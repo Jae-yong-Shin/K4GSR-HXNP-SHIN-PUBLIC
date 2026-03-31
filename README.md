@@ -168,7 +168,7 @@ This project is part of the **K4GSR 3-project ecosystem**:
 |-----------|-------|
 | Storage Ring | Korea-4GSR, 4.0 GeV, 400 mA |
 | Source | IVU24 Undulator (24 mm period, 123 periods) |
-| Energy Range | 5 - 30 keV |
+| Energy Range | 5 - 25 keV |
 | Monochromator | DCM Si(111) / Si(311) |
 | Focusing | KB mirrors (50 nm target) |
 | Beam Size | ~50 nm (nanoprobe) |

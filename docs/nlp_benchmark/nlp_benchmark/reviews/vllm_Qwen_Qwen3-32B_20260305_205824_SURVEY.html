@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NLP Benchmark Review - Qwen/Qwen3-32B</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f1117;
+    color: #e8eaed;
+    min-height: 100vh;
+}
+.header {
+    background: #1a1d23;
+    border-bottom: 1px solid #2a2d35;
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.header h1 {
+    font-size: 20px;
+    color: #4db8ff;
+}
+.meta {
+    font-size: 13px;
+    color: #a0a4ab;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+}
+.progress-bar {
+    height: 6px;
+    background: #2a2d35;
+    border-radius: 3px;
+    margin-top: 8px;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4db8ff, #40d89a);
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+.progress-text {
+    font-size: 12px;
+    color: #a0a4ab;
+    margin-top: 4px;
+    text-align: right;
+}
+.toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.toolbar select, .toolbar button, .reviewer-input {
+    background: #22252b;
+    color: #e8eaed;
+    border: 1px solid #3a3d45;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+.toolbar select:focus, .reviewer-input:focus {
+    outline: none;
+    border-color: #4db8ff;
+}
+.toolbar button:hover { background: #2a2d35; border-color: #4db8ff; }
+.toolbar button.primary {
+    background: #4db8ff; color: #0f1117; border-color: #4db8ff; font-weight: 600;
+}
+.toolbar button.primary:hover { background: #3aa8ef; }
+.toolbar button.danger { background: #ff4d4d; color: #fff; border-color: #ff4d4d; }
+.reviewer-input { width: 140px; cursor: text; }
+.content {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.card {
+    background: #1a1d23;
+    border: 1px solid #2a2d35;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.card.reviewed { border-color: #40d89a44; }
+.card.fail { border-left: 3px solid #ff4d4d; }
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: #22252b;
+    cursor: pointer;
+    user-select: none;
+}
+.card-header:hover { background: #262930; }
+.card-id {
+    font-weight: 600;
+    font-size: 14px;
+    color: #4db8ff;
+    white-space: nowrap;
+}
+.card-prompt-preview {
+    font-size: 13px;
+    color: #a0a4ab;
+    margin-left: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+.card-badges {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+.badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.badge.pass { background: #40d89a22; color: #40d89a; }
+.badge.fail-badge { background: #ff4d4d22; color: #ff4d4d; }
+.badge.time { background: #ffb34022; color: #ffb340; }
+.badge.reviewed-badge { background: #4db8ff22; color: #4db8ff; }
+.badge.verdict-wrong { background: #ff4d4d22; color: #ff4d4d; }
+.badge.verdict-missing { background: #ffb34022; color: #ffb340; }
+.badge.verdict-unnecessary { background: #a855f722; color: #a855f7; }
+.card-body {
+    padding: 16px;
+    display: none;
+}
+.card.open .card-body { display: block; }
+.field { margin-bottom: 12px; }
+.field-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 4px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.field-value {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #e8eaed;
+    background: #22252b;
+    padding: 10px 14px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.field-value.prompt { color: #ffb340; font-weight: 500; font-size: 15px; }
+.field-value.actions {
+    color: #40d89a;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+}
+.field-value.error { color: #ff4d4d; font-size: 13px; }
+.verdict-section {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #2a2d35;
+}
+.verdict-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.verdict-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #3a3d45;
+    transition: all 0.15s;
+    font-size: 13px;
+}
+.verdict-option:hover { background: #22252b; }
+.verdict-option input[type="radio"] { accent-color: #4db8ff; }
+.verdict-option.selected { border-color: #4db8ff; background: #4db8ff11; }
+.comment-input {
+    width: 100%;
+    background: #22252b;
+    border: 1px solid #3a3d45;
+    color: #e8eaed;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 36px;
+}
+.comment-input:focus { outline: none; border-color: #4db8ff; }
+.cat-divider {
+    padding: 20px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.cat-divider h2 { font-size: 16px; color: #4db8ff; white-space: nowrap; }
+.cat-divider .line { flex: 1; height: 1px; background: #2a2d35; }
+.cat-divider .count { font-size: 12px; color: #6b7280; white-space: nowrap; }
+.hidden { display: none !important; }
+.nav-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+.nav-buttons button {
+    flex: 1;
+    padding: 8px;
+    background: #22252b;
+    border: 1px solid #3a3d45;
+    color: #e8eaed;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.nav-buttons button:hover { background: #2a2d35; border-color: #4db8ff; }
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #40d89a;
+    color: #0f1117;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+    pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.summary-bar {
+    display: flex;
+    gap: 16px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #6b7280;
+}
+.summary-bar .s-ok { color: #40d89a; }
+.summary-bar .s-wrong { color: #ff4d4d; }
+.summary-bar .s-missing { color: #ffb340; }
+.summary-bar .s-unnecessary { color: #a855f7; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-top">
+        <h1>NLP Benchmark Review Survey</h1>
+        <div class="meta">
+            <span>Model: <b>Qwen/Qwen3-32B</b></span>
+            <span>Engine: <b>vllm</b></span>
+            <span>Date: <b>2026-03-05</b></span>
+            <span>Total: <b>228</b> | Pass: <b>224</b> | Fail: <b>4</b> | Rate: <b>98.2%</b></span>
+        </div>
+    </div>
+    <div class="toolbar">
+        <label style="font-size:13px;color:#a0a4ab;">Reviewer:</label>
+        <input type="text" class="reviewer-input" id="reviewerName" placeholder="Your name">
+        <select id="filterCat"><option value="all">All categories</option></select>
+        <select id="filterStatus">
+            <option value="all">All status</option>
+            <option value="unreviewed">Unreviewed only</option>
+            <option value="reviewed">Reviewed only</option>
+            <option value="fail">Failed only</option>
+            <option value="flagged">Flagged (not OK)</option>
+        </select>
+        <button class="primary" onclick="exportResults()">Export JSON</button>
+        <button onclick="expandAll()">Expand All</button>
+        <button onclick="collapseAll()">Collapse All</button>
+        <button class="danger" onclick="clearAll()">Clear All</button>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+    <div class="summary-bar" id="summaryBar"></div>
+</div>
+
+<div class="content" id="content"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ITEMS = [{"id": "motor_01", "cat": "motor", "passed": true, "prompt": "에너지를 12 keV로 설정해", "actions": "setTargetEnergy(12)", "explanation": "빔 에너지를 12 keV로 설정합니다.", "confirmation": true, "elapsed": 26.5, "errors": ""}, {"id": "motor_02", "cat": "motor", "passed": true, "prompt": "M1 피치를 2.5로 이동해", "actions": "motorSetUI(m1, m1_pitch, 2.5)", "explanation": "M1 피치를 2.5 mrad로 이동합니다.", "confirmation": true, "elapsed": 5.4, "errors": ""}, {"id": "motor_03", "cat": "motor", "passed": true, "prompt": "시료 X를 100 이동해", "actions": "motorSetUI(sample, sample_cx, 100)", "explanation": "시료 X 위치를 100 µm로 이동합니다.", "confirmation": true, "elapsed": 5.3, "errors": ""}, {"id": "scan_01", "cat": "scan", "passed": true, "prompt": "구리 K-edge XAFS 측정해줘", "actions": "quickXafs(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와 Cu K-edge (8.979 keV)의 차이는 1.021 keV로 2 keV 이하이므로 광학 정렬 없이 바로 측정합니다.", "confirmation": true, "elapsed": 12.6, "errors": ""}, {"id": "scan_02", "cat": "scan", "passed": true, "prompt": "철 XANES 측정해줘", "actions": "quickXanes(Fe, K) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 11.3, "errors": ""}, {"id": "scan_03", "cat": "scan", "passed": true, "prompt": "10x10 범위에 41포인트로 철 XRF 2D 맵 측정해줘", "actions": "setTargetEnergy(8.5) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 15.0, "errors": ""}, {"id": "scan_04", "cat": "scan", "passed": true, "prompt": "시료를 (0,0)에서 (10,5)까지 라인스캔해줘", "actions": "quickLineScan(0, 0, 10, 5, 51) -> queueStart()", "explanation": "시료 (0,0)→(10,5) µm 대각선 라인스캔 (51포인트)을 실행합니다.", "confirmation": true, "elapsed": 8.8, "errors": ""}, {"id": "scan_05", "cat": "scan", "passed": true, "prompt": "M1 피치를 1~4 mrad에서 고속스캔해줘", "actions": "quickFlyScan(m1, pitch, 1, 4, 101) -> queueStart()", "explanation": "M1 피치 1~4 mrad 범위 플라이 스캔 (101포인트)을 실행합니다.", "confirmation": true, "elapsed": 8.2, "errors": ""}, {"id": "scan_06", "cat": "scan", "passed": true, "prompt": "철 K-edge 주변 적응형 에너지 스캔해줘", "actions": "quickAdaptiveScan(6.9, 7.5, 0.1, 5.0) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) 주변을 적응형으로 스캔합니다. 흡수단 근처에서 자동으로 밀도 높은 측정을 합니다. 현재 에너지(10 keV)에서 2.888 keV 변화가 있으므로 광학 정렬을 먼저 수행해야 합니다.", "confirmation": true, "elapsed": 14.7, "errors": ""}, {"id": "scan_07", "cat": "scan", "passed": true, "prompt": "DCM 세타 현위치 기준 +/-0.5도 정렬 스캔해줘", "actions": "quickRelAlign(dcm, theta, 1.0, 21) -> queueStart()", "explanation": "DCM 세타를 현재 위치 기준 ±0.5도 범위에서 정렬 스캔합니다.", "confirmation": true, "elapsed": 7.5, "errors": ""}, {"id": "scan_08", "cat": "scan", "passed": true, "prompt": "현위치에서 페르마 나선 스캔해줘", "actions": "quickFermat(10, 10, 0.5) -> queueStart()", "explanation": "현재 시료 위치에서 10×10 µm 페르마 나선 스캔을 실행합니다.", "confirmation": true, "elapsed": 7.7, "errors": ""}, {"id": "scan_09", "cat": "scan", "passed": true, "prompt": "현위치 기준 5x5 래스터 스캔해줘", "actions": "quickRelRaster(5, 5, 21, 21) -> queueStart()", "explanation": "현재 시료 위치 기준 ±2.5 µm 범위에서 21×21 래스터 스캔을 실행합니다. 현재 에너지는 10 keV, SSA 수평/수직 갭은 50 µm로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 13.3, "errors": ""}, {"id": "align_01", "cat": "alignment", "passed": true, "prompt": "Mo K-edge XAFS 측정해줘", "actions": "setTargetEnergy(20) -> runFullAlignment() -> quickXafs(Mo, K) -> queueStart()", "explanation": "Mo K-edge (20.0 keV) XAFS 스캔입니다. 현재 에너지(10 keV)에서 10 keV 변화이므로 광학 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 11.8, "errors": ""}, {"id": "align_02", "cat": "alignment", "passed": true, "prompt": "철 XRF 2D 맵 측정해줘", "actions": "setTargetEnergy(8.5) -> quickRaster(5, 5, 41) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 5×5 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 14.7, "errors": ""}, {"id": "align_03", "cat": "alignment", "passed": true, "prompt": "전체 빔 정렬 시작", "actions": "runFullAlignment()", "explanation": "전체 빔라인 정렬(7단계)을 시작합니다.", "confirmation": true, "elapsed": 4.6, "errors": ""}, {"id": "align_04", "cat": "alignment", "passed": true, "prompt": "M1 피치 자동 정렬해줘", "actions": "quickAutoTune(m1, pitch, 1.0, 4.0, ic1_current) -> queueStart()", "explanation": "M1 피치를 1~4 mrad 범위에서 반복 센트로이드 탐색으로 자동 정렬합니다.", "confirmation": true, "elapsed": 9.2, "errors": ""}, {"id": "multi_01", "cat": "multi", "passed": true, "prompt": "12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘", "actions": "setTargetEnergy(12) -> runFullAlignment() -> showBeamProfile(sample)", "explanation": "12 keV 설정 → 전체 정렬 → 빔 프로파일 확인합니다.", "confirmation": true, "elapsed": 7.4, "errors": ""}, {"id": "opt_01", "cat": "optimize", "passed": true, "prompt": "Cu 분말 1000ppm XRF 최적화해줘", "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Cu', 'edge': 'K', 'ppm': 1000, 'sampleType': 'powder', 'priority': 'balanced'})", "explanation": "Cu K-edge (8.979 keV) XRF에 최적화된 빔라인 설정을 계산합니다. 에너지, SSA, 예상 flux와 beam size를 포함한 Pareto front를 제공합니다.", "confirmation": true, "elapsed": 12.0, "errors": ""}, {"id": "opt_02", "cat": "optimize", "passed": true, "prompt": "철 시료인데 가장 좋은 분해능으로 XRF 맵핑하고 싶어", "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Fe', 'edge': 'K', 'priority': 'resolution'})", "explanation": "Fe K-edge XRF에 최적 분해능(최소 빔 사이즈) 설정을 찾습니다.", "confirmation": true, "elapsed": 7.5, "errors": ""}, {"id": "opt_03", "cat": "optimize", "passed": false, "prompt": "Ti K-edge XANES 하려는데 시료가 SrTiO3 분말이야", "actions": "optimizeBeamline({'technique': 'xanes', 'element': 'Ti', 'edge': 'K', 'ppm': 100000, 'sampleType': 'powder', 'priority': 'flux'})", "explanation": "Ti K-edge (4.966 keV) XANES는 이 빔라인의 최소 에너지(5.0 keV)보다 약간 낮습니다. 이 에너지에서의 측정은 불가능합니다. 대안으로, Ti L3-edge (45.6 eV)를 사용할 수 있지만, 이는 여전히 빔라인의 에너지 범위(5-25 keV)를 벗어납니다. 따라서 Ti K-edge XANES는 이 빔라인에서 수행할 수 없습니다. 다른 원소나 기법을 고려해 주세요.", "confirmation": false, "elapsed": 39.3, "errors": "Expected confirmation_required=True, got False"}, {"id": "opt_04", "cat": "optimize", "passed": true, "prompt": "ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야", "actions": "optimizeBeamline({'technique': 'ptycho', 'element': 'Cu', 'edge': 'K', 'sampleType': 'solid', 'thickness_um': 1, 'priority': 'coherence'})", "explanation": "Cu K-edge (8.979 keV) ptychography 최적화를 수행합니다. 결맞음 flux(coherent flux)를 최대화하고 결맞음도(degree of coherence) > 0.3 조건을 만족하는 SSA를 추천합니다.", "confirmation": true, "elapsed": 12.8, "errors": ""}, {"id": "opt_05", "cat": "optimize", "passed": true, "prompt": "지금 셋업에서 Cu 신호 얼마나 나와?", "actions": "estimateSignal(xrf, Cu, 10000, None, None, 10)", "explanation": "현재 빔라인 설정(에너지 10 keV, SSA 수평/수직 갭 50 um)에서 Cu XRF 신호를 추정합니다. 10000 ppm, 두께 10 um 시료 기준입니다. 추정값은 빔 강도, SSA, 필터 설정 등에 따라 달라질 수 있습니다.", "confirmation": false, "elapsed": 13.7, "errors": ""}, {"id": "opt_06", "cat": "optimize", "passed": true, "prompt": "W L3-edge XRF 해줘. 시료가 WC 분말이야", "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'W', 'edge': 'L3', 'ppm': 500000, 'sampleType': 'powder', 'priority': 'balanced'})", "explanation": "W L3-edge (10.207 keV) XRF에 최적화된 설정을 계산합니다. WC 분말 시료 기준입니다.", "confirmation": true, "elapsed": 10.6, "errors": ""}, {"id": "opt_07", "cat": "optimize", "passed": true, "prompt": "빔라인 최적화해줘", "actions": "(empty)", "explanation": "빔라인 최적화를 위해 다음 정보가 필요합니다:  1. **측정 기법**: XRF, XANES, XRD, Ptychography 중 어떤 것인가요? 2. **원소**: 측정하려는 원소와 edge (예: Cu K-edge, Au L3-edge) 3. **시료 정보** (선택): 농도(ppm), 두께(um), 형태(powder/solid) 4. **우선순위** (선택): flux(강도), resolution(분해능), balanced(균형), coherence(결맞음)  예시: 'Cu 분말 1000ppm XRF 최적화해줘'", "confirmation": false, "elapsed": 39.9, "errors": ""}, {"id": "atten_01", "cat": "attenmask", "passed": true, "prompt": "어테뉴에이터에 Carbon 1mm 넣어줘", "actions": "setAttenFilter(0, material, Carbon) -> setAttenFilter(0, thickness, 1.0)", "explanation": "어테뉴에이터 슬롯 1에 Carbon 1mm 필터를 삽입합니다.", "confirmation": true, "elapsed": 7.9, "errors": ""}, {"id": "atten_02", "cat": "attenmask", "passed": true, "prompt": "어테뉴에이터 전부 빼", "actions": "setAttenFilter(0, material, None) -> setAttenFilter(0, thickness, 0) -> setAttenFilter(1, material, None) -> setAttenFilter(1, thickness, 0) -> setAttenFilter(2, material, None) -> setAttenFilter(2, thickness, 0) -> setAttenFilter(3, material, None) -> setAttenFilter(3, thickness, 0)", "explanation": "어테뉴에이터 4개 슬롯의 필터를 모두 제거합니다.", "confirmation": true, "elapsed": 18.1, "errors": ""}, {"id": "mask_01", "cat": "attenmask", "passed": true, "prompt": "movable mask를 1mm x 1mm로 이동시켜", "actions": "maskAperUpdate(mmask, h, 1) -> maskAperUpdate(mmask, v, 1)", "explanation": "Movable Mask의 수평/수직 조리개를 각각 1mm로 설정합니다.", "confirmation": true, "elapsed": 7.8, "errors": ""}, {"id": "mask_02", "cat": "attenmask", "passed": true, "prompt": "고정 마스크 수평갭 2mm, 수직갭 3mm", "actions": "maskAperUpdate(fmask, h, 2) -> maskAperUpdate(fmask, v, 3)", "explanation": "Fixed Mask의 수평갭을 2mm, 수직갭을 3mm로 설정합니다.", "confirmation": true, "elapsed": 7.7, "errors": ""}, {"id": "info_01", "cat": "info", "passed": true, "prompt": "XRD가 뭐야?", "actions": "(empty)", "explanation": "XRD(X-ray Diffraction, X선 회절)는 결정 구조를 분석하는 기법입니다.  X선이 결정에 입사하면 Bragg 법칙(nλ=2d sinθ)에 따라 특정 각도에서 회절이 발생합니다. 회절 패턴을 분석하면 격자 상수, 결정 구조, 상(phase) 등을 알 수 있습니다.  이 빔라인에서는 Eiger 2X 검출기로 2D 회절 패턴을 수집합니다. - 단일 포인트 XRD: '분말 XRD 실험 셋업해줘' - 2D XRD 매핑: '2D XRD 매핑해줘' (시료를 스캔하며 위치별 회절 패턴 수집)", "confirmation": false, "elapsed": 42.6, "errors": ""}, {"id": "info_02", "cat": "info", "passed": true, "prompt": "네가 할 수 있는 명령들을 정리해봐", "actions": "(empty)", "explanation": "사용 가능한 명령 목록입니다:  [에너지/광학] - 에너지 설정: '에너지를 12 keV로 설정해' - 결정 변경: 'Si(311)로 변경해' - 집속 모드: 'KB 모드로 전환해'  [모터 제어] - 모터 이동: 'M1 피치를 2.5로 이동해' - 슬릿 조절: '슬릿 수평갭을 1mm로 설정해' - 시료 이동: '시료 X를 100um 이동해'  [정렬] - 전체 정렬: '전체 빔 정렬 시작' - 미러 정렬: 'M1 미러 정렬해줘' - 단일 스텝: 'DCM 로킹커브 스캔해'  [측정/스캔] - XAFS: '구리 K-edge XAFS ...", "confirmation": false, "elapsed": 88.6, "errors": ""}, {"id": "info_03", "cat": "info", "passed": true, "prompt": "빔 프로파일 보여줘", "actions": "showBeamProfile(sample)", "explanation": "시료 위치에서 빔 프로파일을 표시합니다. 다른 위치(IVU, M1, DCM, M2, WBSlit, KBV, KBH)의 프로파일이 필요하시면 말씀해 주세요.", "confirmation": false, "elapsed": 8.9, "errors": ""}, {"id": "param_01", "cat": "param", "passed": true, "prompt": "2D XRD 매핑해줘", "actions": "(empty)", "explanation": "2D XRD 매핑을 준비하겠습니다. 다음 파라미터를 알려주세요: - 스캔 범위 (µm, 예: 10×10) - 포인트 수 (예: 21×21) - 에너지 (keV, 예: 15)  또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 21pt, 15 keV)으로 실행합니다.", "confirmation": false, "elapsed": 28.1, "errors": ""}, {"id": "param_02", "cat": "param", "passed": true, "prompt": "철 XRF 2D 맵 측정해줘", "actions": "setTargetEnergy(8.5) -> quickRaster(5, 5, 41) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 5×5 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 14.6, "errors": ""}, {"id": "sample_01", "cat": "scientist", "passed": true, "prompt": "NMC 622 배터리 시료를 nano XRF로 분석하고 싶어. Ni, Mn, Co를 측정해야 해", "actions": "setTargetEnergy(9.5) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "NMC 622 시료의 Ni, Mn, Co를 nano XRF로 분석합니다. 세 원소 중 가장 높은 Ni K-edge (8.333 keV) 위의 9.5 keV로 설정합니다. 이 에너지에서 Mn(6.539 keV), Co(7.709 keV), Ni(8.333 keV) 형광선이 모두 여기됩니다. KB 미러로 나노빔(~50 nm) 집속하여 측정합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 20.9, "errors": ""}, {"id": "sample_02", "cat": "scientist", "passed": true, "prompt": "Au L3-edge XRF 신호가 충분할지 확인해줘. 50 ppm 시료야", "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Au', 'edge': 'L3', 'ppm': 50, 'priority': 'flux'})", "explanation": "Au L3-edge (11.919 keV) XRF 최적화를 수행합니다. 50 ppm 시료에서 예상 신호를 계산합니다.", "confirmation": true, "elapsed": 10.0, "errors": ""}, {"id": "batt_01", "cat": "battery", "passed": true, "prompt": "배터리 양극재에서 Ni, Mn, Co 원소 분포를 XRF 맵핑으로 측정하고 싶습니다. 10x10 범위 41포인트로요.", "actions": "setTargetEnergy(9.5) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "NMC 양극재의 Ni, Mn, Co 원소 분포를 XRF 맵핑으로 측정합니다. 세 원소 중 가장 높은 Ni K-edge (8.333 keV) 위의 9.5 keV로 설정합니다. 이 에너지에서 Mn(6.539 keV), Co(7.709 keV), Ni(8.333 keV) 형광선이 모두 여기됩니다. KB 미러로 나노빔(~50 nm) 집속하여 측정합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 21.7, "errors": ""}, {"id": "batt_02", "cat": "battery", "passed": true, "prompt": "LiFePO4 시료 철 K-edge XAFS 측정해주세요.", "actions": "quickXafs(Fe, K) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)에서 2.888 keV 변화가 2 keV 이상이므로 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 10.2, "errors": ""}, {"id": "batt_03", "cat": "battery", "passed": true, "prompt": "전고체 전해질 시료인데, 황의 화학 상태를 확인하고 싶어요.", "actions": "(empty)", "explanation": "황(S) K-edge 에너지는 2.472 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 황의 화학 상태를 확인하려면 연X선(soft X-ray) 빔라인에서의 XANES 측정이 필요합니다. 전고체 전해질 시료의 황 화학 상태 분석을 위해서는 다른 시설에서의 측정이 필요할 수 있습니다.", "confirmation": false, "elapsed": 33.1, "errors": ""}, {"id": "batt_04", "cat": "battery", "passed": false, "prompt": "양극재에 구리 오염이 있는지 확인해주세요. 10ppm 수준이에요.", "actions": "setTargetEnergy(9.5) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) + 0.5 keV = 9.5 keV로 설정하여 10ppm 수준의 구리 오염을 확인합니다. 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 17.5, "errors": "Expected fn 'optimizeBeamline' not found in sequence. Got: ['setTargetEnergy', 'quickRaster', 'queueStart']"}, {"id": "batt_05", "cat": "battery", "passed": true, "prompt": "충방전 후 양극재 결정상 분포를 2D XRD 맵으로 측정하고 싶어요. 15 keV에서 10x10 21포인트로.", "actions": "setTargetEnergy(15) -> quickRaster(10, 10, 21) -> queueStart()", "explanation": "15 keV로 설정 후 10x10 µm 범위에서 21x21 포인트 2D XRD 매핑을 실행합니다. 현재 에너지(10 keV)에서 5 keV 변화이므로 광학 정렬은 필요 없습니다. P K-edge (2.145 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. 연X선 빔라인에서 분석하시기 바랍니다.", "confirmation": true, "elapsed": 19.6, "errors": ""}, {"id": "cata_01", "cat": "catalyst", "passed": true, "prompt": "Pt/C 연료전지 촉매에서 백금 산화 상태를 XANES로 확인해주세요.", "actions": "setTargetEnergy(11.564) -> quickXanes(Pt, L3) -> queueStart()", "explanation": "Pt L3-edge (11.564 keV) XANES를 실행합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다. 노출 시간: 기본값 적용.", "confirmation": true, "elapsed": 14.3, "errors": ""}, {"id": "cata_02", "cat": "catalyst", "passed": true, "prompt": "CeO2 담지체의 세륨 L3 엣지 XANES 측정해주세요.", "actions": "setTargetEnergy(5.723) -> quickXanes(Ce, L3) -> queueStart()", "explanation": "Ce L3-edge (5.723 keV) XANES를 실행합니다. 현재 에너지(10 keV)에서 -4.277 keV 변화가 2 keV 이상이므로 광학 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 12.4, "errors": ""}, {"id": "cata_03", "cat": "catalyst", "passed": true, "prompt": "니켈 촉매 반응 중 산화 상태가 변하는지 적응형 에너지 스캔으로 확인하고 싶어요.", "actions": "quickAdaptiveScan(8.2, 8.8, 0.1, 5.0) -> queueStart()", "explanation": "Ni K-edge (8.333 keV) 주변을 적응형 에너지 스캔으로 측정합니다. 흡수단 근처에서 밀도 높은 측정을 하여 산화 상태 변화를 분석할 수 있습니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 15.5, "errors": ""}, {"id": "semi_01", "cat": "semiconductor", "passed": true, "prompt": "반도체 칩 단면에서 구리 배선 분포를 XRF 맵핑해주세요. 분해능을 최대로 해주세요.", "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Cu', 'edge': 'K', 'priority': 'resolution'})", "explanation": "반도체 칩 단면의 Cu 배선 분포를 최고 분해능으로 XRF 맵핑합니다. KB 미러로 나노빔(~50 nm) 집속, SSA 갭 최소화하여 최소 빔 사이즈를 확보합니다. 최적 에너지와 SSA 설정을 계산 중입니다.", "confirmation": true, "elapsed": 13.0, "errors": ""}, {"id": "semi_02", "cat": "semiconductor", "passed": true, "prompt": "에피택셜 박막의 격자 변형을 nano-XRD로 맵핑해주세요. 에너지는 15 keV로.", "actions": "setTargetEnergy(15) -> runFullAlignment() -> setupVirtualExperiment(xrd_2d_map) -> queueStart()", "explanation": "에피택셜 박막의 격자 변형 분석을 위해 15 keV로 에너지를 설정하고 전체 빔 정렬을 수행합니다. XRD 2D 매핑 실험을 시작합니다. 노출 시간은 기본값을 사용합니다.", "confirmation": true, "elapsed": 13.6, "errors": ""}, {"id": "geo_01", "cat": "geology", "passed": true, "prompt": "오염 토양 시료에서 비소의 화학종을 XANES로 구분해주세요.", "actions": "quickXanes(As, K) -> queueStart()", "explanation": "As K-edge (11.867 keV) XANES로 비소의 화학종을 구분합니다. XANES는 흡수단 근처의 구조를 세밀하게 분석하여 As(III)와 As(V)를 구별할 수 있습니다. 현재 에너지(10 keV)에서 1.867 keV 변화가 2 keV 미만이므로 정렬 없이 바로 측정합니다.", "confirmation": true, "elapsed": 15.7, "errors": ""}, {"id": "geo_02", "cat": "geology", "passed": true, "prompt": "사장석 시료에서 스트론튬 분포를 XRF 라인스캔으로 확인해주세요. (0,0)에서 (20,0)까지 51포인트.", "actions": "setTargetEnergy(16.105) -> quickLineScan(0, 0, 20, 0, 51) -> queueStart()", "explanation": "Sr K-edge (16.105 keV) + 1 keV = 17.105 keV로 설정 후 (0,0)에서 (20,0) µm까지 51포인트 XRF 라인스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 16.5, "errors": ""}, {"id": "geo_03", "cat": "geology", "passed": true, "prompt": "광산 폐기물에서 6가 크롬과 3가 크롬을 구분하고 싶어요. Cr XANES 해주세요.", "actions": "quickXanes(Cr, K) -> queueStart()", "explanation": "Cr K-edge (5.989 keV) XANES로 Cr의 산화 상태를 분석합니다. Cr(III)과 Cr(VI)는 near-edge 구조가 다르므로 XANES로 구분할 수 있습니다.", "confirmation": true, "elapsed": 10.0, "errors": ""}, {"id": "env_01", "cat": "environment", "passed": true, "prompt": "비산재 입자에서 납 분포를 XRF로 확인하고, Pb L3 XANES도 해주세요.", "actions": "setTargetEnergy(14) -> quickRaster(10, 10, 41) -> queueStart() -> quickXanes(Pb, L3) -> queueStart()", "explanation": "Pb L3-edge (13.035 keV) XANES를 실행합니다. Pb K-edge (88.0 keV)는 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다. XRF 매핑은 Pb L3-edge 위의 14 keV로 설정하여 10x10 µm, 41x41 포인트로 수행합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 21.8, "errors": ""}, {"id": "env_02", "cat": "environment", "passed": true, "prompt": "하수 슬러지에서 아연의 화학 상태를 알고 싶어요.", "actions": "quickXanes(Zn, K) -> queueStart()", "explanation": "Zn K-edge (9.659 keV) XANES로 화학 상태를 분석합니다. 현재 에너지(10 keV)와 가까워 정렬 없이 바로 측정합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 11.4, "errors": ""}, {"id": "bio_01", "cat": "biology", "passed": true, "prompt": "동결건조한 세포 시료에서 철과 아연 분포를 나노 XRF로 이미징해주세요. 5x5 41포인트.", "actions": "setTargetEnergy(10) -> quickRaster(5, 5, 41) -> queueStart()", "explanation": "Fe K-edge (7.112 keV)와 Zn K-edge (9.659 keV) 중 가장 높은 Zn K-edge를 기준으로 10 keV로 설정하여 XRF 래스터 스캔을 실행합니다. 5x5 µm 범위, 41x41 포인트로 측정합니다. KB 미러로 나노빔(~50 nm) 집속하여 측정합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 20.3, "errors": ""}, {"id": "bio_02", "cat": "biology", "passed": true, "prompt": "신경세포 수상돌기에서 Cu 분포를 페르마 나선 스캔으로 측정해주세요.", "actions": "setTargetEnergy(11.5) -> quickFermat(10, 10, 0.5) -> queueStart()", "explanation": "신경세포 수상돌기의 Cu 분포를 페르마 나선 스캔으로 측정합니다. Cu K-edge (8.979 keV) 위의 11.5 keV로 설정하여 형광선을 여기합니다. 10×10 µm 범위, 0.5 µm 간격의 나선 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. KB 미러로 나노빔(~50 nm) 집속하여 고해상도 측정합니다.", "confirmation": true, "elapsed": 20.8, "errors": ""}, {"id": "mat_01", "cat": "materials", "passed": true, "prompt": "페로브스카이트 태양전지에서 납 분포의 불균일성을 XRF 맵핑해주세요. 10x10 41포인트.", "actions": "setTargetEnergy(13.035) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Pb L3-edge (13.035 keV)로 설정 후 10x10 µm, 41x41 포인트 XRF 래스터 스캔을 실행합니다. Pb K-edge는 88 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다. 납 분포의 불균일성을 확인할 수 있습니다.", "confirmation": true, "elapsed": 17.7, "errors": ""}, {"id": "mat_02", "cat": "materials", "passed": true, "prompt": "고엔트로피 합금 시료에서 Fe, Co, Ni, Cr, Mn 원소 분포를 동시에 XRF 맵핑해주세요. 10x10 41포인트.", "actions": "setTargetEnergy(10) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Fe(7.112 keV), Co(7.709 keV), Ni(8.333 keV), Cr(5.989 keV), Mn(6.539 keV) 원소의 K-edge 중 가장 높은 Ni K-edge (8.333 keV)를 기준으로 10 keV로 설정하여 XRF 래스터 스캔을 실행합니다. 10x10 µm 범위, 41x41 포인트로 Fe, Co, Ni, Cr, Mn의 분포를 동시에 측정합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 23.3, "errors": ""}, {"id": "mat_03", "cat": "materials", "passed": true, "prompt": "구리 산화물 시료가 Cu2O인지 CuO인지 구분하고 싶어요.", "actions": "quickXanes(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XANES로 Cu의 산화 상태를 분석합니다. Cu2O(+1)와 CuO(+2)는 near-edge 구조가 다르므로 XANES로 구분할 수 있습니다.", "confirmation": true, "elapsed": 10.3, "errors": ""}, {"id": "edge_01", "cat": "edgecase", "passed": true, "prompt": "인(P) K-edge XANES 해주세요.", "actions": "(empty)", "explanation": "P(인) K-edge 에너지는 2.145 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 인 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 19.9, "errors": ""}, {"id": "edge_02", "cat": "edgecase", "passed": true, "prompt": "텅스텐 K-edge XAFS 측정해줘.", "actions": "(empty)", "explanation": "W(텅스텐) K-edge 에너지는 69.5 keV로, 이 빔라인의 최대 에너지(25 keV)를 훨씬 초과합니다. 대신 W L3-edge (10.207 keV) XAFS를 측정할 수 있습니다. 이 에너지에서 텅스텐의 흡수 스펙트럼을 얻을 수 있습니다. 측정을 원하시면 '실행해줘'라고 말씀해 주세요.", "confirmation": false, "elapsed": 27.9, "errors": ""}, {"id": "edge_03", "cat": "edgecase", "passed": true, "prompt": "금 시료 XRF 해주세요. 5x5 41포인트.", "actions": "setTargetEnergy(13) -> quickRaster(5, 5, 41) -> queueStart()", "explanation": "Au L3-edge (11.919 keV) + 1 keV = 13 keV로 설정 후 5x5 um, 41x41 포인트 XRF 래스터 스캔을 실행합니다. Au는 K-edge가 80.7 keV로 범위 밖이므로 L3-edge를 사용합니다.", "confirmation": true, "elapsed": 15.0, "errors": ""}, {"id": "edge_04", "cat": "edgecase", "passed": true, "prompt": "Cu K-edge XAFS 돌려줘", "actions": "quickXafs(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와 Cu K-edge 에너지(8.979 keV)의 차이는 1.021 keV로 2 keV 이하이므로 추가 정렬 없이 바로 측정합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 15.5, "errors": ""}, {"id": "edge_05", "cat": "edgecase", "passed": true, "prompt": "XANES랑 EXAFS 차이가 뭐예요?", "actions": "(empty)", "explanation": "XANES와 EXAFS는 모두 X-ray Absorption Fine Structure(XAFS) 기법의 일부입니다.  - **XANES (X-ray Absorption Near Edge Structure)**:   - 흡수단(Edge) 근처의 구조를 분석합니다.   - 에너지 분해능이 매우 높아 (0.25 eV), 화학 상태, 산화수, 국소 구조 정보를 얻을 수 있습니다.   - 주로 화학 상태 분석에 사용됩니다.  - **EXAFS (Extended X-ray Absorption Fine Structure)**:   - 흡수단 ...", "confirmation": false, "elapsed": 58.6, "errors": ""}, {"id": "edge_06", "cat": "edgecase", "passed": true, "prompt": "금 L3 엣지가 몇 keV예요?", "actions": "(empty)", "explanation": "Au(금) L3-edge 에너지는 11.919 keV입니다. Au K-edge는 80.7 keV로 이 빔라인의 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용해야 합니다.", "confirmation": false, "elapsed": 17.3, "errors": ""}, {"id": "edge_07", "cat": "edgecase", "passed": true, "prompt": "Pt L3-edge XANES 측정해주세요.", "actions": "setTargetEnergy(11.564) -> quickXanes(Pt, L3) -> queueStart()", "explanation": "Pt L3-edge (11.564 keV) XANES를 실행합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다. 노출 시간: 기본값 적용.", "confirmation": true, "elapsed": 14.1, "errors": ""}, {"id": "ops_01", "cat": "operations", "passed": true, "prompt": "Si(311)로 변경해주세요.", "actions": "setCrystal(311)", "explanation": "DCM 모노크로메이터의 결정면을 Si(311)로 변경합니다. ⚠ 주의: Si K-edge (1.839 keV)는 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Si(311) 결정면은 Si(111) 대비 높은 에너지 측정에 사용됩니다.", "confirmation": true, "elapsed": 14.8, "errors": ""}, {"id": "ops_02", "cat": "operations", "passed": true, "prompt": "SSA 수평갭을 30 마이크로미터로 줄여주세요.", "actions": "motorSetUI(ssa, ssa_hgap, 30)", "explanation": "SSA 수평 갭을 30 µm로 줄입니다. 현재 수직 갭은 50 µm로 유지됩니다.", "confirmation": true, "elapsed": 7.0, "errors": ""}, {"id": "ops_03", "cat": "operations", "passed": true, "prompt": "긴급 정지!", "actions": "emergencyStop()", "explanation": "긴급 정지를 실행합니다. 모든 모터가 정지되고 빔이 차단됩니다.", "confirmation": true, "elapsed": 4.9, "errors": ""}, {"id": "workflow_01", "cat": "workflow", "passed": false, "prompt": "SrTiO3 시료에서 Ti K-edge XANES 하고 나서 Sr K-edge XANES도 해주세요.", "actions": "(empty)", "explanation": "Ti K-edge 에너지는 4.966 keV로, 이 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정할 수 없습니다. Sr K-edge (16.105 keV)는 측정 가능합니다. Sr K-edge XANES를 실행하시려면 '실행해줘'라고 말씀해 주세요.", "confirmation": false, "elapsed": 25.2, "errors": "Expected fn 'quickXanes' not found in sequence. Got: []; Expected confirmation_required=True, got False"}, {"id": "workflow_02", "cat": "workflow", "passed": true, "prompt": "Cu 1000ppm 분말 시료 XRF 최적화해서 10x10 41포인트로 측정까지 해주세요.", "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Cu', 'edge': 'K', 'ppm': 1000, 'sampleType': 'powder', 'priority': 'balanced'})", "explanation": "Cu K-edge (8.979 keV) XRF에 최적화된 빔라인 설정을 계산합니다. 에너지, SSA, 예상 flux와 beam size를 포함한 Pareto front를 제공합니다.", "confirmation": true, "elapsed": 11.9, "errors": ""}, {"id": "held_01", "cat": "heldout", "passed": true, "prompt": "Zn K흡수단 XANES 스펙트럼을 찍어줘", "actions": "quickXanes(Zn, K) -> queueStart()", "explanation": "Zn K-edge (9.659 keV) XANES를 실행합니다. XANES는 흡수단 근처를 0.25 eV 분해능으로 측정합니다. 현재 에너지(10 keV)와 Zn K-edge의 차이가 0.34 keV로 2 keV 이하이므로 정렬 없이 바로 측정합니다.", "confirmation": true, "elapsed": 14.7, "errors": ""}, {"id": "held_02", "cat": "heldout", "passed": true, "prompt": "X선 에너지를 9.5 keV로 맞춰주실래요?", "actions": "setTargetEnergy(9.5)", "explanation": "빔 에너지를 9.5 keV로 설정합니다. 현재 에너지(10 keV)와의 차이가 0.5 keV로 2 keV 이하이므로 광학 정렬은 필요 없습니다.", "confirmation": true, "elapsed": 8.9, "errors": ""}, {"id": "held_03", "cat": "heldout", "passed": true, "prompt": "M2 미러 pitch angle을 3.0 mrad로 조절해줘", "actions": "motorSetUI(m2, m2_pitch, 3.0)", "explanation": "M2 미러의 pitch angle을 3.0 mrad로 조절합니다.", "confirmation": true, "elapsed": 5.8, "errors": ""}, {"id": "held_04", "cat": "heldout", "passed": true, "prompt": "코발트 흡수 스펙트럼 좀 볼 수 있을까요?", "actions": "quickXafs(Co, K) -> queueStart()", "explanation": "Co K-edge (7.709 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)에서 2.291 keV 변화가 2 keV 이상이므로 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 10.2, "errors": ""}, {"id": "held_05", "cat": "heldout", "passed": true, "prompt": "selenium XRF 이미지를 20um x 20um 영역에서 31포인트로 얻고 싶어", "actions": "setTargetEnergy(13.5) -> quickRaster(20, 20, 31) -> queueStart()", "explanation": "Se K-edge (12.658 keV) + 0.84 keV = 13.5 keV로 설정 후 20x20 um, 31x31 포인트 XRF 래스터 스캔을 실행합니다.", "confirmation": true, "elapsed": 12.9, "errors": ""}, {"id": "held_06", "cat": "heldout", "passed": true, "prompt": "빔 세기를 줄이고 싶은데 어테뉴에이터에 알루미늄 0.5mm 집어넣어줘", "actions": "setAttenFilter(0, material, Aluminium) -> setAttenFilter(0, thickness, 0.5)", "explanation": "어테뉴에이터 슬롯 1에 알루미늄 0.5mm 필터를 삽입하여 빔 강도를 감쇠시킵니다. 알루미늄 K-edge는 1.56 keV로, 이 빔라인의 최소 에너지(5 keV)보다 낮아 알루미늄 자체의 흡수는 없습니다. 따라서 필터 삽입으로 빔 세기만 줄일 수 있습니다.", "confirmation": true, "elapsed": 17.8, "errors": ""}, {"id": "held_07", "cat": "heldout", "passed": true, "prompt": "Bragg 법칙이 뭔지 알려줘", "actions": "(empty)", "explanation": "Bragg 법칙은 X선 회절(XRD)의 기본 원리입니다. 결정 격자에 X선이 입사할 때, 특정 조건에서만 강한 회절이 발생합니다. 이 조건이 Bragg 법칙입니다.  Bragg 법칙 수식: **nλ = 2d sinθ**  - n: 회절 차수 (1,2,3,...) - λ: X선 파장 - d: 격자 간격 (결정의 원자 간 거리) - θ: 입사각 (X선과 격자 평면 사이의 각도)  이 법칙에 따르면, X선이 결정에 일정 각도로 입사할 때, 격자 평면에서 반사된 X선이 서로 간섭하여 강한 회절 신호를 만듭니다. 이 회절 패턴을 분석하면 격...", "confirmation": false, "elapsed": 61.0, "errors": ""}, {"id": "held_08", "cat": "heldout", "passed": true, "prompt": "칼슘 K-edge 측정이 가능한가요?", "actions": "(empty)", "explanation": "Ca(칼슘) K-edge 에너지는 4.038 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 칼슘 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 20.6, "errors": ""}, {"id": "held_09", "cat": "heldout", "passed": true, "prompt": "지금 빔 에너지가 몇이야? 그리고 As XANES 해줘", "actions": "quickXanes(As, K) -> queueStart()", "explanation": "현재 빔 에너지는 10 keV입니다. As K-edge (11.867 keV) XANES를 실행합니다.", "confirmation": true, "elapsed": 7.9, "errors": ""}, {"id": "held_10", "cat": "heldout", "passed": true, "prompt": "시료 위치를 x=150, y=-50으로 옮겨주세요", "actions": "motorSetUI(sample, sample_cx, 150) -> motorSetUI(sample, sample_cy, -50)", "explanation": "시료 X를 150 µm, Y를 -50 µm로 이동합니다.", "confirmation": true, "elapsed": 8.2, "errors": ""}, {"id": "held_11", "cat": "heldout", "passed": true, "prompt": "Mn oxidation state를 확인하려면 어떻게 해야하죠?", "actions": "quickXanes(Mn, K) -> queueStart()", "explanation": "Mn의 산화 상태를 확인하려면 Mn K-edge (6.539 keV) XANES 측정이 적합합니다. XANES는 흡수단 근처의 구조를 0.25 eV 분해능으로 분석하여 Mn²⁺, Mn³⁺, Mn⁴⁺ 등의 산화 상태를 구분할 수 있습니다. 현재 에너지(10 keV)에서 3.46 keV 차이가 2 keV 미만이므로 정렬 없이 바로 측정합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 20.2, "errors": ""}, {"id": "held_12", "cat": "heldout", "passed": true, "prompt": "SSA를 완전히 열어줘", "actions": "motorSetUI(ssa, ssa_hgap, 200) -> motorSetUI(ssa, ssa_vgap, 200)", "explanation": "SSA 수평/수직 갭을 모두 200 um (최대)로 열겠습니다.", "confirmation": true, "elapsed": 8.4, "errors": ""}, {"id": "held_13", "cat": "heldout", "passed": true, "prompt": "Fe K-edge XRF로 10x10 um 영역 빠르게 스캔해줘. 21포인트면 충분해", "actions": "setTargetEnergy(8.5) -> quickRaster(10, 10, 21) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 21×21 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요. P K-edge (2.145 keV)는 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정할 수 없습니다.", "confirmation": true, "elapsed": 20.1, "errors": ""}, {"id": "held_14", "cat": "heldout", "passed": true, "prompt": "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘", "actions": "quickXanes(Cu, K) -> queueStart() -> quickXanes(Zn, K) -> queueStart()", "explanation": "현재 빔 에너지(10 keV)에서 Cu K-edge (8.979 keV) XANES와 Zn K-edge (9.659 keV) XANES를 순차적으로 실행합니다. 에너지 변화가 2 keV 이하이므로 정렬 없이 바로 측정합니다.", "confirmation": true, "elapsed": 15.3, "errors": ""}, {"id": "held_15", "cat": "heldout", "passed": true, "prompt": "Ce L3 XANES를 찍으려면 에너지를 얼마로 해야 해?", "actions": "setTargetEnergy(5.723)", "explanation": "Ce L3-edge 에너지는 5.723 keV입니다. 현재 에너지(10 keV)에서 5.723 keV로 변경하려면 광학 정렬이 필요합니다. 정렬 후 XANES 측정을 진행하시겠습니까?", "confirmation": true, "elapsed": 18.9, "errors": ""}, {"id": "explan_01", "cat": "experiment_plan", "passed": true, "prompt": "NMC622 양극재야. Ni 30%, Co 10%, Mn 10%. 빔타임 8시간.", "actions": "(empty)", "explanation": "NMC622 양극재 (Ni 30%, Co 10%, Mn 10%)를 분석하기 위한 최적화를 시작합니다. 8시간의 빔타임을 고려하여, 다음 정보를 기반으로 최적의 설정을 제안합니다:  1. **측정 기법**: XRF 2D 맵핑 2. **측정 원소**: Ni, Co, Mn 3. **시료 정보**: 분말/고체, 두께 10 µm 가정 4. **우선순위**: flux (신호 강도)와 resolution (분해능)의 균형  최적화 중입니다. 잠시만 기다려 주세요.", "confirmation": true, "elapsed": 47.9, "errors": ""}, {"id": "explan_02", "cat": "experiment_plan", "passed": true, "prompt": "시료가 SrTiO3 단결정인데 Ti, Sr 둘 다 분석해야해", "actions": "(empty)", "explanation": "SrTiO3 단결정에서 Ti와 Sr을 분석하려면 각각의 K-edge 에너지를 고려해야 합니다. Ti K-edge는 4.966 keV로, 이 빔라인의 최소 에너지(5.0 keV)보다 약간 낮아 측정이 어려울 수 있습니다. Sr K-edge는 16.105 keV로, 측정 가능한 범위 내에 있습니다. Sr에 대한 분석은 가능하지만, Ti에 대한 분석은 에너지 제한으로 인해 제한적일 수 있습니다. Sr K-edge에서 XANES 또는 XRF를 수행하는 것이 적절할 수 있습니다. Ti에 대한 분석이 필수적인 경우, 다른 빔라인을 고려해 주세...", "confirmation": false, "elapsed": 48.3, "errors": ""}, {"id": "explan_03", "cat": "experiment_plan", "passed": true, "prompt": "Pt/C 촉매 50ppm인데 XRF로 보일까?", "actions": "setTargetEnergy(11.564) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Pt L3-edge (11.564 keV)로 설정 후 XRF 래스터 스캔을 실행합니다. C K-edge (0.284 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. P K-edge (2.145 keV)도 마찬가지로 측정 불가능합니다. ⚠ Pt L3-edge 측정 시, 미러 코팅이 Rh인 경우 Pt 형광선 간섭이 없어 권장됩니다.", "confirmation": true, "elapsed": 44.8, "errors": ""}, {"id": "explan_04", "cat": "experiment_plan", "passed": true, "prompt": "2D XRF 맵핑 후에 2D XRD도 해야하는데 시간이 얼마나 걸려?", "actions": "(empty)", "explanation": "2D XRF 맵핑과 2D XRD 매핑의 예상 시간을 계산하려면 다음 정보가 필요합니다:  1. **스캔 범위**: 예: 10×10 µm 2. **포인트 수**: 예: 41×41 포인트 3. **노출 시간**: XRF는 0.1초/포인트 기본, XRD는 1초/포인트 기본  기본값으로 5×5 µm, 41×41 포인트, XRF 0.1초/포인트, XRD 1초/포인트로 계산하면: - XRF: 41×41 × 0.1초 = 약 164초 - XRD: 41×41 × 1초 = 약 1,681초 - 총: 약 1,845초 (30분 45초)  정확한 시간을 알...", "confirmation": false, "elapsed": 47.5, "errors": ""}, {"id": "explan_05", "cat": "experiment_plan", "passed": true, "prompt": "ptychography랑 XRF를 동시에 할 수 있어?", "actions": "(empty)", "explanation": "네, 가능합니다. Ptychography는 스캐닝 기반 기법이므로, 스캔 중에 XRF 신호를 SDD 검출기로 동시에 수집할 수 있습니다. 별도의 검출기 교체 없이 ptychography 이미지와 XRF 원소 분포 맵을 동시에 얻을 수 있습니다.", "confirmation": false, "elapsed": 19.8, "errors": ""}, {"id": "explan_06", "cat": "experiment_plan", "passed": true, "prompt": "nano-XANES랑 XRF 맵핑 동시에 되나?", "actions": "(empty)", "explanation": "XANES와 XRF 맵핑은 기본적으로 다른 기법이므로 동시에 수행할 수 없습니다. XANES는 에너지 스캔 기반, XRF 맵핑은 공간 스캔 기반입니다. 하지만, XRF 맵핑과 ptychography는 동시에 가능합니다. ptychography는 공간 스캔 기반의 고해상도 이미지 기법이므로, XRF 맵핑과 병행이 가능합니다.", "confirmation": false, "elapsed": 24.2, "errors": ""}, {"id": "explan_07", "cat": "experiment_plan", "passed": true, "prompt": "빔타임 4시간인데 Cu XAFS 3회 반복이랑 XRF 맵핑 둘 다 가능해?", "actions": "(empty)", "explanation": "Cu XAFS 3회 반복과 XRF 맵핑을 4시간 내에 수행할 수 있는지 확인하겠습니다. Cu K-edge XAFS는 1회당 약 30분 소요되며, XRF 맵핑(5x5 µm, 41x41 포인트)은 약 1시간이 필요합니다. 총 예상 시간은 2시간 30분입니다. 따라서 4시간 내에 둘 다 수행할 수 있습니다. Cu XAFS는 8.979 keV, XRF 맵핑은 Cu K-edge 위의 10 keV로 설정됩니다. 추가로 세부 설정이 필요하시면 말씀해 주세요.", "confirmation": false, "elapsed": 47.2, "errors": ""}, {"id": "explan_08", "cat": "experiment_plan", "passed": true, "prompt": "검출기 교체 시간이 얼마나 걸려?", "actions": "(empty)", "explanation": "이 빔라인에서는 XRF(SDD)와 XRD(Eiger 2X) 검출기가 고정되어 있으며, 스위칭이 필요 없습니다. 두 검출기의 데이터는 별도로 수집됩니다. 따라서 검출기 교체 시간은 0초입니다. 필요시 'XRF 해줘' 또는 'XRD 해줘'로 직접 선택하시면 됩니다.", "confirmation": false, "elapsed": 25.1, "errors": ""}, {"id": "explan_09", "cat": "experiment_plan", "passed": true, "prompt": "XRF 맵핑 해상도를 50nm로 하면 10x10 영역 스캔 시간이 얼마나 걸려?", "actions": "(empty)", "explanation": "50 nm 해상도로 10x10 µm 영역을 XRF 맵핑할 경우, KB 미러 집속으로 나노빔(~50 nm)을 사용해야 합니다. 이 경우 포인트 수는 약 200x200 (40,000 포인트)가 필요합니다. 각 포인트당 노출 시간이 0.1초일 경우, 총 시간은 약 4000초 (66분)가 소요됩니다. 노출 시간을 줄이면 총 시간이 단축되지만, 신호 대 잡음비가 낮아질 수 있습니다. SSA 갭을 50 µm로 설정한 현재 상태에서 KB 집속이 활성화되어 있습니다.", "confirmation": false, "elapsed": 44.2, "errors": ""}, {"id": "explan_10", "cat": "experiment_plan", "passed": true, "prompt": "XAFS 측정 1회에 시간이 얼마나 걸려?", "actions": "(empty)", "explanation": "XAFS 츰정 시간은 측정 조건에 따라 달라집니다. 일반적으로 Cu K-edge XAFS는 10~30분 소요되며, 다음 요소에 따라 달라집니다:  1. **에너지 범위**: K-edge 기준 ±1 keV (약 2 keV 범위) 2. **포인트 수**: 200~400 포인트 3. **노출 시간**: 0.1~1초/포인트 4. **샘플 신호 강도**: 낮은 농도 시 노출 시간 증가  예시: 300 포인트 × 0.5초/포인트 = 2.5분  정확한 시간을 알려드리려면 측정할 원소와 설정을 말씀해 주세요.", "confirmation": false, "elapsed": 49.3, "errors": ""}, {"id": "realuser_01", "cat": "real_user", "passed": true, "prompt": "이 시료 좀 봐줘. Cu 시료야", "actions": "(empty)", "explanation": "Cu 시료 분석을 위해 다음 정보가 필요합니다:  1. **측정 목적**: XRF 이미징, XANES, XAFS, XRD 중 무엇을 원하시나요? 2. **원소 농도**: 예: 1000 ppm, 10000 ppm 3. **시료 형태**: 분말, 고체, 박막 등 4. **기타 요구사항**: 분해능, 측정 시간, 특별한 조건 등  예시: 'Cu 분말 1000ppm XRF 이미징 해줘'", "confirmation": false, "elapsed": 34.1, "errors": ""}, {"id": "realuser_02", "cat": "real_user", "passed": true, "prompt": "형광 맵 좀 찍어줘. 10마이크로 범위", "actions": "quickRaster(10, 10, 41) -> queueStart()", "explanation": "현재 에너지(10 keV)로 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 12.2, "errors": ""}, {"id": "realuser_03", "cat": "real_user", "passed": true, "prompt": "이 에너지에서 시료 신호가 얼마나 되는지 확인해봐", "actions": "(empty)", "explanation": "현재 에너지(10 keV)에서 P(인) K-edge (2.145 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. P K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 20.3, "errors": ""}, {"id": "realuser_04", "cat": "real_user", "passed": true, "prompt": "좀 더 세게 빔 때려줘", "actions": "motorSetUI(ssa, ssa_hgap, 20) -> motorSetUI(ssa, ssa_vgap, 20)", "explanation": "SSA 수평/수직 갭을 20 µm로 줄여서 빔 강도를 증가시킵니다. 현재 SSA 갭이 50 µm에서 20 µm로 변경됩니다. 더 강한 빔이 필요하시면 더 좁게 설정할 수 있습니다.", "confirmation": true, "elapsed": 13.4, "errors": ""}, {"id": "realuser_05", "cat": "real_user", "passed": true, "prompt": "빔 사이즈를 최소로 줄여줘", "actions": "motorSetUI(ssa, ssa_hgap, 10) -> motorSetUI(ssa, ssa_vgap, 10)", "explanation": "SSA 수평/수직 갭을 10 um으로 줄여 빔 사이즈를 최소화합니다. 현재 SSA 갭이 50 um이므로 10 um으로 줄이면 빔 사이즈가 작아집니다. 이 설정은 높은 분해능을 원할 때 유용합니다.", "confirmation": true, "elapsed": 14.1, "errors": ""}, {"id": "realuser_06", "cat": "real_user", "passed": true, "prompt": "결정 구조가 궁금해. XRD 한 번 찍어봐", "actions": "setupVirtualExperiment(powder_xrd) -> queueStart()", "explanation": "분말 XRD 실험을 실행합니다. 현재 에너지(10 keV)에서 회절 패턴을 수집합니다. 결정 구조 분석에 적합합니다.", "confirmation": true, "elapsed": 8.6, "errors": ""}, {"id": "realuser_07", "cat": "real_user", "passed": true, "prompt": "이전 스캔 결과 보여줘", "actions": "(empty)", "explanation": "이전 스캔 결과는 현재 시스템에서 확인할 수 없습니다. 데이터 저장 및 관리는 사용자 책임이며, 이 빔라인은 실시간 데이터만 제공합니다. 저장된 데이터가 있다면 별도의 분석 소프트웨어에서 열어주세요.", "confirmation": false, "elapsed": 16.0, "errors": ""}, {"id": "realuser_08", "cat": "real_user", "passed": true, "prompt": "시료를 좀 더 왼쪽으로 옮겨줘", "actions": "motorSetUI(sample, sample_cx, -10)", "explanation": "시료 X 위치를 -10 µm 이동하여 왼쪽으로 옮깁니다. 현재 시료 X 위치는 0 µm이므로, 이동 후 -10 µm가 됩니다. 이동 거리가 명확하지 않아 기본값으로 -10 µm로 설정했습니다. 다른 거리로 이동하시려면 구체적인 값을 말씀해 주세요.", "confirmation": true, "elapsed": 13.1, "errors": ""}, {"id": "realuser_09", "cat": "real_user", "passed": true, "prompt": "지금 몇 keV야?", "actions": "(empty)", "explanation": "현재 빔 에너지는 10 keV입니다.", "confirmation": false, "elapsed": 6.7, "errors": ""}, {"id": "realuser_10", "cat": "real_user", "passed": true, "prompt": "어떤 실험을 할 수 있어?", "actions": "(empty)", "explanation": "{\"actions\":[],\"explanation\":\"이 빔라인에서는 다음 실험을 수행할 수 있습니다:\\n\\n1. **XAFS (X-ray Absorption Fine Structure)**\\n   - XANES (흡수단 근처 고해상도 스캔)\\n   - EXAFS (흡수단 이후의 구조 정보)\\n   - 예: '구리 K-edge XAFS 측정해줘'\\n\\n2. **XRF Imaging (X-ray Fluorescence Mapping)**\\n   - 2D 원소 분포 이미징\\n   - 나노 XRF 라인스캔\\n   - 예: '철 XRF 2D...", "confirmation": false, "elapsed": 183.2, "errors": ""}, {"id": "realuser_11", "cat": "real_user", "passed": true, "prompt": "빔 안정적이야?", "actions": "(empty)", "explanation": "현재 빔 안정성은 에너지 설정, 정렬 상태, 진공 수준 등 여러 요소에 따라 달라집니다. 정확한 안정성 확인을 위해 빔 프로파일을 확인하시기 바랍니다. '빔 프로파일 보여줘' 명령으로 현재 빔의 형태와 안정성을 시각적으로 확인할 수 있습니다.", "confirmation": false, "elapsed": 37.9, "errors": ""}, {"id": "realuser_12", "cat": "real_user", "passed": true, "prompt": "도와줘", "actions": "(empty)", "explanation": "어떤 작업을 도와드릴까요? 예를 들어: - 특정 원소의 XANES/XAFS 측정 - XRF/XRD 이미징 - 빔라인 정렬 - 모터 이동/조정 - 에너지 설정 - 어텐에이터/마스크 조정  구체적인 요청을 말씀해 주세요.", "confirmation": false, "elapsed": 14.1, "errors": ""}, {"id": "cmulti_01", "cat": "complex_multi", "passed": true, "prompt": "에너지 15 keV로 바꾸고, SSA 30으로 줄이고, XRF 맵 10x10 41포인트 찍어줘", "actions": "setTargetEnergy(15) -> motorSetUI(ssa, ssa_hgap, 30) -> motorSetUI(ssa, ssa_vgap, 30) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "15 keV로 에너지를 설정하고, SSA 수평/수직 갭을 30 um로 줄였습니다. 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. P(인) K-edge (2.145 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. 다른 원소를 측정하시려면 말씀해 주세요.", "confirmation": true, "elapsed": 25.3, "errors": ""}, {"id": "cmulti_02", "cat": "complex_multi", "passed": true, "prompt": "Si(311)로 바꾸고 Se K-edge XAFS 측정해줘", "actions": "setCrystal(311) -> setTargetEnergy(12.658) -> runFullAlignment() -> quickXafs(Se, K) -> queueStart()", "explanation": "Si(311) 결정을 선택하고 Se K-edge (12.658 keV) XAFS를 실행합니다. 현재 에너지(10 keV)에서 2.658 keV 변화이므로 광학 정렬을 먼저 수행합니다. ⚠ 주의: Si K-edge (1.839 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. 하지만 Si(311) 결정은 에너지 설정과는 별도로 광학 시스템의 일부입니다.", "confirmation": true, "elapsed": 23.8, "errors": ""}, {"id": "cmulti_03", "cat": "complex_multi", "passed": true, "prompt": "M1, M2 정렬 순서대로 해줘", "actions": "runMirrorAlignUI(m1) -> runMirrorAlignUI(m2)", "explanation": "M1 미러 정렬을 먼저 수행한 후, M2 미러 정렬을 진행합니다. 각 미러 정렬은 다단계 프로세스로, 현재 에너지(10 keV)에 맞게 반사율 최적화를 수행합니다.", "confirmation": true, "elapsed": 11.0, "errors": ""}, {"id": "cmulti_04", "cat": "complex_multi", "passed": true, "prompt": "Cu XANES 찍고, 에너지를 Fe로 바꿔서 XANES도 찍어줘", "actions": "quickXanes(Cu, K) -> queueStart() -> setTargetEnergy(7.112) -> runFullAlignment() -> quickXanes(Fe, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XANES를 실행한 후, Fe K-edge (7.112 keV)로 에너지를 변경하고 XANES를 다시 실행합니다. Fe로의 에너지 변화(10 keV → 7.112 keV, -2.888 keV)가 2 keV 이상이므로 광학 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 19.8, "errors": ""}, {"id": "cmulti_05", "cat": "complex_multi", "passed": true, "prompt": "XRF 맵핑하고 관심 영역에서 XANES 포인트 스캔해줘", "actions": "(empty)", "explanation": "XRF 맵핑 후 관심 영역에서 XANES 포인트 스캔을 실행하겠습니다. 다음 정보를 알려주세요:  1. **측정 원소**: XRF 맵핑할 원소 (예: P, S, Fe 등) 2. **XANES 원소**: 포인트 스캔할 원소 (예: Fe, Cu 등) 3. **스캔 범위**: XRF 맵핑 범위 (예: 10×10 µm) 4. **포인트 수**: XRF 맵핑 포인트 수 (예: 41×41)  예시: 'Fe XRF 맵핑하고 Fe XANES 포인트 스캔해줘'", "confirmation": false, "elapsed": 30.0, "errors": ""}, {"id": "cmulti_06", "cat": "complex_multi", "passed": true, "prompt": "Pb L3 XANES하고 As K-edge XANES도 연속으로 해줘", "actions": "setTargetEnergy(13.035) -> quickXanes(Pb, L3) -> queueStart() -> setTargetEnergy(11.867) -> quickXanes(As, K) -> queueStart()", "explanation": "Pb L3-edge (13.035 keV) XANES를 실행한 후 As K-edge (11.867 keV) XANES를 순차적으로 실행합니다. Pb K-edge는 88.0 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.", "confirmation": true, "elapsed": 19.6, "errors": ""}, {"id": "cmulti_07", "cat": "complex_multi", "passed": true, "prompt": "어테뉴에이터 Al 0.3mm 넣고 나서 Cr XANES 측정해줘", "actions": "setAttenFilter(0, material, Aluminium) -> setAttenFilter(0, thickness, 0.3) -> quickXanes(Cr, K) -> queueStart()", "explanation": "Al 필터는 K-edge가 1.56 keV로, 이 빔라인의 최소 에너지(5 keV)보다 낮아 사용할 수 없습니다. 대신, Al 필터는 5 keV 이상에서 투과율이 높아 빔 강도 감쇠에 적합합니다. Cr K-edge (5.989 keV) XANES를 실행합니다.", "confirmation": true, "elapsed": 18.5, "errors": ""}, {"id": "cmulti_08", "cat": "complex_multi", "passed": true, "prompt": "12 keV로 설정하고 빔 프로파일 보여주고 XRF 맵 찍어줘", "actions": "setTargetEnergy(12) -> showBeamProfile(sample) -> quickRaster(5, 5, 41) -> queueStart()", "explanation": "12 keV로 설정 후 빔 프로파일을 확인하고, 5×5 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 15.0, "errors": ""}, {"id": "cmulti_09", "cat": "complex_multi", "passed": true, "prompt": "에너지 20 keV로 바꾸고 정렬하고 Mo XANES 찍어줘", "actions": "setTargetEnergy(20) -> runFullAlignment() -> quickXanes(Mo, K) -> queueStart()", "explanation": "Mo K-edge (20.0 keV) XANES를 실행합니다. 현재 에너지(10 keV)에서 10 keV 변화이므로 광학 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 11.7, "errors": ""}, {"id": "robust_01", "cat": "robustness", "passed": true, "prompt": "에너지를 12keV로 설정해줘", "actions": "setTargetEnergy(12)", "explanation": "빔 에너지를 12 keV로 설정합니다.", "confirmation": true, "elapsed": 4.3, "errors": ""}, {"id": "robust_02", "cat": "robustness", "passed": true, "prompt": "copper K-edge XAFS해줘", "actions": "quickXafs(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와의 차이가 1.021 keV로 2 keV 이하이므로 광학 정렬은 수행하지 않습니다.", "confirmation": true, "elapsed": 11.0, "errors": ""}, {"id": "robust_03", "cat": "robustness", "passed": true, "prompt": "Fe xanes", "actions": "quickXanes(Fe, K) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다.", "confirmation": true, "elapsed": 9.7, "errors": ""}, {"id": "robust_04", "cat": "robustness", "passed": true, "prompt": "XAFS 해", "actions": "(empty)", "explanation": "XAFS 측정을 위해 다음 정보가 필요합니다:  1. **원소**: 측정하려는 원소 (예: Cu, Fe, Au) 2. **edge**: K-edge 또는 L3-edge (예: K, L3)  예시: '구리 K-edge XAFS 해줘'", "confirmation": false, "elapsed": 19.9, "errors": ""}, {"id": "robust_05", "cat": "robustness", "passed": true, "prompt": "Cu K-edge XAFS", "actions": "setTargetEnergy(8.979) -> runFullAlignment() -> quickXafs(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XAFS 스캔입니다. 현재 에너지(10 keV)에서 1.021 keV 변화이므로 광학 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 12.4, "errors": ""}, {"id": "robust_06", "cat": "robustness", "passed": true, "prompt": "에너지 8.333 keV로 맞춰줘", "actions": "setTargetEnergy(8.333)", "explanation": "빔 에너지를 8.333 keV로 설정합니다.", "confirmation": true, "elapsed": 4.9, "errors": ""}, {"id": "robust_07", "cat": "robustness", "passed": true, "prompt": "quickXafs Cu K", "actions": "quickXafs(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)에서 1.021 keV 변화가 2 keV 이하이므로 정렬 없이 바로 측정합니다.", "confirmation": true, "elapsed": 10.7, "errors": ""}, {"id": "robust_08", "cat": "robustness", "passed": true, "prompt": "Cu, Fe, Zn 다원소 맵핑 10x10", "actions": "quickRaster(10, 10, 41) -> queueStart()", "explanation": "Cu, Fe, Zn 다원소 맵핑을 위해 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있으며, 이는 Cu(8.979 keV), Fe(7.112 keV), Zn(9.659 keV) K-edge 모두를 여기할 수 있는 적절한 값입니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 19.2, "errors": ""}, {"id": "robust_09", "cat": "robustness", "passed": true, "prompt": "에너지를 -5 keV로", "actions": "(empty)", "explanation": "에너지 설정 범위는 5~25 keV입니다. -5 keV는 유효하지 않은 값입니다. 5 keV 이상의 값을 입력해 주세요.", "confirmation": false, "elapsed": 12.8, "errors": ""}, {"id": "robust_10", "cat": "robustness", "passed": true, "prompt": "에너지를 100 keV로", "actions": "(empty)", "explanation": "빔 에너지를 100 keV로 설정합니다. 이 빔라인의 에너지 범위는 5~25 keV입니다. 요청하신 100 keV는 범위를 훨씬 초과하므로 설정할 수 없습니다. [범위 초과로 제거됨: setTargetEnergy(100.0) - 에너지 100.0 keV는 빔라인 범위(5.0-25.0 keV) 밖입니다.]", "confirmation": false, "elapsed": 17.9, "errors": ""}, {"id": "robust_11", "cat": "robustness", "passed": true, "prompt": "12 kev로 에너지 설정", "actions": "setTargetEnergy(12)", "explanation": "빔 에너지를 12 keV로 설정합니다.", "confirmation": true, "elapsed": 4.2, "errors": ""}, {"id": "robust_12", "cat": "robustness", "passed": true, "prompt": "energy 12", "actions": "setTargetEnergy(12)", "explanation": "빔 에너지를 12 keV로 설정합니다.", "confirmation": true, "elapsed": 4.2, "errors": ""}, {"id": "reject_01", "cat": "rejection", "passed": true, "prompt": "Si K-edge XANES 해줘", "actions": "(empty)", "explanation": "Si K-edge 에너지는 1.839 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Si K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 19.1, "errors": ""}, {"id": "reject_02", "cat": "rejection", "passed": true, "prompt": "산소 K-edge XANES 측정해줘", "actions": "(empty)", "explanation": "산소 K-edge 에너지는 0.543 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 산소 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 19.1, "errors": ""}, {"id": "reject_03", "cat": "rejection", "passed": true, "prompt": "리튬 흡수 스펙트럼 측정해줘", "actions": "(empty)", "explanation": "Li(리튬) K-edge 에너지는 0.543 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 리튬 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 20.1, "errors": ""}, {"id": "reject_04", "cat": "rejection", "passed": true, "prompt": "탄소 K-edge XAFS 해줘", "actions": "(empty)", "explanation": "탄소 K-edge 에너지는 0.284 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 탄소 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 19.1, "errors": ""}, {"id": "reject_05", "cat": "rejection", "passed": true, "prompt": "질소 XANES 측정해줘", "actions": "(empty)", "explanation": "질소(N) K-edge 에너지는 0.400 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 질소 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 19.4, "errors": ""}, {"id": "reject_06", "cat": "rejection", "passed": true, "prompt": "Ag K-edge XAFS 측정해", "actions": "(empty)", "explanation": "Ag K-edge 에너지는 25.5 keV로, 이 빔라인의 최대 에너지(25.0 keV)를 초과합니다. Ag K-edge XAFS는 측정할 수 없습니다. 대안으로 Ag L3-edge (3.351 keV)가 있지만, 이는 빔라인의 최소 에너지(5 keV)보다 낮아 측정이 불가능합니다. Ag 분석에는 다른 빔라인이 필요합니다.", "confirmation": false, "elapsed": 31.4, "errors": ""}, {"id": "reject_07", "cat": "rejection", "passed": true, "prompt": "우라늄 분석해줘", "actions": "(empty)", "explanation": "우라늄(U) 분석은 U L3-edge (17.5 keV) XANES/XAFS 또는 XRF로 수행할 수 있습니다. 다음 중 하나를 선택해주세요:  1. **U L3-edge XANES**: 'U L3 XANES 해줘' 2. **U XRF 이미징**: 'U XRF 2D 맵 측정해줘'  추가 정보가 필요하시면 말씀해 주세요.", "confirmation": false, "elapsed": 15.3, "errors": ""}, {"id": "reject_08", "cat": "rejection", "passed": true, "prompt": "시료 사진 찍어줘", "actions": "(empty)", "explanation": "이 빔라인에서는 시료 사진 촬영 기능이 없습니다. XRF 이미징, XRD 패턴, 빔 프로파일은 측정 가능하지만, 시료의 광학 이미지는 촬영할 수 없습니다. XRF 원소 분포 이미지나 XRD 패턴을 원하시면 말씀해 주세요.", "confirmation": false, "elapsed": 28.4, "errors": ""}, {"id": "reject_09", "cat": "rejection", "passed": true, "prompt": "마그네슘 K-edge 해줘", "actions": "(empty)", "explanation": "Mg(마그네슘) K-edge 에너지는 1.303 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 마그네슘 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": false, "elapsed": 20.7, "errors": ""}, {"id": "reject_10", "cat": "rejection", "passed": true, "prompt": "알루미늄 K-edge XANES 해줘", "actions": "(empty)", "explanation": "Al(알루미늄) K-edge 에너지는 1.560 keV로, 이 빔라인의 에너지 범위(5-25 keV) 아래입니다. 알루미늄 분석에는 저에너지 빔라인이 필요합니다.", "confirmation": false, "elapsed": 17.4, "errors": ""}, {"id": "korean_01", "cat": "korean_variant", "passed": true, "prompt": "구리 K 흡수단 XAFS 돌려줘", "actions": "quickXafs(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와 차이가 1.021 keV로 2 keV 이하이므로 광학 정렬 없이 바로 측정합니다.", "confirmation": true, "elapsed": 11.3, "errors": ""}, {"id": "korean_02", "cat": "korean_variant", "passed": true, "prompt": "니켈 산화 상태 확인", "actions": "quickXanes(Ni, K) -> queueStart()", "explanation": "Ni K-edge (8.333 keV) XANES로 Ni의 산화 상태를 분석합니다. Ni의 산화 상태(Ni0, Ni2+, Ni3+)는 near-edge 구조에서 구분할 수 있습니다. 현재 에너지(10 keV)에서 8.333 keV로 변경 후 측정합니다.", "confirmation": true, "elapsed": 13.1, "errors": ""}, {"id": "korean_03", "cat": "korean_variant", "passed": true, "prompt": "형광 이미징 하고 싶어요", "actions": "(empty)", "explanation": "형광 이미징(XRF 맵핑)을 준비하겠습니다. 다음 파라미터를 알려주세요: - 스캔 범위 (µm, 예: 10×10) - 포인트 수 (예: 41×41) - 측정할 원소 (예: Fe, Cu 등)  또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 41pt, 현재 에너지 10 keV)으로 실행합니다.", "confirmation": false, "elapsed": 30.4, "errors": ""}, {"id": "korean_04", "cat": "korean_variant", "passed": true, "prompt": "에너지 바꿔주세요. 9 keV로요.", "actions": "setTargetEnergy(9)", "explanation": "빔 에너지를 9 keV로 설정합니다.", "confirmation": true, "elapsed": 4.0, "errors": ""}, {"id": "korean_05", "cat": "korean_variant", "passed": true, "prompt": "빔 정렬 한번 해볼까?", "actions": "runFullAlignment()", "explanation": "전체 빔라인 정렬(7단계)을 시작합니다. 현재 에너지는 10 keV, SSA 수평/수직 갭은 50 um입니다. 정렬이 완료되면 빔 품질이 개선됩니다.", "confirmation": true, "elapsed": 9.4, "errors": ""}, {"id": "korean_06", "cat": "korean_variant", "passed": true, "prompt": "SSA 좀 넓혀줄래?", "actions": "motorSetUI(ssa, ssa_hgap, 100) -> motorSetUI(ssa, ssa_vgap, 100)", "explanation": "SSA 수평/수직 갭을 100 um로 넓혔습니다. 현재 설정: 수평 100 um, 수직 100 um. 더 넓히시거나 좁히시려면 말씀해 주세요.", "confirmation": true, "elapsed": 12.0, "errors": ""}, {"id": "korean_07", "cat": "korean_variant", "passed": true, "prompt": "스캔 멈춰!", "actions": "queueStop()", "explanation": "현재 실행 중인 스캔을 중지합니다.", "confirmation": true, "elapsed": 3.8, "errors": ""}, {"id": "korean_08", "cat": "korean_variant", "passed": true, "prompt": "이거 다시 해줘", "actions": "(empty)", "explanation": "죄송합니다, 요청하신 내용이 명확하지 않습니다. 다시 한 번 구체적으로 말씀해 주시겠어요?", "confirmation": false, "elapsed": 8.8, "errors": ""}, {"id": "korean_09", "cat": "korean_variant", "passed": true, "prompt": "망간 흡수단 스캔 부탁해요", "actions": "quickXafs(Mn, K) -> queueStart()", "explanation": "Mn K-edge (6.539 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)에서 3.46 keV 변화가 2 keV 이상이므로 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 10.2, "errors": ""}, {"id": "sigest_01", "cat": "signal_est", "passed": true, "prompt": "Cu 100ppm 시료에서 XRF 신호가 충분할까?", "actions": "estimateSignal(xrf, Cu, 100, None, None, 10)", "explanation": "현재 빔라인 설정에서 Cu XRF 신호를 추정합니다. 100 ppm, 두께 10 um 시료 기준입니다. 10 keV 에너지, SSA 수평/수직 갭 50 um 조건에서의 예상 신호입니다.", "confirmation": false, "elapsed": 11.4, "errors": ""}, {"id": "sigest_02", "cat": "signal_est", "passed": true, "prompt": "Au 10ppm 박막 시료 신호 예상치", "actions": "estimateSignal(xrf, Au, 10, None, None, 100)", "explanation": "Au L3-edge (11.919 keV) XRF 신호를 추정합니다. Au 10 ppm 박막 시료, 두께 100 um 기준입니다. Au K-edge는 80.7 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.", "confirmation": false, "elapsed": 13.4, "errors": ""}, {"id": "sigest_03", "cat": "signal_est", "passed": true, "prompt": "Fe 50% 시료 XAFS 자기흡수 문제 없어?", "actions": "(empty)", "explanation": "Fe XAFS 자기흡수(self-absorption)는 시료 두께와 농도에 따라 달라집니다. Fe K-edge (7.112 keV)에서 50% 농도의 시료는 두께가 얇아야 자기흡수가 적습니다. 두께가 10 µm 이하이면 일반적으로 문제가 없습니다. 두께가 더 두꺼우면 자기흡수로 인해 흡수단이 왜곡될 수 있으므로, 두께를 확인해 주세요. 현재 빔 에너지는 10 keV로 설정되어 있습니다.", "confirmation": false, "elapsed": 28.1, "errors": ""}, {"id": "sigest_04", "cat": "signal_est", "passed": true, "prompt": "Mn 500ppm에서 검출 한계가 어떻게 돼?", "actions": "estimateSignal(xrf, Mn, 500, None, None, 10)", "explanation": "Mn XRF 신호를 500 ppm, 두께 10 um 기준으로 추정합니다. 현재 빔라인 설정(10 keV, SSA 50x50 um)에서의 예상 신호를 계산합니다.", "confirmation": false, "elapsed": 10.6, "errors": ""}, {"id": "sigest_05", "cat": "signal_est", "passed": true, "prompt": "Pt L3 XRF를 할건데 Ir 간섭이 있을까?", "actions": "(empty)", "explanation": "Pt L3-edge (11.564 keV) XRF를 실행하시려면 '실행해줘'라고 말씀해 주세요. Ir K-edge는 14.1 keV로, 이 에너지에서 Ir 형광선이 여기되지 않으므로 간섭은 없습니다. Ir L3-edge는 1.7 keV로 매우 낮아 측정되지 않습니다. 따라서 Pt L3 XRF에서는 Ir 간섭이 없습니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다.", "confirmation": false, "elapsed": 33.0, "errors": ""}, {"id": "blknow_01", "cat": "bl_knowledge", "passed": true, "prompt": "이 빔라인 에너지 범위가 어떻게 돼?", "actions": "(empty)", "explanation": "이 빔라인의 에너지 범위는 5.0 keV에서 25.0 keV입니다. 예를 들어, 인(P) K-edge는 2.145 keV로 이 범위 밖에 있어 측정할 수 없습니다. 5.0 keV 이상의 에너지를 가진 원소의 K-edge나 L3-edge를 측정할 수 있습니다.", "confirmation": false, "elapsed": 24.7, "errors": ""}, {"id": "blknow_02", "cat": "bl_knowledge", "passed": true, "prompt": "KB 미러 초점 거리가 얼마야?", "actions": "(empty)", "explanation": "KB 미러의 초점 거리는 에너지에 따라 달라지며, 이 빔라인에서는 에너지에 따라 자동으로 초점이 맞춰집니다. 현재 에너지가 10 keV일 때, KB 미러의 수직 초점 거리는 약 10.5 m, 수평 초점 거리는 약 11.2 m입니다. 이 초점 거리는 빔라인의 광학 설계에 따라 고정되어 있으며, 사용자가 직접 조정할 수 없습니다.", "confirmation": false, "elapsed": 29.1, "errors": ""}, {"id": "blknow_03", "cat": "bl_knowledge", "passed": true, "prompt": "DCM Si(111)이랑 Si(311) 차이가 뭐야?", "actions": "(empty)", "explanation": "Si(111)과 Si(311)은 결정면의 차이입니다. Si(111)은 저에너지 영역(1.839 keV)의 K-edge를 가지므로 이 빔라인(5~25 keV)에서는 사용할 수 없습니다. Si(311)은 고에너지 영역의 K-edge를 가지므로 사용할 수 있습니다. Si(311)은 고에너지 측정에 적합한 결정면입니다.", "confirmation": false, "elapsed": 31.4, "errors": ""}, {"id": "blknow_04", "cat": "bl_knowledge", "passed": true, "prompt": "이 빔라인에서 할 수 있는 실험 종류를 알려줘", "actions": "(empty)", "explanation": "이 빔라인에서 가능한 실험 기법은 다음과 같습니다:  1. **XAFS(X-ray Absorption Fine Structure)**    - XANES(흡수단 근처 고해상도) 및 EXAFS(흡수단 이후 구조 분석)    - 예: Fe K-edge XAFS, Co K-edge XANES  2. **XRF Imaging(X-ray Fluorescence Mapping)**    - 2D 래스터 스캔으로 원소 분포 이미징    - 예: Cu, Ni, Zn 등의 분포 측정  3. **Powder XRD(X-ray Diffraction)*...", "confirmation": false, "elapsed": 201.9, "errors": ""}, {"id": "blknow_05", "cat": "bl_knowledge", "passed": true, "prompt": "빔 사이즈가 최소 얼마까지 줄어들어?", "actions": "(empty)", "explanation": "빔 사이즈는 광학 설정에 따라 달라집니다. 현재 KB 미러 집속 모드에서 최소 빔 사이즈는 약 50 nm 수준입니다. SSA 갭을 줄이면 빔의 결맞음도(coherence)가 향상되어 더 작은 사이즈가 가능하지만, 이는 빔 강도를 감소시킵니다. 최소 빔 사이즈를 얻기 위해 KB 집속 모드와 좁은 SSA 갭을 사용하는 것이 좋습니다.", "confirmation": false, "elapsed": 29.0, "errors": ""}, {"id": "ssa_01", "cat": "ssa_control", "passed": true, "prompt": "SSA 수직갭을 60um으로 맞춰줘", "actions": "motorSetUI(ssa, ssa_vgap, 60)", "explanation": "SSA 수직 갭을 60 um으로 설정합니다.", "confirmation": true, "elapsed": 5.1, "errors": ""}, {"id": "ssa_02", "cat": "ssa_control", "passed": true, "prompt": "SSA를 최소로 닫아줘. 수평 수직 다 10um으로.", "actions": "motorSetUI(ssa, ssa_hgap, 10) -> motorSetUI(ssa, ssa_vgap, 10)", "explanation": "SSA 수평/수직 갭을 각각 10 um으로 설정합니다.", "confirmation": true, "elapsed": 7.7, "errors": ""}, {"id": "ssa_03", "cat": "ssa_control", "passed": true, "prompt": "SSA 크기 좀 키워줘. 수평 100 수직 80", "actions": "motorSetUI(ssa, ssa_hgap, 100) -> motorSetUI(ssa, ssa_vgap, 80)", "explanation": "SSA 수평 갭을 100 um, 수직 갭을 80 um로 설정합니다. 현재 에너지(10 keV)에서 이 설정은 빔 크기를 증가시키며, 이로 인해 빔의 결맞음도가 감소할 수 있습니다. 정렬이 필요한 경우 별도로 요청해 주세요.", "confirmation": true, "elapsed": 14.9, "errors": ""}, {"id": "analysis_01", "cat": "analysis_intent", "passed": true, "prompt": "이 시료의 Fe 산화 상태를 확인하고 싶어요", "actions": "quickXanes(Fe, K) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XANES로 산화 상태를 분석합니다. XANES는 흡수단 근처의 구조를 세밀하게 측정하여 Fe²⁺, Fe³⁺ 등을 구분할 수 있습니다.", "confirmation": true, "elapsed": 11.0, "errors": ""}, {"id": "analysis_02", "cat": "analysis_intent", "passed": true, "prompt": "Cr(III)인지 Cr(VI)인지 확인해야 합니다", "actions": "quickXanes(Cr, K) -> queueStart()", "explanation": "Cr K-edge (5.989 keV) XANES로 Cr의 산화 상태를 분석합니다. Cr(III)와 Cr(VI)는 near-edge 구조가 다르므로 XANES로 구분할 수 있습니다.", "confirmation": true, "elapsed": 9.9, "errors": ""}, {"id": "analysis_03", "cat": "analysis_intent", "passed": true, "prompt": "니켈 산화물 시료의 상(phase)을 분석하고 싶은데요", "actions": "(empty)", "explanation": "니켈 산화물의 상(phase) 분석에는 XRD(X-ray Diffraction)가 가장 적합합니다. 분말 XRD 실험을 실행하시겠습니까?", "confirmation": true, "elapsed": 17.6, "errors": ""}, {"id": "seq_01", "cat": "sequential", "passed": true, "prompt": "Fe XANES 한 다음에 Ni XANES도 해줘", "actions": "quickXanes(Fe, K) -> queueStart() -> quickXanes(Ni, K) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XANES와 Ni K-edge (8.333 keV) XANES를 순차적으로 실행합니다. 현재 에너지(10 keV)에서 Fe XANES 실행 후, Ni XANES는 10 keV에서 8.333 keV로의 변화(1.667 keV)가 2 keV 이하이므로 정렬 없이 바로 실행합니다.", "confirmation": true, "elapsed": 17.9, "errors": ""}, {"id": "seq_02", "cat": "sequential", "passed": true, "prompt": "Mn이랑 Co XANES를 연속으로 측정해줘", "actions": "quickXanes(Mn, K) -> queueStart() -> quickXanes(Co, K) -> queueStart()", "explanation": "Mn K-edge (6.539 keV) XANES와 Co K-edge (7.709 keV) XANES를 순차적으로 실행합니다. 현재 에너지(10 keV)에서 Mn K-edge로의 변화(3.461 keV)가 2 keV 이상이므로, Mn XANES 전에 광학 정렬을 수행합니다. Co XANES는 Mn XANES 후의 에너지(6.539 keV)에서 1.17 keV 변화로 정렬이 필요 없습니다.", "confirmation": true, "elapsed": 20.8, "errors": ""}, {"id": "seq_03", "cat": "sequential", "passed": true, "prompt": "Pb L3 XANES 하고 나서 As K-edge XANES도 순차적으로 해주세요", "actions": "setTargetEnergy(13.035) -> quickXanes(Pb, L3) -> queueStart() -> setTargetEnergy(11.867) -> quickXanes(As, K) -> queueStart()", "explanation": "Pb L3-edge (13.035 keV) XANES를 실행한 후, As K-edge (11.867 keV) XANES를 순차적으로 실행합니다. Pb K-edge (88.0 keV)는 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.", "confirmation": true, "elapsed": 19.7, "errors": ""}, {"id": "qact_01", "cat": "question_action", "passed": true, "prompt": "현재 결정이 뭐야? 그리고 Fe XAFS 해줘", "actions": "quickXafs(Fe, K) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XAFS 스캔을 실행합니다. 현재 결정은 Si(111)입니다.", "confirmation": true, "elapsed": 7.5, "errors": ""}, {"id": "qact_02", "cat": "question_action", "passed": true, "prompt": "빔 사이즈가 지금 얼마야? SSA를 50um으로 줄여줘", "actions": "motorSetUI(ssa, ssa_hgap, 50)", "explanation": "현재 빔 사이즈는 SSA 수평 갭 100 µm 기준 약 100 nm ~ 1 µm 범위입니다. SSA 수평 갭을 50 µm로 줄이면 빔 사이즈가 작아지고 결맞음도(coherence)가 향상됩니다. 노출 시간이 길어질 수 있으니 주의해 주세요.", "confirmation": true, "elapsed": 13.9, "errors": ""}, {"id": "partial_01", "cat": "partial_range", "passed": true, "prompt": "S K-edge XANES랑 Fe K-edge XANES를 둘 다 해줘", "actions": "quickXanes(Fe, K) -> queueStart()", "explanation": "S(황) K-edge 에너지는 2.472 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Fe K-edge (7.112 keV) XANES는 현재 에너지(10 keV)에서 2.888 keV 차이가 있으므로 광학 정렬을 먼저 수행합니다.", "confirmation": true, "elapsed": 28.5, "errors": ""}, {"id": "partial_02", "cat": "partial_range", "passed": true, "prompt": "Ca XANES하고 Zn XANES도 해줘", "actions": "quickXanes(Zn, K) -> queueStart()", "explanation": "Ca K-edge (4.038 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. Zn K-edge (9.659 keV) XANES는 실행합니다.", "confirmation": true, "elapsed": 22.1, "errors": ""}, {"id": "heavyel_01", "cat": "heavy_element", "passed": true, "prompt": "납 XRF 이미징 해주세요. 10x10um, 51포인트.", "actions": "setTargetEnergy(14) -> quickRaster(10, 10, 51) -> queueStart()", "explanation": "납(Pb) L3-edge (13.035 keV) + 1 keV = 14 keV로 설정 후 10x10 µm, 51x51 포인트 XRF 래스터 스캔을 실행합니다. ⚠ 주의: 납 K-edge (88.0 keV)는 빔라인 최대 에너지(25.0 keV)를 훨씬 초과하므로 L3-edge를 사용합니다. 납 K-edge 분석은 불가능합니다.", "confirmation": true, "elapsed": 20.0, "errors": ""}, {"id": "heavyel_02", "cat": "heavy_element", "passed": true, "prompt": "텅스텐 XRF 맵핑해줘. 5x5 41포인트", "actions": "setTargetEnergy(11.2) -> quickRaster(5, 5, 41) -> queueStart()", "explanation": "W L3-edge (10.207 keV) + 1 keV = 11.2 keV로 설정 후 5x5 µm, 41x41 포인트 XRF 래스터 스캔을 실행합니다. W K-edge는 69.5 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.", "confirmation": true, "elapsed": 16.7, "errors": ""}, {"id": "colloquial_01", "cat": "colloquial", "passed": true, "prompt": "구리 XANES 한번만 빨리 돌려줘", "actions": "quickXanes(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XANES 스캔을 실행합니다. 현재 에너지(10 keV)에서 1.03 keV 변화가 2 keV 이하이므로 정렬 없이 바로 측정합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 12.2, "errors": ""}, {"id": "colloquial_02", "cat": "colloquial", "passed": true, "prompt": "에너지 좀 올려줘. 15 keV로.", "actions": "setTargetEnergy(15)", "explanation": "빔 에너지를 15 keV로 설정합니다.", "confirmation": true, "elapsed": 4.3, "errors": ""}, {"id": "colloquial_03", "cat": "colloquial", "passed": true, "prompt": "아연 분포 좀 봐봐. 20um 정도.", "actions": "quickRaster(20, 20, 41) -> queueStart()", "explanation": "Zn K-edge (8.333 keV) 위의 10 keV로 설정되어 있습니다. 20×20 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 13.7, "errors": ""}, {"id": "colloquial_04", "cat": "colloquial", "passed": true, "prompt": "시료 왼쪽으로 5um 이동", "actions": "motorSetUI(sample, sample_cx, -5)", "explanation": "시료 X 방향을 -5 µm로 이동하여 왼쪽으로 5 µm 이동합니다.", "confirmation": true, "elapsed": 6.3, "errors": ""}, {"id": "safety_01", "cat": "safety", "passed": true, "prompt": "멈춰! 스캔 중지해!", "actions": "queueStop()", "explanation": "현재 실행 중인 스캔을 중지합니다. 큐에 대기 중인 모든 작업도 정지됩니다.", "confirmation": true, "elapsed": 5.4, "errors": ""}, {"id": "safety_02", "cat": "safety", "passed": true, "prompt": "모든 동작 정지시켜", "actions": "emergencyStop()", "explanation": "모든 동작을 즉시 정지시키고 빔을 차단합니다. 긴급 정지 상태가 되었으며, 모든 모터가 정지되고 빔이 차단됩니다. 안전 절차를 확인한 후 재개하시기 바랍니다.", "confirmation": true, "elapsed": 9.1, "errors": ""}, {"id": "implicit_01", "cat": "implicit_technique", "passed": true, "prompt": "이 촉매 시료에서 백금 상태가 궁금해", "actions": "quickXanes(Pt, L3) -> queueStart()", "explanation": "Pt L3-edge (11.564 keV) XANES로 백금의 화학 상태를 분석합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다.", "confirmation": true, "elapsed": 12.6, "errors": ""}, {"id": "implicit_02", "cat": "implicit_technique", "passed": true, "prompt": "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘", "actions": "setTargetEnergy(10) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Cu 오염 확인을 위해 XRF 매핑을 실행합니다. 나노빔(~50 nm)으로 단일 포인트만 측정하면 오염이 없는 부분을 찍을 수 있으므로, 넓은 영역을 매핑하여 분포를 확인하는 것이 적합합니다. Cu K-edge 위의 10 keV로 설정합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 16.3, "errors": ""}, {"id": "implicit_03", "cat": "implicit_technique", "passed": true, "prompt": "토양 시료에서 비소 형태 분석해주세요", "actions": "quickXanes(As, K) -> queueStart()", "explanation": "As K-edge (11.867 keV) XANES로 비소의 화학 상태를 분석합니다. 토양 시료는 불균일하므로, XRF 매핑으로 비소 분포를 확인한 후 XANES로 특정 위치의 비소 형태를 분석하는 것이 효과적입니다. 현재 에너지(10 keV)에서 1.867 keV 변화이므로 정렬 없이 바로 측정합니다.", "confirmation": true, "elapsed": 15.8, "errors": ""}, {"id": "vexp_01", "cat": "experiment_preset", "passed": true, "prompt": "Cu XAFS 실험 셋업해줘", "actions": "setTargetEnergy(8.979) -> runFullAlignment()", "explanation": "Cu K-edge (8.979 keV) XAFS 실험을 준비합니다. 현재 에너지(10 keV)에서 8.979 keV로 변화(1.02 keV)가 2 keV 이하이므로 정렬 없이 에너지만 설정합니다. SSA 수평/수직 갭은 50 um로 유지됩니다. 준비가 완료되면 '시작해줘'라고 말씀해 주세요.", "confirmation": true, "elapsed": 16.0, "errors": ""}, {"id": "vexp_02", "cat": "experiment_preset", "passed": true, "prompt": "분말 XRD 실험 시작해줘", "actions": "setupVirtualExperiment(powder_xrd) -> queueStart()", "explanation": "분말 XRD 실험을 시작합니다. Eiger 2X 검출기로 Debye-Scherrer 링 패턴을 수집합니다. 현재 에너지 10 keV, SSA 수평/수직 갭 50 um 상태에서 실행됩니다.", "confirmation": true, "elapsed": 10.8, "errors": ""}, {"id": "vexp_03", "cat": "experiment_preset", "passed": false, "prompt": "2D XRF 맵핑 실험 셋업", "actions": "(empty)", "explanation": "2D XRF 맵핑을 준비하겠습니다. 다음 정보를 알려주세요:  1. **측정 원소**: 예: Fe, Cu, Ni 2. **스캔 범위**: 예: 10×10 µm 3. **포인트 수**: 예: 41×41  또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 41pt)으로 실행합니다.", "confirmation": false, "elapsed": 27.4, "errors": "Expected confirmation_required=True, got False"}, {"id": "vexp_04", "cat": "experiment_preset", "passed": true, "prompt": "구리 산화물의 흡수 스펙트럼을 보고 싶어", "actions": "quickXafs(Cu, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XAFS 흡수 스펙트럼을 실행합니다. 구리 산화물의 산화 상태를 구분할 수 있습니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 10.8, "errors": ""}, {"id": "vexp_05", "cat": "experiment_preset", "passed": true, "prompt": "위치별 결정상 분포를 알고 싶어", "actions": "quickRaster(10, 10, 41) -> queueStart()", "explanation": "위치별 결정상 분포를 확인하려면 2D XRD 매핑이 필요합니다. 현재 에너지(15 keV)로 10×10 µm 범위, 41×41 포인트 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 14.4, "errors": ""}, {"id": "vexp_06", "cat": "experiment_preset", "passed": true, "prompt": "나노 XRF 라인스캔 프리셋 로드해줘", "actions": "setupVirtualExperiment(nano_xrf_line) -> queueStart()", "explanation": "나노 XRF 라인스캔 프리셋을 로드합니다. KB 미러로 나노빔(~50 nm) 집속하여 XRF 라인 프로파일을 측정합니다. 현재 에너지는 10 keV입니다. P(인) K-edge는 2.145 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 인 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": true, "elapsed": 18.4, "errors": ""}, {"id": "vexp_07", "cat": "experiment_preset", "passed": true, "prompt": "XRF imaging preset으로 시작", "actions": "setupVirtualExperiment(xrf_imaging) -> queueStart()", "explanation": "XRF imaging preset을 실행합니다. 현재 에너지는 10 keV, SSA 수평/수직 갭은 50 um입니다. 추가 설정이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 8.8, "errors": ""}, {"id": "vexp_08", "cat": "experiment_preset", "passed": true, "prompt": "시료의 원소 맵핑을 고해상도로 하고 싶은데, 나노빔 XRF 실험 세팅해줘", "actions": "setTargetEnergy(12) -> runFullAlignment() -> setupVirtualExperiment(nano_xrf_line)", "explanation": "나노빔 XRF 실험을 준비합니다. KB 미러로 ~50 nm 빔을 집속합니다. 에너지를 12 keV로 설정하고 전체 정렬을 수행합니다. 준비가 완료되면 '시작해줘'라고 말씀해 주세요.", "confirmation": true, "elapsed": 12.6, "errors": ""}, {"id": "vexp_09", "cat": "experiment_planning_adv", "passed": true, "prompt": "LiNi0.8Co0.1Mn0.1O2 시료야. Ni, Co, Mn XANES를 각각 하고 XRF 맵도 찍어야해. 빔타임 6시간", "actions": "(empty)", "explanation": "{\"actions\":[],\"explanation\":\"LiNi0.8Co0.1Mn0.1O2 시료의 Ni, Co, Mn XANES 및 XRF 맵핑을 6시간 내에 수행할 계획을 수립하겠습니다. 다음 사항을 고려해야 합니다:\\n\\n1. **XANES 순서**: Ni(8.333 keV) → Co(7.709 keV) → Mn(6.539 keV) 순으로 에너지가 낮아지므로, 에너지 변화가 가장 큰 Ni→Co(0.624 keV) → Co→Mn(1.17 keV)입니다. 각 XANES 사이에 runFullAlignment()가 필요합니다.\\n\\n2. ...", "confirmation": false, "elapsed": 148.4, "errors": ""}, {"id": "vexp_10", "cat": "experiment_planning_adv", "passed": true, "prompt": "FePt 나노입자 촉매인데 Fe K-edge XAFS 3회 반복하고 Pt L3 XANES도 해줘", "actions": "setTargetEnergy(7.112) -> runFullAlignment() -> quickXafs(Fe, K) -> queueStart() -> setTargetEnergy(11.564) -> runFullAlignment() -> quickXanes(Pt, L3) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XAFS 3회 반복 스캔을 실행합니다. 이후 Pt L3-edge (11.564 keV) XANES를 수행합니다. 현재 에너지(10 keV)에서 Fe K-edge로의 변화(0.888 keV)는 2 keV 이하이므로 정렬 없이 바로 측정합니다. 그러나 Pt L3-edge로의 변화(4.456 keV)는 2 keV 이상이므로 정렬을 먼저 수행합니다. ⚠ Pt K-edge (78.4 keV)는 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge (11.564 keV)를 사용합니다. 또한, Pt...", "confirmation": true, "elapsed": 36.9, "errors": ""}, {"id": "vexp_11", "cat": "experiment_planning_adv", "passed": true, "prompt": "XRF 하고 나서 XRD도 해야하는데 검출기 교체가 필요한가요?", "actions": "(empty)", "explanation": "XRF와 XRD는 별도의 검출기를 사용하지만, 이 빔라인에서는 XRF와 XRD 검출기가 서로 다른 위치에 설치되어 있어 교체 없이 동시에 사용할 수 있습니다. XRF는 SDD 검출기, XRD는 Eiger 2X 검출기를 사용합니다. 따라서 XRF 측정 후 XRD 측정을 바로 수행할 수 있습니다.", "confirmation": false, "elapsed": 27.0, "errors": ""}, {"id": "vexp_12", "cat": "experiment_planning_adv", "passed": true, "prompt": "페로브스카이트 태양전지 시료야. 납 분포랑 결정상을 동시에 보고싶어", "actions": "setTargetEnergy(14.0) -> quickRaster(10, 10, 41) -> queueStart() -> setupVirtualExperiment(powder_xrd) -> queueStart()", "explanation": "Pb L3-edge (13.035 keV) + 1 keV = 14 keV로 설정 후, 10x10 µm 영역에서 41x41 포인트 XRF 래스터 스캔으로 납 분포를 측정합니다. 이후 동일 위치에서 XRD 패턴을 수집하여 결정상을 분석합니다. XRF와 XRD는 서로 다른 검출기에서 동시에 측정 가능합니다.", "confirmation": true, "elapsed": 20.6, "errors": ""}, {"id": "vexp_13", "cat": "experiment_planning_adv", "passed": true, "prompt": "배터리 음극재 그래파이트 시료인데 Fe, Cu 불순물을 ppm 수준으로 찾아야해", "actions": "setTargetEnergy(8.5) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Fe K-edge (7.112 keV)와 Cu K-edge (8.979 keV)를 모두 여기할 수 있도록 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 그래파이트 시료에서 Fe, Cu 불순물의 ppm 수준 분포를 확인할 수 있습니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 19.7, "errors": ""}, {"id": "vexp_14", "cat": "experiment_planning_adv", "passed": true, "prompt": "Mn K XANES, Co K XANES, Ni K XANES 순서로 해줘. 에너지 차이가 2 keV 미만이니까 정렬 안해도 되지?", "actions": "quickXanes(Mn, K) -> queueStart() -> quickXanes(Co, K) -> queueStart() -> quickXanes(Ni, K) -> queueStart()", "explanation": "Mn K-edge (6.539 keV) → Co K-edge (7.709 keV) → Ni K-edge (8.333 keV) 순서로 XANES를 실행합니다. 현재 에너지(10 keV)에서 첫 번째 스캔(Mn)으로의 변화는 3.461 keV로 2 keV를 초과하므로 광학 정렬이 필요합니다. 그러나 요청하신대로 정렬을 생략하고 바로 실행합니다. 에너지 변화가 클 경우 빔 강도나 초점이 변할 수 있으니 주의하시기 바랍니다.", "confirmation": true, "elapsed": 24.7, "errors": ""}, {"id": "vexp_15", "cat": "experiment_planning_adv", "passed": true, "prompt": "이 시료에 Cr이 있는데 3가인지 6가인지 구별해야해. 환경 시료라 농도가 낮아", "actions": "quickXanes(Cr, K) -> queueStart()", "explanation": "Cr K-edge (5.989 keV) XANES로 Cr의 산화 상태를 분석합니다. Cr³+와 Cr⁶+는 near-edge 구조가 다르므로 XANES로 구분할 수 있습니다. 환경 시료의 낮은 농도를 고려하여 노출 시간을 0.5초/포인트로 설정합니다.", "confirmation": true, "elapsed": 13.6, "errors": ""}, {"id": "vexp_16", "cat": "experiment_planning_adv", "passed": true, "prompt": "첫번째 시료는 XRF 맵, 두번째 시료는 XANES 해야해. 시료 교체 포함해서 총 시간이 얼마나 걸려?", "actions": "(empty)", "explanation": "시료 교체 및 측정 시간은 다음 요소에 따라 달라집니다:  1. **XRF 맵핑**: 10×10 µm, 41×41 포인트, 0.1초/포인트 → 약 17분 2. **XANES**: 0.25 eV 분해능, 100 eV 범위 → 약 30분 3. **시료 교체**: 수동 교체 시간 (예: 5분) 4. **에너지 변화**: XANES 에너지에 따라 추가 정렬 시간 (최대 30분)  총 예상 시간: 약 1시간 20분 ~ 2시간 (정렬 시간에 따라 변동)", "confirmation": false, "elapsed": 41.0, "errors": ""}, {"id": "vexp_17", "cat": "experiment_planning_adv", "passed": true, "prompt": "Au 나노입자가 TiO2 담지체 위에 있어. Au 분포 보고 Ti 산화상태도 확인하고 싶어", "actions": "setTargetEnergy(12) -> quickRaster(10, 10, 41) -> queueStart() -> queueStart()", "explanation": "Au 나노입자의 분포는 Au L3-edge (11.919 keV) XRF 매핑으로 확인할 수 있습니다. TiO2의 Ti 산화상태는 Ti K-edge (4.966 keV) XANES로 분석할 수 있지만, 이 빔라인의 최소 에너지가 5.0 keV이므로 Ti K-edge는 측정할 수 없습니다. 대안으로 Ti L3-edge (4.64 keV)도 동일한 이유로 측정 불가능합니다. TiO2의 산화상태 분석은 다른 빔라인에서 수행해야 합니다. Au 분포는 12 keV로 설정하여 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본...", "confirmation": true, "elapsed": 29.5, "errors": ""}, {"id": "vexp_18", "cat": "experiment_planning_adv", "passed": true, "prompt": "Ce L3 XANES 하고 그 다음 Fe K XANES 해줘. 에너지 바꿀 때 정렬 필요한가?", "actions": "setTargetEnergy(5.723) -> runFullAlignment() -> quickXanes(Ce, L3) -> queueStart() -> setTargetEnergy(7.112) -> runFullAlignment() -> quickXanes(Fe, K) -> queueStart()", "explanation": "Ce L3-edge (5.723 keV) XANES를 실행한 후 Fe K-edge (7.112 keV) XANES를 실행합니다. 현재 에너지(10 keV)에서 Ce L3-edge로의 변화(4.277 keV)가 2 keV 이상이므로 정렬을 먼저 수행합니다. Fe K-edge로의 변화(1.888 keV)도 2 keV 이상이므로 정렬을 다시 수행합니다.", "confirmation": true, "elapsed": 24.4, "errors": ""}, {"id": "vexp_19", "cat": "ptycho_experiment", "passed": true, "prompt": "ptychography 실험 셋업해줘", "actions": "optimizeBeamline({'technique': 'ptycho', 'element': 'Cu', 'edge': 'K', 'priority': 'coherence'})", "explanation": "ptychography 실험 최적화를 시작합니다. 결맞음 flux(coherent flux)를 최대화하고 결맞음도(degree of coherence) > 0.3 조건을 만족하는 SSA 설정을 추천합니다. 기본 원소는 Cu K-edge로 설정했습니다. 다른 원소나 edge가 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 13.3, "errors": ""}, {"id": "vexp_20", "cat": "ptycho_experiment", "passed": true, "prompt": "coherent imaging으로 시료 구조 보고싶어", "actions": "optimizeBeamline({'technique': 'ptycho', 'element': 'Co', 'edge': 'K', 'priority': 'coherence'})", "explanation": "결맞음 이미징(ptychography)을 위해 빔라인을 최적화합니다. Co K-edge (7.709 keV) 기준으로 SSA와 에너지를 조정하여 결맞음도(degree of coherence) > 0.3 조건을 만족하는 설정을 찾습니다. 현재 에너지(10 keV)에서 7.709 keV로 변경하여 측정할 예정입니다.", "confirmation": true, "elapsed": 16.1, "errors": ""}, {"id": "vexp_21", "cat": "ptycho_experiment", "passed": true, "prompt": "위상 이미징 해줘", "actions": "(empty)", "explanation": "'위상 이미징'은 Ptychography(ptycho)로 수행됩니다. 다음 정보를 알려주세요:  1. **측정 원소와 edge** (예: Cu K-edge, Au L3-edge) 2. **시료 정보** (형태: 분말/박막, 두께, 농도) 3. **우선순위** (분해능, flux, 결맞음)  예시: 'Cu 박막 위상 이미징 최적화해줘'", "confirmation": false, "elapsed": 28.7, "errors": ""}, {"id": "vexp_22", "cat": "ptycho_experiment", "passed": true, "prompt": "결맞음 빔으로 나노구조 관찰하고 싶어. 에너지는 10 keV로", "actions": "optimizeBeamline({'technique': 'ptycho', 'element': 'None', 'edge': 'None', 'priority': 'coherence'})", "explanation": "결맞음(coherence) 최적화를 위해 빔라인 설정을 계산합니다. 10 keV 에너지에서 SSA 조정으로 최대 결맞음도(degree of coherence)를 확보합니다. KB 미러로 나노빔(~50 nm) 집속이 가능합니다.", "confirmation": true, "elapsed": 12.4, "errors": ""}, {"id": "vexp_23", "cat": "ptycho_experiment", "passed": true, "prompt": "반도체 시료를 비파괴로 내부 구조 보고 싶어. 50nm 분해능이 필요해", "actions": "setTargetEnergy(10) -> runFullAlignment() -> setupVirtualExperiment(powder_xrd) -> queueStart()", "explanation": "50nm 분해능을 위해 KB 미러 집속을 사용합니다. 현재 에너지(10 keV)에서 광학 정렬을 수행한 후, 분말 XRD 실험을 시작합니다. XRD는 비파괴 기법으로 내부 결정 구조를 분석할 수 있습니다. SSA 수평/수직 갭은 50 um로 유지됩니다.", "confirmation": true, "elapsed": 16.2, "errors": ""}, {"id": "vexp_24", "cat": "ptycho_experiment", "passed": true, "prompt": "XRF 맵핑 끝나면 ptychography도 이어서 할건데, 셋업 변경 시간이 얼마나 걸려?", "actions": "(empty)", "explanation": "XRF 맵핑 후 ptychography로 전환하는 데는 약 5~10분 소요됩니다. 주요 작업은 다음과 같습니다:  1. **에너지 조정**: 현재 10 keV에서 ptychography 최적 에너지로 변경 (약 2~3분) 2. **SSA 조정**: 현재 50×50 µm에서 ptychography 최적 SSA로 변경 (약 1~2분) 3. **KB 미러 정렬**: 나노빔 집속을 위한 KB 미러 재정렬 (약 2~3분) 4. **샘플 위치 조정**: XRF 측정 위치에서 ptychography 측정 위치로 이동 (약 1~2분)  총 약 6...", "confirmation": false, "elapsed": 54.1, "errors": ""}, {"id": "vexp_25", "cat": "technique_selection", "passed": true, "prompt": "시료의 원소 분포를 알고싶어", "actions": "(empty)", "explanation": "원소 분포를 확인하려면 XRF 이미징(래스터 스캔)이 가장 적합합니다. 다음 정보를 알려주세요:  1. **측정하려는 원소** (예: Fe, Cu, Au 등) 2. **스캔 범위** (µm, 예: 10×10) 3. **포인트 수** (예: 41×41)  또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 41pt)으로 실행합니다.", "confirmation": false, "elapsed": 35.7, "errors": ""}, {"id": "vexp_26", "cat": "technique_selection", "passed": true, "prompt": "결정 구조를 확인하고 싶어", "actions": "(empty)", "explanation": "결정 구조를 확인하려면 XRD(X-ray Diffraction)를 사용하시면 됩니다. XRD는 격자 상수, 결정 방향, 상(phase) 등을 분석할 수 있습니다.  이 빔라인에서는 Eiger 2X 검출기로 2D 회절 패턴을 수집합니다. 다음 중 하나를 선택해 주세요: - 단일 포인트 XRD: '분말 XRD 실험 셋업해줘' - 2D XRD 매핑: '2D XRD 매핑해줘' (시료를 스캔하며 위치별 회절 패턴 수집)  현재 빔 에너지는 15 keV로 설정되어 있습니다. XRD 실험을 위해 추가 설정이 필요할 수 있습니다.", "confirmation": false, "elapsed": 44.4, "errors": ""}, {"id": "vexp_27", "cat": "technique_selection", "passed": true, "prompt": "Fe 산화 상태가 궁금해", "actions": "quickXanes(Fe, K) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XANES로 산화 상태를 분석합니다. XANES는 흡수단 근처의 구조를 세밀하게 측정하여 Fe²⁺와 Fe³⁺를 구분할 수 있습니다.", "confirmation": true, "elapsed": 10.9, "errors": ""}, {"id": "vexp_28", "cat": "technique_selection", "passed": true, "prompt": "화학 결합 상태를 알고 싶어. Cu 시료야", "actions": "quickXanes(Cu, K) -> queueStart()", "explanation": "Cu K-edge XANES를 실행합니다. XANES는 흡수단 근처의 고해상도 구조를 측정하여 화학 결합 상태를 분석할 수 있습니다. Cu의 산화 상태(+1, +2 등)나 화합물 형성 여부를 파악하는 데 유용합니다.", "confirmation": true, "elapsed": 12.8, "errors": ""}, {"id": "vexp_29", "cat": "technique_selection", "passed": true, "prompt": "나노 스케일 이미지가 필요해", "actions": "setFocusMode(kb) -> motorSetUI(ssa, ssa_hgap, 10) -> motorSetUI(ssa, ssa_vgap, 10)", "explanation": "나노 스케일 이미지를 위해서 KB 집속 모드로 전환하고, SSA 수평/수직 갭을 10 um로 줄여 빔 크기를 작게 설정합니다. 이 설정은 높은 분해능을 제공하지만, 빔 강도가 낮아 노출 시간을 늘려야 할 수 있습니다.", "confirmation": true, "elapsed": 15.7, "errors": ""}, {"id": "vexp_30", "cat": "technique_selection", "passed": true, "prompt": "미량 원소 검출이 목적이야. Cr 10ppm 수준", "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Cr', 'edge': 'K', 'ppm': 10, 'priority': 'flux'})", "explanation": "Cr K-edge (5.989 keV) XRF에 최적화된 빔라인 설정을 계산합니다. 10 ppm 미량 원소 검출을 위해 flux(강도)를 최대화하는 조건을 찾습니다.", "confirmation": true, "elapsed": 11.7, "errors": ""}, {"id": "vexp_31", "cat": "technique_selection", "passed": true, "prompt": "상분율을 알고 싶어. 다상 세라믹 시료야", "actions": "(empty)", "explanation": "다상 세라믹 시료의 상분율을 분석하려면 XRD 패턴을 수집한 후 Rietveld 분석이 필요합니다. 다음 중 하나를 선택해주세요:  1. **단일 포인트 XRD**: '분말 XRD 실험 셋업해줘' → 현재 위치에서 XRD 패턴 수집 2. **2D XRD 매핑**: '2D XRD 매핑해줘' → 시료를 스캔하며 위치별 상분율 분포 측정  현재 에너지(15 keV)는 대부분의 세라믹 상의 XRD 회절에 적합합니다. SSA 수평/수직 갭이 50 um로 설정되어 있어 높은 flux를 확보했습니다.", "confirmation": false, "elapsed": 36.6, "errors": ""}, {"id": "vexp_32", "cat": "technique_selection", "passed": true, "prompt": "국소 영역에서 격자 상수 변화를 관찰하고 싶어", "actions": "(empty)", "explanation": "격자 상수 변화 관찰은 XRD 2D 매핑으로 가능합니다. 다음 파라미터를 알려주세요: - 스캔 범위 (µm, 예: 10×10) - 포인트 수 (예: 21×21)  또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 21pt)으로 실행합니다.", "confirmation": false, "elapsed": 26.4, "errors": ""}, {"id": "vexp_33", "cat": "multi_technique_wf", "passed": true, "prompt": "XRF로 관심 영역 찾고 거기서 XANES 해줘. Fe 시료야", "actions": "setTargetEnergy(8.5) -> quickRaster(10, 10, 41) -> queueStart() -> quickXanes(Fe, K) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 이후 Fe K-edge XANES를 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.", "confirmation": true, "elapsed": 18.6, "errors": ""}, {"id": "vexp_34", "cat": "multi_technique_wf", "passed": true, "prompt": "Ni XANES 하고 XRD도 연속으로 해줘", "actions": "quickXanes(Ni, K) -> queueStart() -> setupVirtualExperiment(powder_xrd) -> queueStart()", "explanation": "Ni K-edge (8.333 keV) XANES 스캔 후, 동일 위치에서 XRD 패턴을 수집합니다. XRF와 XRD 검출기는 위치가 달라 동시 장착되어 있습니다.", "confirmation": true, "elapsed": 12.1, "errors": ""}, {"id": "vexp_35", "cat": "multi_technique_wf", "passed": true, "prompt": "Fe XAFS 3번 반복 후에 XRF 맵 찍어줘. 10x10 41포인트", "actions": "setTargetEnergy(7.112) -> runFullAlignment() -> quickXafs(Fe, K) -> queueStart() -> quickXafs(Fe, K) -> queueStart() -> quickXafs(Fe, K) -> queueStart() -> setTargetEnergy(8.5) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Fe K-edge (7.112 keV) XAFS를 3번 반복 실행한 후, XRF 래스터 스캔을 시작합니다. XAFS 후 에너지를 8.5 keV로 변경하여 Fe K-edge 위에서 XRF 맵핑을 수행합니다. 노출 시간: 0.1초/포인트 기본. P K-edge (2.145 keV)는 빔라인 최소 에너지(5.0 keV)보다 낮아 측정할 수 없습니다.", "confirmation": true, "elapsed": 29.8, "errors": ""}, {"id": "vexp_36", "cat": "multi_technique_wf", "passed": true, "prompt": "Mn XANES, Co XANES, Ni XANES 순차 측정 후 XRF 2D 맵핑까지 해줘", "actions": "quickXanes(Mn, K) -> queueStart() -> quickXanes(Co, K) -> queueStart() -> quickXanes(Ni, K) -> queueStart() -> setTargetEnergy(9.5) -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "Mn K-edge (6.539 keV) → Co K-edge (7.709 keV) → Ni K-edge (8.333 keV) XANES 순차 측정 후, XRF 2D 맵핑을 위해 9.5 keV로 에너지 설정 후 10×10 µm, 41×41 포인트 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 26.0, "errors": ""}, {"id": "vexp_37", "cat": "multi_technique_wf", "passed": true, "prompt": "먼저 XRD 패턴 한 장 찍고, 그 다음 XRF 맵핑 해줘", "actions": "setupVirtualExperiment(powder_xrd) -> queueStart() -> quickRaster(10, 10, 41) -> queueStart()", "explanation": "먼저 분말 XRD 패턴을 측정한 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 현재 에너지는 15 keV로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본.", "confirmation": true, "elapsed": 15.8, "errors": ""}, {"id": "vexp_38", "cat": "multi_technique_wf", "passed": true, "prompt": "Cu XANES 끝나면 바로 Zn XANES도 이어서 해줘", "actions": "quickXanes(Cu, K) -> queueStart() -> quickXanes(Zn, K) -> queueStart()", "explanation": "Cu K-edge (8.979 keV) XANES를 실행한 후, Zn K-edge (9.659 keV) XANES를 이어서 실행합니다. 현재 에너지(10 keV)에서 Zn K-edge로의 변화(0.34 keV)는 2 keV 이하이므로 추가 정렬 없이 바로 측정합니다.", "confirmation": true, "elapsed": 16.3, "errors": ""}, {"id": "vexp_39", "cat": "multi_technique_wf", "passed": true, "prompt": "Se K-edge XAFS 하고 나서 Pb L3 XANES도 해줘", "actions": "setTargetEnergy(12.658) -> quickXafs(Se, K) -> queueStart() -> setTargetEnergy(13.035) -> quickXanes(Pb, L3) -> queueStart()", "explanation": "Se K-edge (12.658 keV) XAFS 스캔을 실행한 후, Pb L3-edge (13.035 keV) XANES를 실행합니다. Pb K-edge는 88.0 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.", "confirmation": true, "elapsed": 19.4, "errors": ""}, {"id": "vexp_40", "cat": "multi_technique_wf", "passed": true, "prompt": "에너지 8 keV에서 Cu 시료 XRF 맵핑하고, 에너지 올려서 20 keV에서 Mo XANES도 해줘", "actions": "setTargetEnergy(8) -> quickRaster(10, 10, 41) -> queueStart() -> setTargetEnergy(20) -> runFullAlignment() -> quickXanes(Mo, K) -> queueStart()", "explanation": "8 keV로 설정 후 Cu XRF 맵핑을 실행합니다. 이후 20 keV로 에너지를 변경하고 광학 정렬을 수행한 후 Mo K-edge XANES를 실행합니다.", "confirmation": true, "elapsed": 15.7, "errors": ""}, {"id": "vexp_41", "cat": "timing_feasibility", "passed": true, "prompt": "ptychography 한 장 찍는데 시간이 얼마나 걸려?", "actions": "(empty)", "explanation": "ptychography 측정 시간은 여러 요소에 따라 달라집니다:  1. **스캔 영역 크기** (µm) 2. **포인트 수** (스캔 밀도) 3. **노출 시간/포인트** 4. **데이터 처리 시간** (재구성 알고리즘)  기본 설정(5×5 µm, 41×41 포인트, 0.1초/포인트)을 가정하면: - 총 포인트 수: 41×41 = 1,681 포인트 - 총 측정 시간: 1,681 × 0.1초 ≈ 168초 (약 3분) - 데이터 처리 시간: 1~5분 (컴퓨터 사양에 따라 다름)  정확한 시간을 알려드리려면 스캔 영역, 포인트 수, 노...", "confirmation": false, "elapsed": 52.4, "errors": ""}, {"id": "vexp_42", "cat": "timing_feasibility", "passed": true, "prompt": "XRF 맵 100x100um에 1um 스텝으로 하면 시간이 어떻게 돼?", "actions": "(empty)", "explanation": "100×100 µm 범위, 1 µm 스텝으로 XRF 래스터 스캔을 예상합니다. 포인트 수는 100×100 = 10,000 포인트입니다. 기본 노출 시간(0.1초/포인트) 기준으로 약 10,000 × 0.1초 = 1,000초 (약 16분 40초)가 소요됩니다. 노출 시간을 줄이면 총 시간이 줄어들지만, 신호 대 잡음비가 낮아질 수 있습니다. 반대로 노출 시간을 늘리면 정밀도가 높아지지만 시간이 더 걸립니다. 필요하신 경우 노출 시간을 조정해 드릴 수 있습니다.", "confirmation": false, "elapsed": 49.2, "errors": ""}, {"id": "vexp_43", "cat": "timing_feasibility", "passed": true, "prompt": "XAFS 5회 반복이면 빔타임 몇 시간 필요해?", "actions": "(empty)", "explanation": "XAFS 반복 시간은 스캔 포인트 수, 노출 시간, 빔라인 상태에 따라 달라집니다. 일반적으로: - 1회 XAFS: 100~200 포인트, 0.1~0.5초/포인트 → 10~100분 - 5회 반복: 50~500분 (약 0.8~8시간)  정확한 예측을 위해 다음 정보가 필요합니다: 1. 원소와 에너지 범위 2. 포인트 수 3. 노출 시간 4. 빔라인 상태 (현재 10 keV, SSA 50x50 um)  예: Fe K-edge XAFS (100 포인트, 0.2초/포인트) 5회 반복 → 100×0.2×5 = 100분 (약 1.7시간)", "confirmation": false, "elapsed": 55.7, "errors": ""}, {"id": "vexp_44", "cat": "timing_feasibility", "passed": true, "prompt": "XRD에서 XRF로 바꾸는데 시간이 얼마나 걸려?", "actions": "(empty)", "explanation": "XRD에서 XRF로 전환하는 데는 특별한 시간이 소요되지 않습니다. 두 기법은 서로 다른 검출기(Debye-Scherrer 환형 패턴을 위한 Eiger 2X와 XRF 형광선을 위한 SDD)를 사용하지만, 이 빔라인에서는 이미 두 검출기 모두가 장착되어 있습니다. 따라서 XRD 측정 후 XRF 측정은 즉시 시작할 수 있습니다. 다만, 측정 조건(에너지, SSA, 노출 시간 등)에 따라 준비 시간이 추가될 수 있습니다.", "confirmation": false, "elapsed": 37.8, "errors": ""}, {"id": "vexp_45", "cat": "timing_feasibility", "passed": true, "prompt": "XRF 맵 2장이랑 XANES 3회 하면 총 빔타임이 얼마야?", "actions": "(empty)", "explanation": "XRF 맵 2장과 XANES 3회의 예상 빔타임을 계산하려면 다음 정보가 필요합니다:  1. **XRF 맵핑 파라미터**:    - 스캔 범위 (µm, 예: 10×10)    - 포인트 수 (예: 41×41)    - 노출 시간 (초/포인트, 예: 0.1초)  2. **XANES 파라미터**:    - 측정 원소와 edge (예: Fe K-edge)    - 에너지 스텝 수 (XANES는 일반적으로 100~200 포인트)    - 측정 시간 (초/포인트, 예: 0.5초)  기본값을 사용할 경우: - XRF: 5×5 µm, 41×41...", "confirmation": false, "elapsed": 62.7, "errors": ""}, {"id": "vexp_46", "cat": "experiment_edge", "passed": true, "prompt": "Ag K-edge XAFS 해줘", "actions": "(empty)", "explanation": "Ag K-edge 에너지는 25.5 keV로, 이 빔라인의 최대 에너지(25.0 keV)를 초과합니다. Ag K-edge XAFS는 측정할 수 없습니다. Ag L3-edge (3.351 keV)는 이 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정이 불가능합니다. Ag 분석에는 다른 빔라인이 필요합니다.", "confirmation": false, "elapsed": 29.2, "errors": ""}, {"id": "vexp_47", "cat": "experiment_edge", "passed": true, "prompt": "시료 분석해줘", "actions": "(empty)", "explanation": "시료 분석을 위해 다음 정보가 필요합니다:  1. **측정 기법**: XRF, XANES, XRD, Ptychography 중 어떤 것인가요? 2. **원소**: 측정하려는 원소와 edge (예: Cu K-edge, Au L3-edge) 3. **시료 정보** (선택): 농도(ppm), 두께(um), 형태(powder/solid)  예시: 'Cu 분말 1000ppm XRF 해줘'", "confirmation": false, "elapsed": 30.7, "errors": ""}, {"id": "vexp_48", "cat": "experiment_edge", "passed": true, "prompt": "Ba L3 XANES 하고 Ca K-edge XANES도 해줘", "actions": "quickXanes(Ba, L3) -> queueStart()", "explanation": "Ba L3-edge (5.247 keV) XANES를 실행합니다. Ca K-edge (4.038 keV)는 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Ca K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.", "confirmation": true, "elapsed": 13.8, "errors": ""}, {"id": "vexp_49", "cat": "experiment_edge", "passed": true, "prompt": "XRD 하려는데 에너지 5 keV면 데이터가 괜찮을까?", "actions": "(empty)", "explanation": "XRD 측정에 5 keV는 낮은 에너지입니다. 일반적으로 XRD는 10~20 keV 범위에서 더 좋은 결과를 얻습니다. 5 keV에서는 빔의 에너지가 낮아 회절 신호가 약할 수 있으며, 빔의 집속도가 떨어져 분해능이 낮아질 수 있습니다. 10 keV 이상으로 에너지를 올리는 것을 권장합니다. 변경이 필요하시면 말씀해 주세요.", "confirmation": false, "elapsed": 42.2, "errors": ""}, {"id": "vexp_50", "cat": "experiment_edge", "passed": true, "prompt": "La L3 XANES 하면서 동시에 ptychography도 할 수 있어?", "actions": "(empty)", "explanation": "La L3-edge XANES (5.483 keV)와 ptychography는 동시에 수행할 수 없습니다. XANES는 에너지 스캔을, ptychography는 공간 스캔을 요구하기 때문입니다. 하지만, XANES 측정 후 동일 위치에서 ptychography를 수행할 수 있습니다. La L3 XANES를 먼저 실행하시겠습니까?", "confirmation": false, "elapsed": 21.8, "errors": ""}];
+const CAT_ORDER = ["motor", "scan", "alignment", "multi", "optimize", "attenmask", "info", "param", "scientist", "battery", "catalyst", "semiconductor", "geology", "environment", "biology", "materials", "edgecase", "operations", "workflow", "heldout", "experiment_plan", "real_user", "complex_multi", "robustness", "rejection", "korean_variant", "signal_est", "bl_knowledge", "ssa_control", "analysis_intent", "sequential", "question_action", "partial_range", "heavy_element", "colloquial", "safety", "implicit_technique", "experiment_preset", "experiment_planning_adv", "ptycho_experiment", "technique_selection", "multi_technique_wf", "timing_feasibility", "experiment_edge"];
+const CAT_COUNTS = {"motor": 3, "scan": 9, "alignment": 4, "multi": 1, "optimize": 7, "attenmask": 4, "info": 3, "param": 2, "scientist": 2, "battery": 5, "catalyst": 3, "semiconductor": 2, "geology": 3, "environment": 2, "biology": 2, "materials": 3, "edgecase": 7, "operations": 3, "workflow": 2, "heldout": 15, "experiment_plan": 10, "real_user": 12, "complex_multi": 9, "robustness": 12, "rejection": 10, "korean_variant": 9, "signal_est": 5, "bl_knowledge": 5, "ssa_control": 3, "analysis_intent": 3, "sequential": 3, "question_action": 2, "partial_range": 2, "heavy_element": 2, "colloquial": 4, "safety": 2, "implicit_technique": 3, "experiment_preset": 8, "experiment_planning_adv": 10, "ptycho_experiment": 6, "technique_selection": 8, "multi_technique_wf": 8, "timing_feasibility": 5, "experiment_edge": 5};
+const MODEL = 'Qwen/Qwen3-32B';
+const DATE = '2026-03-05';
+const STORAGE_KEY = 'nlp_review_' + DATE + '_' + MODEL.replace(/[^a-zA-Z0-9]/g,'_');
+
+let verdicts = {};
+let comments = {};
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const s = JSON.parse(saved);
+            verdicts = s.verdicts || {};
+            comments = s.comments || {};
+            if (s.reviewer) document.getElementById('reviewerName').value = s.reviewer;
+        }
+    } catch(e) {}
+}
+
+function saveState() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            verdicts, comments,
+            reviewer: document.getElementById('reviewerName').value
+        }));
+    } catch(e) {}
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function updateProgress() {
+    const total = ITEMS.length;
+    const done = Object.keys(verdicts).length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent =
+        done + ' / ' + total + ' reviewed (' + pct + '%)';
+
+    const vals = Object.values(verdicts);
+    const ok = vals.filter(v => v === 'OK').length;
+    const wrong = vals.filter(v => v === 'Wrong action').length;
+    const missing = vals.filter(v => v === 'Missing action').length;
+    const unnecessary = vals.filter(v => v === 'Unnecessary action').length;
+    document.getElementById('summaryBar').innerHTML =
+        '<span class="s-ok">OK: ' + ok + '</span>' +
+        '<span class="s-wrong">Wrong: ' + wrong + '</span>' +
+        '<span class="s-missing">Missing: ' + missing + '</span>' +
+        '<span class="s-unnecessary">Unnecessary: ' + unnecessary + '</span>';
+}
+
+function verdictBadgeClass(v) {
+    if (v === 'OK') return 'reviewed-badge';
+    if (v === 'Wrong action') return 'verdict-wrong';
+    if (v === 'Missing action') return 'verdict-missing';
+    if (v === 'Unnecessary action') return 'verdict-unnecessary';
+    return 'reviewed-badge';
+}
+
+function setVerdict(id, value) {
+    verdicts[id] = value;
+    saveState();
+    updateProgress();
+    const card = document.getElementById('card-' + id);
+    if (card) {
+        card.classList.add('reviewed');
+        let badge = card.querySelector('.review-verdict-badge');
+        if (badge) {
+            badge.textContent = value;
+            badge.className = 'badge review-verdict-badge ' + verdictBadgeClass(value);
+        } else {
+            const badges = card.querySelector('.card-badges');
+            const b = document.createElement('span');
+            b.className = 'badge review-verdict-badge ' + verdictBadgeClass(value);
+            b.textContent = value;
+            badges.appendChild(b);
+        }
+    }
+    card.querySelectorAll('.verdict-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.querySelector('input').value === value);
+    });
+    applyFilters();
+}
+
+function setComment(id, value) {
+    if (value.trim()) comments[id] = value.trim();
+    else delete comments[id];
+    saveState();
+}
+
+function esc(text) {
+    if (!text) return '';
+    const d = document.createElement('div');
+    d.textContent = text;
+    return d.innerHTML;
+}
+
+function truncate(s, n) {
+    if (!s) return '';
+    return s.length > n ? s.substring(0, n) + '...' : s;
+}
+
+function buildCards() {
+    const container = document.getElementById('content');
+    container.innerHTML = '';
+
+    const catSelect = document.getElementById('filterCat');
+    // Clear existing options except first
+    while (catSelect.options.length > 1) catSelect.remove(1);
+    CAT_ORDER.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat + ' (' + CAT_COUNTS[cat] + ')';
+        catSelect.appendChild(opt);
+    });
+
+    let currentCat = '';
+    ITEMS.forEach((item, idx) => {
+        if (item.cat !== currentCat) {
+            currentCat = item.cat;
+            const divider = document.createElement('div');
+            divider.className = 'cat-divider';
+            divider.setAttribute('data-cat', currentCat);
+            divider.innerHTML = '<h2>' + esc(currentCat) + '</h2><div class="line"></div><div class="count">' + CAT_COUNTS[currentCat] + ' tests</div>';
+            container.appendChild(divider);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'card' + (item.passed ? '' : ' fail') + (verdicts[item.id] ? ' reviewed' : '');
+        card.id = 'card-' + item.id;
+        card.setAttribute('data-cat', item.cat);
+        card.setAttribute('data-id', item.id);
+
+        const statusBadge = item.passed
+            ? '<span class="badge pass">PASS</span>'
+            : '<span class="badge fail-badge">FAIL</span>';
+        const timeBadge = '<span class="badge time">' + item.elapsed + 's</span>';
+        const sv = verdicts[item.id];
+        const reviewBadge = sv
+            ? '<span class="badge review-verdict-badge ' + verdictBadgeClass(sv) + '">' + esc(sv) + '</span>'
+            : '';
+
+        let errorsHtml = '';
+        if (item.errors) {
+            errorsHtml = '<div class="field"><div class="field-label">Errors</div><div class="field-value error">' + esc(item.errors) + '</div></div>';
+        }
+
+        let confirmHtml = '';
+        if (item.confirmation !== null && item.confirmation !== undefined) {
+            confirmHtml = '<div class="field"><div class="field-label">Confirmation Required</div><div class="field-value">' + (item.confirmation ? 'Yes' : 'No') + '</div></div>';
+        }
+
+        const savedComment = comments[item.id] || '';
+        const savedVerdict = verdicts[item.id] || '';
+        const previewText = truncate(item.prompt, 50);
+
+        const verdictChoices = ['OK', 'Wrong action', 'Missing action', 'Unnecessary action'];
+
+        card.innerHTML =
+            '<div class="card-header" onclick="toggleCard(\'' + item.id + '\')">' +
+                '<span class="card-id">#' + (idx+1) + ' ' + esc(item.id) + '</span>' +
+                '<span class="card-prompt-preview">' + esc(previewText) + '</span>' +
+                '<div class="card-badges">' + statusBadge + timeBadge + reviewBadge + '</div>' +
+            '</div>' +
+            '<div class="card-body">' +
+                '<div class="field"><div class="field-label">User Prompt</div><div class="field-value prompt">' + esc(item.prompt) + '</div></div>' +
+                '<div class="field"><div class="field-label">Model Actions</div><div class="field-value actions">' + esc(item.actions) + '</div></div>' +
+                confirmHtml +
+                '<div class="field"><div class="field-label">Model Explanation</div><div class="field-value">' + esc(item.explanation) + '</div></div>' +
+                errorsHtml +
+                '<div class="verdict-section">' +
+                    '<div class="field-label">Your Verdict</div>' +
+                    '<div class="verdict-options">' +
+                        verdictChoices.map(function(v) {
+                            return '<label class="verdict-option ' + (savedVerdict === v ? 'selected' : '') + '">' +
+                                '<input type="radio" name="verdict-' + item.id + '" value="' + v + '"' +
+                                (savedVerdict === v ? ' checked' : '') +
+                                ' onchange="setVerdict(\'' + item.id + '\', \'' + v + '\')">' +
+                                v + '</label>';
+                        }).join('') +
+                    '</div>' +
+                    '<textarea class="comment-input" placeholder="Comment (optional, e.g. suggested correct action)..."' +
+                    ' onchange="setComment(\'' + item.id + '\', this.value)">' + esc(savedComment) + '</textarea>' +
+                '</div>' +
+                '<div class="nav-buttons">' +
+                    '<button onclick="navPrev(' + idx + ')">Prev</button>' +
+                    '<button onclick="markOKAndNext(' + idx + ',\'' + item.id + '\')">OK & Next</button>' +
+                    '<button onclick="navNext(' + idx + ')">Next</button>' +
+                '</div>' +
+            '</div>';
+
+        container.appendChild(card);
+    });
+}
+
+function toggleCard(id) {
+    document.getElementById('card-' + id).classList.toggle('open');
+}
+
+function expandAll() {
+    document.querySelectorAll('.card:not(.hidden)').forEach(c => c.classList.add('open'));
+}
+
+function collapseAll() {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('open'));
+}
+
+function getVisibleCards() {
+    return Array.from(document.querySelectorAll('.card:not(.hidden)'));
+}
+
+function navToCard(cards, targetIdx) {
+    if (targetIdx >= 0 && targetIdx < cards.length) {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('open'));
+        cards[targetIdx].classList.add('open');
+        cards[targetIdx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function navPrev(idx) {
+    const visible = getVisibleCards();
+    const cur = document.querySelectorAll('.card')[idx];
+    const ci = visible.indexOf(cur);
+    navToCard(visible, ci - 1);
+}
+
+function navNext(idx) {
+    const visible = getVisibleCards();
+    const cur = document.querySelectorAll('.card')[idx];
+    const ci = visible.indexOf(cur);
+    navToCard(visible, ci + 1);
+}
+
+function markOKAndNext(idx, id) {
+    if (!verdicts[id]) setVerdict(id, 'OK');
+    navNext(idx);
+}
+
+function applyFilters() {
+    const catFilter = document.getElementById('filterCat').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+
+    document.querySelectorAll('.card').forEach(card => {
+        const cat = card.getAttribute('data-cat');
+        const id = card.getAttribute('data-id');
+        const isFail = card.classList.contains('fail');
+        const isReviewed = !!verdicts[id];
+        const verdict = verdicts[id] || '';
+
+        let show = true;
+        if (catFilter !== 'all' && cat !== catFilter) show = false;
+        if (statusFilter === 'unreviewed' && isReviewed) show = false;
+        if (statusFilter === 'reviewed' && !isReviewed) show = false;
+        if (statusFilter === 'fail' && !isFail) show = false;
+        if (statusFilter === 'flagged' && (!isReviewed || verdict === 'OK')) show = false;
+
+        card.classList.toggle('hidden', !show);
+    });
+
+    document.querySelectorAll('.cat-divider').forEach(div => {
+        const cat = div.getAttribute('data-cat');
+        if (catFilter !== 'all' && cat !== catFilter) {
+            div.classList.add('hidden');
+        } else {
+            const hasVisible = document.querySelector('.card[data-cat="' + cat + '"]:not(.hidden)');
+            div.classList.toggle('hidden', !hasVisible);
+        }
+    });
+}
+
+function exportResults() {
+    const reviewer = document.getElementById('reviewerName').value || 'anonymous';
+    const vals = Object.values(verdicts);
+    const result = {
+        reviewer: reviewer,
+        model: MODEL,
+        date: DATE,
+        exported_at: new Date().toISOString(),
+        total: ITEMS.length,
+        reviewed: Object.keys(verdicts).length,
+        summary: {
+            ok: vals.filter(v => v === 'OK').length,
+            wrong: vals.filter(v => v === 'Wrong action').length,
+            missing: vals.filter(v => v === 'Missing action').length,
+            unnecessary: vals.filter(v => v === 'Unnecessary action').length,
+        },
+        items: {},
+    };
+
+    ITEMS.forEach(item => {
+        result.items[item.id] = {
+            cat: item.cat,
+            auto_passed: item.passed,
+            verdict: verdicts[item.id] || '(not reviewed)',
+            comment: comments[item.id] || '',
+            prompt: item.prompt,
+            actions: item.actions,
+        };
+    });
+
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'review_' + reviewer + '_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Exported ' + Object.keys(verdicts).length + ' verdicts');
+}
+
+function clearAll() {
+    if (!confirm('Clear ALL verdicts and comments?')) return;
+    verdicts = {};
+    comments = {};
+    saveState();
+    buildCards();
+    updateProgress();
+    showToast('All cleared');
+}
+
+// Init
+loadState();
+buildCards();
+updateProgress();
+document.getElementById('filterCat').addEventListener('change', applyFilters);
+document.getElementById('filterStatus').addEventListener('change', applyFilters);
+document.getElementById('reviewerName').addEventListener('change', saveState);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+    const openCard = document.querySelector('.card.open:not(.hidden)');
+    if (!openCard) return;
+    const id = openCard.getAttribute('data-id');
+    const allCards = Array.from(document.querySelectorAll('.card'));
+    const idx = allCards.indexOf(openCard);
+
+    if (e.key === '1') { setVerdict(id, 'OK'); e.preventDefault(); }
+    if (e.key === '2') { setVerdict(id, 'Wrong action'); e.preventDefault(); }
+    if (e.key === '3') { setVerdict(id, 'Missing action'); e.preventDefault(); }
+    if (e.key === '4') { setVerdict(id, 'Unnecessary action'); e.preventDefault(); }
+    if (e.key === 'ArrowRight' || e.key === 'n') { navNext(idx); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'p') { navPrev(idx); e.preventDefault(); }
+    if (e.key === ' ' && !e.shiftKey) { markOKAndNext(idx, id); e.preventDefault(); }
+});
+</script>
+</body>
+</html>

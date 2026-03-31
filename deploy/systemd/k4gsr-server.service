@@ -1,0 +1,35 @@
+[Unit]
+Description=K4GSR BL10 Main WebSocket Server
+Documentation=https://github.com/Jae-yong-Shin/K4GSR-Beamline
+After=network.target k4gsr-ioc.service
+Wants=k4gsr-ioc.service
+
+[Service]
+Type=simple
+User=__SERVICE_USER__
+Group=__SERVICE_USER__
+WorkingDirectory=__INSTALL_DIR__
+
+# Server mode is determined by __SERVER_MODE__:
+#   standalone: --standalone
+#   full:       --ca-bridge --bluesky
+#   hybrid:     --ca-bridge --bluesky --ioc-addr "__EPICS_IOC_ADDR_LIST__"
+ExecStart=__VENV_DIR__/bin/python server/server.py --ca-bridge --bluesky --port __PORT_SERVER__ --ioc-addr "__EPICS_IOC_ADDR_LIST__"
+
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:__LOG_DIR__/server.log
+StandardError=append:__LOG_DIR__/server.log
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=EPICS_CA_ADDR_LIST=__EPICS_IOC_ADDR_LIST__
+Environment=EPICS_CA_AUTO_ADDR_LIST=NO
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=__LOG_DIR__ __INSTALL_DIR__
+
+[Install]
+WantedBy=multi-user.target

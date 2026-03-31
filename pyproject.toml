@@ -1,0 +1,34 @@
+[project]
+name = "k4gsr-beamline"
+version = "4.36.0"
+description = "K4GSR BL10 NanoProbe Virtual Beamline Control System"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short -q"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "epics: requires EPICS IOC running",
+    "bluesky: requires Bluesky RunEngine",
+    "h5py: requires h5py for HDF5 tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:ophyd.*",
+    "ignore::DeprecationWarning:bluesky.*",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F"]
+ignore = ["E501", "E402", "F401", "W605", "F841"]
+# E501: line too long (existing code)
+# E402: module level import not at top (conditional imports)
+# F401: unused import (optional dependency patterns)
+# W605: invalid escape sequence (EPICS PV patterns)
+# F841: unused variable (async context managers, intentional assigns)

@@ -1,0 +1,1075 @@
+{
+  "engine": "vllm",
+  "model": "Qwen/Qwen3-32B",
+  "timestamp": "2026-03-26T16:13:52.750599",
+  "total": 50,
+  "pass": 44,
+  "fail": 6,
+  "pass_rate": 88.0,
+  "total_time_s": 712.4,
+  "latency": {
+    "avg": 14.249,
+    "min": 4.546,
+    "max": 119.853,
+    "p95": 25.522
+  },
+  "per_category": {
+    "nano_scan": {
+      "pass": 12,
+      "fail": 3,
+      "total": 15,
+      "avg_time": 15.237
+    },
+    "nano_move": {
+      "pass": 10,
+      "fail": 0,
+      "total": 10,
+      "avg_time": 5.611
+    },
+    "hw_status": {
+      "pass": 9,
+      "fail": 3,
+      "total": 12,
+      "avg_time": 20.398
+    },
+    "anti_hallucination": {
+      "pass": 13,
+      "fail": 0,
+      "total": 13,
+      "avg_time": 14.077
+    }
+  },
+  "details": [
+    {
+      "id": "nano_01",
+      "cat": "nano_scan",
+      "input": "나노스캐너로 10x10um 스캔해줘",
+      "desc": "Nano 2D step scan 10x10um",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.83,
+      "response": {
+        "actions": [
+          {
+            "label": "나노스캐너 2D 스캔",
+            "fn": "nanoScanStep2D",
+            "args": [
+              10,
+              10,
+              101,
+              101,
+              0.01
+            ]
+          }
+        ],
+        "explanation": "나노스캐너로 10x10 µm 2D 스캔을 실행합니다. 101x101 포인트, 0.01초/포인트입니다. 현재 에너지는 10 keV로 설정되어 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_02",
+      "cat": "nano_scan",
+      "input": "나노 플라이 스캔 X축 20um 200포인트",
+      "desc": "Nano fly scan X 20um",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.08,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoScanFly1D",
+            "args": [
+              "x",
+              20,
+              200,
+              5.0
+            ]
+          }
+        ],
+        "explanation": "X축 20 µm, 200 포인트, 5 µm/s 속도로 나노 플라이 스캔을 실행합니다. 주의: P(인) K-edge 에너지는 2.145 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 인 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_03",
+      "cat": "nano_scan",
+      "input": "나노 스파이럴 스캔 반경 5um 간격 50nm",
+      "desc": "Nano spiral scan R=5um dr=50nm",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.28,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoScanSpiral",
+            "args": [
+              5,
+              0.05,
+              0.01
+            ]
+          }
+        ],
+        "explanation": "반경 5 um, 간격 50 nm, 체류 시간 0.01초로 나노 스파이럴 스캔을 시작합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_04",
+      "cat": "nano_scan",
+      "input": "나노 2D 스캔 5x5um 51x51포인트 dwell 0.05초",
+      "desc": "Nano 2D scan with full params",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.45,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoScanStep2D",
+            "args": [
+              5,
+              5,
+              51,
+              51,
+              0.05
+            ]
+          }
+        ],
+        "explanation": "5×5 µm, 51×51 포인트, 0.05초/포인트로 나노 2D 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있습니다. P(인) K-edge (2.145 keV)는 이 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정할 수 없습니다. 다른 에너지나 원소를 선택해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_05",
+      "cat": "nano_scan",
+      "input": "나노스캐너로 고해상도 래스터 스캔",
+      "desc": "Nano scan param missing -> ask",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 1: ['nanoScanStep2D']"
+      ],
+      "elapsed_s": 16.13,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoScanStep2D",
+            "args": [
+              10,
+              10,
+              101,
+              101,
+              0.01
+            ]
+          }
+        ],
+        "explanation": "10×10 µm 범위, 101×101 포인트, 0.01초/포인트로 고해상도 나노 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로, KB 미러 집속으로 나노빔(~50 nm)을 사용합니다. SSA는 50×50 µm로 설정되어 있습니다. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_06",
+      "cat": "nano_scan",
+      "input": "나노스캔 해줘",
+      "desc": "Nano scan no params -> ask",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.57,
+      "response": {
+        "actions": [],
+        "explanation": "나노스캔 범위(um), 포인트 수, 체류 시간을 알려주세요. 예: 10x10 um, 101x101 포인트, 0.01초/포인트",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_07",
+      "cat": "nano_scan",
+      "input": "나노 스캔 기본값으로 해줘",
+      "desc": "Nano scan with defaults",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.52,
+      "response": {
+        "actions": [
+          {
+            "label": "나노 2D 스텝 스캔",
+            "fn": "nanoScanStep2D",
+            "args": [
+              10,
+              10,
+              101,
+              101,
+              0.01
+            ]
+          }
+        ],
+        "explanation": "기본값으로 10x10 µm, 101x101 포인트, 0.01초/포인트의 2D 나노 스캔을 시작합니다. 이 설정은 일반적인 나노 이미징에 적합합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_08",
+      "cat": "nano_scan",
+      "input": "MCS2로 20x20um 200포인트 스캔해줘",
+      "desc": "MCS2 keyword triggers nano scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 31.44,
+      "response": {
+        "actions": [
+          {
+            "label": "20x20um 200포인트 스캔",
+            "fn": "nanoScanStep2D",
+            "args": [
+              20,
+              20,
+              200,
+              200,
+              0.01
+            ]
+          }
+        ],
+        "explanation": "MCS2 나노스캐너로 20x20um, 200x200 포인트 스캔을 시작합니다. 체류 시간은 0.01초/포인트입니다. 이 스캔은 빔라인의 현재 에너지(10 keV)에서 수행됩니다. 참고로 P(인) K-edge 에너지는 2.145 keV로, 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. 인 분석에는 연X선 빔라인이 필요합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_09",
+      "cat": "nano_scan",
+      "input": "피코스케일로 X축 라인스캔 10um 100포인트",
+      "desc": "PicoScale keyword triggers nano scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.65,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoScanFly1D",
+            "args": [
+              "x",
+              10,
+              100,
+              1.0
+            ]
+          }
+        ],
+        "explanation": "X축 10 um, 100 포인트, 1.0 um/s 속도로 플라이 스캔을 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_10",
+      "cat": "nano_scan",
+      "input": "나노 스파이럴 5um 간격 100nm dwell 0.02초",
+      "desc": "Nano spiral with full params",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.2,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoScanSpiral",
+            "args": [
+              5,
+              0.5,
+              0.02
+            ]
+          }
+        ],
+        "explanation": "반경 5 um, 500 nm 간격, 0.02초 dwell 시간의 페르마 나선 스캔을 시작합니다. 현재 빔 에너지는 10 keV이며, SSA 수평/수직 갭은 50 um입니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_11",
+      "cat": "nano_scan",
+      "input": "10x10 래스터 스캔해줘",
+      "desc": "Regular raster (no nano keyword) -> quickRaster",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRaster' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 15.11,
+      "response": {
+        "actions": [],
+        "explanation": "현재 에너지 10 keV에서 10×10 µm, 41×41 포인트 래스터 스캔을 실행합니다. SSA 수평/수직 갭은 50 µm로 설정되어 있습니다. 이 설정은 일반적인 XRF 맵핑에 적합합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_12",
+      "cat": "nano_scan",
+      "input": "XRF 맵핑 해줘 Fe",
+      "desc": "XRF mapping (no nano) -> quickRaster",
+      "passed": false,
+      "errors": [
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 14.82,
+      "response": {
+        "actions": [],
+        "explanation": "현재 에너지는 10 keV로 설정되어 있습니다. 이는 Fe K-edge (7.112 keV) 위의 적절한 값입니다. 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_13",
+      "cat": "nano_scan",
+      "input": "나노 스캔 중단해",
+      "desc": "Nano scan abort",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.01,
+      "response": {
+        "actions": [
+          {
+            "label": "나노 스캔 중단",
+            "fn": "nanoScanAbort",
+            "args": []
+          },
+          {
+            "label": "큐 중단",
+            "fn": "queueAbort",
+            "args": []
+          }
+        ],
+        "explanation": "현재 진행 중인 나노 스캔을 중단합니다. 큐 실행 중이면 함께 중지됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_14",
+      "cat": "nano_scan",
+      "input": "나노스캐너 스캔 멈춰",
+      "desc": "Nano scan stop (alt phrasing)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.93,
+      "response": {
+        "actions": [
+          {
+            "label": "나노스캐너 스캔 중단",
+            "fn": "nanoScanAbort",
+            "args": []
+          },
+          {
+            "label": "큐 중단",
+            "fn": "queueAbort",
+            "args": []
+          }
+        ],
+        "explanation": "나노스캐너 스캔을 중단합니다. 큐 실행 중이면 함께 중지합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nano_15",
+      "cat": "nano_scan",
+      "input": "나노 2D 스캔 X 20um Y 5um 101x51포인트",
+      "desc": "Nano 2D scan asymmetric range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.54,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoScanStep2D",
+            "args": [
+              20,
+              5,
+              101,
+              51,
+              0.01
+            ]
+          }
+        ],
+        "explanation": "X축 20um, Y축 5um, 101x51 포인트, 0.01초/포인트로 나노 2D 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있습니다. P(인) K-edge는 2.145 keV로, 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. 인 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_01",
+      "cat": "nano_move",
+      "input": "나노 스테이지 X축 500nm 이동",
+      "desc": "Nano jog X 500nm = 0.5um",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.76,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoJog",
+            "args": [
+              "x",
+              0.5
+            ]
+          }
+        ],
+        "explanation": "나노 스테이지 X축을 500 nm(0.5 um) 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_02",
+      "cat": "nano_move",
+      "input": "나노 Y축 10um 위치로 이동해줘",
+      "desc": "Nano absolute move Y to 10um",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.55,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoMoveTo",
+            "args": [
+              "y",
+              10
+            ]
+          }
+        ],
+        "explanation": "나노 Y축을 10 um 위치로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_03",
+      "cat": "nano_move",
+      "input": "MCS2 X 1um 이동해줘",
+      "desc": "MCS2 keyword jog X 1um",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.62,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoJog",
+            "args": [
+              "x",
+              1
+            ]
+          }
+        ],
+        "explanation": "나노스캐너 MCS2 X축을 1 um 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_04",
+      "cat": "nano_move",
+      "input": "나노 스테이지 X축 -2um 이동",
+      "desc": "Nano jog negative direction",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.67,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoJog",
+            "args": [
+              "x",
+              -2
+            ]
+          }
+        ],
+        "explanation": "나노 스테이지 X축을 -2 um 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_05",
+      "cat": "nano_move",
+      "input": "나노 Z축 500nm으로 이동해",
+      "desc": "Nano absolute move Z to 500nm",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.76,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoMoveTo",
+            "args": [
+              "z",
+              0.5
+            ]
+          }
+        ],
+        "explanation": "나노스캐너 Z축을 0.5 mm(500 nm) 위치로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_06",
+      "cat": "nano_move",
+      "input": "나노 스테이지 이동해",
+      "desc": "Nano move missing params -> ask",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 6.58,
+      "response": {
+        "actions": [],
+        "explanation": "어느 축(X/Y/Z)으로 얼마나 이동할까요?",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_07",
+      "cat": "nano_move",
+      "input": "나노 X축 이동",
+      "desc": "Nano move missing distance -> ask",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 6.32,
+      "response": {
+        "actions": [],
+        "explanation": "X축으로 얼마나 이동할까요?",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_08",
+      "cat": "nano_move",
+      "input": "나노 스캐너 원점으로 이동",
+      "desc": "Nano move to origin",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.33,
+      "response": {
+        "actions": [
+          {
+            "fn": "nanoMoveTo",
+            "args": [
+              "x",
+              0
+            ]
+          },
+          {
+            "fn": "nanoMoveTo",
+            "args": [
+              "y",
+              0
+            ]
+          },
+          {
+            "fn": "nanoMoveTo",
+            "args": [
+              "z",
+              0
+            ]
+          }
+        ],
+        "explanation": "나노스캐너의 X, Y, Z 축을 각각 0 um 위치로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_09",
+      "cat": "nano_move",
+      "input": "시료 X를 5mm로 이동해",
+      "desc": "Sample X 5mm (not nano) -> motorSetUI",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.55,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "sample",
+              "sample_cx",
+              5
+            ]
+          }
+        ],
+        "explanation": "시료 X를 5 mm로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "nmov_10",
+      "cat": "nano_move",
+      "input": "시료 파인X 10um으로 이동",
+      "desc": "Sample fine X (PI PIMars, not nano)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.98,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "sample",
+              "sample_fx",
+              10
+            ]
+          }
+        ],
+        "explanation": "시료 파인X를 10 µm로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_01",
+      "cat": "hw_status",
+      "input": "피코스케일 위치 읽어줘",
+      "desc": "PicoScale position query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.74,
+      "response": {
+        "actions": [
+          {
+            "label": "피코스케일 위치 조회",
+            "fn": "nanoStatus",
+            "args": []
+          }
+        ],
+        "explanation": "피코스케일 나노스캐너의 현재 위치와 상태를 조회합니다. 이 정보는 X,Y,Z 축의 실제 위치와 간섭계 상태를 포함합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_02",
+      "cat": "hw_status",
+      "input": "간섭계 상태는 어때?",
+      "desc": "Interferometer status query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.55,
+      "response": {
+        "actions": [
+          {
+            "label": "간섭계 상태 조회",
+            "fn": "nanoStatus",
+            "args": []
+          },
+          {
+            "label": "전체 하드웨어 상태 조회",
+            "fn": "queryHardwareStatus",
+            "args": [
+              "all"
+            ]
+          }
+        ],
+        "explanation": "간섭계 상태는 현재 nanoStatus() 함수로 조회할 수 있습니다. 전체 하드웨어 상태를 확인하려면 queryHardwareStatus('all')을 실행하세요. 확인을 원하시면 아래 버튼을 클릭하세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_03",
+      "cat": "hw_status",
+      "input": "XBPM 읽어줘",
+      "desc": "XBPM status query",
+      "passed": false,
+      "errors": [
+        "Expected fn 'queryHardwareStatus' not found in sequence. Got: []"
+      ],
+      "elapsed_s": 7.38,
+      "response": {
+        "actions": [],
+        "explanation": "XBPM(X-ray Beam Position Monitor)의 현재 값을 조회합니다. 잠시만 기다려주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_04",
+      "cat": "hw_status",
+      "input": "현재 링 전류 얼마야?",
+      "desc": "Ring current query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.38,
+      "response": {
+        "actions": [],
+        "explanation": "현재 링 전류는 확인할 수 없습니다. 하드웨어 상태를 조회합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_05",
+      "cat": "hw_status",
+      "input": "나노스캐너 연결 상태 확인해줘",
+      "desc": "Nano scanner connection status",
+      "passed": false,
+      "errors": [
+        "Expected fn 'nanoStatus' not found in sequence. Got: []"
+      ],
+      "elapsed_s": 119.85,
+      "response": {
+        "actions": [],
+        "explanation": "나노스캐너의 연결 상태를 확인합니다. 현재 빔 에너지는 10 keV이며, SSA 수평 및 수직 갭은 각각 50 µm입니다.\n( -- not valid, removed)",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_06",
+      "cat": "hw_status",
+      "input": "KOHZU 스테이지 위치 보여줘",
+      "desc": "KOHZU stage position query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 25.52,
+      "response": {
+        "actions": [],
+        "explanation": "KOHZU 스테이지의 현재 위치는 다음과 같습니다:\n- 시료 X (sample_cx): [미지정] mm\n- 시료 Y (sample_cy): [미지정] mm\n- 시료 Z (sample_cz): [미지정] mm\n- 시료 회전 (sample_th): [미지정] mrad\n- 시료 회전 (sample_phi): [미지정] mrad\n\n정확한 위치는 하드웨어 상태를 조회해야 확인됩니다. 하드웨어 상태를 조회하시겠습니까?",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_07",
+      "cat": "hw_status",
+      "input": "전체 장비 상태 보여줘",
+      "desc": "All hardware status query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.93,
+      "response": {
+        "actions": [
+          {
+            "fn": "queryHardwareStatus",
+            "args": [
+              "all"
+            ]
+          }
+        ],
+        "explanation": "모든 하드웨어의 실시간 상태를 조회합니다. 현재 에너지는 10 keV, SSA 수평/수직 갭은 각각 50 µm입니다. 조회 결과는 채팅 메시지로 표시됩니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_08",
+      "cat": "hw_status",
+      "input": "MCS2 연결됐어?",
+      "desc": "MCS2 connection check",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.65,
+      "response": {
+        "actions": [
+          {
+            "label": "MCS2 상태 조회",
+            "fn": "nanoStatus",
+            "args": []
+          },
+          {
+            "label": "XBPM, 렌즈, 링 전류 상태 조회",
+            "fn": "queryHardwareStatus",
+            "args": [
+              "all"
+            ]
+          }
+        ],
+        "explanation": "MCS2 연결 상태를 확인합니다. 간섭계, 피코스케일, XBPM, 렌즈, 링 전류 등의 하드웨어 상태도 함께 조회합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_09",
+      "cat": "hw_status",
+      "input": "빔 위치 모니터 값 확인해줘",
+      "desc": "Beam position monitor query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.57,
+      "response": {
+        "actions": [
+          {
+            "fn": "queryHardwareStatus",
+            "args": [
+              "xbpm"
+            ]
+          }
+        ],
+        "explanation": "XBPM(X-ray Beam Position Monitor)의 현재 위치 값을 조회합니다. 잠시만 기다려 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_10",
+      "cat": "hw_status",
+      "input": "현재 에너지 얼마야?",
+      "desc": "Current energy from context (no action needed)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 6.57,
+      "response": {
+        "actions": [],
+        "explanation": "현재 빔 에너지는 10 keV입니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_11",
+      "cat": "hw_status",
+      "input": "XBPM 전류 값 얼마야?",
+      "desc": "XBPM current value query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.25,
+      "response": {
+        "actions": [
+          {
+            "label": "XBPM 전류 값 조회",
+            "fn": "queryHardwareStatus",
+            "args": [
+              "xbpm"
+            ]
+          }
+        ],
+        "explanation": "XBPM(X-ray Beam Position Monitor)의 전류 값은 빔 강도를 나타냅니다. 현재 값을 조회합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "hw_12",
+      "cat": "hw_status",
+      "input": "나노 스테이지 현재 위치 알려줘",
+      "desc": "Nano stage current position",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (vllm): 'str' object has no attribute 'get'"
+      ],
+      "elapsed_s": 6.37,
+      "response": {
+        "type": "error",
+        "message": "NLP error (vllm): 'str' object has no attribute 'get'"
+      }
+    },
+    {
+      "id": "ah_01",
+      "cat": "anti_hallucination",
+      "input": "간섭계 상태 정상이야?",
+      "desc": "Anti-hallucination: interferometer status must query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.17,
+      "response": {
+        "actions": [],
+        "explanation": "간섭계 상태는 실시간으로 확인해야 합니다. 현재 상태를 조회합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_02",
+      "cat": "anti_hallucination",
+      "input": "피코스케일 정밀도 괜찮아?",
+      "desc": "Anti-hallucination: PicoScale precision query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.08,
+      "response": {
+        "actions": [],
+        "explanation": "피코스케일(PicoScale)의 정밀도는 현재 설정에 따라 달라집니다. 현재 SSA 수평/수직 갭이 50 µm로 설정되어 있으며, 이는 빔의 집속 상태에 영향을 줄 수 있습니다. 정밀도를 확인하려면 nanoStatus() 명령으로 나노스캐너의 상태를 조회하는 것이 좋습니다. 원하시면 즉시 조회해 드릴 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_03",
+      "cat": "anti_hallucination",
+      "input": "XBPM 빔 위치가 중앙이야?",
+      "desc": "Anti-hallucination: XBPM center check must query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.92,
+      "response": {
+        "actions": [],
+        "explanation": "XBPM 빔 위치는 현재 상태를 확인해야 합니다. 하드웨어 상태를 조회합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_04",
+      "cat": "anti_hallucination",
+      "input": "KOHZU 모터 에러 없어?",
+      "desc": "Anti-hallucination: KOHZU motor error check",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.77,
+      "response": {
+        "actions": [],
+        "explanation": "KOHZU 모터의 실시간 상태는 확인할 수 없습니다. 하드웨어 상태를 조회합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_05",
+      "cat": "anti_hallucination",
+      "input": "나노스캐너 캘리브레이션 됐어?",
+      "desc": "Anti-hallucination: nano calibration status",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.96,
+      "response": {
+        "actions": [],
+        "explanation": "현재 나노스캐너의 캘리브레이션 상태는 확인할 수 없습니다. 하드웨어 상태를 조회합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_06",
+      "cat": "anti_hallucination",
+      "input": "현재 빔 상태 좋아?",
+      "desc": "Anti-hallucination: beam status must not guess",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 24.49,
+      "response": {
+        "actions": [],
+        "explanation": "현재 빔 에너지는 10 keV, SSA 수평/수직 갭은 각각 50 µm로 설정되어 있습니다. 정확한 빔 상태(강도, 프로파일, 정렬)를 확인하려면 '빔 프로파일 보여줘' 명령을 사용해 주세요. 하드웨어 상태(연결, 오류 등)는 '장비 상태 확인' 명령으로 조회할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_07",
+      "cat": "anti_hallucination",
+      "input": "모터 다 정상이야?",
+      "desc": "Anti-hallucination: all motors status",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.33,
+      "response": {
+        "actions": [],
+        "explanation": "모터 상태는 실시간으로 확인해야 정확합니다. 하드웨어 상태를 조회합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_08",
+      "cat": "anti_hallucination",
+      "input": "링 전류 정상 범위야?",
+      "desc": "Anti-hallucination: ring current range check",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.44,
+      "response": {
+        "actions": [],
+        "explanation": "현재 빔라인의 에너지는 10 keV입니다. 정확한 링 전류 값은 queryHardwareStatus('ring') 명령으로 확인할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_09",
+      "cat": "anti_hallucination",
+      "input": "나노스캐너 온도 괜찮아?",
+      "desc": "Anti-hallucination: unsupported feature honest answer",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.46,
+      "response": {
+        "actions": [],
+        "explanation": "현재 나노스캐너의 온도 상태는 확인할 수 없습니다. 하드웨어 상태를 조회하여 확인해 드리겠습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_10",
+      "cat": "anti_hallucination",
+      "input": "빔 사이즈 지금 50nm이야?",
+      "desc": "Anti-hallucination: beam size question",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 24.61,
+      "response": {
+        "actions": [],
+        "explanation": "현재 빔 사이즈는 KB 미러 집속 상태에 따라 결정되며, 정확한 값을 제공할 수 없습니다. 빔 사이즈를 확인하려면 '빔 프로파일' 명령을 사용해 주세요. 현재 SSA 수평/수직 갭은 50 µm로 설정되어 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_11",
+      "cat": "anti_hallucination",
+      "input": "SSA가 지금 열려있어?",
+      "desc": "Anti-hallucination: SSA status from context",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.89,
+      "response": {
+        "actions": [],
+        "explanation": "현재 SSA 수평 갭은 50 um, 수직 갭은 50 um로 설정되어 있습니다. 이는 SSA가 완전히 열려 있는 상태입니다. 완전히 열린 경우 수평 및 수직 갭은 200 um이 되어야 하며, 현재는 부분적으로 열려 있는 상태입니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_12",
+      "cat": "anti_hallucination",
+      "input": "DCM 정상적으로 동작해?",
+      "desc": "Anti-hallucination: DCM status must query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 6.5,
+      "response": {
+        "actions": [
+          {
+            "fn": "queryHardwareStatus",
+            "args": [
+              "dcm"
+            ]
+          }
+        ],
+        "explanation": "DCM(Diffraction Crystal Monochromator)의 현재 상태를 조회합니다. 연결 상태, 위치, 에러 여부 등을 확인할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ah_13",
+      "cat": "anti_hallucination",
+      "input": "검출기 연결됐어?",
+      "desc": "Anti-hallucination: detector connection honest answer",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.36,
+      "response": {
+        "actions": [],
+        "explanation": "해당 기능은 현재 지원하지 않습니다. 직접 하드웨어 상태를 확인해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    }
+  ]
+}

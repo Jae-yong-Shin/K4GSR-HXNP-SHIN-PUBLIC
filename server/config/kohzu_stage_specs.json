@@ -1,0 +1,102 @@
+{
+  "_comment": "KOHZU ARIES/LYNX stage specifications for K4GSR BL10 NanoProbe sample stage.",
+  "_source": "github.com/verysys-pal/KOHUZ_ALV1/kohzuApp/opi/stages/*.json",
+  "_updated": "2026-03-12",
+
+  "controller": {
+    "model": "ARIES Model 3 / LYNX",
+    "ip": "10.1.101.51",
+    "port": 12321,
+    "protocol": "TCP/IP ASCII, CRLF terminated",
+    "driver": "TITAN-A II (5-phase stepper)",
+    "max_axes": 6
+  },
+
+  "axis_mapping": {
+    "_comment": "KOHZU axis number -> BL10 PV name mapping",
+    "0": {"pv_suffix": "CX",  "description": "Coarse X (KOHZU XA07A-L202)"},
+    "1": {"pv_suffix": "CY",  "description": "Coarse Y (KOHZU XA07A-L202)"},
+    "2": {"pv_suffix": "CZ",  "description": "Coarse Z (KOHZU ZA07A-V1F01)"}
+  },
+
+  "stages": {
+    "XA07A-L202": {
+      "axisType": "Linear",
+      "use_for": ["CX", "CY"],
+      "specifications": {
+        "tableSize": "70mm x 70mm",
+        "guideMechanism": "Linear Guide",
+        "leadMechanism": "Ball Screw, Lead 1.0mm",
+        "motionRange_mm": 70,
+        "maxSpeed_mm_s": 5.0,
+        "loadCapacity_N": 68.6,
+        "motor": "PK523HPMB (5 Phase Stepper)",
+        "sensor": "F-107 (LIMIT), F-108 (HOME)",
+        "weight_kg": 1.15
+      },
+      "epics_params": {
+        "EGU": "mm",
+        "UREV": 1.0,
+        "SREV": 2000,
+        "MRES": 0.0005,
+        "VELO": 2.0,
+        "VBAS": 0.1,
+        "ACCL": 0.5,
+        "VMAX": 5.0,
+        "HLM": 34.0,
+        "LLM": -34.0,
+        "DHLM": 35.0,
+        "DLLM": -35.0,
+        "PREC": 4,
+        "RDBD": 0.003,
+        "UEIP": "No",
+        "DLY": 0.1
+      }
+    },
+
+    "ZA07A-V1F01": {
+      "axisType": "Vertical",
+      "use_for": ["CZ"],
+      "specifications": {
+        "tableSize": "70mm x 70mm",
+        "guideMechanism": "Tetrahedral Flat Roller",
+        "leadMechanism": "Ground Screw, Lead 0.5mm, 1/2 belt drive",
+        "motionRange_mm": 20,
+        "maxSpeed_mm_s": 2.5,
+        "loadCapacity_N": 117.6,
+        "motor": "C090P-9015P (5 Phase Stepper)",
+        "sensor": "F-115 (HOME, LIMIT)",
+        "weight_kg": 1.8
+      },
+      "epics_params": {
+        "EGU": "mm",
+        "UREV": 0.25,
+        "SREV": 1000,
+        "MRES": 0.00025,
+        "VELO": 1.0,
+        "VBAS": 0.1,
+        "ACCL": 0.5,
+        "VMAX": 2.5,
+        "HLM": 9.5,
+        "LLM": -9.5,
+        "DHLM": 10.0,
+        "DLLM": -10.0,
+        "PREC": 4,
+        "RDBD": 0.003,
+        "UEIP": "No",
+        "DLY": 0.1
+      }
+    }
+  },
+
+  "homing": {
+    "supported_methods": {
+      "4": "NORG sensor edge (Kohzu standard)",
+      "7": "CW Limit switch edge",
+      "8": "CCW Limit switch edge"
+    },
+    "default_method": 4,
+    "epics_field": "HOMF",
+    "custom_pv_suffix": ":HomingMethod"
+  }
+}

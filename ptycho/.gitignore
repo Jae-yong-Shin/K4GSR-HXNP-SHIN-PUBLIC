@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+
+results/
+matlab_ref/
+
+*.mat
+!data/imgs/probe_PSI.mat
+
+.env
+*.log
+.vscode/
+.idea/

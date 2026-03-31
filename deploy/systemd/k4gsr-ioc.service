@@ -1,0 +1,27 @@
+[Unit]
+Description=K4GSR BL10 EPICS Soft IOC (caproto)
+Documentation=https://github.com/Jae-yong-Shin/K4GSR-Beamline
+After=network.target
+
+[Service]
+Type=simple
+User=__SERVICE_USER__
+Group=__SERVICE_USER__
+WorkingDirectory=__INSTALL_DIR__
+ExecStart=__VENV_DIR__/bin/python server/epics/soft_ioc.py --interfaces 0.0.0.0
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:__LOG_DIR__/soft_ioc.log
+StandardError=append:__LOG_DIR__/soft_ioc.log
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=EPICS_CAS_INTF_ADDR_LIST=0.0.0.0
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=__LOG_DIR__ __INSTALL_DIR__
+
+[Install]
+WantedBy=multi-user.target

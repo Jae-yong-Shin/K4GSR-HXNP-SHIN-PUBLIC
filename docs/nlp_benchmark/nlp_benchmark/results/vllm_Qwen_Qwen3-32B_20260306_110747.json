@@ -1,0 +1,655 @@
+{
+  "engine": "vllm",
+  "model": "Qwen/Qwen3-32B",
+  "timestamp": "2026-03-06T11:07:47.978381",
+  "total": 30,
+  "pass": 26,
+  "fail": 4,
+  "pass_rate": 86.7,
+  "total_time_s": 834.5,
+  "latency": {
+    "avg": 27.817,
+    "min": 4.303,
+    "max": 68.454,
+    "p95": 65.726
+  },
+  "per_category": {
+    "exp_workflow": {
+      "pass": 26,
+      "fail": 4,
+      "total": 30,
+      "avg_time": 27.817
+    }
+  },
+  "details": [
+    {
+      "id": "expwf_01",
+      "cat": "exp_workflow",
+      "input": "CVD 물질로 Co 실험하고 싶어. 최적 조건 알려줘.",
+      "desc": "Should ask experiment type, not assume XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.88,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "Co",
+                "edge": "K",
+                "sampleType": "solid",
+                "priority": "balanced"
+              }
+            ]
+          }
+        ],
+        "explanation": "Co K-edge XRF에 최적화된 빔라인 설정을 계산합니다. CVD 물질의 Co 분포를 분석하기 위한 조건입니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_02",
+      "cat": "exp_workflow",
+      "input": "우리 배터리 양극재 시료 분석하고 싶은데 어떻게 하면 돼?",
+      "desc": "Battery cathode - should ask technique type",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 44.97,
+      "response": {
+        "actions": [],
+        "explanation": "배터리 양극재 분석은 XRF 이미징, XANES, XRD 등 다양한 기법이 사용됩니다. 구체적으로 어떤 정보를 얻고 싶으신가요?\n\n1. **원소 분포 확인**: XRF 이미징으로 Ni, Co, Mn 등 원소 분포 맵핑\n2. **화학 상태 분석**: XANES로 Ni/Co/Mn의 산화 상태, 화학 결합 분석\n3. **결정 구조 분석**: XRD로 결정상, 격자 상수, 상변화 분석\n\n시료 마운트 방법, 측정 목적, 관심 원소를 알려주시면 구체적인 측정 방법을 안내해 드리겠습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_03",
+      "cat": "exp_workflow",
+      "input": "반도체 웨이퍼에서 불순물 측정하고 싶어",
+      "desc": "Semiconductor impurity - should ask which element and technique",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 22.54,
+      "response": {
+        "actions": [],
+        "explanation": "불순물 측정을 위해 XRF 이미징이 가장 적합합니다. 반도체 웨이퍼의 불순물 분포를 2D 맵으로 확인할 수 있습니다. 측정하고자 하는 불순물 원소가 무엇인가요?",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_04",
+      "cat": "exp_workflow",
+      "input": "Fe 촉매 시료 갖고 왔는데 뭘 해야 할지 모르겠어",
+      "desc": "User unsure what to do - should guide through options",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 34.59,
+      "response": {
+        "actions": [],
+        "explanation": "Fe 촉매 시료 분석을 위해 어떤 실험 기법이 필요하신가요?\n\n1. **이미징**: XRF 맵핑, Ptychography, 나노빔 스캐닝 — 원소 분포, 형태 관찰\n2. **분광**: XANES, XAFS/EXAFS — 화학 상태, 전자 구조, 배위 환경\n3. **회절**: 분말 XRD, 2D XRD 매핑 — 결정 구조, 상 분석\n\n원하시는 분석 목적에 따라 선택해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_05",
+      "cat": "exp_workflow",
+      "input": "이 시료에 Ni이 들어있는지 확인해줘",
+      "desc": "Element detection - should ask about sample prep before scanning",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 2: ['quickXanes', 'queueStart']"
+      ],
+      "elapsed_s": 11.99,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ni",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ni K-edge XANES를 실행하여 Ni의 존재 여부를 확인합니다. Ni K-edge는 8.333 keV이며, 현재 빔 에너지(10 keV)에서 측정이 가능합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_06",
+      "cat": "exp_workflow",
+      "input": "그래핀 CVD 성장 시료 분석 도와줘",
+      "desc": "Graphene CVD - should not assume carbon measurement",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 46.63,
+      "response": {
+        "actions": [],
+        "explanation": "그래핀 CVD 성장 시료 분석을 위해 어떤 실험 기법이 필요하신가요?\n\n1. **이미징 (XRF 맵핑, Ptychography)**: 원소 분포, 결함, 불균일성 관찰\n2. **분광 (XANES, XAFS)**: 화학 상태, 결합 환경 분석 (예: C 1s → K-edge 분석 불가, 대신 SiC 기판 분석 가능)\n3. **회절 (XRD)**: 결정 구조, 격자 상수, 결함 밀도 분석\n\n그래핀은 C 기반 물질이지만, C K-edge (0.284 keV)는 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정이 불가능합니다. 대신 SiC 기판의 Si K-edge (1.839 keV)나 그래핀의 불순물 분석 (Ni, Co 촉매 등)을 위한 XRF/XANES가 일반적입니다.\n\n어떤 분석을 원하시는지 구체적으로 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_07",
+      "cat": "exp_workflow",
+      "input": "지질학 시료에서 희토류 원소 분석 가능해?",
+      "desc": "Rare earth in geology - should discuss feasibility and technique options",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 43.64,
+      "response": {
+        "actions": [],
+        "explanation": "지질학 시료에서 희토류 원소 분석은 XRF 이미징을 통해 가능합니다. 희토류 원소는 La, Ce, Pr, Nd, Sm, Eu, Gd, Tb, Dy, Ho, Er, Tm, Yb, Lu 등이 있으며, 이들의 K-edge 에너지는 5.483 keV(La) ~ 57.3 keV(Lu)까지 다양합니다. 이 빔라인의 에너지 범위(5-25 keV) 내에 있는 La, Ce, Pr, Nd, Sm, Eu, Gd, Tb, Dy, Ho, Er, Tm, Yb는 분석이 가능합니다. Lu는 57.3 keV로 범위를 벗어나 측정이 불가능합니다. 원소별 분석을 위해 XRF 이미징을 수행할 수 있으며, 원하는 원소를 지정해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_08",
+      "cat": "exp_workflow",
+      "input": "NMC 양극재 분석 실험 준비 좀 해줘",
+      "desc": "NMC cathode - should ask technique, not jump to scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 24.05,
+      "response": {
+        "actions": [],
+        "explanation": "NMC 양극재 분석을 위해 어떤 실험 기법을 사용하시겠어요? 예를 들어:\n1. XRF 맵핑: 원소 분포 확인 (Ni, Co, Mn 등)\n2. XANES: 화학 상태 분석 (Ni/Co/Mn의 산화 상태)\n3. XRD: 결정상 분석 (LiNiO2, LiMn2O4 등)\n4. 2D XRD 매핑: 상 분포 분석\n5. 나노 XRF 라인 스캔: 미세 구조 분석\n\n원하시는 분석 방법을 알려주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_09",
+      "cat": "exp_workflow",
+      "input": "합금 시료인데 조성 분석 하고 싶어",
+      "desc": "Alloy composition - should ask which elements",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 65.73,
+      "response": {
+        "actions": [],
+        "explanation": "합금 시료의 조성 분석은 XRF 이미징(원소 분포 맵핑)이 가장 적합합니다. XRF는 시료에 X선을 조사하여 방출되는 형광 X선을 측정하여 원소 종류와 농도를 분석하는 기법입니다.\n\n측정 가능한 원소는 빔 에너지에 따라 달라집니다. 현재 에너지는 10 keV로 설정되어 있습니다. 이 에너지에서 측정 가능한 주요 원소는 다음과 같습니다:\n- P(인): K-edge 2.145 keV (빔라인 최소 에너지 5.0 keV 이하로 측정 불가)\n- Au(금): K-edge 80.7 keV (빔라인 최대 에너지 25.0 keV 초과, 대신 L3-edge 11.919 keV 사용 가능)\n\n원소 분포 맵핑을 위해 다음 정보가 필요합니다:\n1. 분석하고자 하는 주요 원소는 무엇인가요? (예: Cu, Ni, Fe 등)\n2. 시료는 어떻게 장착되어 있나요? (파우더, 티니 필름, 블록 등)\n3. 특수 환경(가열, 냉각, 가스)이 필요한가요?\n4. 시료 크기/두께는 어떻게 되나요? (나노빔 투과 측정인지, 반사 측정인지)\n\n이 정보를 바탕으로 최적의 측정 조건을 설정해 드리겠습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_10",
+      "cat": "exp_workflow",
+      "input": "환경 시료에서 중금속 오염 확인하려고 하는데",
+      "desc": "Environmental heavy metal - should ask specific elements",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 41.95,
+      "response": {
+        "actions": [],
+        "explanation": "환경 시료에서 중금속 오염 확인을 위해 XRF 매핑이 적합합니다. 그러나 일부 중금속의 K-edge 에너지가 이 빔라인의 범위(5-25 keV)를 벗어납니다. 예를 들어, P(인) K-edge는 2.145 keV로 너무 낮고, Au(금) K-edge는 80.7 keV로 너무 높습니다. P는 측정이 불가능하며, Au는 L3-edge (11.919 keV)를 사용해야 합니다. 측정 가능한 중금속(Fe, Cu, Zn, Pb 등)에 대해 XRF 매핑을 진행하시겠습니까?",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_11",
+      "cat": "exp_workflow",
+      "input": "Co K-edge XANES 실험 시작하고 싶어",
+      "desc": "Co XANES - technique clear but should ask sample prep",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 2: ['quickXanes', 'queueStart']"
+      ],
+      "elapsed_s": 15.15,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Co",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Co K-edge (7.709 keV) XANES를 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 현재 에너지(10 keV)에서 7.709 keV로 감소(2.29 keV 차이)하므로, 정렬을 먼저 수행합니다. 정렬 후 XANES 측정이 시작됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_12",
+      "cat": "exp_workflow",
+      "input": "Fe XRF 이미징 측정 준비해줘",
+      "desc": "Fe XRF imaging - should ask sample conditions",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.43,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 에너지를 설정합니다. XRF 이미징을 위해 빔 정렬을 수행합니다. 준비가 완료되면 '시작해줘'라고 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_13",
+      "cat": "exp_workflow",
+      "input": "분말 XRD 실험 시작",
+      "desc": "Powder XRD - should ask sample mounting method",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 2: ['setupVirtualExperiment', 'queueStart']"
+      ],
+      "elapsed_s": 12.97,
+      "response": {
+        "actions": [
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "powder_xrd"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "분말 XRD 실험을 시작합니다. 현재 에너지는 10 keV이며, SSA 수평/수직 갭이 50 µm로 설정되어 있습니다. 분말 XRD는 Eiger 2X 검출기로 Debye-Scherrer 링 패턴을 수집합니다. 측정이 시작되면 약 10초 후 데이터가 저장됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_14",
+      "cat": "exp_workflow",
+      "input": "Cu 시료 in-situ 가열하면서 XANES 찍으려고 하는데",
+      "desc": "In-situ heating XANES - should ask setup details",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 51.52,
+      "response": {
+        "actions": [],
+        "explanation": "Cu XANES 측정을 위해 in-situ 가열 환경이 필요하신군요. 먼저 몇 가지 확인 사항이 있습니다:\n\n1. **가열 장치 타입**: 어떤 종류의 in-situ 가열 셋업을 사용하시나요? (예: 레이저 가열, 전기 가열, 플라즈마 가열 등)\n2. **가열 온도 범위**: 어떤 온도 범위에서 측정을 원하시나요? (예: 200°C ~ 1000°C)\n3. **가열 셋업 프리셋 번호**: 우리 시스템의 in-situ 가열 프리셋 중 몇 번에 해당하는가요? (프리셋 번호를 모르시면 가열 장치의 구체적인 조건을 알려주세요.)\n4. **시료 마운트 방법**: Cu 시료는 어떻게 장착되어 있나요? (예: 파우더, thin film, bulk, TEM grid 등)\n5. **시료 크기/두께**: 나노빔 투과 측정인지, 반사 측정인지?\n\n이 정보를 알려주시면, Cu K-edge XANES 측정을 위한 빔라인 셋업과 in-situ 가열 조건을 조정할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_15",
+      "cat": "exp_workflow",
+      "input": "TEM 그리드에 올린 나노입자 시료 ptychography 하고 싶어",
+      "desc": "TEM grid nanoparticle ptycho - should check sample details",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 28.2,
+      "response": {
+        "actions": [],
+        "explanation": "Ptychography는 이미징 기법으로, 시료의 고해상도 구조를 볼 수 있습니다. 먼저 실험 유형을 확인해 주세요: 1. Imaging (이미징): XRF 맵핑, Ptychography, 나노빔 스캐닝 — 원소 분포, 형태 관찰 2. Spectroscopy (분광): XANES, XAFS/EXAFS — 화학 상태, 전자 구조, 배위 환경 3. Diffraction (회절): 분말 XRD, 2D XRD 매핑 — 결정 구조, 상 분석",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_16",
+      "cat": "exp_workflow",
+      "input": "bulk 시료인데 반사모드로 XRF 맵핑 해줘",
+      "desc": "Bulk sample reflection XRF - should ask element and prep",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.55,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "반사모드 XRF 맵핑을 위해, Fe K-edge (7.112 keV) + 1.4 keV = 8.5 keV로 설정합니다. 10×10 µm, 41×41 포인트 XRF 래스터 스캔입니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_17",
+      "cat": "exp_workflow",
+      "input": "가스 환경에서 촉매 반응 중에 실시간 XANES 모니터링하고 싶어",
+      "desc": "Gas-phase operando XANES - should ask detailed setup",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 57.04,
+      "response": {
+        "actions": [],
+        "explanation": "가스 환경에서 촉매 반응 중 실시간 XANES 모니터링은 가능합니다. 다음 정보를 알려주세요:\n\n1. 측정하고자 하는 원소 (예: Fe, Co, Ni 등)\n2. 측정할 에너지 에지 (K-edge 또는 L3-edge)\n3. 반응 조건 (가스 종류, 온도, 압력 등)\n4. 시료 마운트 방법 (예: 셀 종류, 입자 크기, 층 두께 등)\n5. 측정 주기 (예: 1분 간격, 5분 간격 등)\n\n이 정보를 바탕으로 빔라인 셋업과 측정 계획을 구성할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_18",
+      "cat": "exp_workflow",
+      "input": "시료 마운트 안 했는데 XAFS 먼저 셋업만 해놓을 수 있어?",
+      "desc": "Pre-mount setup request - should ask element at minimum",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.45,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.979
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 셋업을 진행합니다. 현재 에너지(10 keV)에서 8.979 keV로 변화(1.021 keV)가 2 keV 이하이므로 정렬은 생략합니다. 시료 마운트 후 '시작해줘'라고 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_19",
+      "cat": "exp_workflow",
+      "input": "박막 시료 두께가 100nm인데 투과 모드로 Ni XANES 가능해?",
+      "desc": "Thin film transmission XANES feasibility - should check conditions",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 31.13,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ni",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ni K-edge (8.333 keV) XANES는 100nm 두께의 박막 시료에 대해 투과 모드로 가능합니다. 에너지는 이미 10 keV로 설정되어 있으므로 바로 측정이 가능합니다. XANES는 흡수단 근처를 0.25 eV 분해능으로 측정하여 Ni의 화학 상태를 분석할 수 있습니다. 측정 시간은 약 5분 정도 소요됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_20",
+      "cat": "exp_workflow",
+      "input": "수용액 시료인데 측정 가능해?",
+      "desc": "Aqueous solution sample - should ask element and cell setup",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 25.99,
+      "response": {
+        "actions": [],
+        "explanation": "물 솔루션 시료는 측정이 가능합니다. 다만, 시료의 주요 성분과 원소에 따라 측정 가능 여부가 달라집니다. 예를 들어, 인(P) K-edge는 2.145 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정이 불가능합니다. 측정하고자 하는 원소와 실험 목적을 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_21",
+      "cat": "exp_workflow",
+      "input": "Co K-edge XANES 해줘",
+      "desc": "Explicit Co XANES command - should execute (direct command)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.21,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Co",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Co K-edge (7.709 keV) XANES를 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 현재 에너지(10 keV)에서 7.709 keV로 2.291 keV 감소하므로(> 2 keV 기준), 정렬을 먼저 수행합니다. 정렬 후 XANES 측정이 시작됩니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_22",
+      "cat": "exp_workflow",
+      "input": "에너지 8.5keV로 맞춰줘",
+      "desc": "Direct energy command - should execute immediately",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.3,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 8.5 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_23",
+      "cat": "exp_workflow",
+      "input": "같은 위치에서 XRD도 찍어줘",
+      "desc": "Follow-up XRD at same position - should execute (no re-ask)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.53,
+      "response": {
+        "actions": [
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "powder_xrd"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "현재 위치에서 XRD 패턴을 수집합니다. XRF와 XRD 검출기는 위치가 달라 동시 장착되어 있습니다. ⚠ XRF(SDD) → XRD(EIGER2) 검출기 교체에 약 30분이 소요됩니다. 검출기 교체는 수동 작업이므로 빔타임 계획에 포함해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_24",
+      "cat": "exp_workflow",
+      "input": "페로브스카이트 태양전지 시료 갖고 왔어. Pb 분석해줘",
+      "desc": "Perovskite Pb analysis - should ask technique and prep",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 1: ['setTargetEnergy']"
+      ],
+      "elapsed_s": 17.5,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              13.035
+            ]
+          }
+        ],
+        "explanation": "Pb L3-edge 에너지는 13.035 keV입니다. 이 에너지를 사용하여 Pb 분석을 진행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_25",
+      "cat": "exp_workflow",
+      "input": "리튬이온 배터리 음극재에서 Si 분석 가능해?",
+      "desc": "Si in Li-ion anode - should explain Si edge out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.93,
+      "response": {
+        "actions": [],
+        "explanation": "Si(규소) K-edge 에너지는 1.839 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Si 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_26",
+      "cat": "exp_workflow",
+      "input": "스테인리스 스틸 용접부 결함 분석",
+      "desc": "Stainless steel weld defect - should ask technique and elements",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 40.48,
+      "response": {
+        "actions": [],
+        "explanation": "스테인리스 스틸 용접부 결함 분석을 위해서는 일반적으로 P(인)이나 S(황)의 분포를 확인하는 XRF 이미징이 효과적입니다. 그러나 P K-edge(2.145 keV)와 S K-edge(2.472 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정이 불가능합니다.\n\n대안으로는 다음과 같은 방법을 고려할 수 있습니다:\n1. 고에너지 XRF: Mn(6.539 keV), Fe(7.112 keV), Ni(8.333 keV) 등의 K-edge에서 측정하여 원소 분포를 확인\n2. XRD: 용접부의 결정 구조 변화나 미세결함 분석\n3. XANES: 특정 금속 원소의 화학 상태 분석\n\n원하시는 분석 방법을 구체적으로 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_27",
+      "cat": "exp_workflow",
+      "input": "시료 준비 프리셋 3번으로 마운트 되어있어. Fe XANES 가능?",
+      "desc": "Preset 3 + Fe XANES - should acknowledge prep and confirm feasibility",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.2,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XANES를 실행합니다. 시료 준비 프리셋 3번 기준으로 Fe XANES가 가능합니다. 현재 에너지(10 keV)에서 Fe K-edge로의 변화는 2.888 keV로 2 keV 이상이므로, 정렬을 먼저 수행합니다. 정렬 후 XANES 측정이 시작됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_28",
+      "cat": "exp_workflow",
+      "input": "시료 위치 확인부터 해줘. 아직 빔을 못 찾았어",
+      "desc": "Sample finding request - should suggest survey scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.55,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickRaster",
+            "args": [
+              100,
+              100,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": [],
+            "label": "Scan Start (auto-added)"
+          }
+        ],
+        "explanation": "시료 위치를 확인하기 위해 100×100 µm 범위, 41×41 포인트의 래스터 스캔을 실행합니다. 이 스캔은 시료가 있는 위치를 찾는 데 도움이 됩니다. 스캔이 끝나면 시료 위치를 확인할 수 있습니다. \n\n참고: P(인) K-edge 에너지는 2.145 keV로, 이 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정할 수 없습니다. 인 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_29",
+      "cat": "exp_workflow",
+      "input": "촉매 시료 표면에 Pt 나노입자 분포를 보고 싶어",
+      "desc": "Pt nanoparticle distribution on catalyst - should ask prep",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.98,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.564
+            ]
+          }
+        ],
+        "explanation": "Pt L3-edge 에너지는 11.564 keV입니다. 이 에너지는 KB 미러의 Pt 코팅 에지와 일치하므로, 미러 자체에서 Pt 형광 신호가 발생할 수 있습니다. 이 현상을 피하기 위해 Rh 코팅으로 미러를 교체하는 것이 권장됩니다. 에너지를 11.564 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "expwf_30",
+      "cat": "exp_workflow",
+      "input": "내일 빔타임인데 미리 실험 계획 좀 세워줘. Mn-Co-Ni 배터리 양극재야.",
+      "desc": "Beamtime planning for NMC cathode - should discuss full plan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 68.45,
+      "response": {
+        "actions": [],
+        "explanation": "Mn-Co-Ni 배터리 양극재 실험 계획을 세우겠습니다. 먼저 실험 유형을 선택해 주세요:\n\n1. **이미징(XRF 맵핑)**: Mn, Co, Ni의 원소 분포를 2D 이미지로 확인\n2. **분광(XANES/XAFS)**: Mn, Co, Ni의 화학 상태, 전자 구조, 배위 환경 분석\n3. **회절(XRD)**: 결정 구조, 상 분석\n\n예: 'XRF 맵핑으로 Mn-Co-Ni 분포 확인하고 싶어' 또는 'Mn K-edge XANES 해줘'\n\n추가로, 시료 마운트 방법, in-situ 조건, 시료 준비 프리셋 번호, 시료 크기/두께 등을 알려주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    }
+  ]
+}

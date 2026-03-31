@@ -1,0 +1,73 @@
+# Backup files
+*.bak
+*.orig
+*.tmp
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+
+# Environment / secrets
+.env
+server/.env
+
+# Logs
+*.log
+
+# Claude Code internal
+.claude/
+
+# Cursor IDE
+.cursor/
+
+# Installers
+*.msi
+
+# Word temp files
+paper/~$*
+
+# Paper old versions
+paper/old/
+
+# xraylib auto-generated database files
+*.dat
+
+# Scan data (generated at runtime)
+server/data/scans/
+
+# RAG vector database (generated at runtime)
+server/chroma_db/
+
+# Large reference binaries (Spectra program)
+docs/knowledge/spectra/*.exe
+docs/knowledge/spectra/*.dll
+
+# Research plan (administrative docs, large binaries)
+Research_plan/
+
+# Old paper figures (superseded versions)
+paper/figures/old/
+
+# Large TIF figures (use Git LFS if needed)
+paper/figures/fig4_mc_vs_shadow4.tif
+
+# Note: _bundle.html is tracked in git so collaborators can open it directly.
+# Rebuild with: python Scripts/build.py --bundle --html virtual_beamline_nanoprobe_V4_36.html
+dist/

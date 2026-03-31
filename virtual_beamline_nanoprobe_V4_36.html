@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Korea-4GSR ID10 NanoProbe Virtual Beamline v4.36</title>
+<!-- Fonts: system fallback -->
+<!-- Chart lib: uPlot 1.6.31 (35KB) for interactive 1D charts -->
+<link rel="stylesheet" href="vendor/uplot-1.6.31.min.css">
+<style>
+:root{--bg:#f0f2f5;--s0:#ffffff;--s1:#e8ecf0;--s2:#dce0e6;--s3:#d0d5dc;--b0:rgba(0,40,80,.06);--b1:rgba(0,40,80,.14);--b2:rgba(0,40,80,.24);--ac:#0066aa;--pr:#6050b0;--pr2:rgba(96,80,176,.12);--am:#b07800;--gn:#007858;--rd:#c02818;--pk:#a03870;--t0:#1a2030;--t1:#2a3040;--t2:#506070;--t3:#5a6678;--t3-bright:#48566a;--sn:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;--mn:'IBM Plex Mono','SF Mono','Consolas',monospace;--fs-display:13px;--fs-primary:11px;--fs-secondary:9px;--fs-tertiary:8px;--ui-zoom:1.8}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sn);background:var(--bg);color:var(--t0);overflow:hidden;height:100vh}
+.app{display:grid;grid-template-rows:auto 1fr auto auto;grid-template-columns:1fr var(--rside-w,540px);height:100vh}
+.bar{grid-column:1/-1;display:flex;align-items:center;padding:0 12px;background:var(--s0);border-bottom:1px solid var(--b1);gap:10px;zoom:var(--ui-zoom,1.8)}
+.bar-logo{font-weight:700;font-size:13px;color:var(--ac);letter-spacing:1px}.bar-sub{font-size:10px;color:var(--t2);font-family:var(--mn)}
+.bar-r{margin-left:auto;display:flex;align-items:center;gap:10px}.bar-st{font-size:10px;font-family:var(--mn);display:flex;align-items:center;gap:5px}
+.led{width:6px;height:6px;border-radius:50%;background:var(--gn);box-shadow:0 0 6px var(--gn)}
+.mode-btns{display:flex;gap:2px;margin-left:10px}.mode-btn{font-size:9px;padding:3px 8px;background:var(--s2);border:1px solid var(--b1);border-radius:3px;color:var(--t2);cursor:pointer;font-family:var(--mn)}.mode-btn.active{background:var(--ac);color:#000;border-color:var(--ac)}
+.bar-btn{font-size:9px;padding:4px 10px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);border-radius:3px;cursor:pointer;font-family:var(--mn);text-align:center;white-space:nowrap;line-height:1;display:inline-flex;align-items:center;justify-content:center;min-width:60px}.bar-btn:hover{background:var(--s3)}
+.bar-btn.estop{background:var(--rd);color:#fff;border-color:var(--rd);font-weight:700}.bar-btn.estop:hover{background:#ff3030}
+.svgwrap{grid-column:1;overflow:hidden;background:var(--bg);min-height:0;display:flex;flex-direction:column;padding-top:40px}
+.svgwrap svg{display:block;width:100%;flex:1;min-height:0;cursor:grab;margin-bottom:20px}.svgwrap svg.panning{cursor:grabbing}
+.svg-pan-bar{height:20px;background:var(--s0);display:flex;align-items:center;padding:2px 30px;flex-shrink:0;border-top:1px solid var(--b0);zoom:var(--ui-zoom,1.8)}
+.svg-pan-bar input[type=range]{flex:1;height:3px;-webkit-appearance:none;background:var(--b1);border-radius:2px;outline:none;margin:0}
+.svg-pan-bar input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:8px;border-radius:3px;background:var(--s3);cursor:pointer;border:1px solid var(--b2)}
+.svg-pan-bar input[type=range]::-webkit-slider-thumb:hover{background:var(--ac)}
+.rside{grid-row:2/-1;grid-column:2;border-left:1px solid var(--b1);background:var(--s0);display:flex;flex-direction:column;overflow:hidden;position:relative;zoom:var(--ui-zoom,1.8)}
+.tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--b1)}.tab{flex:0 0 14.285%;padding:9px 2px;font-size:10px;text-align:center;cursor:pointer;color:var(--t2);font-family:var(--mn);border-bottom:2px solid transparent;transition:background .15s}.tab.active{color:var(--ac);border-bottom-color:var(--ac);background:var(--s1)}.tab:hover{background:var(--s2)}
+.tabcontent{flex:1;overflow-y:auto;padding:6px;min-height:0}.tabpane{display:none}.tabpane.active{display:block}
+.ctrl-group{margin-bottom:6px;padding:5px 7px;background:var(--s1);border-radius:5px;border:1px solid var(--b0);overflow:hidden}.ctrl-label{font-size:9px;color:var(--t2);margin-bottom:2px;display:flex;justify-content:space-between;font-family:var(--mn)}.ctrl-val{color:var(--ac);font-weight:500}
+input[type=range]{width:100%;height:3px;-webkit-appearance:none;background:var(--b1);border-radius:2px;outline:none;margin:4px 0}input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--ac);cursor:pointer}
+select,input[type=number]{width:100%;background:var(--s2);border:1px solid var(--b1);color:var(--t0);padding:4px 6px;border-radius:4px;font-size:10px;font-family:var(--mn)}.row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.bpan{grid-column:1;display:flex;gap:0;border-top:1px solid var(--b1);height:var(--bpan-h,160px);overflow:hidden;position:relative;zoom:var(--ui-zoom,1.8)}
+.resizer-h{position:absolute;left:-3px;top:0;bottom:0;width:6px;cursor:col-resize;z-index:100}.resizer-h:hover,.resizer-h.active{background:rgba(77,184,255,.4)}
+.resizer-v{position:absolute;top:-3px;left:0;right:0;height:6px;cursor:row-resize;z-index:100}.resizer-v:hover,.resizer-v.active{background:rgba(77,184,255,.4)}
+.pn{flex:1;display:flex;flex-direction:column;border-right:1px solid var(--b0);min-width:0}.pn-h{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:var(--s1);border-bottom:1px solid var(--b0);flex-shrink:0;flex-grow:0}.pn-h h4{font-size:9px;color:var(--t2);font-family:var(--mn);letter-spacing:.5px}.pn-body{flex:1;overflow-y:auto;padding:6px;font-size:10px}
+button.sb{background:var(--ac);color:#000;border:none;padding:3px 10px;border-radius:3px;font-size:9px;font-weight:600;cursor:pointer;margin:2px}button.sb.stop{background:var(--rd);color:#fff}button.sb.act{padding:4px 14px}button.sb.go{background:var(--gn);color:#000}button.sb.sec{background:var(--s2);color:var(--t2)}
+.prog-bar{height:4px;background:var(--s2);border-radius:2px;overflow:hidden;margin-top:4px}.prog-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--pr));border-radius:2px;transition:width .3s;width:0}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}.modal-overlay.open{display:flex}
+.modal{background:var(--s0);border:1px solid var(--b2);border-radius:10px;max-width:min(900px,calc(92vw / var(--ui-zoom,1.8)));width:calc(92vw / var(--ui-zoom,1.8));max-height:calc(90vh / var(--ui-zoom,1.8));overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);position:relative;resize:both;min-width:340px;min-height:180px;zoom:var(--ui-zoom,1.8)}.modal.dragging{user-select:none}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--b0);background:var(--s1);cursor:move}.modal-head h3{font-size:13px;color:var(--ac)}.modal-close{background:none;border:none;color:var(--t2);font-size:18px;cursor:pointer}.modal-close:hover{color:var(--rd)}.modal-body{padding:16px;overflow-y:auto;max-height:calc(90vh / var(--ui-zoom,1.8) - 50px)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}.info-item{background:var(--s1);padding:5px 8px;border-radius:4px;font-family:var(--mn);font-size:10px}.info-item .lbl{color:var(--t3);font-size:9px;margin-bottom:2px}.info-item .val{color:var(--ac);font-weight:600}
+.mc{background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:10px 12px;margin-bottom:10px}.mc h4{font-size:10px;color:var(--pr);margin:0 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.mc-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}.mc-row label{font-size:10px;color:var(--t2);font-family:var(--mn);min-width:80px}.mc-row input[type=range]{flex:1;height:3px}.mc-row input[type=number]{width:70px;background:var(--s2);border:1px solid var(--b1);border-radius:3px;color:var(--ac);font-family:var(--mn);font-size:10px;padding:3px 4px;text-align:center}.mc-row .mc-val{font-family:var(--mn);font-size:10px;color:var(--ac);font-weight:600;min-width:50px;text-align:right}
+.cmp-table{width:100%;border-collapse:collapse;font-size:10px;font-family:var(--mn)}.cmp-table th{text-align:left;padding:4px 6px;background:var(--s2);color:var(--t2)}.cmp-table td{padding:3px 6px;border-bottom:1px solid var(--b0)}
+.sug{background:var(--s1);border-left:3px solid var(--am);padding:6px 10px;margin-bottom:4px;border-radius:0 4px 4px 0;font-size:10px}.sug-act{color:var(--am);font-weight:600;font-size:9px}
+.logbox{font-family:var(--mn);font-size:10px;color:var(--t2);line-height:1.8}.logbox .ltime{color:var(--t3)}.logbox .linfo{color:var(--ac)}.logbox .lwarn{color:var(--am)}.logbox .lerr{color:var(--rd)}
+.view-lbl{font-family:var(--mn);fill:var(--t3);font-size:9px;letter-spacing:1px}
+.comp-name{font-family:var(--sn);fill:var(--t0);font-size:8px;font-weight:600;pointer-events:none}
+.dist-label{font-family:var(--mn);fill:var(--t3-bright);font-size:8px}
+.comp-g{cursor:pointer}.comp-g:hover .comp-name{fill:#80d0ff!important}.comp-g:hover .hit{stroke:rgba(77,184,255,.3)!important;fill:rgba(77,184,255,.04)!important}
+.harm-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-family:var(--mn);font-weight:600;cursor:pointer;margin:1px}.harm-badge.active{background:var(--gn);color:#000}.harm-badge.avail{background:var(--s2);color:var(--t2)}
+
+.mtr-row{display:flex;align-items:center;gap:4px;padding:2px 0;border-bottom:1px solid var(--b0)}
+.mtr-row label{font-size:8px;color:var(--t2);min-width:60px;font-family:var(--mn)}
+.mtr-row input[type=range]{flex:1;height:2px}.mtr-row input[type=number]{width:50px;font-size:8px}
+.mtr-val{font-size:8px;color:var(--ac);font-family:var(--mn);min-width:45px;text-align:right}
+.align-step{padding:4px 6px;cursor:pointer;transition:background .2s}.align-step:hover{background:var(--b0)}
+.heat-warn{color:var(--rd);font-weight:600;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.5}}
+
+
+.live-bar{grid-column:1;display:flex;align-items:center;gap:12px;padding:2px 10px;background:var(--s1);border-top:1px solid var(--b0);font-size:8px;font-family:var(--mn);color:var(--t2);flex-wrap:wrap}
+.heat-warn{color:var(--rd);font-weight:600;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.5}}
+
+.epics-mode-btn{transition:background .2s,color .2s;border:1px solid var(--b1)!important}
+.epics-mode-btn.active{font-weight:600}
+.pv-row:hover{background:rgba(80,160,255,.04)}
+@keyframes pv-flash{0%,100%{opacity:1}50%{opacity:.3}}
+.pv-alarm-major{animation:pv-flash .5s ease-in-out 3}
+.fixed-val{min-width:4.5em;text-align:right;font-variant-numeric:tabular-nums;display:inline-block}
+
+/* === Color Themes === */
+body.theme-dark{--bg:#000;--s0:#0a0a0a;--s1:#181818;--s2:#282828;--s3:#383838;--b0:rgba(255,255,255,.12);--b1:rgba(255,255,255,.28);--b2:rgba(255,255,255,.45);--ac:#00e0ff;--pr:#c0a0ff;--pr2:rgba(192,160,255,.2);--am:#ffe000;--gn:#00ff80;--rd:#ff3030;--pk:#ff80c0;--t0:#ffffff;--t1:#e0e0e0;--t2:#c0c0c0;--t3:#808080;--t3-bright:#a0a0a0}
+body.theme-dark2{--bg:#0c111a;--s0:#101822;--s1:#151f2e;--s2:#1a2738;--s3:#1f2f44;--b0:rgba(80,160,255,.06);--b1:rgba(80,160,255,.12);--b2:rgba(80,160,255,.22);--ac:#4db8ff;--pr:#a08cff;--pr2:rgba(160,140,255,.15);--am:#f0b840;--gn:#40d89a;--rd:#ff5050;--pk:#e870a0;--t0:#e8eef8;--t1:#c0d0e0;--t2:#6a7f96;--t3:#3d5068;--t3-bright:#5a7a9a}
+body.theme-deuter{--gn:#56b4e9;--rd:#e69f00;--pk:#cc79a7;--am:#f0e442}
+body.theme-protan{--gn:#56b4e9;--rd:#e69f00;--pk:#cc79a7;--am:#f0e442}
+body.theme-tritan{--ac:#e69f00;--gn:#009e73;--rd:#d55e00;--pr:#cc79a7;--am:#56b4e9}
+
+/* === Layout Modes === */
+body.layout-wide .rside{display:none}body.layout-wide .app{grid-template-columns:1fr 0px}
+body.layout-focus .rside{display:none}body.layout-focus .bpan{display:none}body.layout-focus .app{grid-template-columns:1fr 0px;grid-template-rows:36px 1fr 0}body.layout-focus [style*="grid-column:1"]{display:none}
+body.layout-compact{--rside-w:380px}
+
+/* Mode menu */
+.mode-menu{position:absolute;top:34px;right:0;background:var(--s0);border:1px solid var(--b2);border-radius:6px;padding:8px;z-index:200;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none}
+.mode-menu.open{display:block}
+.mode-menu h5{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:6px 0 4px;font-family:var(--mn)}
+.mode-menu h5:first-child{margin-top:0}
+.mode-opt{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;cursor:pointer;font-size:10px;color:var(--t2);font-family:var(--mn);transition:background .15s}
+.mode-opt:hover{background:var(--s2)}
+.mode-opt.active{color:var(--ac);background:var(--s1)}
+.mode-opt .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--b2);flex-shrink:0}
+.mode-opt.active .dot{background:var(--ac);border-color:var(--ac)}
+/* Motor jog controls */
+.ax-ctrl{margin:2px 0;padding:3px 0;border-bottom:1px solid var(--b0)}.ax-r1{display:flex;align-items:center;gap:4px}
+.ax-name{min-width:58px;font-size:9px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ax-unit{color:var(--t3);font-size:8px}
+.ax-pos{font-size:9px;font-family:var(--mn);margin-left:auto;min-width:50px;text-align:right}
+.ax-slider{width:100%;height:2px;margin:2px 0}.ax-r2{display:flex;align-items:center;gap:3px;margin-top:2px}
+.ax-step{width:48px;font-size:9px;background:var(--s2);color:var(--ac);border:1px solid var(--b1);border-radius:2px;padding:2px 3px;text-align:center;font-family:var(--mn)}
+.jog-btn{padding:4px 7px;font-size:10px;border:none;border-radius:3px;cursor:pointer;font-family:var(--mn);font-weight:600;min-width:28px;text-align:center;line-height:1;transition:background .15s}
+.jog-neg{background:rgba(255,80,80,.15);color:var(--rd)}.jog-neg:hover{background:rgba(255,80,80,.35)}
+.jog-pos{background:rgba(64,216,154,.15);color:var(--gn)}.jog-pos:hover{background:rgba(64,216,154,.35)}
+/* Live beam monitor strip */
+.live-mon{background:var(--s1);border-bottom:1px solid var(--b1);padding:6px 8px;font-family:var(--mn);font-size:9px}
+.live-mon-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.live-mon-hdr h5{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:0}
+.mon-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px}.mon-item{display:flex;justify-content:space-between;color:var(--t2)}.mon-val{color:var(--ac);font-weight:500}
+/* PV Trend popup */
+.trend-popup{position:fixed;top:60px;left:50%;transform:translateX(-50%);width:560px;height:340px;background:var(--s0);border:1px solid var(--b2);border-radius:8px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.5);overflow:hidden;display:none;zoom:var(--ui-zoom,1.8)}
+.trend-popup.open{display:flex;flex-direction:column}
+.trend-popup-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:var(--s1);border-bottom:1px solid var(--b0);cursor:move;flex-shrink:0}
+.trend-popup-hdr h4{font-size:11px;color:var(--ac);margin:0}
+.trend-popup-body{padding:8px;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.trend-popup-body .trend-chart-wrap{flex:1;min-height:0;position:relative}
+/* XBPM live monitor popup */
+.xbpm-popup{position:fixed;top:44px;right:calc(var(--rside-w,540px) + 10px);width:520px;max-height:calc(100vh - 60px);background:var(--s0);border:1px solid var(--b2);border-radius:8px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.5);overflow:auto;display:none;zoom:var(--ui-zoom,1.8)}
+.xbpm-popup.open{display:flex;flex-direction:column}
+.xbpm-popup-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--s1);border-bottom:1px solid var(--b0);cursor:move}
+.xbpm-popup-hdr h4{font-size:11px;color:var(--ac);margin:0}.xbpm-popup-close{background:none;border:none;color:var(--t2);font-size:16px;cursor:pointer;padding:0 4px}.xbpm-popup-close:hover{color:var(--rd)}
+.xbpm-popup-body{padding:8px;overflow-y:auto;flex:1}
+.xbpm-cards{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.xbpm-card{background:var(--s1);border:1px solid var(--b0);border-radius:5px;padding:6px;font-family:var(--mn);font-size:9px}
+.xbpm-card h5{font-size:9px;color:var(--t2);margin:0 0 2px;display:flex;justify-content:space-between}.xbpm-card h5 span{color:var(--t3);font-weight:400}
+.xbpm-card canvas{width:100%;aspect-ratio:2.5;height:auto;border-radius:3px;background:var(--s2);margin:3px 0}
+.xbpm-card .xbpm-vals{display:grid;grid-template-columns:1fr 1fr;gap:1px 6px;color:var(--t2)}.xbpm-card .xv{color:var(--ac);font-weight:500;text-align:right}
+/* Attenuator filter slot */
+.att-slot{display:flex;gap:4px;align-items:center;margin:3px 0;font-size:9px;font-family:var(--mn)}
+.att-slot select,.att-slot input{font-size:9px;background:var(--s2);border:1px solid var(--b1);color:var(--t0);padding:2px 4px;border-radius:2px}
+.att-slot select{flex:1}.att-slot input{width:48px;text-align:center}
+.att-trans{font-size:10px;color:var(--gn);font-weight:600;font-family:var(--mn);margin-top:4px}
+/* === UI zoom applied via CSS zoom on .rside, .bpan, .bar, live-bar, modals === */
+</style>
+</head>
+<body>
+<div class="app">
+<div class="bar"><div class="bar-logo">Korea-4GSR</div><div class="bar-sub">ID10 NanoProbe v4.36</div>
+<div class="mode-btns"><button class="mode-btn active" onclick="setMode('virtual')">Virtual</button><button class="mode-btn" onclick="setMode('real')">Real</button><button class="mode-btn" onclick="setMode('dual')">Dual</button></div>
+<div class="bar-r"><span id="ringStatusBar" style="font-size:8px;font-family:var(--mn);display:flex;gap:4px;align-items:center"></span><span class="bar-st"><span class="led"></span><span id="modeStatus">VIRTUAL MODE</span></span><span id="epicsLiveStats" style="font-size:8px;font-family:var(--mn);color:var(--t3)"></span><button class="bar-btn" onclick="window.open('../K4GSR-TOMO/web/tomo_ui.html','_blank')" title="Open Tomography Reconstruction UI">TOMO</button><button class="bar-btn" onclick="window.open('../K4GSR-PTYCHO/web/ptycho_ui.html','_blank')" title="Open Ptychography Reconstruction UI">PTYCHO</button><button class="bar-btn" onclick="resetVisualSx()">⟲ Reset</button><div style="position:relative;display:inline-flex;align-items:center"><button class="bar-btn" onclick="toggleModeMenu()" id="modeSelectorBtn">⚙ View</button><div class="mode-menu" id="modeMenu"></div></div><div style="position:relative;display:inline-flex;align-items:center"><button class="bar-btn" onclick="toggleLangMenu()" id="langSelectorBtn" style="min-width:32px">EN</button><div class="mode-menu" id="langMenu"></div></div><span style="display:inline-flex;align-items:center;gap:3px;margin:0 4px"><button class="bar-btn" onclick="setUIZoom(-0.1)" title="Zoom Out" style="min-width:28px;padding:4px 6px">-</button><span id="uiZoomLabel" style="font-size:9px;font-family:var(--mn);color:var(--t2);min-width:36px;text-align:center">180%</span><button class="bar-btn" onclick="setUIZoom(+0.1)" title="Zoom In" style="min-width:28px;padding:4px 6px">+</button></span><button class="bar-btn estop" onclick="emergencyStop()">⚠ E-STOP</button></div></div>
+
+<div class="svgwrap" id="svgWrap"><svg id="blSvg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="gWB" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ffd080" stop-opacity=".7"/><stop offset="100%" stop-color="#ffa040" stop-opacity=".08"/></linearGradient>
+<linearGradient id="gMn" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#60b0ff" stop-opacity=".6"/><stop offset="100%" stop-color="#4090ff" stop-opacity=".08"/></linearGradient>
+<filter id="gl"><feGaussianBlur stdDeviation="1.5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="glS"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1200" height="400" fill="var(--bg)"/>
+<text x="20" y="40" class="view-lbl">TOP VIEW</text>
+<line x1="0" y1="192" x2="1200" y2="192" stroke="#203040" stroke-width=".5" stroke-dasharray="2,4"/>
+<text x="20" y="210" class="view-lbl">SIDE VIEW</text>
+<g id="topBeam"></g><g id="sideBeam"></g><g id="topComp"></g><g id="sideComp"></g><g id="distLabels"></g>
+</svg>
+<div class="svg-pan-bar" id="svgPanBar"><input type="range" id="svgPanSlider" min="0" max="0" value="0" step="1"></div></div>
+
+<div style="grid-column:1;display:flex;align-items:center;gap:12px;padding:2px 10px;background:var(--s1);border-top:1px solid var(--b0);font-size:8px;font-family:var(--mn);color:var(--t2);zoom:var(--ui-zoom,1.8)">
+  <span>E=<span id="liveE" style="color:var(--ac)">10.00</span> keV</span>
+  <span>Flux:<span id="liveFlux" style="color:var(--gn)">—</span></span>
+  <span>Spot:<span id="liveSpot" style="color:var(--pk)">—</span></span>
+</div>
+<div class="bpan"><div class="resizer-v" id="resizerV"></div>
+<div class="pn"><div class="pn-h"><h4>📊 MEASUREMENT</h4><span id="scanStatus" style="font-size:10px;font-family:var(--mn);color:var(--gn)">IDLE</span></div><div class="pn-body"><canvas id="measChart" height="170"></canvas></div></div>
+<div class="pn"><div class="pn-h"><h4>⚙ HARMONIC SELECT</h4><span id="harmInfo" style="font-size:10px;font-family:var(--mn);color:var(--ac)">—</span></div><div class="pn-body" id="harmPanel" style="font-family:var(--mn);font-size:10px"></div></div>
+<div class="pn" style="min-width:170px"><div class="pn-h"><h4>📋 LOG</h4><button onclick="clearLog()" style="font-size:8px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);border-radius:3px;padding:1px 6px;cursor:pointer">Clr</button></div><div class="pn-body logbox" id="logBox"></div></div>
+<div class="pn" id="comparePanel" style="display:none"><div class="pn-h"><h4>⚖ V/R</h4><span id="cmpScoreBar" style="font-size:10px;font-family:var(--mn);color:var(--gn)">—</span></div><div class="pn-body" id="comparePanelBody" style="overflow-y:auto;font-size:9px"></div></div>
+<div class="pn" id="bsPanel" style="display:none;min-width:200px;flex:1.5">
+<div class="pn-h" style="flex-wrap:wrap;gap:4px">
+<h4>🔬 BLUESKY LIVE</h4>
+<span id="bsLiveStatus" style="font-size:10px;font-family:var(--mn);color:var(--ac)">—</span>
+<div id="bsScanCtrl" style="display:none;margin-left:auto;gap:2px;display:none;align-items:center">
+<button class="sb" onclick="window.bsScanPause()" id="bsPauseBtn" style="font-size:8px;padding:2px 6px" title="Pause">❚❚</button>
+<button class="sb" onclick="window.bsScanResume()" id="bsResumeBtn" style="font-size:8px;padding:2px 6px;background:var(--gn);color:#000;display:none" title="Resume">▶▶</button>
+<button class="sb stop" onclick="window.bsScanAbort()" id="bsAbortBtn" style="font-size:8px;padding:2px 6px" title="Abort">✖</button>
+</div>
+</div>
+<div style="padding:0 6px">
+<div class="prog-bar" style="margin:2px 0"><div class="prog-fill" id="bsLiveProgress" style="width:0%;transition:width .3s"></div></div>
+<div style="display:flex;justify-content:space-between;font-size:8px;font-family:var(--mn);color:var(--t3)">
+<span id="bsLivePts">—</span>
+<span id="bsLiveEta">—</span>
+</div>
+</div>
+<div class="pn-body" id="bsPanelBody" style="overflow-y:auto;font-size:9px"><canvas id="bsLiveCanvas" height="150"></canvas></div>
+</div>
+</div>
+
+<!-- Right sidebar with expanded tabs -->
+<div class="rside"><div class="resizer-h" id="resizerH"></div><div class="tabs">
+<div class="tab active" onclick="switchTab('undulator')">IVU</div><div class="tab" onclick="switchTab('mask')">Mask</div><div class="tab" onclick="switchTab('dcm')">DCM</div><div class="tab" onclick="switchTab('optics')">Optics</div><div class="tab" onclick="switchTab('atten')">Atten</div><div class="tab" onclick="switchTab('motors')">Motors</div><div class="tab" onclick="switchTab('measure')">Meas</div>
+<div class="tab" onclick="switchTab('align')">Align</div><div class="tab" onclick="switchTab('compare')">V/R</div><div class="tab" onclick="switchTab('epics')" style="color:var(--gn)">EPICS</div><div class="tab" onclick="switchTab('bluesky')" style="color:var(--pr)">BS</div><div class="tab" onclick="switchTab('guide')" style="color:var(--am)">Guide</div><div class="tab" onclick="switchTab('chat')" style="color:var(--pk)">Chat</div><div class="tab" onclick="switchTab('expt')" style="color:var(--gn)">Expt</div><div class="tab" onclick="switchTab('scanner')" style="color:var(--ac)">Scan</div></div>
+<div id="liveBeamMon" class="live-mon" style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px"><div style="display:flex;gap:10px;align-items:center"><span style="color:var(--t3)">E:</span><span class="mon-val" id="lm_e">10.00 keV</span><span style="color:var(--t3)">Flux:</span><span class="mon-val" id="lm_flux">—</span><span style="color:var(--t3)">Spot:</span><span class="mon-val" id="lm_sh">—</span><span class="mon-val" id="lm_sv" style="display:none"></span></div><button class="bar-btn" onclick="toggleXbpmPopup()" style="font-size:8px;padding:3px 8px;min-width:auto">XBPM</button></div>
+<div class="tabcontent">
+
+<!-- IVU Tab — content rendered by renderDynTabs() -->
+<div class="tabpane active" id="tab-undulator"></div>
+
+<!-- DCM Tab — content rendered by renderDynTabs() -->
+<div class="tabpane" id="tab-dcm"></div>
+
+<!-- Optics Tab — content rendered by renderDynTabs() -->
+<div class="tabpane" id="tab-optics"></div>
+
+<!-- MOTORS Tab (NEW) -->
+<div class="tabpane" id="tab-motors">
+<div style="margin-bottom:6px">
+<h4 style="font-size:10px;color:var(--t1);font-weight:600;margin:0 0 3px 2px">MOTOR GROUP</h4>
+<div class="ctrl-group" style="margin:0">
+<select id="motorGroupSel" onchange="showMotorGroup(this.value)" style="margin-bottom:4px">
+<option value="sample">Sample Stage (8-axis)</option>
+<option value="m1">M1 Mirror</option>
+<option value="m2">M2 Mirror</option>
+<option value="dcm">DCM</option>
+<option value="kbv">KB-V Mirror</option>
+<option value="kbh">KB-H Mirror</option>
+<option value="atten">Attenuator</option>
+<option value="wbslit">WB Slit</option>
+<option value="ssa">SSA</option>
+<option value="det">Detector</option>
+<option value="fmask">Fixed Mask</option>
+<option value="mmask">Movable Mask</option>
+<option value="zp">ZP/CRL</option>
+</select></div></div>
+<div id="motorGroupPanel"></div>
+<div class="ctrl-group" style="margin-top:4px"><button class="sb" style="font-size:8px" onclick="logAllMotorPositions()">📋 Log All Positions</button></div>
+</div>
+
+<!-- MASK Tab (NEW) -->
+<div class="tabpane" id="tab-mask">
+<div style="margin-bottom:6px">
+<h4 style="font-size:10px;color:var(--t1);font-weight:600;margin:0 0 3px 2px">MASK SELECTOR</h4>
+<div class="ctrl-group" style="margin:0">
+<div style="display:flex;gap:2px;margin-bottom:6px"><button class="mode-btn active" id="maskBtn-fmask" onclick="selectMask('fmask')">Fixed Mask</button><button class="mode-btn" id="maskBtn-mmask" onclick="selectMask('mmask')">Movable Mask</button></div></div></div>
+<div id="maskSidePanel"></div>
+<div class="ctrl-group" style="margin:0"><button class="sb" onclick="openMaskModal()" style="font-size:9px">Full Analysis</button></div>
+</div>
+
+<!-- Measure Tab -->
+<div class="tabpane" id="tab-measure">
+<div style="margin-bottom:6px">
+<h4 style="font-size:10px;color:var(--t1);font-weight:600;margin:0 0 3px 2px">TECHNIQUE</h4>
+<div class="ctrl-group" style="margin:0"><select id="technique" onchange="updateTechUI()" style="width:100%"><option value="xanes">XANES</option><option value="xrd2d">XRD 2D Map</option><option value="xrf">XRF</option><option value="xrf2d">XRF 2D Map</option></select></div></div>
+<div style="margin-bottom:6px">
+<h4 style="font-size:10px;color:var(--t1);font-weight:600;margin:0 0 3px 2px">MATERIAL</h4>
+<div class="ctrl-group" style="margin:0"><select id="material" style="width:100%"><option value="Fe">Fe</option><option value="Cu" selected>Cu</option><option value="Ni">Ni</option><option value="Ti">Ti</option><option value="Au">Au</option><option value="Pt">Pt</option><option value="Si">Si</option><option value="SrTiO3">SrTiO₃</option></select></div></div>
+<div id="xanesParams"><div class="ctrl-group"><div class="row" style="margin-bottom:4px"><div><div class="ctrl-label">Sample</div><select id="xanesSampleType"><option value="solid">Solid</option><option value="powder">Powder (dilute)</option></select></div><div><div class="ctrl-label">Conc(ppm)</div><input id="xanesPPM" type="number" value="10000" step="100"/></div></div><select id="xanesEdge"><option value="K">K edge</option><option value="L3">L₃ edge</option></select><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Pre(eV)</div><input type="number" value="-50" id="xanesPre"/></div><div><div class="ctrl-label">Post(eV)</div><input type="number" value="300" id="xanesPost"/></div></div><div class="ctrl-label" style="margin-top:4px">Step(eV)</div><input type="number" value="0.5" step="0.1" id="xanesStep"/></div></div>
+
+<div id="xrd2dParams" style="display:none"><div class="ctrl-group"><div class="row"><div><div class="ctrl-label">X Start(µm)</div><input type="number" value="-500" id="mapXstart"/></div><div><div class="ctrl-label">X End</div><input type="number" value="500" id="mapXend"/></div></div><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Y Start</div><input type="number" value="-500" id="mapYstart"/></div><div><div class="ctrl-label">Y End</div><input type="number" value="500" id="mapYend"/></div></div><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Step</div><input type="number" value="10" id="mapStep"/></div><div><div class="ctrl-label">Dwell(ms)</div><input type="number" value="100" id="mapDwell"/></div></div></div></div>
+<div id="xrfParams" style="display:none"><div class="ctrl-group"><div class="row" style="margin-bottom:4px"><div><div class="ctrl-label">Sample</div><select id="xrfSampleType"><option value="solid">Solid</option><option value="powder">Powder (dilute)</option></select></div><div><div class="ctrl-label">Conc(ppm)</div><input id="xrfPPM" type="number" value="10000" step="100"/></div></div><div class="row"><div><div class="ctrl-label">Exc E(keV)</div><input type="number" value="12" step="0.5" id="xrfExE"/></div><div><div class="ctrl-label">Dwell(s)</div><input type="number" value="10" step="1" id="xrfDwell"/></div></div></div></div>
+<div id="xrf2dParams" style="display:none"><div class="ctrl-group"><div class="row"><div><div class="ctrl-label">PPM</div><input type="number" value="1000" step="100" id="xrf2dPPM"/></div><div><div class="ctrl-label">Dwell(s)</div><input type="number" value="0.1" step="0.01" id="xrf2dDwell"/></div></div><div class="row"><div><div class="ctrl-label">X start</div><input type="number" value="-500" id="xrf2dXstart"/></div><div><div class="ctrl-label">X end</div><input type="number" value="500" id="xrf2dXend"/></div></div><div class="row"><div><div class="ctrl-label">Y start</div><input type="number" value="-500" id="xrf2dYstart"/></div><div><div class="ctrl-label">Y end</div><input type="number" value="500" id="xrf2dYend"/></div></div><div class="ctrl-label" style="margin-top:4px">Step(um)</div><input type="number" value="1.0" step="0.1" id="xrf2dStep"/></div></div>
+<div class="ctrl-group" style="display:flex;gap:4px"><button class="sb go act" onclick="startScan()">▶ START</button><button class="sb stop act" onclick="stopScan()">■ STOP</button><button class="sb sec" onclick="exportCSV()">💾 CSV</button></div>
+<div class="prog-bar"><div class="prog-fill" id="scanProg"></div></div></div>
+
+<!-- ATTEN Tab -->
+<div class="tabpane" id="tab-atten">
+<div style="margin-bottom:6px">
+<h4 style="font-size:10px;color:var(--t1);font-weight:600;margin:0 0 3px 2px">ATTENUATOR</h4>
+<div class="ctrl-group" style="margin:0">
+<div style="font-size:8px;color:var(--t3);margin-bottom:4px">Between WB Slit and XBPM-WB. 4 filter slots.</div>
+<div id="attenSlots"></div>
+<div style="margin-top:4px"><div class="ctrl-label">Total Transmission<span class="att-trans" id="attenTransVal">100.0%</span></div>
+<div class="ctrl-label">Transmitted Flux<span class="ctrl-val" id="attenFluxVal">—</span></div></div>
+</div></div>
+<div id="tab-atten-motors"></div>
+</div>
+
+<!-- ALIGN Tab -->
+<div class="tabpane" id="tab-align">
+<div id="alignStepsList"></div>
+<div style="margin-top:6px">
+<h4 style="font-size:10px;color:var(--t1);font-weight:600;margin:0 0 3px 2px">ALIGNMENT RESULT</h4>
+<div class="ctrl-group" style="margin:0"><canvas id="alignChart" height="120"></canvas></div>
+</div>
+</div>
+
+<!-- Compare Tab (unchanged) -->
+<div class="tabpane" id="tab-compare">
+<div class="ctrl-group" style="display:flex;gap:4px;align-items:center">
+<button class="sb go act" onclick="startComparison()">▶ Start V/R</button>
+<button class="sb stop act" onclick="stopComparison()">■ Stop</button>
+<span style="font-size:8px;color:var(--t3);margin-left:auto" id="cmpMode2">—</span>
+</div>
+<div id="compareBody" style="overflow-y:auto"></div>
+</div>
+<div class="tabpane" id="tab-epics"><!-- Rendered dynamically by renderEpicsTab() --></div>
+<div class="tabpane" id="tab-bluesky"><!-- Rendered dynamically by renderBlueskyTab() --></div>
+<div class="tabpane" id="tab-guide"><!-- Rendered dynamically --></div>
+<div class="tabpane" id="tab-chat"><!-- Rendered by renderChatTab() --></div>
+<div class="tabpane" id="tab-expt"><!-- Rendered by renderExptTab() --></div>
+<div class="tabpane" id="tab-scanner"><!-- Rendered by renderScannerTab() --></div>
+</div></div>
+
+<!-- Modal overlay -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalDialog"><div class="modal-head" id="modalHead"><h3 id="modalTitle">—</h3><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div></div></div>
+</div>
+
+
+<!-- XBPM Live Monitor Popup (floating, non-modal) -->
+<div class="xbpm-popup" id="xbpmPopup">
+<div class="xbpm-popup-hdr" id="xbpmPopupHdr"><h4>XBPM Live Monitor</h4><div style="display:flex;gap:6px;align-items:center"><span style="font-size:8px;color:var(--t3);font-family:var(--mn)" id="xbpmRefreshRate">&#x2014;</span><button class="xbpm-popup-close" onclick="toggleXbpmPopup()">&#x2715;</button></div></div>
+<div class="xbpm-popup-body"><div style="display:flex;gap:8px;margin-bottom:6px;font-family:var(--mn);font-size:9px"><span style="color:var(--t3)">E:</span><span class="mon-val" id="xm_e">&#x2014;</span><span style="color:var(--t3)">Atten:</span><span class="mon-val" id="xm_att">100%</span><span style="color:var(--t3)">Flux:</span><span class="mon-val" id="xm_flux">&#x2014;</span></div>
+<div class="xbpm-cards" id="xbpmCards"></div>
+</div></div>
+
+<div class="trend-popup" id="pvTrendPopup">
+<div class="trend-popup-hdr" id="pvTrendPopupHdr">
+<h4>PV Trend <span id="trendPopupPVLabel" style="color:var(--t2);font-weight:400;margin-left:6px"></span></h4>
+<div style="display:flex;gap:6px;align-items:center">
+<span style="font-size:9px;color:var(--ac);font-family:var(--mn)" id="trendPopupCurVal">--</span>
+<button class="xbpm-popup-close" onclick="toggleTrendPopup()">&#x2715;</button>
+</div>
+</div>
+<div class="trend-popup-body">
+<div style="display:flex;gap:4px;margin-bottom:6px;align-items:center;flex-shrink:0">
+<select id="trendPopupPvSelect" style="flex:1;font-size:9px;padding:3px" onchange="setTrendPVPopup(this.value)"></select>
+</div>
+<div class="trend-chart-wrap"><div id="trendPopupCanvas" style="width:100%;height:100%"></div></div>
+</div>
+</div>
+
+<!-- === DDD Domain Scripts (47 files, dependency-ordered) === -->
+<!-- 0. vendor: third-party libraries -->
+<script src="vendor/uplot-1.6.31.min.js"></script>
+<!-- 1. shared: constants, state (no dependencies) -->
+<script src="js/shared/01_constants.js"></script>
+<script src="js/shared/02_chart_stub.js"></script>
+<script src="js/shared/03_i18n.js"></script>
+<!-- 2. optics: physics functions (depends on shared) -->
+<script src="js/optics/00_optconst_tables.js"></script>
+<script src="js/optics/01_undulator.js"></script>
+<script src="js/optics/02_crystal.js"></script>
+<script src="js/optics/02b_crystal_psi_tables.js"></script>
+<script src="js/optics/03_reflectivity.js"></script>
+<script src="js/optics/04_source.js"></script>
+<!-- 3. control: motors, EPICS (depends on shared) -->
+<script src="js/control/01_motors.js"></script>
+<script src="js/control/02_epics.js"></script>
+<script src="js/control/03_energy_sync.js"></script>
+<script src="js/control/04_compare.js"></script>
+<!-- 4. analysis: fitting, masks (depends on shared+optics) -->
+<script src="js/analysis/01_mask_calc.js"></script>
+<script src="js/analysis/02_transmission.js"></script>
+<!-- 5. raytrace: MC engine (depends on optics+control) -->
+<script src="js/raytrace/01_mc_engine.js"></script>
+<script src="js/raytrace/02_propagation.js"></script>
+<script src="js/raytrace/03_beam_profile.js"></script>
+<script src="js/raytrace/04_propagation_ui.js"></script>
+<!-- 6. optics: beam optics (depends on raytrace for beamAt/focalSpot) -->
+<script src="js/optics/05_beam_optics.js"></script>
+<!-- 7. alignment: signals, strategies, runners (depends on raytrace+control) -->
+<script src="js/alignment/01_signals.js"></script>
+<script src="js/alignment/02_strategies.js"></script>
+<script src="js/alignment/03_runners.js"></script>
+<script src="js/alignment/04_align_ui.js"></script>
+<script src="js/alignment/05_align_analysis.js"></script>
+<!-- 8. ui: DOM rendering (depends on all above) -->
+<script src="js/ui/01_popup_util.js"></script>
+<script src="js/ui/02_layout_svg.js"></script>
+<script src="js/ui/03_panels.js"></script>
+<script src="js/ui/04_dynamic_tabs.js"></script>
+<script src="js/ui/05_modal.js"></script>
+<script src="js/ui/07_meas_chart.js"></script>
+<script src="js/ui/08_theme_layout.js"></script>
+<script src="js/ui/09_panel_resize.js"></script>
+<script src="js/ui/10_motor_jog.js"></script>
+<script src="js/ui/11_beam_monitor.js"></script>
+<!-- 9. control: EPICS UI (depends on ui) -->
+<script src="js/control/05_epics_ui.js"></script>
+<!-- 10. detector: simulation (depends on raytrace+ui) -->
+<script src="js/detector/01_eiger.js"></script>
+<script src="js/detector/02_sdd.js"></script>
+<!-- 11. measurement: scan control (depends on control+ui) -->
+<script src="js/measurement/01_scan_control.js"></script>
+<script src="js/measurement/03_init.js"></script>
+<!-- 11b. experiment: virtual experiment simulators (depends on shared+measurement) -->
+<script src="js/experiment/01_xray_data.js"></script>
+<!-- Removed: 02_xafs_sim, 03_xrd_sim, 04_xrd2d_sim (legacy JS simulators deleted, server engine only) -->
+<script src="js/experiment/05_ptycho_sim.js"></script>
+<script src="js/experiment/06_experiment_ui.js"></script>
+<script src="js/experiment/07_experiment_run.js"></script>
+<script src="js/experiment/08_phantoms.js"></script>
+<!-- 12. bluesky: queue server (depends on control+ui+detector) -->
+<script src="js/bluesky/01_queue.js"></script>
+<script src="js/bluesky/03_bluesky_ui.js"></script>
+<script src="js/bluesky/06_live_scan.js"></script>
+<script src="js/bluesky/07_server_history.js"></script>
+<script src="js/bluesky/08_scan_results.js"></script>
+<!-- 13. tutorial: guided workflows (depends on detector+bluesky) -->
+<script src="js/tutorial/01_tutorial.js"></script>
+<script src="js/tutorial/02_experiment_ui.js"></script>
+<!-- 14. independent modules -->
+<script src="js/nlp/01_nlp_chat.js"></script>
+<script src="js/nlp/02_nlp_nano_bridge.js"></script>
+<script src="js/nlp/02_optimizer.js"></script>
+<script src="js/tomo/01_tomography.js"></script>
+<!-- 15. nano scanner panel -->
+<script src="js/ui/13_scanner_panel.js"></script>
+</body></html>

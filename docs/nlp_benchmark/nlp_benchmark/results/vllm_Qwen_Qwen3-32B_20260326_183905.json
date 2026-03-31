@@ -1,0 +1,422 @@
+{
+  "engine": "vllm",
+  "model": "Qwen/Qwen3-32B",
+  "timestamp": "2026-03-26T18:39:05.595462",
+  "total": 13,
+  "pass": 9,
+  "fail": 4,
+  "pass_rate": 69.2,
+  "total_time_s": 190.0,
+  "latency": {
+    "avg": 14.618,
+    "min": 4.498,
+    "max": 37.296,
+    "p95": 37.296
+  },
+  "per_category": {
+    "scan": {
+      "pass": 7,
+      "fail": 2,
+      "total": 9,
+      "avg_time": 15.882
+    },
+    "alignment": {
+      "pass": 2,
+      "fail": 2,
+      "total": 4,
+      "avg_time": 11.773
+    }
+  },
+  "details": [
+    {
+      "id": "scan_01",
+      "cat": "scan",
+      "input": "시료 프리셋 1번 pellet으로 준비했어. 구리 K-edge XAFS 측정해줘",
+      "desc": "Cu XAFS (preset 1 pellet — sample prep confirmed)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 37.3,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.979
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS를 실행합니다. 현재 에너지(10 keV)에서 8.979 keV로 변화(1.02 keV)가 2 keV 이하이므로 정렬은 생략합니다. Pellet 마운트(프리셋 1)의 경우 투과+형광 모드로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_02",
+      "cat": "scan",
+      "input": "시료 프리셋 2번 thin film이야. 철 XANES 측정해줘",
+      "desc": "Fe XANES (preset 2 thin film — sample prep confirmed)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.83,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              7.112
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XANES를 실행합니다. 현재 에너지(10 keV)에서 7.112 keV로 변화(2.888 keV)가 2 keV 이상이므로 정렬을 먼저 수행합니다. Thin film (프리셋 2)은 반사 형광 모드로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_03",
+      "cat": "scan",
+      "input": "시료 준비 완료. 10x10 범위에 41포인트로 철 XRF 2D 맵 측정해줘",
+      "desc": "Fe XRF 2D map (sample prep confirmed)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.04,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_04",
+      "cat": "scan",
+      "input": "시료 장착 완료. 시료를 (0,0)에서 (10,5)까지 라인스캔해줘",
+      "desc": "Line scan (0,0)-(10,5) (sample ready)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.86,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickLineScan",
+            "args": [
+              0,
+              0,
+              10,
+              5,
+              51
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "시료 (0,0)→(10,5) µm 대각선 라인스캔 (51포인트)을 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_05",
+      "cat": "scan",
+      "input": "M1 피치를 1~4 mrad에서 고속스캔해줘",
+      "desc": "M1 pitch fly scan 1-4 mrad (alignment — no sample needed)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickFlyScan' not found in sequence. Got: []",
+        "Args missing expected value 'm1' in all actions: []",
+        "Args missing expected value 'pitch' in all actions: []",
+        "Args missing expected value '1' in all actions: []",
+        "Args missing expected value '4' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 7.75,
+      "response": {
+        "actions": [],
+        "explanation": "M1 피치를 1~4 mrad 범위에서 101 포인트로 고속 스캔합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_06",
+      "cat": "scan",
+      "input": "프리셋 4번 capillary 시료야. 철 K-edge 주변 적응형 에너지 스캔해줘",
+      "desc": "Fe adaptive scan (preset 4 capillary)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.43,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              7.112
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickAdaptiveScan",
+            "args": [
+              6.9,
+              7.5,
+              0.1,
+              5.0
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV)로 에너지를 설정하고 전체 빔 정렬을 수행합니다. 현재 에너지(10 keV)에서 7.112 keV로 변화(2.888 keV 차이)가 2 keV 이상이므로 정렬을 먼저 수행합니다. 적응형 에너지 스캔을 시작합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_07",
+      "cat": "scan",
+      "input": "DCM 세타 현위치 기준 +/-0.5도 정렬 스캔해줘",
+      "desc": "DCM theta alignment scan (no sample needed)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRelAlign' not found in sequence. Got: []",
+        "Args missing expected value 'dcm' in all actions: []",
+        "Args missing expected value 'theta' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 12.51,
+      "response": {
+        "actions": [],
+        "explanation": "DCM 세타를 현위치 기준 ±0.5도 범위(총 1.0도)에서 21점 정렬 스캔합니다. 정렬 대상은 DCM 모노크로메이터의 theta 축입니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_08",
+      "cat": "scan",
+      "input": "시료 준비됐어. 현위치에서 페르마 나선 스캔해줘",
+      "desc": "Fermat spiral (sample ready)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.03,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickFermat",
+            "args": [
+              10,
+              10,
+              0.5
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "현재 시료 위치에서 10×10 µm 페르마 나선 스캔을 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_09",
+      "cat": "scan",
+      "input": "시료 프리셋 5번 bulk 시료. 현위치 기준 5x5 래스터 스캔해줘",
+      "desc": "Relative raster 5x5 (preset 5 bulk)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.19,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickRelRaster",
+            "args": [
+              5,
+              5,
+              21,
+              21
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "시료 프리셋 5번(bulk) 기준, 현위치 기준 5×5 µm, 21×21 포인트 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있습니다. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "align_01",
+      "cat": "alignment",
+      "input": "시료 프리셋 1번 pellet 준비 완료. Mo K-edge XAFS 측정해줘",
+      "desc": "Mo K-edge: dE=10 keV > 2 keV => auto alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.55,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              20
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Mo",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mo K-edge (20.0 keV) XAFS를 실행합니다. 현재 에너지(10 keV)에서 20 keV로 변화(10 keV 차이)가 2 keV 이상이므로 정렬을 먼저 수행합니다. 프리셋 1번 pellet 마운트에 맞는 투과+형광 모드로 설정되어 있습니다. 노출 시간: 기본값 적용.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "align_02",
+      "cat": "alignment",
+      "input": "시료 준비 완료. 철 XRF 2D 맵 측정해줘",
+      "desc": "Fe XRF: dE=1.5 keV < 2 keV => NO alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.81,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "align_03",
+      "cat": "alignment",
+      "input": "전체 빔 정렬 시작",
+      "desc": "Explicit full alignment request",
+      "passed": false,
+      "errors": [
+        "Expected fn 'runFullAlignment' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 4.5,
+      "response": {
+        "actions": [],
+        "explanation": "전체 빔라인 정렬(7단계)을 시작합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "align_04",
+      "cat": "alignment",
+      "input": "M1 피치 자동 정렬해줘",
+      "desc": "M1 pitch auto-tune (iterative centroid)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickAutoTune' not found in sequence. Got: ['runMirrorAlignUI']",
+        "Args missing expected value 'pitch' in all actions: [['m1']]"
+      ],
+      "elapsed_s": 11.24,
+      "response": {
+        "actions": [
+          {
+            "fn": "runMirrorAlignUI",
+            "args": [
+              "m1"
+            ]
+          }
+        ],
+        "explanation": "M1 미러의 다단계 자동 정렬을 시작합니다. 현재 에너지는 10 keV, SSA 수평/수직 갭은 50 um입니다. 정렬 과정에서 빔 위치와 피치 각도를 최적화합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    }
+  ]
+}

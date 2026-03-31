@@ -1,0 +1,2190 @@
+{
+  "engine": "claude",
+  "model": "claude-sonnet-4-5-20250929",
+  "timestamp": "2026-02-28T01:33:52.862379",
+  "total": 154,
+  "pass": 0,
+  "fail": 154,
+  "pass_rate": 0.0,
+  "total_time_s": 43.7,
+  "latency": {
+    "avg": 0.284,
+    "min": 0.223,
+    "max": 2.186,
+    "p95": 0.393
+  },
+  "per_category": {
+    "motor": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.255
+    },
+    "scan": {
+      "pass": 0,
+      "fail": 9,
+      "total": 9,
+      "avg_time": 0.281
+    },
+    "alignment": {
+      "pass": 0,
+      "fail": 4,
+      "total": 4,
+      "avg_time": 0.295
+    },
+    "multi": {
+      "pass": 0,
+      "fail": 1,
+      "total": 1,
+      "avg_time": 0.238
+    },
+    "optimize": {
+      "pass": 0,
+      "fail": 7,
+      "total": 7,
+      "avg_time": 0.246
+    },
+    "attenmask": {
+      "pass": 0,
+      "fail": 4,
+      "total": 4,
+      "avg_time": 0.24
+    },
+    "info": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.245
+    },
+    "param": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.241
+    },
+    "scientist": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.246
+    },
+    "battery": {
+      "pass": 0,
+      "fail": 5,
+      "total": 5,
+      "avg_time": 0.248
+    },
+    "catalyst": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.247
+    },
+    "semiconductor": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.235
+    },
+    "geology": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.318
+    },
+    "environment": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.259
+    },
+    "biology": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.236
+    },
+    "materials": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.248
+    },
+    "edgecase": {
+      "pass": 0,
+      "fail": 7,
+      "total": 7,
+      "avg_time": 0.291
+    },
+    "operations": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.283
+    },
+    "workflow": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.26
+    },
+    "heldout": {
+      "pass": 0,
+      "fail": 15,
+      "total": 15,
+      "avg_time": 0.274
+    },
+    "experiment_plan": {
+      "pass": 0,
+      "fail": 10,
+      "total": 10,
+      "avg_time": 0.269
+    },
+    "real_user": {
+      "pass": 0,
+      "fail": 12,
+      "total": 12,
+      "avg_time": 0.283
+    },
+    "complex_multi": {
+      "pass": 0,
+      "fail": 9,
+      "total": 9,
+      "avg_time": 0.267
+    },
+    "robustness": {
+      "pass": 0,
+      "fail": 12,
+      "total": 12,
+      "avg_time": 0.277
+    },
+    "rejection": {
+      "pass": 0,
+      "fail": 10,
+      "total": 10,
+      "avg_time": 0.277
+    },
+    "korean_variant": {
+      "pass": 0,
+      "fail": 9,
+      "total": 9,
+      "avg_time": 0.528
+    },
+    "signal_est": {
+      "pass": 0,
+      "fail": 5,
+      "total": 5,
+      "avg_time": 0.258
+    },
+    "bl_knowledge": {
+      "pass": 0,
+      "fail": 5,
+      "total": 5,
+      "avg_time": 0.271
+    }
+  },
+  "details": [
+    {
+      "id": "motor_01",
+      "desc": "Energy set to 12 keV",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqUYReu9NmoHdteeWa'}"
+      ],
+      "elapsed_s": 0.3,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqUYReu9NmoHdteeWa'}"
+      }
+    },
+    {
+      "id": "motor_02",
+      "desc": "M1 pitch move to 2.5 mrad",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqWsKw8BR2b6KgVNGa'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqWsKw8BR2b6KgVNGa'}"
+      }
+    },
+    {
+      "id": "motor_03",
+      "desc": "Sample X motor move",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqZED6Ui6Eh1oLKtFe'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqZED6Ui6Eh1oLKtFe'}"
+      }
+    },
+    {
+      "id": "scan_01",
+      "desc": "Cu K-edge XAFS with queueStart",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqbZrE7AxHMAgBbVGz'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqbZrE7AxHMAgBbVGz'}"
+      }
+    },
+    {
+      "id": "scan_02",
+      "desc": "Fe K-edge XANES with queueStart",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqe4fu2f2E2H4bNdov'}"
+      ],
+      "elapsed_s": 0.38,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqe4fu2f2E2H4bNdov'}"
+      }
+    },
+    {
+      "id": "scan_03",
+      "desc": "Fe XRF 2D map with params (energy+raster+queue)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqgtaRGMzo6cZkX1zP'}"
+      ],
+      "elapsed_s": 0.3,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqgtaRGMzo6cZkX1zP'}"
+      }
+    },
+    {
+      "id": "scan_04",
+      "desc": "Line scan (0,0)-(10,5)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqjUrKprcuLF1wojJ9'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqjUrKprcuLF1wojJ9'}"
+      }
+    },
+    {
+      "id": "scan_05",
+      "desc": "M1 pitch fly scan 1-4 mrad",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqmrEXFTKb6Y2PHPzv'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqmrEXFTKb6Y2PHPzv'}"
+      }
+    },
+    {
+      "id": "scan_06",
+      "desc": "Fe K-edge adaptive energy scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqpGLhTYGm5TAVLqqY'}"
+      ],
+      "elapsed_s": 0.28,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqpGLhTYGm5TAVLqqY'}"
+      }
+    },
+    {
+      "id": "scan_07",
+      "desc": "DCM theta relative alignment scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqrjfhEUQKYWo9C2pM'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqrjfhEUQKYWo9C2pM'}"
+      }
+    },
+    {
+      "id": "scan_08",
+      "desc": "Fermat spiral scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqu7J1FWU4JP3Xzon1'}"
+      ],
+      "elapsed_s": 0.29,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqu7J1FWU4JP3Xzon1'}"
+      }
+    },
+    {
+      "id": "scan_09",
+      "desc": "Relative raster 5x5 scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqwhKLh4d8eV5x7h4m'}"
+      ],
+      "elapsed_s": 0.3,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqwhKLh4d8eV5x7h4m'}"
+      }
+    },
+    {
+      "id": "align_01",
+      "desc": "Mo K-edge: dE=10 keV > 2 keV => auto alignment",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqzJpuKkJizmFwzYn1'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtqzJpuKkJizmFwzYn1'}"
+      }
+    },
+    {
+      "id": "align_02",
+      "desc": "Fe XRF: dE=1.5 keV < 2 keV => NO alignment",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtr2fTk6AzbddFEK4Cx'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtr2fTk6AzbddFEK4Cx'}"
+      }
+    },
+    {
+      "id": "align_03",
+      "desc": "Explicit full alignment request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtr4ysDmC4DhUtw2p9U'}"
+      ],
+      "elapsed_s": 0.22,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtr4ysDmC4DhUtw2p9U'}"
+      }
+    },
+    {
+      "id": "align_04",
+      "desc": "M1 pitch auto-tune (iterative centroid)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtr7LWBZty2wJFJRi2U'}"
+      ],
+      "elapsed_s": 0.47,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtr7LWBZty2wJFJRi2U'}"
+      }
+    },
+    {
+      "id": "multi_01",
+      "desc": "3-step: energy + align + beam profile",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrAaiWtTLtdzeRGoau'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrAaiWtTLtdzeRGoau'}"
+      }
+    },
+    {
+      "id": "opt_01",
+      "desc": "Cu XRF optimize (balanced)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrCvMhHuNfTSWYtMDq'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrCvMhHuNfTSWYtMDq'}"
+      }
+    },
+    {
+      "id": "opt_02",
+      "desc": "Fe XRF optimize (resolution priority)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrFFkYPMoLp7Wwvugt'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrFFkYPMoLp7Wwvugt'}"
+      }
+    },
+    {
+      "id": "opt_03",
+      "desc": "Ti XANES optimize (SrTiO3 powder)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrHcdaax7Sw9fGAYmd'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrHcdaax7Sw9fGAYmd'}"
+      }
+    },
+    {
+      "id": "opt_04",
+      "desc": "Ptychography optimize (coherence priority)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrKx2Yt8AEPrQ3sfq8'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrKx2Yt8AEPrQ3sfq8'}"
+      }
+    },
+    {
+      "id": "opt_05",
+      "desc": "Signal estimate (no confirmation)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrNJfWnkA3wLfSCopi'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrNJfWnkA3wLfSCopi'}"
+      }
+    },
+    {
+      "id": "opt_06",
+      "desc": "W L3-edge XRF optimize (WC powder)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrQf3uHV7sP7Bj4QfF'}"
+      ],
+      "elapsed_s": 0.28,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrQf3uHV7sP7Bj4QfF'}"
+      }
+    },
+    {
+      "id": "opt_07",
+      "desc": "Optimization without element => ask for info",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrT8d73xJbqyUyJhai'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrT8d73xJbqyUyJhai'}"
+      }
+    },
+    {
+      "id": "atten_01",
+      "desc": "Attenuator: insert Carbon 1mm",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrVQoJzUmnYJeEHPMw'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrVQoJzUmnYJeEHPMw'}"
+      }
+    },
+    {
+      "id": "atten_02",
+      "desc": "Attenuator: remove all (8 calls for 4 slots)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrXmgT8hvENBEAXgGD'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrXmgT8hvENBEAXgGD'}"
+      }
+    },
+    {
+      "id": "mask_01",
+      "desc": "Movable mask 1x1 mm",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtraCH6kajiJYGvQiPT'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtraCH6kajiJYGvQiPT'}"
+      }
+    },
+    {
+      "id": "mask_02",
+      "desc": "Fixed mask h=2mm, v=3mm",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrcZAC2gBTEFH1jmnL'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrcZAC2gBTEFH1jmnL'}"
+      }
+    },
+    {
+      "id": "info_01",
+      "desc": "Info query: XRD explanation",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrer5JqT8LsUQokRj8'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrer5JqT8LsUQokRj8'}"
+      }
+    },
+    {
+      "id": "info_02",
+      "desc": "Info query: list available commands",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrhDwuEafV6DgTsPB1'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrhDwuEafV6DgTsPB1'}"
+      }
+    },
+    {
+      "id": "info_03",
+      "desc": "Show beam profile (no confirmation)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrjh2pN53kvFNkC3us'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrjh2pN53kvFNkC3us'}"
+      }
+    },
+    {
+      "id": "param_01",
+      "desc": "XRD map without params => ask or use defaults",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrn2gGqCi58dp2FPNE'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrn2gGqCi58dp2FPNE'}"
+      }
+    },
+    {
+      "id": "param_02",
+      "desc": "Fe XRF map without params => ask or use defaults",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrpQ49qNkHyMZLcG4V'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrpQ49qNkHyMZLcG4V'}"
+      }
+    },
+    {
+      "id": "sample_01",
+      "desc": "NMC 622 battery sample -- multi-element optimization",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrrkCBRnVeF5MaDC3C'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrrkCBRnVeF5MaDC3C'}"
+      }
+    },
+    {
+      "id": "sample_02",
+      "desc": "Au L3-edge XRF signal check (50 ppm)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtruEWUTfEysfVyVyeg'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtruEWUTfEysfVyVyeg'}"
+      }
+    },
+    {
+      "id": "batt_01",
+      "desc": "NMC cathode XRF -- multi-element, params given",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrwXBDFwV3ezZgxDXG'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtrwXBDFwV3ezZgxDXG'}"
+      }
+    },
+    {
+      "id": "batt_02",
+      "desc": "LFP cathode Fe K-edge XAFS",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtryrpeMCdkLPGmwNNp'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtryrpeMCdkLPGmwNNp'}"
+      }
+    },
+    {
+      "id": "batt_03",
+      "desc": "S K-edge (2.47 keV) out of range => explain",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYts2EwT4SSVzZcTxrW3'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYts2EwT4SSVzZcTxrW3'}"
+      }
+    },
+    {
+      "id": "batt_04",
+      "desc": "Cu contamination 10ppm -- signal estimation",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYts4c5QHbpt5wWjrhrr'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYts4c5QHbpt5wWjrhrr'}"
+      }
+    },
+    {
+      "id": "batt_05",
+      "desc": "Cathode XRD phase map 15keV (dE=5>2 => align)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYts71vsrPVCGV6BpM3E'}"
+      ],
+      "elapsed_s": 0.27,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYts71vsrPVCGV6BpM3E'}"
+      }
+    },
+    {
+      "id": "cata_01",
+      "desc": "Pt L3-edge XANES (auto L3 for heavy element)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYts9WW89JVcro4vgda5'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYts9WW89JVcro4vgda5'}"
+      }
+    },
+    {
+      "id": "cata_02",
+      "desc": "Ce L3-edge XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsBsdbwbF39ZKbhaHH'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsBsdbwbF39ZKbhaHH'}"
+      }
+    },
+    {
+      "id": "cata_03",
+      "desc": "Ni K-edge adaptive scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsE9JR11MCDHQK7d1y'}"
+      ],
+      "elapsed_s": 0.27,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsE9JR11MCDHQK7d1y'}"
+      }
+    },
+    {
+      "id": "semi_01",
+      "desc": "Cu XRF resolution priority (semiconductor)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsGXRqbL6hwAbjeUDn'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsGXRqbL6hwAbjeUDn'}"
+      }
+    },
+    {
+      "id": "semi_02",
+      "desc": "Thin film strain XRD mapping 15keV",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsJqpwYuDe6GsvCZDU'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsJqpwYuDe6GsvCZDU'}"
+      }
+    },
+    {
+      "id": "geo_01",
+      "desc": "As K-edge XANES speciation (soil)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsM9zCU3dR2rB8fMe5'}"
+      ],
+      "elapsed_s": 0.31,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsM9zCU3dR2rB8fMe5'}"
+      }
+    },
+    {
+      "id": "geo_02",
+      "desc": "Sr XRF linescan -- dE>2keV => align needed",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsPqTxqSK2F8Gmfufx'}"
+      ],
+      "elapsed_s": 0.33,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsPqTxqSK2F8Gmfufx'}"
+      }
+    },
+    {
+      "id": "geo_03",
+      "desc": "Cr K-edge XANES valence (mine waste)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsSZB1UR4Eg8JXW5qF'}"
+      ],
+      "elapsed_s": 0.31,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsSZB1UR4Eg8JXW5qF'}"
+      }
+    },
+    {
+      "id": "env_01",
+      "desc": "Pb L3 XRF+XANES multi-step (fly ash)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsVDAiW3yoX9QcCWpH'}"
+      ],
+      "elapsed_s": 0.27,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsVDAiW3yoX9QcCWpH'}"
+      }
+    },
+    {
+      "id": "env_02",
+      "desc": "Zn K-edge XANES (biosolids)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsXfG6qoyDmJKvc27U'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsXfG6qoyDmJKvc27U'}"
+      }
+    },
+    {
+      "id": "bio_01",
+      "desc": "Cell XRF imaging Fe+Zn (biology)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsa2PXuKYcMno8srQ4'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsa2PXuKYcMno8srQ4'}"
+      }
+    },
+    {
+      "id": "bio_02",
+      "desc": "Cu Fermat spiral scan (neuron)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtscLYcGaGVQzPcFjNv'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtscLYcGaGVQzPcFjNv'}"
+      }
+    },
+    {
+      "id": "mat_01",
+      "desc": "Pb L3 XRF perovskite solar cell",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtseiuxFr21xrbHhpK3'}"
+      ],
+      "elapsed_s": 0.27,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtseiuxFr21xrbHhpK3'}"
+      }
+    },
+    {
+      "id": "mat_02",
+      "desc": "HEA 5-element XRF mapping",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtshAW8HrUWBVpYwWNV'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtshAW8HrUWBVpYwWNV'}"
+      }
+    },
+    {
+      "id": "mat_03",
+      "desc": "Cu2O vs CuO phase ID by XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsjUfEc1S8UYG99twM'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsjUfEc1S8UYG99twM'}"
+      }
+    },
+    {
+      "id": "edge_01",
+      "desc": "P K-edge (2.1 keV) out of range => explain",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsmq3krCPC1M5vBHMf'}"
+      ],
+      "elapsed_s": 0.3,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsmq3krCPC1M5vBHMf'}"
+      }
+    },
+    {
+      "id": "edge_02",
+      "desc": "W K-edge (69.5 keV) out of range => suggest L3",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtspT4GFrswGubG9zoE'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtspT4GFrswGubG9zoE'}"
+      }
+    },
+    {
+      "id": "edge_03",
+      "desc": "Au XRF -- must auto-select L3 edge (11.9 keV)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsrnwc4E74FqmuX3mt'}"
+      ],
+      "elapsed_s": 0.28,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsrnwc4E74FqmuX3mt'}"
+      }
+    },
+    {
+      "id": "edge_04",
+      "desc": "Mixed Korean/English colloquial request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsuG2kQnPCf1G2YBSH'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsuG2kQnPCf1G2YBSH'}"
+      }
+    },
+    {
+      "id": "edge_05",
+      "desc": "Info: XANES vs EXAFS difference",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtswgspPkqMqbC5966P'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtswgspPkqMqbC5966P'}"
+      }
+    },
+    {
+      "id": "edge_06",
+      "desc": "Info: Au L3 edge energy query",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsz22ATq3E9AnChjQV'}"
+      ],
+      "elapsed_s": 0.36,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtsz22ATq3E9AnChjQV'}"
+      }
+    },
+    {
+      "id": "edge_07",
+      "desc": "Pt L3 XANES -- should warn about mirror coating",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtt2qCFR98BCGGxUknp'}"
+      ],
+      "elapsed_s": 0.36,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtt2qCFR98BCGGxUknp'}"
+      }
+    },
+    {
+      "id": "ops_01",
+      "desc": "Crystal change to Si(311)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtt5gqX4aU4JtPSfvEd'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtt5gqX4aU4JtPSfvEd'}"
+      }
+    },
+    {
+      "id": "ops_02",
+      "desc": "SSA hgap motor set to 30",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtt7zVrZCocoaLFCheq'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtt7zVrZCocoaLFCheq'}"
+      }
+    },
+    {
+      "id": "ops_03",
+      "desc": "Emergency stop",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttATahkWx54KxGJgLS'}"
+      ],
+      "elapsed_s": 0.35,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttATahkWx54KxGJgLS'}"
+      }
+    },
+    {
+      "id": "workflow_01",
+      "desc": "Sequential Ti+Sr XANES (large dE => align)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttDGk8ctYApnbNg4Sk'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttDGk8ctYApnbNg4Sk'}"
+      }
+    },
+    {
+      "id": "workflow_02",
+      "desc": "Full workflow: optimize + scan request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttFiLSRLBKmAgyZMXC'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttFiLSRLBKmAgyZMXC'}"
+      }
+    },
+    {
+      "id": "held_01",
+      "desc": "Zn XANES with unusual Korean phrasing",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttJ9gUo4KxATUaPSmz'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttJ9gUo4KxATUaPSmz'}"
+      }
+    },
+    {
+      "id": "held_02",
+      "desc": "Energy set with polite question form",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttLY3z1RDwZQd4vaDi'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttLY3z1RDwZQd4vaDi'}"
+      }
+    },
+    {
+      "id": "held_03",
+      "desc": "Motor move with English-Korean mixed phrasing",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttNswh3x5ungQ5ercW'}"
+      ],
+      "elapsed_s": 0.28,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttNswh3x5ungQ5ercW'}"
+      }
+    },
+    {
+      "id": "held_04",
+      "desc": "Co XANES/XAFS with indirect request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttRRzDKnb4mUEa5M6o'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttRRzDKnb4mUEa5M6o'}"
+      }
+    },
+    {
+      "id": "held_05",
+      "desc": "Se XRF map with English element name",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttTp76TozLCJDvES9b'}"
+      ],
+      "elapsed_s": 0.32,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttTp76TozLCJDvES9b'}"
+      }
+    },
+    {
+      "id": "held_06",
+      "desc": "Attenuator with Korean context description",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttWSrn1gWSywvFnNE1'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttWSrn1gWSywvFnNE1'}"
+      }
+    },
+    {
+      "id": "held_07",
+      "desc": "Info query: Bragg's law",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttYpVDsSVdiJ5KKtgY'}"
+      ],
+      "elapsed_s": 0.29,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttYpVDsSVdiJ5KKtgY'}"
+      }
+    },
+    {
+      "id": "held_08",
+      "desc": "Out-of-range element query (Ca K=4.038 keV)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttbRzkAyx46CLoHRdD'}"
+      ],
+      "elapsed_s": 0.28,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttbRzkAyx46CLoHRdD'}"
+      }
+    },
+    {
+      "id": "held_09",
+      "desc": "Combined info + scan request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttdx45VinD1uvGuN5H'}"
+      ],
+      "elapsed_s": 0.29,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttdx45VinD1uvGuN5H'}"
+      }
+    },
+    {
+      "id": "held_10",
+      "desc": "Multi-axis motor move with xy coordinates",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttgRddUa6dVrffG5Re'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttgRddUa6dVrffG5Re'}"
+      }
+    },
+    {
+      "id": "held_11",
+      "desc": "Advisory question about Mn oxidation analysis",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttik3C2TMELMGWiZRQ'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttik3C2TMELMGWiZRQ'}"
+      }
+    },
+    {
+      "id": "held_12",
+      "desc": "SSA fully open with informal phrasing",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttm9Q9j1kPYqramqmf'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttm9Q9j1kPYqramqmf'}"
+      }
+    },
+    {
+      "id": "held_13",
+      "desc": "XRF raster with 'quick' context",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttp6zbv5RbCWWN8g8U'}"
+      ],
+      "elapsed_s": 0.37,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttp6zbv5RbCWWN8g8U'}"
+      }
+    },
+    {
+      "id": "held_14",
+      "desc": "Sequential Cu+Zn XANES from current energy",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttrV7uHtpa3LnisQsM'}"
+      ],
+      "elapsed_s": 0.31,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttrV7uHtpa3LnisQsM'}"
+      }
+    },
+    {
+      "id": "held_15",
+      "desc": "Advisory question about Ce L3 energy",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttu87hNLXPrwZSt9kW'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttu87hNLXPrwZSt9kW'}"
+      }
+    },
+    {
+      "id": "explan_01",
+      "desc": "NMC622 cathode with composition and beamtime",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttwVkQ3PtBcRjHLyc8'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttwVkQ3PtBcRjHLyc8'}"
+      }
+    },
+    {
+      "id": "explan_02",
+      "desc": "Multi-element sequential (Ti + Sr)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttyqPRt21996nvgJ38'}"
+      ],
+      "elapsed_s": 0.28,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYttyqPRt21996nvgJ38'}"
+      }
+    },
+    {
+      "id": "explan_03",
+      "desc": "Pt 50ppm signal estimation inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtu2HUTaH1qX4oRFCbd'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtu2HUTaH1qX4oRFCbd'}"
+      }
+    },
+    {
+      "id": "explan_04",
+      "desc": "Timing inquiry for XRF + XRD mapping",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtu4csa1KvJ25YE4Bfe'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtu4csa1KvJ25YE4Bfe'}"
+      }
+    },
+    {
+      "id": "explan_05",
+      "desc": "Technique compatibility question (ptycho + XRF)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtu6xGD1YvZWYCrZrdg'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtu6xGD1YvZWYCrZrdg'}"
+      }
+    },
+    {
+      "id": "explan_06",
+      "desc": "Technique compatibility question (XANES + XRF map)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtu9MsnSShaE2Kuc9mp'}"
+      ],
+      "elapsed_s": 0.27,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtu9MsnSShaE2Kuc9mp'}"
+      }
+    },
+    {
+      "id": "explan_07",
+      "desc": "Time budget question (XAFS repeat + XRF map)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuBpDVX7U5kZzaBasZ'}"
+      ],
+      "elapsed_s": 0.34,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuBpDVX7U5kZzaBasZ'}"
+      }
+    },
+    {
+      "id": "explan_08",
+      "desc": "Setup change inquiry (detector swap time)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuEb9T2m4HPKx7hbFN'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuEb9T2m4HPKx7hbFN'}"
+      }
+    },
+    {
+      "id": "realuser_01",
+      "desc": "Vague request -- should ask for specifics",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuGuoRFn1NhGfxesYE'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuGuoRFn1NhGfxesYE'}"
+      }
+    },
+    {
+      "id": "realuser_02",
+      "desc": "Colloquial XRF request with range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuKFgwX8bJ2Ys35hiX'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuKFgwX8bJ2Ys35hiX'}"
+      }
+    },
+    {
+      "id": "realuser_03",
+      "desc": "Signal check at current energy",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuMg3Xmq7Fz8Dwi7jx'}"
+      ],
+      "elapsed_s": 0.58,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuMg3Xmq7Fz8Dwi7jx'}"
+      }
+    },
+    {
+      "id": "realuser_04",
+      "desc": "Increase flux (SSA open wider or remove attenuator)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuRVVAF8XjrZPtRs8W'}"
+      ],
+      "elapsed_s": 0.31,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuRVVAF8XjrZPtRs8W'}"
+      }
+    },
+    {
+      "id": "realuser_05",
+      "desc": "Minimize beam size",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuU9yNJ8XHXDtmdFpT'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuU9yNJ8XHXDtmdFpT'}"
+      }
+    },
+    {
+      "id": "realuser_06",
+      "desc": "XRD single shot request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuWYLpPmJzk4vHKA3Q'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuWYLpPmJzk4vHKA3Q'}"
+      }
+    },
+    {
+      "id": "realuser_07",
+      "desc": "Unsupported request -- show previous results",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuYpmF7aTrk2gJff6W'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuYpmF7aTrk2gJff6W'}"
+      }
+    },
+    {
+      "id": "realuser_08",
+      "desc": "Relative motor move (left)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtubGMkRTS1tYCYunmK'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtubGMkRTS1tYCYunmK'}"
+      }
+    },
+    {
+      "id": "realuser_09",
+      "desc": "Energy inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtudbW9uQMvwZwTaoYq'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtudbW9uQMvwZwTaoYq'}"
+      }
+    },
+    {
+      "id": "realuser_10",
+      "desc": "Capability inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtufxdkstUxY4nydLQ3'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtufxdkstUxY4nydLQ3'}"
+      }
+    },
+    {
+      "id": "cmulti_01",
+      "desc": "3-step: energy + SSA + XRF raster",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuiJmiYpzaRqRKdSbf'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuiJmiYpzaRqRKdSbf'}"
+      }
+    },
+    {
+      "id": "cmulti_02",
+      "desc": "Crystal change + Se XAFS",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtukgeS73FPMLrBW5oY'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtukgeS73FPMLrBW5oY'}"
+      }
+    },
+    {
+      "id": "cmulti_03",
+      "desc": "Sequential M1 + M2 alignment",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuo4GqhFReUZYfNPG1'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuo4GqhFReUZYfNPG1'}"
+      }
+    },
+    {
+      "id": "cmulti_04",
+      "desc": "Sequential Cu XANES + Fe XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuqXr2vBAr1Cm6QnqR'}"
+      ],
+      "elapsed_s": 0.31,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuqXr2vBAr1Cm6QnqR'}"
+      }
+    },
+    {
+      "id": "cmulti_05",
+      "desc": "Multi-step workflow: XRF map then XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuszBZa45wwE3Raxb7'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuszBZa45wwE3Raxb7'}"
+      }
+    },
+    {
+      "id": "cmulti_06",
+      "desc": "Sequential Pb L3 + As K XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuvEsZ78adQvnQCHnr'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuvEsZ78adQvnQCHnr'}"
+      }
+    },
+    {
+      "id": "cmulti_07",
+      "desc": "Attenuator insert + Cr XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuxXXtXrB9JVUNod8y'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtuxXXtXrB9JVUNod8y'}"
+      }
+    },
+    {
+      "id": "cmulti_08",
+      "desc": "3-step: energy + profile + XRF map",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtv1Zbm98bFRuNSXKfb'}"
+      ],
+      "elapsed_s": 0.39,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtv1Zbm98bFRuNSXKfb'}"
+      }
+    },
+    {
+      "id": "robust_01",
+      "desc": "No space before keV",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtv41gryWt1EpoZ6ZtJ'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtv41gryWt1EpoZ6ZtJ'}"
+      }
+    },
+    {
+      "id": "robust_02",
+      "desc": "English element in Korean sentence",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtv6RYPih5vTmyMnMSc'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtv6RYPih5vTmyMnMSc'}"
+      }
+    },
+    {
+      "id": "robust_03",
+      "desc": "Minimal input (Fe xanes)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtv8pAbZraqF39o3QLj'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtv8pAbZraqF39o3QLj'}"
+      }
+    },
+    {
+      "id": "robust_04",
+      "desc": "No element specified => should ask",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvBDXVke7Udgn1BZ4A'}"
+      ],
+      "elapsed_s": 0.29,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvBDXVke7Udgn1BZ4A'}"
+      }
+    },
+    {
+      "id": "robust_05",
+      "desc": "Extra whitespace around input",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvDiLvSrrv6kT3DvPS'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvDiLvSrrv6kT3DvPS'}"
+      }
+    },
+    {
+      "id": "robust_06",
+      "desc": "Exact edge energy (Ni K=8.333) -- should warn about being AT the edge",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvG213jUn33XWoPi7q'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvG213jUn33XWoPi7q'}"
+      }
+    },
+    {
+      "id": "robust_07",
+      "desc": "User typing function name directly",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvJKujdPiBPQ7eN2vr'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvJKujdPiBPQ7eN2vr'}"
+      }
+    },
+    {
+      "id": "robust_08",
+      "desc": "Comma-separated elements mapping",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvLfZ2oiHte8h9odWM'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvLfZ2oiHte8h9odWM'}"
+      }
+    },
+    {
+      "id": "robust_09",
+      "desc": "Negative energy => should reject",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvP3fub9qJzji5cF4c'}"
+      ],
+      "elapsed_s": 0.45,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvP3fub9qJzji5cF4c'}"
+      }
+    },
+    {
+      "id": "robust_10",
+      "desc": "Energy way out of range (100 keV)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvSHPR9cSheD4mdQmK'}"
+      ],
+      "elapsed_s": 0.28,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvSHPR9cSheD4mdQmK'}"
+      }
+    },
+    {
+      "id": "reject_01",
+      "desc": "Si K-edge (1.84 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvUpBnoARx27JPZVjL'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvUpBnoARx27JPZVjL'}"
+      }
+    },
+    {
+      "id": "reject_02",
+      "desc": "O K-edge (0.54 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvXBa5HWXNjybPfUwU'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvXBa5HWXNjybPfUwU'}"
+      }
+    },
+    {
+      "id": "reject_03",
+      "desc": "Li K-edge (0.055 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvZjN3HgtQcixwkjKu'}"
+      ],
+      "elapsed_s": 0.31,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvZjN3HgtQcixwkjKu'}"
+      }
+    },
+    {
+      "id": "reject_04",
+      "desc": "C K-edge (0.28 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvcK8xMFTCEE2JuadQ'}"
+      ],
+      "elapsed_s": 0.39,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvcK8xMFTCEE2JuadQ'}"
+      }
+    },
+    {
+      "id": "reject_05",
+      "desc": "N K-edge (0.40 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvfC2Q2qiZZn7NZFBt'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvfC2Q2qiZZn7NZFBt'}"
+      }
+    },
+    {
+      "id": "reject_06",
+      "desc": "Ag K-edge (25.5 keV) at boundary -- should warn",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvhWvJyWnkKPWSKzA5'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvhWvJyWnkKPWSKzA5'}"
+      }
+    },
+    {
+      "id": "reject_07",
+      "desc": "Uranium not in standard database",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvk8vsYDeZiSExRXrq'}"
+      ],
+      "elapsed_s": 0.27,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvk8vsYDeZiSExRXrq'}"
+      }
+    },
+    {
+      "id": "reject_08",
+      "desc": "Optical imaging not available",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvnRr1zxjMSJJz9ETR'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvnRr1zxjMSJJz9ETR'}"
+      }
+    },
+    {
+      "id": "korean_01",
+      "desc": "Korean 'absorption edge' phrasing",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvpnj3e5i5mUHPghkz'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvpnj3e5i5mUHPghkz'}"
+      }
+    },
+    {
+      "id": "korean_02",
+      "desc": "Ni oxidation state check (terse)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvsUwzDFDmDk5hgQao'}"
+      ],
+      "elapsed_s": 0.43,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvsUwzDFDmDk5hgQao'}"
+      }
+    },
+    {
+      "id": "korean_03",
+      "desc": "Polite XRF imaging request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvvKrQEvYUeP3Xpqj5'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvvKrQEvYUeP3Xpqj5'}"
+      }
+    },
+    {
+      "id": "korean_04",
+      "desc": "Polite energy change with period",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvxjxvLxewBmD6onB9'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtvxjxvLxewBmD6onB9'}"
+      }
+    },
+    {
+      "id": "korean_05",
+      "desc": "Casual question form alignment",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtw13NRWsSBG8cAeRcw'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtw13NRWsSBG8cAeRcw'}"
+      }
+    },
+    {
+      "id": "korean_06",
+      "desc": "Informal SSA widen request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtw3VxTvEnbCk8BrRvi'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtw3VxTvEnbCk8BrRvi'}"
+      }
+    },
+    {
+      "id": "korean_07",
+      "desc": "Stop scan command",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtw6iSG2vSV4WyRRhKz'}"
+      ],
+      "elapsed_s": 0.46,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtw6iSG2vSV4WyRRhKz'}"
+      }
+    },
+    {
+      "id": "korean_08",
+      "desc": "Repeat last action -- context-dependent",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtw9dZ1Tq9CwNMcvJfJ'}"
+      ],
+      "elapsed_s": 0.44,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtw9dZ1Tq9CwNMcvJfJ'}"
+      }
+    },
+    {
+      "id": "sigest_01",
+      "desc": "Cu 100ppm XRF signal sufficiency",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwCKXeYaH2hXXdMwMv'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwCKXeYaH2hXXdMwMv'}"
+      }
+    },
+    {
+      "id": "sigest_02",
+      "desc": "Au 10ppm thin film signal estimate",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwEbhUtzqgNa3b4Tsv'}"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwEbhUtzqgNa3b4Tsv'}"
+      }
+    },
+    {
+      "id": "sigest_03",
+      "desc": "Fe 50% self-absorption concern",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwGxqABrGF5SJAqiXW'}"
+      ],
+      "elapsed_s": 0.22,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwGxqABrGF5SJAqiXW'}"
+      }
+    },
+    {
+      "id": "sigest_04",
+      "desc": "Mn 500ppm detection limit inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwKGyz1EXmGEPsgX4p'}"
+      ],
+      "elapsed_s": 0.36,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwKGyz1EXmGEPsgX4p'}"
+      }
+    },
+    {
+      "id": "sigest_05",
+      "desc": "Pt-Ir spectral interference question",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwN4v7fSJSAa6WMbX5'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwN4v7fSJSAa6WMbX5'}"
+      }
+    },
+    {
+      "id": "blknow_01",
+      "desc": "Beamline energy range inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwQT2sjps7c1gc1DTm'}"
+      ],
+      "elapsed_s": 0.27,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwQT2sjps7c1gc1DTm'}"
+      }
+    },
+    {
+      "id": "blknow_02",
+      "desc": "KB mirror focal distance inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwSvN759jtJAHLfKVE'}"
+      ],
+      "elapsed_s": 0.3,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwSvN759jtJAHLfKVE'}"
+      }
+    },
+    {
+      "id": "blknow_03",
+      "desc": "DCM Si(111) vs Si(311) difference",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwVb6yRfspVwfAtyqR'}"
+      ],
+      "elapsed_s": 0.3,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwVb6yRfspVwfAtyqR'}"
+      }
+    },
+    {
+      "id": "blknow_04",
+      "desc": "List available experiment types",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwY9dsZ8FiAJKQirRF'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwY9dsZ8FiAJKQirRF'}"
+      }
+    },
+    {
+      "id": "blknow_05",
+      "desc": "Minimum beam size inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwaVH59R38WCJ3cpg6'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwaVH59R38WCJ3cpg6'}"
+      }
+    },
+    {
+      "id": "explan_09",
+      "desc": "Scan time estimation for high-res XRF",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwcs9mtwcKNnvTu3eF'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwcs9mtwcKNnvTu3eF'}"
+      }
+    },
+    {
+      "id": "explan_10",
+      "desc": "XAFS single scan time inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwfHGBsucNQLijUVMS'}"
+      ],
+      "elapsed_s": 0.36,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwfHGBsucNQLijUVMS'}"
+      }
+    },
+    {
+      "id": "robust_11",
+      "desc": "Lowercase keV unit",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwi4SYYXTgZXitWwwq'}"
+      ],
+      "elapsed_s": 0.35,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwi4SYYXTgZXitWwwq'}"
+      }
+    },
+    {
+      "id": "robust_12",
+      "desc": "Minimal English energy command",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwkqsuq6MJ71pgEnBz'}"
+      ],
+      "elapsed_s": 0.25,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwkqsuq6MJ71pgEnBz'}"
+      }
+    },
+    {
+      "id": "reject_09",
+      "desc": "Mg K-edge (1.30 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwoGybsh2qdVzaFwXd'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwoGybsh2qdVzaFwXd'}"
+      }
+    },
+    {
+      "id": "reject_10",
+      "desc": "Al K-edge (1.56 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwqiZvbx5vs71RJcYy'}"
+      ],
+      "elapsed_s": 0.34,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwqiZvbx5vs71RJcYy'}"
+      }
+    },
+    {
+      "id": "realuser_11",
+      "desc": "Beam stability inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwtS2x8dJ2wWydngdk'}"
+      ],
+      "elapsed_s": 0.26,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwtS2x8dJ2wWydngdk'}"
+      }
+    },
+    {
+      "id": "realuser_12",
+      "desc": "Help request (generic)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwvsshxwcqbjvoWKN3'}"
+      ],
+      "elapsed_s": 0.29,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwvsshxwcqbjvoWKN3'}"
+      }
+    },
+    {
+      "id": "cmulti_09",
+      "desc": "3-step: 20keV + align + Mo XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwySfGNafJJVRQBYrB'}"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtwySfGNafJJVRQBYrB'}"
+      }
+    },
+    {
+      "id": "korean_09",
+      "desc": "Mn absorption edge scan (polite request)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtx8apkjDkm3hc2xvuU'}"
+      ],
+      "elapsed_s": 2.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (claude): Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CYYtx8apkjDkm3hc2xvuU'}"
+      }
+    }
+  ]
+}

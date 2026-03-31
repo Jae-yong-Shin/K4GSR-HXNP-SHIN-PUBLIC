@@ -1,0 +1,52 @@
+name: CI — Build & Test
+
+on:
+  push:
+    branches: [main, beta/ddd]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: JS bundle build + syntax check
+        run: python Scripts/build.py --bundle --html virtual_beamline_nanoprobe_V4_36.html
+
+      - name: Python syntax check (core modules)
+        run: |
+          python -m py_compile server/server.py
+          python -m py_compile server/nlp_agent.py
+          python -m py_compile server/pv_store.py
+          python -m py_compile server/ca_bridge.py
+          python -m py_compile server/simulation_server.py
+
+      - name: JS physics unit tests (142 assertions)
+        run: node tests/js/test_physics.js
+
+      - name: Python unit tests (pytest — 149 tests)
+        run: |
+          pip install pytest h5py xraydb httpx -q
+          pytest tests/ -m "not epics and not bluesky" --ignore=tests/test_plans.py --ignore=tests/test_runner.py --ignore=tests/test_devices.py --ignore=tests/e2e -q --tb=short
+
+      - name: Python lint (ruff — full server/)
+        run: |
+          pip install ruff -q
+          ruff check server/ --config pyproject.toml
+
+      - name: JS lint (ESLint — blocking)
+        run: |
+          npm install eslint@10 -g -q
+          eslint js/shared/ js/optics/ js/raytrace/ --no-warn-ignored --max-warnings 400

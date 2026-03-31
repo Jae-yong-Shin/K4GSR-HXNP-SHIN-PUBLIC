@@ -1,0 +1,28 @@
+{
+  "name": "k4gsr-beamline",
+  "version": "1.0.0",
+  "description": "---\r title: \"Project README\"\r category: other\r status: current\r updated: 2026-03-16\r tags: [readme]\r summary: \"프로젝트 소개, Quick Start, 아키텍처, 로드맵\"\r ---\r # K4GSR Hard X-ray Nanoprobe Virtual Beamline",
+  "main": "eslint.config.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jae-yong-Shin/K4GSR_HXNP_SHIN.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Jae-yong-Shin/K4GSR_HXNP_SHIN/issues"
+  },
+  "homepage": "https://github.com/Jae-yong-Shin/K4GSR_HXNP_SHIN#readme",
+  "devDependencies": {
+    "esbuild": "^0.27.4"
+  }
+}

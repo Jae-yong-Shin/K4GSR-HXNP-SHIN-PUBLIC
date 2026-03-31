@@ -1,0 +1,2190 @@
+{
+  "engine": "deepseek",
+  "model": "deepseek-chat",
+  "timestamp": "2026-02-28T01:31:44.420587",
+  "total": 154,
+  "pass": 0,
+  "fail": 154,
+  "pass_rate": 0.0,
+  "total_time_s": 32.4,
+  "latency": {
+    "avg": 0.21,
+    "min": 0.18,
+    "max": 0.707,
+    "p95": 0.239
+  },
+  "per_category": {
+    "motor": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.315
+    },
+    "scan": {
+      "pass": 0,
+      "fail": 9,
+      "total": 9,
+      "avg_time": 0.196
+    },
+    "alignment": {
+      "pass": 0,
+      "fail": 4,
+      "total": 4,
+      "avg_time": 0.326
+    },
+    "multi": {
+      "pass": 0,
+      "fail": 1,
+      "total": 1,
+      "avg_time": 0.204
+    },
+    "optimize": {
+      "pass": 0,
+      "fail": 7,
+      "total": 7,
+      "avg_time": 0.197
+    },
+    "attenmask": {
+      "pass": 0,
+      "fail": 4,
+      "total": 4,
+      "avg_time": 0.198
+    },
+    "info": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.209
+    },
+    "param": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.189
+    },
+    "scientist": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.202
+    },
+    "battery": {
+      "pass": 0,
+      "fail": 5,
+      "total": 5,
+      "avg_time": 0.198
+    },
+    "catalyst": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.534
+    },
+    "semiconductor": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.244
+    },
+    "geology": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.196
+    },
+    "environment": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.192
+    },
+    "biology": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.19
+    },
+    "materials": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.211
+    },
+    "edgecase": {
+      "pass": 0,
+      "fail": 7,
+      "total": 7,
+      "avg_time": 0.2
+    },
+    "operations": {
+      "pass": 0,
+      "fail": 3,
+      "total": 3,
+      "avg_time": 0.195
+    },
+    "workflow": {
+      "pass": 0,
+      "fail": 2,
+      "total": 2,
+      "avg_time": 0.202
+    },
+    "heldout": {
+      "pass": 0,
+      "fail": 15,
+      "total": 15,
+      "avg_time": 0.198
+    },
+    "experiment_plan": {
+      "pass": 0,
+      "fail": 10,
+      "total": 10,
+      "avg_time": 0.197
+    },
+    "real_user": {
+      "pass": 0,
+      "fail": 12,
+      "total": 12,
+      "avg_time": 0.2
+    },
+    "complex_multi": {
+      "pass": 0,
+      "fail": 9,
+      "total": 9,
+      "avg_time": 0.197
+    },
+    "robustness": {
+      "pass": 0,
+      "fail": 12,
+      "total": 12,
+      "avg_time": 0.196
+    },
+    "rejection": {
+      "pass": 0,
+      "fail": 10,
+      "total": 10,
+      "avg_time": 0.196
+    },
+    "korean_variant": {
+      "pass": 0,
+      "fail": 9,
+      "total": 9,
+      "avg_time": 0.197
+    },
+    "signal_est": {
+      "pass": 0,
+      "fail": 5,
+      "total": 5,
+      "avg_time": 0.192
+    },
+    "bl_knowledge": {
+      "pass": 0,
+      "fail": 5,
+      "total": 5,
+      "avg_time": 0.197
+    }
+  },
+  "details": [
+    {
+      "id": "motor_01",
+      "desc": "Energy set to 12 keV",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.55,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "motor_02",
+      "desc": "M1 pitch move to 2.5 mrad",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "motor_03",
+      "desc": "Sample X motor move",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_01",
+      "desc": "Cu K-edge XAFS with queueStart",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_02",
+      "desc": "Fe K-edge XANES with queueStart",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.18,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_03",
+      "desc": "Fe XRF 2D map with params (energy+raster+queue)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_04",
+      "desc": "Line scan (0,0)-(10,5)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_05",
+      "desc": "M1 pitch fly scan 1-4 mrad",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_06",
+      "desc": "Fe K-edge adaptive energy scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_07",
+      "desc": "DCM theta relative alignment scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_08",
+      "desc": "Fermat spiral scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "scan_09",
+      "desc": "Relative raster 5x5 scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "align_01",
+      "desc": "Mo K-edge: dE=10 keV > 2 keV => auto alignment",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "align_02",
+      "desc": "Fe XRF: dE=1.5 keV < 2 keV => NO alignment",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "align_03",
+      "desc": "Explicit full alignment request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "align_04",
+      "desc": "M1 pitch auto-tune (iterative centroid)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.7,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "multi_01",
+      "desc": "3-step: energy + align + beam profile",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "opt_01",
+      "desc": "Cu XRF optimize (balanced)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "opt_02",
+      "desc": "Fe XRF optimize (resolution priority)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.18,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "opt_03",
+      "desc": "Ti XANES optimize (SrTiO3 powder)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "opt_04",
+      "desc": "Ptychography optimize (coherence priority)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "opt_05",
+      "desc": "Signal estimate (no confirmation)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "opt_06",
+      "desc": "W L3-edge XRF optimize (WC powder)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "opt_07",
+      "desc": "Optimization without element => ask for info",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "atten_01",
+      "desc": "Attenuator: insert Carbon 1mm",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "atten_02",
+      "desc": "Attenuator: remove all (8 calls for 4 slots)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "mask_01",
+      "desc": "Movable mask 1x1 mm",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "mask_02",
+      "desc": "Fixed mask h=2mm, v=3mm",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "info_01",
+      "desc": "Info query: XRD explanation",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "info_02",
+      "desc": "Info query: list available commands",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "info_03",
+      "desc": "Show beam profile (no confirmation)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "param_01",
+      "desc": "XRD map without params => ask or use defaults",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "param_02",
+      "desc": "Fe XRF map without params => ask or use defaults",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "sample_01",
+      "desc": "NMC 622 battery sample -- multi-element optimization",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "sample_02",
+      "desc": "Au L3-edge XRF signal check (50 ppm)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "batt_01",
+      "desc": "NMC cathode XRF -- multi-element, params given",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "batt_02",
+      "desc": "LFP cathode Fe K-edge XAFS",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "batt_03",
+      "desc": "S K-edge (2.47 keV) out of range => explain",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "batt_04",
+      "desc": "Cu contamination 10ppm -- signal estimation",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "batt_05",
+      "desc": "Cathode XRD phase map 15keV (dE=5>2 => align)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cata_01",
+      "desc": "Pt L3-edge XANES (auto L3 for heavy element)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cata_02",
+      "desc": "Ce L3-edge XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.71,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cata_03",
+      "desc": "Ni K-edge adaptive scan",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.7,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "semi_01",
+      "desc": "Cu XRF resolution priority (semiconductor)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.3,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "semi_02",
+      "desc": "Thin film strain XRD mapping 15keV",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "geo_01",
+      "desc": "As K-edge XANES speciation (soil)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "geo_02",
+      "desc": "Sr XRF linescan -- dE>2keV => align needed",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "geo_03",
+      "desc": "Cr K-edge XANES valence (mine waste)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "env_01",
+      "desc": "Pb L3 XRF+XANES multi-step (fly ash)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "env_02",
+      "desc": "Zn K-edge XANES (biosolids)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "bio_01",
+      "desc": "Cell XRF imaging Fe+Zn (biology)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "bio_02",
+      "desc": "Cu Fermat spiral scan (neuron)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "mat_01",
+      "desc": "Pb L3 XRF perovskite solar cell",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "mat_02",
+      "desc": "HEA 5-element XRF mapping",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "mat_03",
+      "desc": "Cu2O vs CuO phase ID by XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "edge_01",
+      "desc": "P K-edge (2.1 keV) out of range => explain",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "edge_02",
+      "desc": "W K-edge (69.5 keV) out of range => suggest L3",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "edge_03",
+      "desc": "Au XRF -- must auto-select L3 edge (11.9 keV)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "edge_04",
+      "desc": "Mixed Korean/English colloquial request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "edge_05",
+      "desc": "Info: XANES vs EXAFS difference",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "edge_06",
+      "desc": "Info: Au L3 edge energy query",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "edge_07",
+      "desc": "Pt L3 XANES -- should warn about mirror coating",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "ops_01",
+      "desc": "Crystal change to Si(311)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "ops_02",
+      "desc": "SSA hgap motor set to 30",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "ops_03",
+      "desc": "Emergency stop",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "workflow_01",
+      "desc": "Sequential Ti+Sr XANES (large dE => align)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "workflow_02",
+      "desc": "Full workflow: optimize + scan request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_01",
+      "desc": "Zn XANES with unusual Korean phrasing",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_02",
+      "desc": "Energy set with polite question form",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_03",
+      "desc": "Motor move with English-Korean mixed phrasing",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_04",
+      "desc": "Co XANES/XAFS with indirect request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_05",
+      "desc": "Se XRF map with English element name",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.18,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_06",
+      "desc": "Attenuator with Korean context description",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_07",
+      "desc": "Info query: Bragg's law",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_08",
+      "desc": "Out-of-range element query (Ca K=4.038 keV)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_09",
+      "desc": "Combined info + scan request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_10",
+      "desc": "Multi-axis motor move with xy coordinates",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_11",
+      "desc": "Advisory question about Mn oxidation analysis",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_12",
+      "desc": "SSA fully open with informal phrasing",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_13",
+      "desc": "XRF raster with 'quick' context",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_14",
+      "desc": "Sequential Cu+Zn XANES from current energy",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "held_15",
+      "desc": "Advisory question about Ce L3 energy",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_01",
+      "desc": "NMC622 cathode with composition and beamtime",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_02",
+      "desc": "Multi-element sequential (Ti + Sr)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_03",
+      "desc": "Pt 50ppm signal estimation inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_04",
+      "desc": "Timing inquiry for XRF + XRD mapping",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_05",
+      "desc": "Technique compatibility question (ptycho + XRF)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_06",
+      "desc": "Technique compatibility question (XANES + XRF map)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_07",
+      "desc": "Time budget question (XAFS repeat + XRF map)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_08",
+      "desc": "Setup change inquiry (detector swap time)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_01",
+      "desc": "Vague request -- should ask for specifics",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.18,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_02",
+      "desc": "Colloquial XRF request with range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_03",
+      "desc": "Signal check at current energy",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_04",
+      "desc": "Increase flux (SSA open wider or remove attenuator)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_05",
+      "desc": "Minimize beam size",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_06",
+      "desc": "XRD single shot request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_07",
+      "desc": "Unsupported request -- show previous results",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_08",
+      "desc": "Relative motor move (left)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_09",
+      "desc": "Energy inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_10",
+      "desc": "Capability inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_01",
+      "desc": "3-step: energy + SSA + XRF raster",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_02",
+      "desc": "Crystal change + Se XAFS",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_03",
+      "desc": "Sequential M1 + M2 alignment",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_04",
+      "desc": "Sequential Cu XANES + Fe XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_05",
+      "desc": "Multi-step workflow: XRF map then XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_06",
+      "desc": "Sequential Pb L3 + As K XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_07",
+      "desc": "Attenuator insert + Cr XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.23,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_08",
+      "desc": "3-step: energy + profile + XRF map",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_01",
+      "desc": "No space before keV",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_02",
+      "desc": "English element in Korean sentence",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_03",
+      "desc": "Minimal input (Fe xanes)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_04",
+      "desc": "No element specified => should ask",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_05",
+      "desc": "Extra whitespace around input",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_06",
+      "desc": "Exact edge energy (Ni K=8.333) -- should warn about being AT the edge",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_07",
+      "desc": "User typing function name directly",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_08",
+      "desc": "Comma-separated elements mapping",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_09",
+      "desc": "Negative energy => should reject",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_10",
+      "desc": "Energy way out of range (100 keV)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_01",
+      "desc": "Si K-edge (1.84 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.21,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_02",
+      "desc": "O K-edge (0.54 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_03",
+      "desc": "Li K-edge (0.055 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_04",
+      "desc": "C K-edge (0.28 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_05",
+      "desc": "N K-edge (0.40 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_06",
+      "desc": "Ag K-edge (25.5 keV) at boundary -- should warn",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_07",
+      "desc": "Uranium not in standard database",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_08",
+      "desc": "Optical imaging not available",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_01",
+      "desc": "Korean 'absorption edge' phrasing",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_02",
+      "desc": "Ni oxidation state check (terse)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_03",
+      "desc": "Polite XRF imaging request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_04",
+      "desc": "Polite energy change with period",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_05",
+      "desc": "Casual question form alignment",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_06",
+      "desc": "Informal SSA widen request",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_07",
+      "desc": "Stop scan command",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_08",
+      "desc": "Repeat last action -- context-dependent",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "sigest_01",
+      "desc": "Cu 100ppm XRF signal sufficiency",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "sigest_02",
+      "desc": "Au 10ppm thin film signal estimate",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "sigest_03",
+      "desc": "Fe 50% self-absorption concern",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "sigest_04",
+      "desc": "Mn 500ppm detection limit inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "sigest_05",
+      "desc": "Pt-Ir spectral interference question",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.18,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "blknow_01",
+      "desc": "Beamline energy range inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "blknow_02",
+      "desc": "KB mirror focal distance inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "blknow_03",
+      "desc": "DCM Si(111) vs Si(311) difference",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "blknow_04",
+      "desc": "List available experiment types",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "blknow_05",
+      "desc": "Minimum beam size inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_09",
+      "desc": "Scan time estimation for high-res XRF",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "explan_10",
+      "desc": "XAFS single scan time inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_11",
+      "desc": "Lowercase keV unit",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "robust_12",
+      "desc": "Minimal English energy command",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.2,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_09",
+      "desc": "Mg K-edge (1.30 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "reject_10",
+      "desc": "Al K-edge (1.56 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_11",
+      "desc": "Beam stability inquiry",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "realuser_12",
+      "desc": "Help request (generic)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.24,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "cmulti_09",
+      "desc": "3-step: 20keV + align + Mo XANES",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    },
+    {
+      "id": "korean_09",
+      "desc": "Mn absorption edge scan (polite request)",
+      "passed": false,
+      "errors": [
+        "Backend error: NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      ],
+      "elapsed_s": 0.19,
+      "response": {
+        "type": "error",
+        "message": "NLP error (deepseek): Client error '401 Unauthorized' for url 'https://api.together.xyz/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1674 @@
+{
+  "engine": "ollama",
+  "model": "ingu627/qwen3:235b-q3_K_M",
+  "timestamp": "2026-02-28T18:27:50.247607",
+  "total": 154,
+  "pass": 143,
+  "fail": 11,
+  "pass_rate": 92.9,
+  "total_time_s": 25155.9,
+  "latency": {
+    "avg": 163.35,
+    "min": 98.485,
+    "max": 451.825,
+    "p95": 291.552
+  },
+  "per_category": {
+    "motor": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 113.527
+    },
+    "scan": {
+      "pass": 9,
+      "fail": 0,
+      "total": 9,
+      "avg_time": 115.233
+    },
+    "alignment": {
+      "pass": 4,
+      "fail": 0,
+      "total": 4,
+      "avg_time": 116.93
+    },
+    "multi": {
+      "pass": 1,
+      "fail": 0,
+      "total": 1,
+      "avg_time": 107.911
+    },
+    "optimize": {
+      "pass": 7,
+      "fail": 0,
+      "total": 7,
+      "avg_time": 158.363
+    },
+    "attenmask": {
+      "pass": 4,
+      "fail": 0,
+      "total": 4,
+      "avg_time": 122.438
+    },
+    "info": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 260.762
+    },
+    "param": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 182.734
+    },
+    "scientist": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 143.223
+    },
+    "battery": {
+      "pass": 4,
+      "fail": 1,
+      "total": 5,
+      "avg_time": 184.143
+    },
+    "catalyst": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 207.702
+    },
+    "semiconductor": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 117.975
+    },
+    "geology": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 123.74
+    },
+    "environment": {
+      "pass": 1,
+      "fail": 1,
+      "total": 2,
+      "avg_time": 147.11
+    },
+    "biology": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 145.611
+    },
+    "materials": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 196.445
+    },
+    "edgecase": {
+      "pass": 6,
+      "fail": 1,
+      "total": 7,
+      "avg_time": 217.814
+    },
+    "operations": {
+      "pass": 1,
+      "fail": 2,
+      "total": 3,
+      "avg_time": 137.914
+    },
+    "workflow": {
+      "pass": 1,
+      "fail": 1,
+      "total": 2,
+      "avg_time": 195.77
+    },
+    "heldout": {
+      "pass": 15,
+      "fail": 0,
+      "total": 15,
+      "avg_time": 159.208
+    },
+    "experiment_plan": {
+      "pass": 10,
+      "fail": 0,
+      "total": 10,
+      "avg_time": 194.094
+    },
+    "real_user": {
+      "pass": 12,
+      "fail": 0,
+      "total": 12,
+      "avg_time": 198.513
+    },
+    "complex_multi": {
+      "pass": 9,
+      "fail": 0,
+      "total": 9,
+      "avg_time": 137.846
+    },
+    "robustness": {
+      "pass": 12,
+      "fail": 0,
+      "total": 12,
+      "avg_time": 138.421
+    },
+    "rejection": {
+      "pass": 5,
+      "fail": 5,
+      "total": 10,
+      "avg_time": 147.735
+    },
+    "korean_variant": {
+      "pass": 9,
+      "fail": 0,
+      "total": 9,
+      "avg_time": 178.214
+    },
+    "signal_est": {
+      "pass": 5,
+      "fail": 0,
+      "total": 5,
+      "avg_time": 121.852
+    },
+    "bl_knowledge": {
+      "pass": 5,
+      "fail": 0,
+      "total": 5,
+      "avg_time": 242.185
+    }
+  },
+  "details": [
+    {
+      "id": "motor_01",
+      "desc": "Energy set to 12 keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 129.41,
+      "response": null
+    },
+    {
+      "id": "motor_02",
+      "desc": "M1 pitch move to 2.5 mrad",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 108.19,
+      "response": null
+    },
+    {
+      "id": "motor_03",
+      "desc": "Sample X motor move",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 102.97,
+      "response": null
+    },
+    {
+      "id": "scan_01",
+      "desc": "Cu K-edge XAFS with queueStart",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 119.29,
+      "response": null
+    },
+    {
+      "id": "scan_02",
+      "desc": "Fe K-edge XANES with queueStart",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 120.05,
+      "response": null
+    },
+    {
+      "id": "scan_03",
+      "desc": "Fe XRF 2D map with params (energy+raster+queue)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 123.61,
+      "response": null
+    },
+    {
+      "id": "scan_04",
+      "desc": "Line scan (0,0)-(10,5)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 122.97,
+      "response": null
+    },
+    {
+      "id": "scan_05",
+      "desc": "M1 pitch fly scan 1-4 mrad",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 111.63,
+      "response": null
+    },
+    {
+      "id": "scan_06",
+      "desc": "Fe K-edge adaptive energy scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 117.31,
+      "response": null
+    },
+    {
+      "id": "scan_07",
+      "desc": "DCM theta relative alignment scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 106.16,
+      "response": null
+    },
+    {
+      "id": "scan_08",
+      "desc": "Fermat spiral scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 108.75,
+      "response": null
+    },
+    {
+      "id": "scan_09",
+      "desc": "Relative raster 5x5 scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 107.32,
+      "response": null
+    },
+    {
+      "id": "align_01",
+      "desc": "Mo K-edge: dE=10 keV > 2 keV => auto alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 119.7,
+      "response": null
+    },
+    {
+      "id": "align_02",
+      "desc": "Fe XRF: dE=1.5 keV < 2 keV => NO alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 125.16,
+      "response": null
+    },
+    {
+      "id": "align_03",
+      "desc": "Explicit full alignment request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 105.59,
+      "response": null
+    },
+    {
+      "id": "align_04",
+      "desc": "M1 pitch auto-tune (iterative centroid)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 117.28,
+      "response": null
+    },
+    {
+      "id": "multi_01",
+      "desc": "3-step: energy + align + beam profile",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 107.91,
+      "response": null
+    },
+    {
+      "id": "opt_01",
+      "desc": "Cu XRF optimize (balanced)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 121.96,
+      "response": null
+    },
+    {
+      "id": "opt_02",
+      "desc": "Fe XRF optimize (resolution priority)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 121.22,
+      "response": null
+    },
+    {
+      "id": "opt_03",
+      "desc": "Ti XANES optimize (SrTiO3 powder)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 242.46,
+      "response": null
+    },
+    {
+      "id": "opt_04",
+      "desc": "Ptychography optimize (coherence priority)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 121.12,
+      "response": null
+    },
+    {
+      "id": "opt_05",
+      "desc": "Signal estimate (no confirmation)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 115.7,
+      "response": null
+    },
+    {
+      "id": "opt_06",
+      "desc": "W L3-edge XRF optimize (WC powder)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 127.06,
+      "response": null
+    },
+    {
+      "id": "opt_07",
+      "desc": "Optimization without element => ask for info",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 259.03,
+      "response": null
+    },
+    {
+      "id": "atten_01",
+      "desc": "Attenuator: insert Carbon 1mm",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 112.98,
+      "response": null
+    },
+    {
+      "id": "atten_02",
+      "desc": "Attenuator: remove all (8 calls for 4 slots)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 157.54,
+      "response": null
+    },
+    {
+      "id": "mask_01",
+      "desc": "Movable mask 1x1 mm",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 109.73,
+      "response": null
+    },
+    {
+      "id": "mask_02",
+      "desc": "Fixed mask h=2mm, v=3mm",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 109.5,
+      "response": null
+    },
+    {
+      "id": "info_01",
+      "desc": "Info query: XRD explanation",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 248.82,
+      "response": null
+    },
+    {
+      "id": "info_02",
+      "desc": "Info query: list available commands",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 431.6,
+      "response": null
+    },
+    {
+      "id": "info_03",
+      "desc": "Show beam profile (no confirmation)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 101.87,
+      "response": null
+    },
+    {
+      "id": "param_01",
+      "desc": "XRD map without params => ask or use defaults",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 241.74,
+      "response": null
+    },
+    {
+      "id": "param_02",
+      "desc": "Fe XRF map without params => ask or use defaults",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 123.73,
+      "response": null
+    },
+    {
+      "id": "sample_01",
+      "desc": "NMC 622 battery sample -- multi-element optimization",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 159.47,
+      "response": null
+    },
+    {
+      "id": "sample_02",
+      "desc": "Au L3-edge XRF signal check (50 ppm)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 126.97,
+      "response": null
+    },
+    {
+      "id": "batt_01",
+      "desc": "NMC cathode XRF -- multi-element, params given",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 165.57,
+      "response": null
+    },
+    {
+      "id": "batt_02",
+      "desc": "LFP cathode Fe K-edge XAFS",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 122.58,
+      "response": null
+    },
+    {
+      "id": "batt_03",
+      "desc": "S K-edge (2.47 keV) out of range => explain",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 1: ['setTargetEnergy']"
+      ],
+      "elapsed_s": 244.9,
+      "response": {
+        "actions": [
+          {
+            "label": "S K-edge 아래이므로 최소 에너지로 설정",
+            "fn": "setTargetEnergy",
+            "args": [
+              5
+            ]
+          }
+        ],
+        "explanation": "전고체 전해질 시료에서 황(S)의 화학 상태를 확인하려면 S K-edge (2.472 keV)를 측정해야 하지만, 이 빔라인은 최소 5.0 keV만 가능합니다. 대신 최소 에너지인 5.0 keV로 설정하여 XANES/XPS 측정이 가능합니다. 다만 이 에너지는 S K-edge보다 높아 표면 정보만 얻을 수 있습니다. 더 낮은 에너지가 필요한 경우 다른 기법(SX-ARPES 등)을 고려해야 합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "batt_04",
+      "desc": "Cu contamination 10ppm -- signal estimation",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 259.94,
+      "response": null
+    },
+    {
+      "id": "batt_05",
+      "desc": "Cathode XRD phase map 15keV (dE=5>2 => align)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 127.72,
+      "response": null
+    },
+    {
+      "id": "cata_01",
+      "desc": "Pt L3-edge XANES (auto L3 for heavy element)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 242.37,
+      "response": null
+    },
+    {
+      "id": "cata_02",
+      "desc": "Ce L3-edge XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 117.58,
+      "response": null
+    },
+    {
+      "id": "cata_03",
+      "desc": "Ni K-edge adaptive scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 263.16,
+      "response": null
+    },
+    {
+      "id": "semi_01",
+      "desc": "Cu XRF resolution priority (semiconductor)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 116.31,
+      "response": null
+    },
+    {
+      "id": "semi_02",
+      "desc": "Thin film strain XRD mapping 15keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 119.64,
+      "response": null
+    },
+    {
+      "id": "geo_01",
+      "desc": "As K-edge XANES speciation (soil)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 127.55,
+      "response": null
+    },
+    {
+      "id": "geo_02",
+      "desc": "Sr XRF linescan -- dE>2keV => align needed",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 128.09,
+      "response": null
+    },
+    {
+      "id": "geo_03",
+      "desc": "Cr K-edge XANES valence (mine waste)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 115.59,
+      "response": null
+    },
+    {
+      "id": "env_01",
+      "desc": "Pb L3 XRF+XANES multi-step (fly ash)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 163.85,
+      "response": null
+    },
+    {
+      "id": "env_02",
+      "desc": "Zn K-edge XANES (biosolids)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: ['optimizeBeamline']",
+        "Args missing expected value 'Zn' in all actions: [[{'technique': 'xanes', 'element': 'Zn', 'edge': 'K', 'ppm': 1000, 'sampleType': 'solid', 'priority': 'flux'}]]",
+        "Args missing expected value 'K' in all actions: [[{'technique': 'xanes', 'element': 'Zn', 'edge': 'K', 'ppm': 1000, 'sampleType': 'solid', 'priority': 'flux'}]]"
+      ],
+      "elapsed_s": 130.37,
+      "response": {
+        "actions": [
+          {
+            "label": "Zn K-edge XANES 측정 준비",
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xanes",
+                "element": "Zn",
+                "edge": "K",
+                "ppm": 1000,
+                "sampleType": "solid",
+                "priority": "flux"
+              }
+            ]
+          }
+        ],
+        "explanation": "하수 슬러지에서 아연(Zn)의 화학 상태를 분석하기 위해 XANES(X-ray Absorption Near Edge Structure) 측정이 적합합니다. 현재 설정(10 keV)은 Zn K-edge(9.659 keV)와 가까워 에너지 조정이 최소화됩니다. 최적화를 통해 Zn XANES에 적합한 빔라인 설정을 제안합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "bio_01",
+      "desc": "Cell XRF imaging Fe+Zn (biology)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 155.1,
+      "response": null
+    },
+    {
+      "id": "bio_02",
+      "desc": "Cu Fermat spiral scan (neuron)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 136.12,
+      "response": null
+    },
+    {
+      "id": "mat_01",
+      "desc": "Pb L3 XRF perovskite solar cell",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 131.73,
+      "response": null
+    },
+    {
+      "id": "mat_02",
+      "desc": "HEA 5-element XRF mapping",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 185.78,
+      "response": null
+    },
+    {
+      "id": "mat_03",
+      "desc": "Cu2O vs CuO phase ID by XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 271.82,
+      "response": null
+    },
+    {
+      "id": "edge_01",
+      "desc": "P K-edge (2.1 keV) out of range => explain",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 242.56,
+      "response": null
+    },
+    {
+      "id": "edge_02",
+      "desc": "W K-edge (69.5 keV) out of range => suggest L3",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 119.9,
+      "response": null
+    },
+    {
+      "id": "edge_03",
+      "desc": "Au XRF -- must auto-select L3 edge (11.9 keV)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: ['optimizeBeamline']"
+      ],
+      "elapsed_s": 247.56,
+      "response": {
+        "actions": [
+          {
+            "label": "Au L3-edge XRF 최적화",
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "Au",
+                "edge": "L3",
+                "ppm": 100000,
+                "sampleType": "solid",
+                "priority": "balanced"
+              }
+            ]
+          }
+        ],
+        "explanation": "Au K-edge (80.7 keV)는 빔라인 최대 에너지(25 keV)를 초과합니다. 대신 Au L3-edge (11.919 keV)를 사용합니다. 5×5 µm, 41×41 포인트 XRF 래스터 스캔을 위한 최적화를 시작합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "edge_04",
+      "desc": "Mixed Korean/English colloquial request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 117.94,
+      "response": null
+    },
+    {
+      "id": "edge_05",
+      "desc": "Info: XANES vs EXAFS difference",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 451.82,
+      "response": null
+    },
+    {
+      "id": "edge_06",
+      "desc": "Info: Au L3 edge energy query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 221.03,
+      "response": null
+    },
+    {
+      "id": "edge_07",
+      "desc": "Pt L3 XANES -- should warn about mirror coating",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 123.88,
+      "response": null
+    },
+    {
+      "id": "ops_01",
+      "desc": "Crystal change to Si(311)",
+      "passed": false,
+      "errors": [
+        "Args missing expected value '311' in all actions: [['Si(311)']]"
+      ],
+      "elapsed_s": 111.77,
+      "response": {
+        "actions": [
+          {
+            "label": "Si(311) 결정 변경",
+            "fn": "setCrystal",
+            "args": [
+              "Si(311)"
+            ]
+          }
+        ],
+        "explanation": "Si(311) 결정으로 변경합니다. 단, Si K-edge (1.839 keV)는 빔라인 최소 에너지(5.0 keV)보다 낮아 측정 불가능합니다. 다른 원소 측정 시에는 적절한 결정을 선택해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ops_02",
+      "desc": "SSA hgap motor set to 30",
+      "passed": false,
+      "errors": [
+        "Args missing expected value 'ssa_hgap' in all actions: [['ssa', 'ssa_h', 30]]"
+      ],
+      "elapsed_s": 102.78,
+      "response": {
+        "actions": [
+          {
+            "label": "SSA 수평갭 설정",
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_h",
+              30
+            ]
+          }
+        ],
+        "explanation": "SSA 수평갭을 50 µm에서 30 µm로 줄입니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ops_03",
+      "desc": "Emergency stop",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 199.19,
+      "response": null
+    },
+    {
+      "id": "workflow_01",
+      "desc": "Sequential Ti+Sr XANES (large dE => align)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: ['optimizeBeamline', 'optimizeBeamline']"
+      ],
+      "elapsed_s": 243.62,
+      "response": {
+        "actions": [
+          {
+            "label": "Ti K-edge XANES 실험",
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xanes",
+                "element": "Ti",
+                "edge": "K",
+                "priority": "flux"
+              }
+            ]
+          },
+          {
+            "label": "Sr K-edge XANES 실험",
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xanes",
+                "element": "Sr",
+                "edge": "K",
+                "priority": "flux"
+              }
+            ]
+          }
+        ],
+        "explanation": "Ti K-edge (4.966 keV)는 빔라인 최소 에너지(5.0 keV)보다 낮아 측정이 불가능합니다. Sr K-edge (16.109 keV)는 측정 가능합니다. 최적화를 통해 각 에너지에서의 설정을 확인할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "workflow_02",
+      "desc": "Full workflow: optimize + scan request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 147.92,
+      "response": null
+    },
+    {
+      "id": "held_01",
+      "desc": "Zn XANES with unusual Korean phrasing",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 114.84,
+      "response": null
+    },
+    {
+      "id": "held_02",
+      "desc": "Energy set with polite question form",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 101.46,
+      "response": null
+    },
+    {
+      "id": "held_03",
+      "desc": "Motor move with English-Korean mixed phrasing",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 110.47,
+      "response": null
+    },
+    {
+      "id": "held_04",
+      "desc": "Co XANES/XAFS with indirect request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 115.81,
+      "response": null
+    },
+    {
+      "id": "held_05",
+      "desc": "Se XRF map with English element name",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 270.05,
+      "response": null
+    },
+    {
+      "id": "held_06",
+      "desc": "Attenuator with Korean context description",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 111.61,
+      "response": null
+    },
+    {
+      "id": "held_07",
+      "desc": "Info query: Bragg's law",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 245.98,
+      "response": null
+    },
+    {
+      "id": "held_08",
+      "desc": "Out-of-range element query (Ca K=4.038 keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 240.6,
+      "response": null
+    },
+    {
+      "id": "held_09",
+      "desc": "Combined info + scan request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 111.44,
+      "response": null
+    },
+    {
+      "id": "held_10",
+      "desc": "Multi-axis motor move with xy coordinates",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 109.63,
+      "response": null
+    },
+    {
+      "id": "held_11",
+      "desc": "Advisory question about Mn oxidation analysis",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 261.07,
+      "response": null
+    },
+    {
+      "id": "held_12",
+      "desc": "SSA fully open with informal phrasing",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 112.42,
+      "response": null
+    },
+    {
+      "id": "held_13",
+      "desc": "XRF raster with 'quick' context",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 127.26,
+      "response": null
+    },
+    {
+      "id": "held_14",
+      "desc": "Sequential Cu+Zn XANES from current energy",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 123.03,
+      "response": null
+    },
+    {
+      "id": "held_15",
+      "desc": "Advisory question about Ce L3 energy",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 232.44,
+      "response": null
+    },
+    {
+      "id": "explan_01",
+      "desc": "NMC622 cathode with composition and beamtime",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 157.59,
+      "response": null
+    },
+    {
+      "id": "explan_02",
+      "desc": "Multi-element sequential (Ti + Sr)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 143.82,
+      "response": null
+    },
+    {
+      "id": "explan_03",
+      "desc": "Pt 50ppm signal estimation inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 291.55,
+      "response": null
+    },
+    {
+      "id": "explan_04",
+      "desc": "Timing inquiry for XRF + XRD mapping",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 310.62,
+      "response": null
+    },
+    {
+      "id": "explan_05",
+      "desc": "Technique compatibility question (ptycho + XRF)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 132.52,
+      "response": null
+    },
+    {
+      "id": "explan_06",
+      "desc": "Technique compatibility question (XANES + XRF map)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 138.52,
+      "response": null
+    },
+    {
+      "id": "explan_07",
+      "desc": "Time budget question (XAFS repeat + XRF map)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 143.21,
+      "response": null
+    },
+    {
+      "id": "explan_08",
+      "desc": "Setup change inquiry (detector swap time)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 213.36,
+      "response": null
+    },
+    {
+      "id": "realuser_01",
+      "desc": "Vague request -- should ask for specifics",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 117.82,
+      "response": null
+    },
+    {
+      "id": "realuser_02",
+      "desc": "Colloquial XRF request with range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 120.58,
+      "response": null
+    },
+    {
+      "id": "realuser_03",
+      "desc": "Signal check at current energy",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 240.69,
+      "response": null
+    },
+    {
+      "id": "realuser_04",
+      "desc": "Increase flux (SSA open wider or remove attenuator)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 117.16,
+      "response": null
+    },
+    {
+      "id": "realuser_05",
+      "desc": "Minimize beam size",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 110.08,
+      "response": null
+    },
+    {
+      "id": "realuser_06",
+      "desc": "XRD single shot request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 235.01,
+      "response": null
+    },
+    {
+      "id": "realuser_07",
+      "desc": "Unsupported request -- show previous results",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 229.69,
+      "response": null
+    },
+    {
+      "id": "realuser_08",
+      "desc": "Relative motor move (left)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 105.54,
+      "response": null
+    },
+    {
+      "id": "realuser_09",
+      "desc": "Energy inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 215.08,
+      "response": null
+    },
+    {
+      "id": "realuser_10",
+      "desc": "Capability inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 338.82,
+      "response": null
+    },
+    {
+      "id": "cmulti_01",
+      "desc": "3-step: energy + SSA + XRF raster",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 125.19,
+      "response": null
+    },
+    {
+      "id": "cmulti_02",
+      "desc": "Crystal change + Se XAFS",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 120.36,
+      "response": null
+    },
+    {
+      "id": "cmulti_03",
+      "desc": "Sequential M1 + M2 alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 107.08,
+      "response": null
+    },
+    {
+      "id": "cmulti_04",
+      "desc": "Sequential Cu XANES + Fe XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 122.57,
+      "response": null
+    },
+    {
+      "id": "cmulti_05",
+      "desc": "Multi-step workflow: XRF map then XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 264.69,
+      "response": null
+    },
+    {
+      "id": "cmulti_06",
+      "desc": "Sequential Pb L3 + As K XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 132.81,
+      "response": null
+    },
+    {
+      "id": "cmulti_07",
+      "desc": "Attenuator insert + Cr XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 123.46,
+      "response": null
+    },
+    {
+      "id": "cmulti_08",
+      "desc": "3-step: energy + profile + XRF map",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 120.1,
+      "response": null
+    },
+    {
+      "id": "robust_01",
+      "desc": "No space before keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 98.49,
+      "response": null
+    },
+    {
+      "id": "robust_02",
+      "desc": "English element in Korean sentence",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 118.64,
+      "response": null
+    },
+    {
+      "id": "robust_03",
+      "desc": "Minimal input (Fe xanes)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 114.12,
+      "response": null
+    },
+    {
+      "id": "robust_04",
+      "desc": "No element specified => should ask",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 221.24,
+      "response": null
+    },
+    {
+      "id": "robust_05",
+      "desc": "Extra whitespace around input",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 121.4,
+      "response": null
+    },
+    {
+      "id": "robust_06",
+      "desc": "Exact edge energy (Ni K=8.333) -- should warn about being AT the edge",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 99.82,
+      "response": null
+    },
+    {
+      "id": "robust_07",
+      "desc": "User typing function name directly",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 111.64,
+      "response": null
+    },
+    {
+      "id": "robust_08",
+      "desc": "Comma-separated elements mapping",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 162.27,
+      "response": null
+    },
+    {
+      "id": "robust_09",
+      "desc": "Negative energy => should reject",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 204.16,
+      "response": null
+    },
+    {
+      "id": "robust_10",
+      "desc": "Energy way out of range (100 keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 204.85,
+      "response": null
+    },
+    {
+      "id": "reject_01",
+      "desc": "Si K-edge (1.84 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 235.0,
+      "response": null
+    },
+    {
+      "id": "reject_02",
+      "desc": "O K-edge (0.54 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 2: ['quickXanes', 'queueStart']"
+      ],
+      "elapsed_s": 115.36,
+      "response": {
+        "actions": [
+          {
+            "label": "quickXanes",
+            "fn": "quickXanes",
+            "args": [
+              "O",
+              "K"
+            ]
+          },
+          {
+            "label": "queueStart",
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "O K-edge (0.543 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_03",
+      "desc": "Li K-edge (0.055 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 113.26,
+      "response": null
+    },
+    {
+      "id": "reject_04",
+      "desc": "C K-edge (0.28 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 4: ['setTargetEnergy', 'runFullAlignment', 'quickXafs', 'queueStart']"
+      ],
+      "elapsed_s": 118.87,
+      "response": {
+        "actions": [
+          {
+            "label": "set energy",
+            "fn": "setTargetEnergy",
+            "args": [
+              280
+            ]
+          },
+          {
+            "label": "run alignment",
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "label": "carbon XAFS",
+            "fn": "quickXafs",
+            "args": [
+              "C",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": [],
+            "label": "Scan Start (auto-added)"
+          }
+        ],
+        "explanation": "C K-edge (280 eV) XAFS 스캔입니다. 현재 에너지(10 keV)에서 280 eV로 변경이 필요합니다. 큰 에너지 변화이므로 전체 정렬을 수행한 후 XAFS 스캔을 시작합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_05",
+      "desc": "N K-edge (0.40 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 2: ['quickXanes', 'queueStart']"
+      ],
+      "elapsed_s": 120.16,
+      "response": {
+        "actions": [
+          {
+            "label": "N K-edge XANES 스캔",
+            "fn": "quickXanes",
+            "args": [
+              "N",
+              "K"
+            ]
+          },
+          {
+            "label": "측정 시작",
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "N K-edge (400 eV = 0.4 keV)는 현재 빔라인의 최소 에너지(1 keV)보다 낮아 측정이 불가능합니다. 이 빔라인은 1 keV 이상의 에너지에서만 작동합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_06",
+      "desc": "Ag K-edge (25.5 keV) at boundary -- should warn",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 217.71,
+      "response": null
+    },
+    {
+      "id": "reject_07",
+      "desc": "Uranium not in standard database",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 121.78,
+      "response": null
+    },
+    {
+      "id": "reject_08",
+      "desc": "Optical imaging not available",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 203.98,
+      "response": null
+    },
+    {
+      "id": "korean_01",
+      "desc": "Korean 'absorption edge' phrasing",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 123.02,
+      "response": null
+    },
+    {
+      "id": "korean_02",
+      "desc": "Ni oxidation state check (terse)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 256.61,
+      "response": null
+    },
+    {
+      "id": "korean_03",
+      "desc": "Polite XRF imaging request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 262.06,
+      "response": null
+    },
+    {
+      "id": "korean_04",
+      "desc": "Polite energy change with period",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 102.47,
+      "response": null
+    },
+    {
+      "id": "korean_05",
+      "desc": "Casual question form alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 102.72,
+      "response": null
+    },
+    {
+      "id": "korean_06",
+      "desc": "Informal SSA widen request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 239.11,
+      "response": null
+    },
+    {
+      "id": "korean_07",
+      "desc": "Stop scan command",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 202.23,
+      "response": null
+    },
+    {
+      "id": "korean_08",
+      "desc": "Repeat last action -- context-dependent",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 209.51,
+      "response": null
+    },
+    {
+      "id": "sigest_01",
+      "desc": "Cu 100ppm XRF signal sufficiency",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 117.57,
+      "response": null
+    },
+    {
+      "id": "sigest_02",
+      "desc": "Au 10ppm thin film signal estimate",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 118.62,
+      "response": null
+    },
+    {
+      "id": "sigest_03",
+      "desc": "Fe 50% self-absorption concern",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 125.18,
+      "response": null
+    },
+    {
+      "id": "sigest_04",
+      "desc": "Mn 500ppm detection limit inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 119.34,
+      "response": null
+    },
+    {
+      "id": "sigest_05",
+      "desc": "Pt-Ir spectral interference question",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 128.55,
+      "response": null
+    },
+    {
+      "id": "blknow_01",
+      "desc": "Beamline energy range inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 225.8,
+      "response": null
+    },
+    {
+      "id": "blknow_02",
+      "desc": "KB mirror focal distance inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 217.17,
+      "response": null
+    },
+    {
+      "id": "blknow_03",
+      "desc": "DCM Si(111) vs Si(311) difference",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 306.9,
+      "response": null
+    },
+    {
+      "id": "blknow_04",
+      "desc": "List available experiment types",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 345.11,
+      "response": null
+    },
+    {
+      "id": "blknow_05",
+      "desc": "Minimum beam size inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 115.94,
+      "response": null
+    },
+    {
+      "id": "explan_09",
+      "desc": "Scan time estimation for high-res XRF",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 124.92,
+      "response": null
+    },
+    {
+      "id": "explan_10",
+      "desc": "XAFS single scan time inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 284.82,
+      "response": null
+    },
+    {
+      "id": "robust_11",
+      "desc": "Lowercase keV unit",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 100.17,
+      "response": null
+    },
+    {
+      "id": "robust_12",
+      "desc": "Minimal English energy command",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 104.26,
+      "response": null
+    },
+    {
+      "id": "reject_09",
+      "desc": "Mg K-edge (1.30 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 4: ['setTargetEnergy', 'runFullAlignment', 'quickXanes', 'queueStart']"
+      ],
+      "elapsed_s": 121.15,
+      "response": {
+        "actions": [
+          {
+            "label": "에너지 설정",
+            "fn": "setTargetEnergy",
+            "args": [
+              1.5
+            ]
+          },
+          {
+            "label": "전체 정렬",
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "label": "XANES 스캔",
+            "fn": "quickXanes",
+            "args": [
+              "Mg",
+              "K"
+            ]
+          },
+          {
+            "label": "큐 시작",
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mg K-edge (1.305 keV) XANES 스캔입니다. 현재 에너지(10 keV)에서 1.5 keV로 변경하여 측정합니다. 에너지 변화가 크므로 광학 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_10",
+      "desc": "Al K-edge (1.56 keV) out of range",
+      "passed": false,
+      "errors": [
+        "Expected NO actions, got 2: ['quickXanes', 'queueStart']"
+      ],
+      "elapsed_s": 110.08,
+      "response": {
+        "actions": [
+          {
+            "label": "Al K-edge XANES 스캔",
+            "fn": "quickXanes",
+            "args": [
+              "Al",
+              "K"
+            ]
+          },
+          {
+            "label": "큐 시작",
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Al K-edge (1.559 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_11",
+      "desc": "Beam stability inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 236.65,
+      "response": null
+    },
+    {
+      "id": "realuser_12",
+      "desc": "Help request (generic)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 315.06,
+      "response": null
+    },
+    {
+      "id": "cmulti_09",
+      "desc": "3-step: 20keV + align + Mo XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 124.36,
+      "response": null
+    },
+    {
+      "id": "korean_09",
+      "desc": "Mn absorption edge scan (polite request)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 106.2,
+      "response": null
+    }
+  ]
+}

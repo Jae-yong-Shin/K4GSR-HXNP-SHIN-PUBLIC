@@ -1,0 +1,6332 @@
+{
+  "engine": "vllm",
+  "model": "Qwen/Qwen3-32B",
+  "timestamp": "2026-03-05T20:58:24.115133",
+  "total": 228,
+  "pass": 224,
+  "fail": 4,
+  "pass_rate": 98.2,
+  "total_time_s": 4918.7,
+  "latency": {
+    "avg": 21.573,
+    "min": 3.798,
+    "max": 201.924,
+    "p95": 49.171
+  },
+  "per_category": {
+    "motor": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 12.433
+    },
+    "scan": {
+      "pass": 9,
+      "fail": 0,
+      "total": 9,
+      "avg_time": 11.001
+    },
+    "alignment": {
+      "pass": 4,
+      "fail": 0,
+      "total": 4,
+      "avg_time": 10.055
+    },
+    "multi": {
+      "pass": 1,
+      "fail": 0,
+      "total": 1,
+      "avg_time": 7.427
+    },
+    "optimize": {
+      "pass": 6,
+      "fail": 1,
+      "total": 7,
+      "avg_time": 19.396
+    },
+    "attenmask": {
+      "pass": 4,
+      "fail": 0,
+      "total": 4,
+      "avg_time": 10.384
+    },
+    "info": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 46.71
+    },
+    "param": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 21.358
+    },
+    "scientist": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 15.455
+    },
+    "battery": {
+      "pass": 4,
+      "fail": 1,
+      "total": 5,
+      "avg_time": 20.405
+    },
+    "catalyst": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 14.045
+    },
+    "semiconductor": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 13.314
+    },
+    "geology": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 14.057
+    },
+    "environment": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 16.594
+    },
+    "biology": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 20.591
+    },
+    "materials": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 17.1
+    },
+    "edgecase": {
+      "pass": 7,
+      "fail": 0,
+      "total": 7,
+      "avg_time": 24.042
+    },
+    "operations": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 8.913
+    },
+    "workflow": {
+      "pass": 1,
+      "fail": 1,
+      "total": 2,
+      "avg_time": 18.561
+    },
+    "heldout": {
+      "pass": 15,
+      "fail": 0,
+      "total": 15,
+      "avg_time": 16.718
+    },
+    "experiment_plan": {
+      "pass": 10,
+      "fail": 0,
+      "total": 10,
+      "avg_time": 39.82
+    },
+    "real_user": {
+      "pass": 12,
+      "fail": 0,
+      "total": 12,
+      "avg_time": 31.142
+    },
+    "complex_multi": {
+      "pass": 9,
+      "fail": 0,
+      "total": 9,
+      "avg_time": 19.4
+    },
+    "robustness": {
+      "pass": 12,
+      "fail": 0,
+      "total": 12,
+      "avg_time": 10.944
+    },
+    "rejection": {
+      "pass": 10,
+      "fail": 0,
+      "total": 10,
+      "avg_time": 21.009
+    },
+    "korean_variant": {
+      "pass": 9,
+      "fail": 0,
+      "total": 9,
+      "avg_time": 11.472
+    },
+    "signal_est": {
+      "pass": 5,
+      "fail": 0,
+      "total": 5,
+      "avg_time": 19.31
+    },
+    "bl_knowledge": {
+      "pass": 5,
+      "fail": 0,
+      "total": 5,
+      "avg_time": 63.209
+    },
+    "ssa_control": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 9.249
+    },
+    "analysis_intent": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 12.841
+    },
+    "sequential": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 19.475
+    },
+    "question_action": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 10.709
+    },
+    "partial_range": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 25.275
+    },
+    "heavy_element": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 18.353
+    },
+    "colloquial": {
+      "pass": 4,
+      "fail": 0,
+      "total": 4,
+      "avg_time": 9.106
+    },
+    "safety": {
+      "pass": 2,
+      "fail": 0,
+      "total": 2,
+      "avg_time": 7.261
+    },
+    "implicit_technique": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 14.891
+    },
+    "experiment_preset": {
+      "pass": 7,
+      "fail": 1,
+      "total": 8,
+      "avg_time": 14.924
+    },
+    "experiment_planning_adv": {
+      "pass": 10,
+      "fail": 0,
+      "total": 10,
+      "avg_time": 38.583
+    },
+    "ptycho_experiment": {
+      "pass": 6,
+      "fail": 0,
+      "total": 6,
+      "avg_time": 23.455
+    },
+    "technique_selection": {
+      "pass": 8,
+      "fail": 0,
+      "total": 8,
+      "avg_time": 24.278
+    },
+    "multi_technique_wf": {
+      "pass": 8,
+      "fail": 0,
+      "total": 8,
+      "avg_time": 19.218
+    },
+    "timing_feasibility": {
+      "pass": 5,
+      "fail": 0,
+      "total": 5,
+      "avg_time": 51.565
+    },
+    "experiment_edge": {
+      "pass": 5,
+      "fail": 0,
+      "total": 5,
+      "avg_time": 27.525
+    }
+  },
+  "details": [
+    {
+      "id": "motor_01",
+      "cat": "motor",
+      "input": "에너지를 12 keV로 설정해",
+      "desc": "Energy set to 12 keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 26.54,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 12 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "motor_02",
+      "cat": "motor",
+      "input": "M1 피치를 2.5로 이동해",
+      "desc": "M1 pitch move to 2.5 mrad",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.43,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "m1",
+              "m1_pitch",
+              2.5
+            ]
+          }
+        ],
+        "explanation": "M1 피치를 2.5 mrad로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "motor_03",
+      "cat": "motor",
+      "input": "시료 X를 100 이동해",
+      "desc": "Sample X motor move",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.33,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "sample",
+              "sample_cx",
+              100
+            ]
+          }
+        ],
+        "explanation": "시료 X 위치를 100 µm로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_01",
+      "cat": "scan",
+      "input": "구리 K-edge XAFS 측정해줘",
+      "desc": "Cu K-edge XAFS with queueStart",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.6,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와 Cu K-edge (8.979 keV)의 차이는 1.021 keV로 2 keV 이하이므로 광학 정렬 없이 바로 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_02",
+      "cat": "scan",
+      "input": "철 XANES 측정해줘",
+      "desc": "Fe K-edge XANES with queueStart",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.28,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_03",
+      "cat": "scan",
+      "input": "10x10 범위에 41포인트로 철 XRF 2D 맵 측정해줘",
+      "desc": "Fe XRF 2D map with params (energy+raster+queue)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.02,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_04",
+      "cat": "scan",
+      "input": "시료를 (0,0)에서 (10,5)까지 라인스캔해줘",
+      "desc": "Line scan (0,0)-(10,5)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.75,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickLineScan",
+            "args": [
+              0,
+              0,
+              10,
+              5,
+              51
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "시료 (0,0)→(10,5) µm 대각선 라인스캔 (51포인트)을 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_05",
+      "cat": "scan",
+      "input": "M1 피치를 1~4 mrad에서 고속스캔해줘",
+      "desc": "M1 pitch fly scan 1-4 mrad",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.22,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickFlyScan",
+            "args": [
+              "m1",
+              "pitch",
+              1,
+              4,
+              101
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "M1 피치 1~4 mrad 범위 플라이 스캔 (101포인트)을 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_06",
+      "cat": "scan",
+      "input": "철 K-edge 주변 적응형 에너지 스캔해줘",
+      "desc": "Fe K-edge adaptive energy scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.68,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickAdaptiveScan",
+            "args": [
+              6.9,
+              7.5,
+              0.1,
+              5.0
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 주변을 적응형으로 스캔합니다. 흡수단 근처에서 자동으로 밀도 높은 측정을 합니다. 현재 에너지(10 keV)에서 2.888 keV 변화가 있으므로 광학 정렬을 먼저 수행해야 합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_07",
+      "cat": "scan",
+      "input": "DCM 세타 현위치 기준 +/-0.5도 정렬 스캔해줘",
+      "desc": "DCM theta relative alignment scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.47,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickRelAlign",
+            "args": [
+              "dcm",
+              "theta",
+              1.0,
+              21
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "DCM 세타를 현재 위치 기준 ±0.5도 범위에서 정렬 스캔합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_08",
+      "cat": "scan",
+      "input": "현위치에서 페르마 나선 스캔해줘",
+      "desc": "Fermat spiral scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.71,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickFermat",
+            "args": [
+              10,
+              10,
+              0.5
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "현재 시료 위치에서 10×10 µm 페르마 나선 스캔을 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_09",
+      "cat": "scan",
+      "input": "현위치 기준 5x5 래스터 스캔해줘",
+      "desc": "Relative raster 5x5 scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.29,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickRelRaster",
+            "args": [
+              5,
+              5,
+              21,
+              21
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "현재 시료 위치 기준 ±2.5 µm 범위에서 21×21 래스터 스캔을 실행합니다. 현재 에너지는 10 keV, SSA 수평/수직 갭은 50 µm로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "align_01",
+      "cat": "alignment",
+      "input": "Mo K-edge XAFS 측정해줘",
+      "desc": "Mo K-edge: dE=10 keV > 2 keV => auto alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.75,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              20
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Mo",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mo K-edge (20.0 keV) XAFS 스캔입니다. 현재 에너지(10 keV)에서 10 keV 변화이므로 광학 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "align_02",
+      "cat": "alignment",
+      "input": "철 XRF 2D 맵 측정해줘",
+      "desc": "Fe XRF: dE=1.5 keV < 2 keV => NO alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.65,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              5,
+              5,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 5×5 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "align_03",
+      "cat": "alignment",
+      "input": "전체 빔 정렬 시작",
+      "desc": "Explicit full alignment request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.64,
+      "response": {
+        "actions": [
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          }
+        ],
+        "explanation": "전체 빔라인 정렬(7단계)을 시작합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "align_04",
+      "cat": "alignment",
+      "input": "M1 피치 자동 정렬해줘",
+      "desc": "M1 pitch auto-tune (iterative centroid)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.18,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickAutoTune",
+            "args": [
+              "m1",
+              "pitch",
+              1.0,
+              4.0,
+              "ic1_current"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "M1 피치를 1~4 mrad 범위에서 반복 센트로이드 탐색으로 자동 정렬합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "multi_01",
+      "cat": "multi",
+      "input": "12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘",
+      "desc": "3-step: energy + align + beam profile",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.43,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "showBeamProfile",
+            "args": [
+              "sample"
+            ]
+          }
+        ],
+        "explanation": "12 keV 설정 → 전체 정렬 → 빔 프로파일 확인합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "opt_01",
+      "cat": "optimize",
+      "input": "Cu 분말 1000ppm XRF 최적화해줘",
+      "desc": "Cu XRF optimize (balanced)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.99,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "Cu",
+                "edge": "K",
+                "ppm": 1000,
+                "sampleType": "powder",
+                "priority": "balanced"
+              }
+            ]
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XRF에 최적화된 빔라인 설정을 계산합니다. 에너지, SSA, 예상 flux와 beam size를 포함한 Pareto front를 제공합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "opt_02",
+      "cat": "optimize",
+      "input": "철 시료인데 가장 좋은 분해능으로 XRF 맵핑하고 싶어",
+      "desc": "Fe XRF optimize (resolution priority)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.52,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "Fe",
+                "edge": "K",
+                "priority": "resolution"
+              }
+            ]
+          }
+        ],
+        "explanation": "Fe K-edge XRF에 최적 분해능(최소 빔 사이즈) 설정을 찾습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "opt_03",
+      "cat": "optimize",
+      "input": "Ti K-edge XANES 하려는데 시료가 SrTiO3 분말이야",
+      "desc": "Ti XANES optimize (SrTiO3 powder)",
+      "passed": false,
+      "errors": [
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 39.28,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xanes",
+                "element": "Ti",
+                "edge": "K",
+                "ppm": 100000,
+                "sampleType": "powder",
+                "priority": "flux"
+              }
+            ]
+          }
+        ],
+        "explanation": "Ti K-edge (4.966 keV) XANES는 이 빔라인의 최소 에너지(5.0 keV)보다 약간 낮습니다. 이 에너지에서의 측정은 불가능합니다. 대안으로, Ti L3-edge (45.6 eV)를 사용할 수 있지만, 이는 여전히 빔라인의 에너지 범위(5-25 keV)를 벗어납니다. 따라서 Ti K-edge XANES는 이 빔라인에서 수행할 수 없습니다. 다른 원소나 기법을 고려해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "opt_04",
+      "cat": "optimize",
+      "input": "ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야",
+      "desc": "Ptychography optimize (coherence priority)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.8,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "ptycho",
+                "element": "Cu",
+                "edge": "K",
+                "sampleType": "solid",
+                "thickness_um": 1,
+                "priority": "coherence"
+              }
+            ]
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) ptychography 최적화를 수행합니다. 결맞음 flux(coherent flux)를 최대화하고 결맞음도(degree of coherence) > 0.3 조건을 만족하는 SSA를 추천합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "opt_05",
+      "cat": "optimize",
+      "input": "지금 셋업에서 Cu 신호 얼마나 나와?",
+      "desc": "Signal estimate (no confirmation)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.71,
+      "response": {
+        "actions": [
+          {
+            "fn": "estimateSignal",
+            "args": [
+              "xrf",
+              "Cu",
+              10000,
+              null,
+              null,
+              10
+            ]
+          }
+        ],
+        "explanation": "현재 빔라인 설정(에너지 10 keV, SSA 수평/수직 갭 50 um)에서 Cu XRF 신호를 추정합니다. 10000 ppm, 두께 10 um 시료 기준입니다. 추정값은 빔 강도, SSA, 필터 설정 등에 따라 달라질 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "opt_06",
+      "cat": "optimize",
+      "input": "W L3-edge XRF 해줘. 시료가 WC 분말이야",
+      "desc": "W L3-edge XRF optimize (WC powder)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.57,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "W",
+                "edge": "L3",
+                "ppm": 500000,
+                "sampleType": "powder",
+                "priority": "balanced"
+              }
+            ]
+          }
+        ],
+        "explanation": "W L3-edge (10.207 keV) XRF에 최적화된 설정을 계산합니다. WC 분말 시료 기준입니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "opt_07",
+      "cat": "optimize",
+      "input": "빔라인 최적화해줘",
+      "desc": "Optimization without element => ask for info",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 39.89,
+      "response": {
+        "actions": [],
+        "explanation": "빔라인 최적화를 위해 다음 정보가 필요합니다:\n\n1. **측정 기법**: XRF, XANES, XRD, Ptychography 중 어떤 것인가요?\n2. **원소**: 측정하려는 원소와 edge (예: Cu K-edge, Au L3-edge)\n3. **시료 정보** (선택): 농도(ppm), 두께(um), 형태(powder/solid)\n4. **우선순위** (선택): flux(강도), resolution(분해능), balanced(균형), coherence(결맞음)\n\n예시: 'Cu 분말 1000ppm XRF 최적화해줘'",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "atten_01",
+      "cat": "attenmask",
+      "input": "어테뉴에이터에 Carbon 1mm 넣어줘",
+      "desc": "Attenuator: insert Carbon 1mm",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.93,
+      "response": {
+        "actions": [
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              0,
+              "material",
+              "Carbon"
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              0,
+              "thickness",
+              1.0
+            ]
+          }
+        ],
+        "explanation": "어테뉴에이터 슬롯 1에 Carbon 1mm 필터를 삽입합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "atten_02",
+      "cat": "attenmask",
+      "input": "어테뉴에이터 전부 빼",
+      "desc": "Attenuator: remove all (8 calls for 4 slots)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.1,
+      "response": {
+        "actions": [
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              0,
+              "material",
+              "None"
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              0,
+              "thickness",
+              0
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              1,
+              "material",
+              "None"
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              1,
+              "thickness",
+              0
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              2,
+              "material",
+              "None"
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              2,
+              "thickness",
+              0
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              3,
+              "material",
+              "None"
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              3,
+              "thickness",
+              0
+            ]
+          }
+        ],
+        "explanation": "어테뉴에이터 4개 슬롯의 필터를 모두 제거합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "mask_01",
+      "cat": "attenmask",
+      "input": "movable mask를 1mm x 1mm로 이동시켜",
+      "desc": "Movable mask 1x1 mm",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.76,
+      "response": {
+        "actions": [
+          {
+            "fn": "maskAperUpdate",
+            "args": [
+              "mmask",
+              "h",
+              1
+            ]
+          },
+          {
+            "fn": "maskAperUpdate",
+            "args": [
+              "mmask",
+              "v",
+              1
+            ]
+          }
+        ],
+        "explanation": "Movable Mask의 수평/수직 조리개를 각각 1mm로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "mask_02",
+      "cat": "attenmask",
+      "input": "고정 마스크 수평갭 2mm, 수직갭 3mm",
+      "desc": "Fixed mask h=2mm, v=3mm",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.74,
+      "response": {
+        "actions": [
+          {
+            "fn": "maskAperUpdate",
+            "args": [
+              "fmask",
+              "h",
+              2
+            ]
+          },
+          {
+            "fn": "maskAperUpdate",
+            "args": [
+              "fmask",
+              "v",
+              3
+            ]
+          }
+        ],
+        "explanation": "Fixed Mask의 수평갭을 2mm, 수직갭을 3mm로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "info_01",
+      "cat": "info",
+      "input": "XRD가 뭐야?",
+      "desc": "Info query: XRD explanation",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 42.62,
+      "response": {
+        "actions": [],
+        "explanation": "XRD(X-ray Diffraction, X선 회절)는 결정 구조를 분석하는 기법입니다.\n\nX선이 결정에 입사하면 Bragg 법칙(nλ=2d sinθ)에 따라 특정 각도에서 회절이 발생합니다. 회절 패턴을 분석하면 격자 상수, 결정 구조, 상(phase) 등을 알 수 있습니다.\n\n이 빔라인에서는 Eiger 2X 검출기로 2D 회절 패턴을 수집합니다.\n- 단일 포인트 XRD: '분말 XRD 실험 셋업해줘'\n- 2D XRD 매핑: '2D XRD 매핑해줘' (시료를 스캔하며 위치별 회절 패턴 수집)",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "info_02",
+      "cat": "info",
+      "input": "네가 할 수 있는 명령들을 정리해봐",
+      "desc": "Info query: list available commands",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 88.62,
+      "response": {
+        "actions": [],
+        "explanation": "사용 가능한 명령 목록입니다:\n\n[에너지/광학]\n- 에너지 설정: '에너지를 12 keV로 설정해'\n- 결정 변경: 'Si(311)로 변경해'\n- 집속 모드: 'KB 모드로 전환해'\n\n[모터 제어]\n- 모터 이동: 'M1 피치를 2.5로 이동해'\n- 슬릿 조절: '슬릿 수평갭을 1mm로 설정해'\n- 시료 이동: '시료 X를 100um 이동해'\n\n[정렬]\n- 전체 정렬: '전체 빔 정렬 시작'\n- 미러 정렬: 'M1 미러 정렬해줘'\n- 단일 스텝: 'DCM 로킹커브 스캔해'\n\n[측정/스캔]\n- XAFS: '구리 K-edge XAFS 측정해줘'\n- XRF 맵핑: '철 분포 2D 맵 측정해'\n- XRD: '분말 XRD 실험' 또는 '2D XRD 매핑해줘'\n- 에너지 스캔: '8~10 keV 에너지 스캔'\n- 라인스캔: '나노 XRF 라인스캔'\n\n[기타]\n- 빔 프로파일: '빔 프로파일 보여줘'\n- 긴급 정지: '긴급 정지'\n- 가상 실험: 'Cu XAFS 실험 셋업해줘'",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "info_03",
+      "cat": "info",
+      "input": "빔 프로파일 보여줘",
+      "desc": "Show beam profile (no confirmation)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.89,
+      "response": {
+        "actions": [
+          {
+            "fn": "showBeamProfile",
+            "args": [
+              "sample"
+            ]
+          }
+        ],
+        "explanation": "시료 위치에서 빔 프로파일을 표시합니다. 다른 위치(IVU, M1, DCM, M2, WBSlit, KBV, KBH)의 프로파일이 필요하시면 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "param_01",
+      "cat": "param",
+      "input": "2D XRD 매핑해줘",
+      "desc": "XRD map without params => ask or use defaults",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 28.13,
+      "response": {
+        "actions": [],
+        "explanation": "2D XRD 매핑을 준비하겠습니다. 다음 파라미터를 알려주세요:\n- 스캔 범위 (µm, 예: 10×10)\n- 포인트 수 (예: 21×21)\n- 에너지 (keV, 예: 15)\n\n또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 21pt, 15 keV)으로 실행합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "param_02",
+      "cat": "param",
+      "input": "철 XRF 2D 맵 측정해줘",
+      "desc": "Fe XRF map without params => ask or use defaults",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.59,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              5,
+              5,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 5×5 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "sample_01",
+      "cat": "scientist",
+      "input": "NMC 622 배터리 시료를 nano XRF로 분석하고 싶어. Ni, Mn, Co를 측정해야 해",
+      "desc": "NMC 622 battery sample -- multi-element optimization",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.93,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              9.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "NMC 622 시료의 Ni, Mn, Co를 nano XRF로 분석합니다. 세 원소 중 가장 높은 Ni K-edge (8.333 keV) 위의 9.5 keV로 설정합니다. 이 에너지에서 Mn(6.539 keV), Co(7.709 keV), Ni(8.333 keV) 형광선이 모두 여기됩니다. KB 미러로 나노빔(~50 nm) 집속하여 측정합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "sample_02",
+      "cat": "scientist",
+      "input": "Au L3-edge XRF 신호가 충분할지 확인해줘. 50 ppm 시료야",
+      "desc": "Au L3-edge XRF signal check (50 ppm)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.98,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "Au",
+                "edge": "L3",
+                "ppm": 50,
+                "priority": "flux"
+              }
+            ]
+          }
+        ],
+        "explanation": "Au L3-edge (11.919 keV) XRF 최적화를 수행합니다. 50 ppm 시료에서 예상 신호를 계산합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "batt_01",
+      "cat": "battery",
+      "input": "배터리 양극재에서 Ni, Mn, Co 원소 분포를 XRF 맵핑으로 측정하고 싶습니다. 10x10 범위 41포인트로요.",
+      "desc": "NMC cathode XRF -- multi-element, params given",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 21.66,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              9.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "NMC 양극재의 Ni, Mn, Co 원소 분포를 XRF 맵핑으로 측정합니다. 세 원소 중 가장 높은 Ni K-edge (8.333 keV) 위의 9.5 keV로 설정합니다. 이 에너지에서 Mn(6.539 keV), Co(7.709 keV), Ni(8.333 keV) 형광선이 모두 여기됩니다. KB 미러로 나노빔(~50 nm) 집속하여 측정합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "batt_02",
+      "cat": "battery",
+      "input": "LiFePO4 시료 철 K-edge XAFS 측정해주세요.",
+      "desc": "LFP cathode Fe K-edge XAFS",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.22,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)에서 2.888 keV 변화가 2 keV 이상이므로 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "batt_03",
+      "cat": "battery",
+      "input": "전고체 전해질 시료인데, 황의 화학 상태를 확인하고 싶어요.",
+      "desc": "S K-edge (2.47 keV) out of range => explain",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 33.07,
+      "response": {
+        "actions": [],
+        "explanation": "황(S) K-edge 에너지는 2.472 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 황의 화학 상태를 확인하려면 연X선(soft X-ray) 빔라인에서의 XANES 측정이 필요합니다. 전고체 전해질 시료의 황 화학 상태 분석을 위해서는 다른 시설에서의 측정이 필요할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "batt_04",
+      "cat": "battery",
+      "input": "양극재에 구리 오염이 있는지 확인해주세요. 10ppm 수준이에요.",
+      "desc": "Cu contamination 10ppm -- signal estimation",
+      "passed": false,
+      "errors": [
+        "Expected fn 'optimizeBeamline' not found in sequence. Got: ['setTargetEnergy', 'quickRaster', 'queueStart']"
+      ],
+      "elapsed_s": 17.46,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              9.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) + 0.5 keV = 9.5 keV로 설정하여 10ppm 수준의 구리 오염을 확인합니다. 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "batt_05",
+      "cat": "battery",
+      "input": "충방전 후 양극재 결정상 분포를 2D XRD 맵으로 측정하고 싶어요. 15 keV에서 10x10 21포인트로.",
+      "desc": "Cathode XRD phase map 15keV (dE=5>2 => align)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.62,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              15
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              21
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "15 keV로 설정 후 10x10 µm 범위에서 21x21 포인트 2D XRD 매핑을 실행합니다. 현재 에너지(10 keV)에서 5 keV 변화이므로 광학 정렬은 필요 없습니다. P K-edge (2.145 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. 연X선 빔라인에서 분석하시기 바랍니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cata_01",
+      "cat": "catalyst",
+      "input": "Pt/C 연료전지 촉매에서 백금 산화 상태를 XANES로 확인해주세요.",
+      "desc": "Pt L3-edge XANES (auto L3 for heavy element)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.28,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.564
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Pt",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pt L3-edge (11.564 keV) XANES를 실행합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다. 노출 시간: 기본값 적용.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cata_02",
+      "cat": "catalyst",
+      "input": "CeO2 담지체의 세륨 L3 엣지 XANES 측정해주세요.",
+      "desc": "Ce L3-edge XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.37,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              5.723
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ce",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ce L3-edge (5.723 keV) XANES를 실행합니다. 현재 에너지(10 keV)에서 -4.277 keV 변화가 2 keV 이상이므로 광학 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cata_03",
+      "cat": "catalyst",
+      "input": "니켈 촉매 반응 중 산화 상태가 변하는지 적응형 에너지 스캔으로 확인하고 싶어요.",
+      "desc": "Ni K-edge adaptive scan",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.48,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickAdaptiveScan",
+            "args": [
+              8.2,
+              8.8,
+              0.1,
+              5.0
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ni K-edge (8.333 keV) 주변을 적응형 에너지 스캔으로 측정합니다. 흡수단 근처에서 밀도 높은 측정을 하여 산화 상태 변화를 분석할 수 있습니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "semi_01",
+      "cat": "semiconductor",
+      "input": "반도체 칩 단면에서 구리 배선 분포를 XRF 맵핑해주세요. 분해능을 최대로 해주세요.",
+      "desc": "Cu XRF resolution priority (semiconductor)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.99,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "Cu",
+                "edge": "K",
+                "priority": "resolution"
+              }
+            ]
+          }
+        ],
+        "explanation": "반도체 칩 단면의 Cu 배선 분포를 최고 분해능으로 XRF 맵핑합니다. KB 미러로 나노빔(~50 nm) 집속, SSA 갭 최소화하여 최소 빔 사이즈를 확보합니다. 최적 에너지와 SSA 설정을 계산 중입니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "semi_02",
+      "cat": "semiconductor",
+      "input": "에피택셜 박막의 격자 변형을 nano-XRD로 맵핑해주세요. 에너지는 15 keV로.",
+      "desc": "Thin film strain XRD mapping 15keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.64,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              15
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "xrd_2d_map"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "에피택셜 박막의 격자 변형 분석을 위해 15 keV로 에너지를 설정하고 전체 빔 정렬을 수행합니다. XRD 2D 매핑 실험을 시작합니다. 노출 시간은 기본값을 사용합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "geo_01",
+      "cat": "geology",
+      "input": "오염 토양 시료에서 비소의 화학종을 XANES로 구분해주세요.",
+      "desc": "As K-edge XANES speciation (soil)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.74,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "As",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "As K-edge (11.867 keV) XANES로 비소의 화학종을 구분합니다. XANES는 흡수단 근처의 구조를 세밀하게 분석하여 As(III)와 As(V)를 구별할 수 있습니다. 현재 에너지(10 keV)에서 1.867 keV 변화가 2 keV 미만이므로 정렬 없이 바로 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "geo_02",
+      "cat": "geology",
+      "input": "사장석 시료에서 스트론튬 분포를 XRF 라인스캔으로 확인해주세요. (0,0)에서 (20,0)까지 51포인트.",
+      "desc": "Sr XRF linescan -- dE>2keV => align needed",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.46,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              16.105
+            ]
+          },
+          {
+            "fn": "quickLineScan",
+            "args": [
+              0,
+              0,
+              20,
+              0,
+              51
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Sr K-edge (16.105 keV) + 1 keV = 17.105 keV로 설정 후 (0,0)에서 (20,0) µm까지 51포인트 XRF 라인스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "geo_03",
+      "cat": "geology",
+      "input": "광산 폐기물에서 6가 크롬과 3가 크롬을 구분하고 싶어요. Cr XANES 해주세요.",
+      "desc": "Cr K-edge XANES valence (mine waste)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.97,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cr",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cr K-edge (5.989 keV) XANES로 Cr의 산화 상태를 분석합니다. Cr(III)과 Cr(VI)는 near-edge 구조가 다르므로 XANES로 구분할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "env_01",
+      "cat": "environment",
+      "input": "비산재 입자에서 납 분포를 XRF로 확인하고, Pb L3 XANES도 해주세요.",
+      "desc": "Pb L3 XRF+XANES multi-step (fly ash)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 21.78,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              14
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Pb",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pb L3-edge (13.035 keV) XANES를 실행합니다. Pb K-edge (88.0 keV)는 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다. XRF 매핑은 Pb L3-edge 위의 14 keV로 설정하여 10x10 µm, 41x41 포인트로 수행합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "env_02",
+      "cat": "environment",
+      "input": "하수 슬러지에서 아연의 화학 상태를 알고 싶어요.",
+      "desc": "Zn K-edge XANES (biosolids)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.4,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Zn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Zn K-edge (9.659 keV) XANES로 화학 상태를 분석합니다. 현재 에너지(10 keV)와 가까워 정렬 없이 바로 측정합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "bio_01",
+      "cat": "biology",
+      "input": "동결건조한 세포 시료에서 철과 아연 분포를 나노 XRF로 이미징해주세요. 5x5 41포인트.",
+      "desc": "Cell XRF imaging Fe+Zn (biology)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.34,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              10
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              5,
+              5,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV)와 Zn K-edge (9.659 keV) 중 가장 높은 Zn K-edge를 기준으로 10 keV로 설정하여 XRF 래스터 스캔을 실행합니다. 5x5 µm 범위, 41x41 포인트로 측정합니다. KB 미러로 나노빔(~50 nm) 집속하여 측정합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "bio_02",
+      "cat": "biology",
+      "input": "신경세포 수상돌기에서 Cu 분포를 페르마 나선 스캔으로 측정해주세요.",
+      "desc": "Cu Fermat spiral scan (neuron)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.84,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.5
+            ]
+          },
+          {
+            "fn": "quickFermat",
+            "args": [
+              10,
+              10,
+              0.5
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "신경세포 수상돌기의 Cu 분포를 페르마 나선 스캔으로 측정합니다. Cu K-edge (8.979 keV) 위의 11.5 keV로 설정하여 형광선을 여기합니다. 10×10 µm 범위, 0.5 µm 간격의 나선 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. KB 미러로 나노빔(~50 nm) 집속하여 고해상도 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "mat_01",
+      "cat": "materials",
+      "input": "페로브스카이트 태양전지에서 납 분포의 불균일성을 XRF 맵핑해주세요. 10x10 41포인트.",
+      "desc": "Pb L3 XRF perovskite solar cell",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.68,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              13.035
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pb L3-edge (13.035 keV)로 설정 후 10x10 µm, 41x41 포인트 XRF 래스터 스캔을 실행합니다. Pb K-edge는 88 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다. 납 분포의 불균일성을 확인할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "mat_02",
+      "cat": "materials",
+      "input": "고엔트로피 합금 시료에서 Fe, Co, Ni, Cr, Mn 원소 분포를 동시에 XRF 맵핑해주세요. 10x10 41포인트.",
+      "desc": "HEA 5-element XRF mapping",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 23.28,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              10
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe(7.112 keV), Co(7.709 keV), Ni(8.333 keV), Cr(5.989 keV), Mn(6.539 keV) 원소의 K-edge 중 가장 높은 Ni K-edge (8.333 keV)를 기준으로 10 keV로 설정하여 XRF 래스터 스캔을 실행합니다. 10x10 µm 범위, 41x41 포인트로 Fe, Co, Ni, Cr, Mn의 분포를 동시에 측정합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "mat_03",
+      "cat": "materials",
+      "input": "구리 산화물 시료가 Cu2O인지 CuO인지 구분하고 싶어요.",
+      "desc": "Cu2O vs CuO phase ID by XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.35,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XANES로 Cu의 산화 상태를 분석합니다. Cu2O(+1)와 CuO(+2)는 near-edge 구조가 다르므로 XANES로 구분할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "edge_01",
+      "cat": "edgecase",
+      "input": "인(P) K-edge XANES 해주세요.",
+      "desc": "P K-edge (2.1 keV) out of range => explain",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.9,
+      "response": {
+        "actions": [],
+        "explanation": "P(인) K-edge 에너지는 2.145 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 인 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "edge_02",
+      "cat": "edgecase",
+      "input": "텅스텐 K-edge XAFS 측정해줘.",
+      "desc": "W K-edge (69.5 keV) out of range => suggest L3",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 27.9,
+      "response": {
+        "actions": [],
+        "explanation": "W(텅스텐) K-edge 에너지는 69.5 keV로, 이 빔라인의 최대 에너지(25 keV)를 훨씬 초과합니다. 대신 W L3-edge (10.207 keV) XAFS를 측정할 수 있습니다. 이 에너지에서 텅스텐의 흡수 스펙트럼을 얻을 수 있습니다. 측정을 원하시면 '실행해줘'라고 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "edge_03",
+      "cat": "edgecase",
+      "input": "금 시료 XRF 해주세요. 5x5 41포인트.",
+      "desc": "Au XRF -- must auto-select L3 edge (11.9 keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.99,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              13
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              5,
+              5,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Au L3-edge (11.919 keV) + 1 keV = 13 keV로 설정 후 5x5 um, 41x41 포인트 XRF 래스터 스캔을 실행합니다. Au는 K-edge가 80.7 keV로 범위 밖이므로 L3-edge를 사용합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "edge_04",
+      "cat": "edgecase",
+      "input": "Cu K-edge XAFS 돌려줘",
+      "desc": "Mixed Korean/English colloquial request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.51,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와 Cu K-edge 에너지(8.979 keV)의 차이는 1.021 keV로 2 keV 이하이므로 추가 정렬 없이 바로 측정합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "edge_05",
+      "cat": "edgecase",
+      "input": "XANES랑 EXAFS 차이가 뭐예요?",
+      "desc": "Info: XANES vs EXAFS difference",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 58.64,
+      "response": {
+        "actions": [],
+        "explanation": "XANES와 EXAFS는 모두 X-ray Absorption Fine Structure(XAFS) 기법의 일부입니다.\n\n- **XANES (X-ray Absorption Near Edge Structure)**:\n  - 흡수단(Edge) 근처의 구조를 분석합니다.\n  - 에너지 분해능이 매우 높아 (0.25 eV), 화학 상태, 산화수, 국소 구조 정보를 얻을 수 있습니다.\n  - 주로 화학 상태 분석에 사용됩니다.\n\n- **EXAFS (Extended X-ray Absorption Fine Structure)**:\n  - 흡수단 이후의 구조를 분석합니다.\n  - 주변 원자들의 거리, 조각수, 혼합각 등 구조 정보를 얻을 수 있습니다.\n  - 주로 결정 구조, 결합 거리 분석에 사용됩니다.\n\nXANES는 화학 상태 분석에, EXAFS는 구조 분석에 각각 사용됩니다. 일반적으로 XAFS는 XANES + EXAFS를 포함하는 전체적인 기법입니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "edge_06",
+      "cat": "edgecase",
+      "input": "금 L3 엣지가 몇 keV예요?",
+      "desc": "Info: Au L3 edge energy query",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.3,
+      "response": {
+        "actions": [],
+        "explanation": "Au(금) L3-edge 에너지는 11.919 keV입니다. Au K-edge는 80.7 keV로 이 빔라인의 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용해야 합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "edge_07",
+      "cat": "edgecase",
+      "input": "Pt L3-edge XANES 측정해주세요.",
+      "desc": "Pt L3 XANES -- should warn about mirror coating",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.06,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.564
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Pt",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pt L3-edge (11.564 keV) XANES를 실행합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다. 노출 시간: 기본값 적용.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ops_01",
+      "cat": "operations",
+      "input": "Si(311)로 변경해주세요.",
+      "desc": "Crystal change to Si(311)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.79,
+      "response": {
+        "actions": [
+          {
+            "fn": "setCrystal",
+            "args": [
+              "311"
+            ]
+          }
+        ],
+        "explanation": "DCM 모노크로메이터의 결정면을 Si(311)로 변경합니다. ⚠ 주의: Si K-edge (1.839 keV)는 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Si(311) 결정면은 Si(111) 대비 높은 에너지 측정에 사용됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ops_02",
+      "cat": "operations",
+      "input": "SSA 수평갭을 30 마이크로미터로 줄여주세요.",
+      "desc": "SSA hgap motor set to 30",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.03,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              30
+            ]
+          }
+        ],
+        "explanation": "SSA 수평 갭을 30 µm로 줄입니다. 현재 수직 갭은 50 µm로 유지됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ops_03",
+      "cat": "operations",
+      "input": "긴급 정지!",
+      "desc": "Emergency stop",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.92,
+      "response": {
+        "actions": [
+          {
+            "fn": "emergencyStop",
+            "args": []
+          }
+        ],
+        "explanation": "긴급 정지를 실행합니다. 모든 모터가 정지되고 빔이 차단됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "workflow_01",
+      "cat": "workflow",
+      "input": "SrTiO3 시료에서 Ti K-edge XANES 하고 나서 Sr K-edge XANES도 해주세요.",
+      "desc": "Sequential Ti+Sr XANES (large dE => align)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 25.18,
+      "response": {
+        "actions": [],
+        "explanation": "Ti K-edge 에너지는 4.966 keV로, 이 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정할 수 없습니다. Sr K-edge (16.105 keV)는 측정 가능합니다. Sr K-edge XANES를 실행하시려면 '실행해줘'라고 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "workflow_02",
+      "cat": "workflow",
+      "input": "Cu 1000ppm 분말 시료 XRF 최적화해서 10x10 41포인트로 측정까지 해주세요.",
+      "desc": "Full workflow: optimize + scan request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.94,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "Cu",
+                "edge": "K",
+                "ppm": 1000,
+                "sampleType": "powder",
+                "priority": "balanced"
+              }
+            ]
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XRF에 최적화된 빔라인 설정을 계산합니다. 에너지, SSA, 예상 flux와 beam size를 포함한 Pareto front를 제공합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_01",
+      "cat": "heldout",
+      "input": "Zn K흡수단 XANES 스펙트럼을 찍어줘",
+      "desc": "Zn XANES with unusual Korean phrasing",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.69,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Zn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Zn K-edge (9.659 keV) XANES를 실행합니다. XANES는 흡수단 근처를 0.25 eV 분해능으로 측정합니다. 현재 에너지(10 keV)와 Zn K-edge의 차이가 0.34 keV로 2 keV 이하이므로 정렬 없이 바로 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_02",
+      "cat": "heldout",
+      "input": "X선 에너지를 9.5 keV로 맞춰주실래요?",
+      "desc": "Energy set with polite question form",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.92,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              9.5
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 9.5 keV로 설정합니다. 현재 에너지(10 keV)와의 차이가 0.5 keV로 2 keV 이하이므로 광학 정렬은 필요 없습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_03",
+      "cat": "heldout",
+      "input": "M2 미러 pitch angle을 3.0 mrad로 조절해줘",
+      "desc": "Motor move with English-Korean mixed phrasing",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.82,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "m2",
+              "m2_pitch",
+              3.0
+            ]
+          }
+        ],
+        "explanation": "M2 미러의 pitch angle을 3.0 mrad로 조절합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_04",
+      "cat": "heldout",
+      "input": "코발트 흡수 스펙트럼 좀 볼 수 있을까요?",
+      "desc": "Co XANES/XAFS with indirect request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.15,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Co",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Co K-edge (7.709 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)에서 2.291 keV 변화가 2 keV 이상이므로 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_05",
+      "cat": "heldout",
+      "input": "selenium XRF 이미지를 20um x 20um 영역에서 31포인트로 얻고 싶어",
+      "desc": "Se XRF map with English element name",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.92,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              13.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              20,
+              20,
+              31
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Se K-edge (12.658 keV) + 0.84 keV = 13.5 keV로 설정 후 20x20 um, 31x31 포인트 XRF 래스터 스캔을 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_06",
+      "cat": "heldout",
+      "input": "빔 세기를 줄이고 싶은데 어테뉴에이터에 알루미늄 0.5mm 집어넣어줘",
+      "desc": "Attenuator with Korean context description",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.77,
+      "response": {
+        "actions": [
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              0,
+              "material",
+              "Aluminium"
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              0,
+              "thickness",
+              0.5
+            ]
+          }
+        ],
+        "explanation": "어테뉴에이터 슬롯 1에 알루미늄 0.5mm 필터를 삽입하여 빔 강도를 감쇠시킵니다. 알루미늄 K-edge는 1.56 keV로, 이 빔라인의 최소 에너지(5 keV)보다 낮아 알루미늄 자체의 흡수는 없습니다. 따라서 필터 삽입으로 빔 세기만 줄일 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_07",
+      "cat": "heldout",
+      "input": "Bragg 법칙이 뭔지 알려줘",
+      "desc": "Info query: Bragg's law",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 61.0,
+      "response": {
+        "actions": [],
+        "explanation": "Bragg 법칙은 X선 회절(XRD)의 기본 원리입니다. 결정 격자에 X선이 입사할 때, 특정 조건에서만 강한 회절이 발생합니다. 이 조건이 Bragg 법칙입니다.\n\nBragg 법칙 수식:\n**nλ = 2d sinθ**\n\n- n: 회절 차수 (1,2,3,...)\n- λ: X선 파장\n- d: 격자 간격 (결정의 원자 간 거리)\n- θ: 입사각 (X선과 격자 평면 사이의 각도)\n\n이 법칙에 따르면, X선이 결정에 일정 각도로 입사할 때, 격자 평면에서 반사된 X선이 서로 간섭하여 강한 회절 신호를 만듭니다. 이 회절 패턴을 분석하면 격자 상수, 결정 구조, 상(phase) 등을 알 수 있습니다.\n\n이 빔라인에서는 Eiger 2X 검출기로 2D 회절 패턴을 수집하여 분석합니다. 단일 포인트 XRD는 '분말 XRD 실험 셋업해줘', 2D 매핑은 '2D XRD 매핑해줘'로 실행할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_08",
+      "cat": "heldout",
+      "input": "칼슘 K-edge 측정이 가능한가요?",
+      "desc": "Out-of-range element query (Ca K=4.038 keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.56,
+      "response": {
+        "actions": [],
+        "explanation": "Ca(칼슘) K-edge 에너지는 4.038 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 칼슘 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_09",
+      "cat": "heldout",
+      "input": "지금 빔 에너지가 몇이야? 그리고 As XANES 해줘",
+      "desc": "Combined info + scan request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.9,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "As",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "현재 빔 에너지는 10 keV입니다. As K-edge (11.867 keV) XANES를 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_10",
+      "cat": "heldout",
+      "input": "시료 위치를 x=150, y=-50으로 옮겨주세요",
+      "desc": "Multi-axis motor move with xy coordinates",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.17,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "sample",
+              "sample_cx",
+              150
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "sample",
+              "sample_cy",
+              -50
+            ]
+          }
+        ],
+        "explanation": "시료 X를 150 µm, Y를 -50 µm로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_11",
+      "cat": "heldout",
+      "input": "Mn oxidation state를 확인하려면 어떻게 해야하죠?",
+      "desc": "Advisory question about Mn oxidation analysis",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.24,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Mn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mn의 산화 상태를 확인하려면 Mn K-edge (6.539 keV) XANES 측정이 적합합니다. XANES는 흡수단 근처의 구조를 0.25 eV 분해능으로 분석하여 Mn²⁺, Mn³⁺, Mn⁴⁺ 등의 산화 상태를 구분할 수 있습니다. 현재 에너지(10 keV)에서 3.46 keV 차이가 2 keV 미만이므로 정렬 없이 바로 측정합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_12",
+      "cat": "heldout",
+      "input": "SSA를 완전히 열어줘",
+      "desc": "SSA fully open with informal phrasing",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.4,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              200
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              200
+            ]
+          }
+        ],
+        "explanation": "SSA 수평/수직 갭을 모두 200 um (최대)로 열겠습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_13",
+      "cat": "heldout",
+      "input": "Fe K-edge XRF로 10x10 um 영역 빠르게 스캔해줘. 21포인트면 충분해",
+      "desc": "XRF raster with 'quick' context",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.05,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              21
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 21×21 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요. P K-edge (2.145 keV)는 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정할 수 없습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_14",
+      "cat": "heldout",
+      "input": "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘",
+      "desc": "Sequential Cu+Zn XANES from current energy",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.26,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Zn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "현재 빔 에너지(10 keV)에서 Cu K-edge (8.979 keV) XANES와 Zn K-edge (9.659 keV) XANES를 순차적으로 실행합니다. 에너지 변화가 2 keV 이하이므로 정렬 없이 바로 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "held_15",
+      "cat": "heldout",
+      "input": "Ce L3 XANES를 찍으려면 에너지를 얼마로 해야 해?",
+      "desc": "Advisory question about Ce L3 energy",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.93,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              5.723
+            ]
+          }
+        ],
+        "explanation": "Ce L3-edge 에너지는 5.723 keV입니다. 현재 에너지(10 keV)에서 5.723 keV로 변경하려면 광학 정렬이 필요합니다. 정렬 후 XANES 측정을 진행하시겠습니까?",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_01",
+      "cat": "experiment_plan",
+      "input": "NMC622 양극재야. Ni 30%, Co 10%, Mn 10%. 빔타임 8시간.",
+      "desc": "NMC622 cathode with composition and beamtime",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 47.89,
+      "response": {
+        "actions": [],
+        "explanation": "NMC622 양극재 (Ni 30%, Co 10%, Mn 10%)를 분석하기 위한 최적화를 시작합니다. 8시간의 빔타임을 고려하여, 다음 정보를 기반으로 최적의 설정을 제안합니다:\n\n1. **측정 기법**: XRF 2D 맵핑\n2. **측정 원소**: Ni, Co, Mn\n3. **시료 정보**: 분말/고체, 두께 10 µm 가정\n4. **우선순위**: flux (신호 강도)와 resolution (분해능)의 균형\n\n최적화 중입니다. 잠시만 기다려 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_02",
+      "cat": "experiment_plan",
+      "input": "시료가 SrTiO3 단결정인데 Ti, Sr 둘 다 분석해야해",
+      "desc": "Multi-element sequential (Ti + Sr)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 48.28,
+      "response": {
+        "actions": [],
+        "explanation": "SrTiO3 단결정에서 Ti와 Sr을 분석하려면 각각의 K-edge 에너지를 고려해야 합니다. Ti K-edge는 4.966 keV로, 이 빔라인의 최소 에너지(5.0 keV)보다 약간 낮아 측정이 어려울 수 있습니다. Sr K-edge는 16.105 keV로, 측정 가능한 범위 내에 있습니다. Sr에 대한 분석은 가능하지만, Ti에 대한 분석은 에너지 제한으로 인해 제한적일 수 있습니다. Sr K-edge에서 XANES 또는 XRF를 수행하는 것이 적절할 수 있습니다. Ti에 대한 분석이 필수적인 경우, 다른 빔라인을 고려해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_03",
+      "cat": "experiment_plan",
+      "input": "Pt/C 촉매 50ppm인데 XRF로 보일까?",
+      "desc": "Pt 50ppm signal estimation inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 44.78,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.564
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pt L3-edge (11.564 keV)로 설정 후 XRF 래스터 스캔을 실행합니다. C K-edge (0.284 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. P K-edge (2.145 keV)도 마찬가지로 측정 불가능합니다. ⚠ Pt L3-edge 측정 시, 미러 코팅이 Rh인 경우 Pt 형광선 간섭이 없어 권장됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_04",
+      "cat": "experiment_plan",
+      "input": "2D XRF 맵핑 후에 2D XRD도 해야하는데 시간이 얼마나 걸려?",
+      "desc": "Timing inquiry for XRF + XRD mapping",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 47.48,
+      "response": {
+        "actions": [],
+        "explanation": "2D XRF 맵핑과 2D XRD 매핑의 예상 시간을 계산하려면 다음 정보가 필요합니다:\n\n1. **스캔 범위**: 예: 10×10 µm\n2. **포인트 수**: 예: 41×41 포인트\n3. **노출 시간**: XRF는 0.1초/포인트 기본, XRD는 1초/포인트 기본\n\n기본값으로 5×5 µm, 41×41 포인트, XRF 0.1초/포인트, XRD 1초/포인트로 계산하면:\n- XRF: 41×41 × 0.1초 = 약 164초\n- XRD: 41×41 × 1초 = 약 1,681초\n- 총: 약 1,845초 (30분 45초)\n\n정확한 시간을 알려드리려면 스캔 범위와 포인트 수를 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_05",
+      "cat": "experiment_plan",
+      "input": "ptychography랑 XRF를 동시에 할 수 있어?",
+      "desc": "Technique compatibility question (ptycho + XRF)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.76,
+      "response": {
+        "actions": [],
+        "explanation": "네, 가능합니다. Ptychography는 스캐닝 기반 기법이므로, 스캔 중에 XRF 신호를 SDD 검출기로 동시에 수집할 수 있습니다. 별도의 검출기 교체 없이 ptychography 이미지와 XRF 원소 분포 맵을 동시에 얻을 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_06",
+      "cat": "experiment_plan",
+      "input": "nano-XANES랑 XRF 맵핑 동시에 되나?",
+      "desc": "Technique compatibility question (XANES + XRF map)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 24.25,
+      "response": {
+        "actions": [],
+        "explanation": "XANES와 XRF 맵핑은 기본적으로 다른 기법이므로 동시에 수행할 수 없습니다. XANES는 에너지 스캔 기반, XRF 맵핑은 공간 스캔 기반입니다. 하지만, XRF 맵핑과 ptychography는 동시에 가능합니다. ptychography는 공간 스캔 기반의 고해상도 이미지 기법이므로, XRF 맵핑과 병행이 가능합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_07",
+      "cat": "experiment_plan",
+      "input": "빔타임 4시간인데 Cu XAFS 3회 반복이랑 XRF 맵핑 둘 다 가능해?",
+      "desc": "Time budget question (XAFS repeat + XRF map)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 47.16,
+      "response": {
+        "actions": [],
+        "explanation": "Cu XAFS 3회 반복과 XRF 맵핑을 4시간 내에 수행할 수 있는지 확인하겠습니다. Cu K-edge XAFS는 1회당 약 30분 소요되며, XRF 맵핑(5x5 µm, 41x41 포인트)은 약 1시간이 필요합니다. 총 예상 시간은 2시간 30분입니다. 따라서 4시간 내에 둘 다 수행할 수 있습니다. Cu XAFS는 8.979 keV, XRF 맵핑은 Cu K-edge 위의 10 keV로 설정됩니다. 추가로 세부 설정이 필요하시면 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_08",
+      "cat": "experiment_plan",
+      "input": "검출기 교체 시간이 얼마나 걸려?",
+      "desc": "Setup change inquiry (detector swap time)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 25.15,
+      "response": {
+        "actions": [],
+        "explanation": "이 빔라인에서는 XRF(SDD)와 XRD(Eiger 2X) 검출기가 고정되어 있으며, 스위칭이 필요 없습니다. 두 검출기의 데이터는 별도로 수집됩니다. 따라서 검출기 교체 시간은 0초입니다. 필요시 'XRF 해줘' 또는 'XRD 해줘'로 직접 선택하시면 됩니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_01",
+      "cat": "real_user",
+      "input": "이 시료 좀 봐줘. Cu 시료야",
+      "desc": "Vague request -- should ask for specifics",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 34.06,
+      "response": {
+        "actions": [],
+        "explanation": "Cu 시료 분석을 위해 다음 정보가 필요합니다:\n\n1. **측정 목적**: XRF 이미징, XANES, XAFS, XRD 중 무엇을 원하시나요?\n2. **원소 농도**: 예: 1000 ppm, 10000 ppm\n3. **시료 형태**: 분말, 고체, 박막 등\n4. **기타 요구사항**: 분해능, 측정 시간, 특별한 조건 등\n\n예시: 'Cu 분말 1000ppm XRF 이미징 해줘'",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_02",
+      "cat": "real_user",
+      "input": "형광 맵 좀 찍어줘. 10마이크로 범위",
+      "desc": "Colloquial XRF request with range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.2,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "현재 에너지(10 keV)로 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_03",
+      "cat": "real_user",
+      "input": "이 에너지에서 시료 신호가 얼마나 되는지 확인해봐",
+      "desc": "Signal check at current energy",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.28,
+      "response": {
+        "actions": [],
+        "explanation": "현재 에너지(10 keV)에서 P(인) K-edge (2.145 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. P K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_04",
+      "cat": "real_user",
+      "input": "좀 더 세게 빔 때려줘",
+      "desc": "Increase flux (SSA open wider or remove attenuator)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.43,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              20
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              20
+            ]
+          }
+        ],
+        "explanation": "SSA 수평/수직 갭을 20 µm로 줄여서 빔 강도를 증가시킵니다. 현재 SSA 갭이 50 µm에서 20 µm로 변경됩니다. 더 강한 빔이 필요하시면 더 좁게 설정할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_05",
+      "cat": "real_user",
+      "input": "빔 사이즈를 최소로 줄여줘",
+      "desc": "Minimize beam size",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.1,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              10
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              10
+            ]
+          }
+        ],
+        "explanation": "SSA 수평/수직 갭을 10 um으로 줄여 빔 사이즈를 최소화합니다. 현재 SSA 갭이 50 um이므로 10 um으로 줄이면 빔 사이즈가 작아집니다. 이 설정은 높은 분해능을 원할 때 유용합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_06",
+      "cat": "real_user",
+      "input": "결정 구조가 궁금해. XRD 한 번 찍어봐",
+      "desc": "XRD single shot request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.62,
+      "response": {
+        "actions": [
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "powder_xrd"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "분말 XRD 실험을 실행합니다. 현재 에너지(10 keV)에서 회절 패턴을 수집합니다. 결정 구조 분석에 적합합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_07",
+      "cat": "real_user",
+      "input": "이전 스캔 결과 보여줘",
+      "desc": "Unsupported request -- show previous results",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.04,
+      "response": {
+        "actions": [],
+        "explanation": "이전 스캔 결과는 현재 시스템에서 확인할 수 없습니다. 데이터 저장 및 관리는 사용자 책임이며, 이 빔라인은 실시간 데이터만 제공합니다. 저장된 데이터가 있다면 별도의 분석 소프트웨어에서 열어주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_08",
+      "cat": "real_user",
+      "input": "시료를 좀 더 왼쪽으로 옮겨줘",
+      "desc": "Relative motor move (left)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.09,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "sample",
+              "sample_cx",
+              -10
+            ]
+          }
+        ],
+        "explanation": "시료 X 위치를 -10 µm 이동하여 왼쪽으로 옮깁니다. 현재 시료 X 위치는 0 µm이므로, 이동 후 -10 µm가 됩니다. 이동 거리가 명확하지 않아 기본값으로 -10 µm로 설정했습니다. 다른 거리로 이동하시려면 구체적인 값을 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_09",
+      "cat": "real_user",
+      "input": "지금 몇 keV야?",
+      "desc": "Energy inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 6.72,
+      "response": {
+        "actions": [],
+        "explanation": "현재 빔 에너지는 10 keV입니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_10",
+      "cat": "real_user",
+      "input": "어떤 실험을 할 수 있어?",
+      "desc": "Capability inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 183.22,
+      "response": {
+        "actions": [],
+        "explanation": "{\"actions\":[],\"explanation\":\"이 빔라인에서는 다음 실험을 수행할 수 있습니다:\\n\\n1. **XAFS (X-ray Absorption Fine Structure)**\\n   - XANES (흡수단 근처 고해상도 스캔)\\n   - EXAFS (흡수단 이후의 구조 정보)\\n   - 예: '구리 K-edge XAFS 측정해줘'\\n\\n2. **XRF Imaging (X-ray Fluorescence Mapping)**\\n   - 2D 원소 분포 이미징\\n   - 나노 XRF 라인스캔\\n   - 예: '철 XRF 2D 맵 측정해줘'\\n\\n3. **Powder XRD (X-ray Diffraction)**\\n   - 결정 구조 분석\\n   - 2D XRD 매핑 (위치별 결정상 분포)\\n   - 예: '분말 XRD 실험'\\n\\n4. **Energy Scan**\\n   - 에너지 대역별 흡수/회절 분석\\n   - 예: '8~10 keV 에너지 스캔'\\n\\n5. **Point Measurement (Counting)**\\n   - 단일 포인트 신호 측정\\n   - 예: '100 포인트 카운트'\\n\\n6. **Line Scan**\\n   - 임의 방향의 1D 스캔\\n   - 예: '시료 (0,0)에서 (10,5)까지 라인스캔'\\n\\n7. **Fly Scan**\\n   - 고속 연속 스캔\\n   - 예: 'M1 피치 플라이 스캔'\\n\\n8. **Auto-Tune**\\n   - 반복 센트로이드 기반 정렬\\n   - 예: 'M1 피치 자동 정렬'\\n\\n9. **Adaptive Energy Scan**\\n   - 흡수단 근처에서 밀도 증가\\n   - 예: '철 K-edge 적응형 스캔'\\n\\n10. **Fermat Spiral Scan**\\n    - 효율적인 2D 스캔\\n    - 예: '페르마 나선 스캔'\\n\\n11. **Relative Raster Scan**\\n    - 현위치 기준 래스터 스캔\\n    - 예: '현위치 기준 5×5 래스터'\\n\\n12. **Optimization**\\n    - 최적 에너지/SSA 추천\\n    - 예: 'Cu XRF 최적화해줘'\\n\\n13. **Signal Estimation**\\n    - 예상 신호 계산\\n    - 예: 'Cu 신호 얼마나 나와?'\\n\\n14. **Mirror Alignment**\\n    - 미러별 다단계 정렬\\n    - 예: 'M1 미러 정렬'\\n\\n15. **Full Alignment**\\n    - 전체 7단계 빔 정렬\\n    - 예: '전체 빔 정렬 시작'\\n\\n16. **Energy Setting**\\n    - 원하는 에너지로 설정\\n    - 예: '에너지를 12 keV로 설정해'\\n\\n17. **Motor Control**\\n    - 모터 이동 및 정렬\\n    - 예: 'M1 피치를 2.5로 이동해'\\n\\n18. **Mask and Aperture Control**\\n    - 마스크/조리개 조절\\n    - 예: 'movable mask를 1mm x 1mm로'\\n\\n19. **Attenuator Control**\\n    - 어테뉴에이터 삽입/제거\\n    - 예: 'Carbon 1mm 넣어'\\n\\n20. **Beam Profile**\\n    - 빔 프로파일 확인\\n    - 예: '빔 프로파일 보여줘'\\n\\n21. **Emergency Stop**\\n    - 긴급 정지\\n    - 예: '긴급 정지'\\n\\n22. **Virtual Experiment Setup**\\n    - 사전 정의된 실험 프리셋\\n    - 예: 'Cu XAFS 실험 셋업'\\n\\n23. **Multi-Region Scan**\\n    - 다중 에너지 영역 스캔\\n    - 예: '다중 영역 에너지 스캔'\\n\\n24. **Relative Alignment Scan**\\n",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_01",
+      "cat": "complex_multi",
+      "input": "에너지 15 keV로 바꾸고, SSA 30으로 줄이고, XRF 맵 10x10 41포인트 찍어줘",
+      "desc": "3-step: energy + SSA + XRF raster",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 25.26,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              15
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              30
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              30
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "15 keV로 에너지를 설정하고, SSA 수평/수직 갭을 30 um로 줄였습니다. 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. P(인) K-edge (2.145 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. 다른 원소를 측정하시려면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_02",
+      "cat": "complex_multi",
+      "input": "Si(311)로 바꾸고 Se K-edge XAFS 측정해줘",
+      "desc": "Crystal change + Se XAFS",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 23.77,
+      "response": {
+        "actions": [
+          {
+            "fn": "setCrystal",
+            "args": [
+              "311"
+            ]
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12.658
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Se",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Si(311) 결정을 선택하고 Se K-edge (12.658 keV) XAFS를 실행합니다. 현재 에너지(10 keV)에서 2.658 keV 변화이므로 광학 정렬을 먼저 수행합니다. ⚠ 주의: Si K-edge (1.839 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. 하지만 Si(311) 결정은 에너지 설정과는 별도로 광학 시스템의 일부입니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_03",
+      "cat": "complex_multi",
+      "input": "M1, M2 정렬 순서대로 해줘",
+      "desc": "Sequential M1 + M2 alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.01,
+      "response": {
+        "actions": [
+          {
+            "fn": "runMirrorAlignUI",
+            "args": [
+              "m1"
+            ]
+          },
+          {
+            "fn": "runMirrorAlignUI",
+            "args": [
+              "m2"
+            ]
+          }
+        ],
+        "explanation": "M1 미러 정렬을 먼저 수행한 후, M2 미러 정렬을 진행합니다. 각 미러 정렬은 다단계 프로세스로, 현재 에너지(10 keV)에 맞게 반사율 최적화를 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_04",
+      "cat": "complex_multi",
+      "input": "Cu XANES 찍고, 에너지를 Fe로 바꿔서 XANES도 찍어줘",
+      "desc": "Sequential Cu XANES + Fe XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.82,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              7.112
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XANES를 실행한 후, Fe K-edge (7.112 keV)로 에너지를 변경하고 XANES를 다시 실행합니다. Fe로의 에너지 변화(10 keV → 7.112 keV, -2.888 keV)가 2 keV 이상이므로 광학 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_05",
+      "cat": "complex_multi",
+      "input": "XRF 맵핑하고 관심 영역에서 XANES 포인트 스캔해줘",
+      "desc": "Multi-step workflow: XRF map then XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 30.0,
+      "response": {
+        "actions": [],
+        "explanation": "XRF 맵핑 후 관심 영역에서 XANES 포인트 스캔을 실행하겠습니다. 다음 정보를 알려주세요:\n\n1. **측정 원소**: XRF 맵핑할 원소 (예: P, S, Fe 등)\n2. **XANES 원소**: 포인트 스캔할 원소 (예: Fe, Cu 등)\n3. **스캔 범위**: XRF 맵핑 범위 (예: 10×10 µm)\n4. **포인트 수**: XRF 맵핑 포인트 수 (예: 41×41)\n\n예시: 'Fe XRF 맵핑하고 Fe XANES 포인트 스캔해줘'",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_06",
+      "cat": "complex_multi",
+      "input": "Pb L3 XANES하고 As K-edge XANES도 연속으로 해줘",
+      "desc": "Sequential Pb L3 + As K XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.59,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              13.035
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Pb",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.867
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "As",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pb L3-edge (13.035 keV) XANES를 실행한 후 As K-edge (11.867 keV) XANES를 순차적으로 실행합니다. Pb K-edge는 88.0 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_07",
+      "cat": "complex_multi",
+      "input": "어테뉴에이터 Al 0.3mm 넣고 나서 Cr XANES 측정해줘",
+      "desc": "Attenuator insert + Cr XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.49,
+      "response": {
+        "actions": [
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              0,
+              "material",
+              "Aluminium"
+            ]
+          },
+          {
+            "fn": "setAttenFilter",
+            "args": [
+              0,
+              "thickness",
+              0.3
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cr",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Al 필터는 K-edge가 1.56 keV로, 이 빔라인의 최소 에너지(5 keV)보다 낮아 사용할 수 없습니다. 대신, Al 필터는 5 keV 이상에서 투과율이 높아 빔 강도 감쇠에 적합합니다. Cr K-edge (5.989 keV) XANES를 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_08",
+      "cat": "complex_multi",
+      "input": "12 keV로 설정하고 빔 프로파일 보여주고 XRF 맵 찍어줘",
+      "desc": "3-step: energy + profile + XRF map",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.99,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          },
+          {
+            "fn": "showBeamProfile",
+            "args": [
+              "sample"
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              5,
+              5,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "12 keV로 설정 후 빔 프로파일을 확인하고, 5×5 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_01",
+      "cat": "robustness",
+      "input": "에너지를 12keV로 설정해줘",
+      "desc": "No space before keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.27,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 12 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_02",
+      "cat": "robustness",
+      "input": "copper K-edge XAFS해줘",
+      "desc": "English element in Korean sentence",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.03,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와의 차이가 1.021 keV로 2 keV 이하이므로 광학 정렬은 수행하지 않습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_03",
+      "cat": "robustness",
+      "input": "Fe xanes",
+      "desc": "Minimal input (Fe xanes)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.7,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_04",
+      "cat": "robustness",
+      "input": "XAFS 해",
+      "desc": "No element specified => should ask",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.86,
+      "response": {
+        "actions": [],
+        "explanation": "XAFS 측정을 위해 다음 정보가 필요합니다:\n\n1. **원소**: 측정하려는 원소 (예: Cu, Fe, Au)\n2. **edge**: K-edge 또는 L3-edge (예: K, L3)\n\n예시: '구리 K-edge XAFS 해줘'",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_05",
+      "cat": "robustness",
+      "input": "   Cu K-edge XAFS   ",
+      "desc": "Extra whitespace around input",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.45,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.979
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 스캔입니다. 현재 에너지(10 keV)에서 1.021 keV 변화이므로 광학 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_06",
+      "cat": "robustness",
+      "input": "에너지 8.333 keV로 맞춰줘",
+      "desc": "Exact edge energy (Ni K=8.333) -- should warn about being AT the edge",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.92,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.333
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 8.333 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_07",
+      "cat": "robustness",
+      "input": "quickXafs Cu K",
+      "desc": "User typing function name directly",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.7,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)에서 1.021 keV 변화가 2 keV 이하이므로 정렬 없이 바로 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_08",
+      "cat": "robustness",
+      "input": "Cu, Fe, Zn 다원소 맵핑 10x10",
+      "desc": "Comma-separated elements mapping",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.24,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu, Fe, Zn 다원소 맵핑을 위해 10×10 µm 범위, 41×41 포인트 XRF 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있으며, 이는 Cu(8.979 keV), Fe(7.112 keV), Zn(9.659 keV) K-edge 모두를 여기할 수 있는 적절한 값입니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_09",
+      "cat": "robustness",
+      "input": "에너지를 -5 keV로",
+      "desc": "Negative energy => should reject",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.75,
+      "response": {
+        "actions": [],
+        "explanation": "에너지 설정 범위는 5~25 keV입니다. -5 keV는 유효하지 않은 값입니다. 5 keV 이상의 값을 입력해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_10",
+      "cat": "robustness",
+      "input": "에너지를 100 keV로",
+      "desc": "Energy way out of range (100 keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.93,
+      "response": {
+        "actions": [],
+        "explanation": "빔 에너지를 100 keV로 설정합니다. 이 빔라인의 에너지 범위는 5~25 keV입니다. 요청하신 100 keV는 범위를 훨씬 초과하므로 설정할 수 없습니다.\n[범위 초과로 제거됨: setTargetEnergy(100.0) - 에너지 100.0 keV는 빔라인 범위(5.0-25.0 keV) 밖입니다.]",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_01",
+      "cat": "rejection",
+      "input": "Si K-edge XANES 해줘",
+      "desc": "Si K-edge (1.84 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.11,
+      "response": {
+        "actions": [],
+        "explanation": "Si K-edge 에너지는 1.839 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Si K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_02",
+      "cat": "rejection",
+      "input": "산소 K-edge XANES 측정해줘",
+      "desc": "O K-edge (0.54 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.13,
+      "response": {
+        "actions": [],
+        "explanation": "산소 K-edge 에너지는 0.543 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 산소 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_03",
+      "cat": "rejection",
+      "input": "리튬 흡수 스펙트럼 측정해줘",
+      "desc": "Li K-edge (0.055 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.06,
+      "response": {
+        "actions": [],
+        "explanation": "Li(리튬) K-edge 에너지는 0.543 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 리튬 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_04",
+      "cat": "rejection",
+      "input": "탄소 K-edge XAFS 해줘",
+      "desc": "C K-edge (0.28 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.15,
+      "response": {
+        "actions": [],
+        "explanation": "탄소 K-edge 에너지는 0.284 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 탄소 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_05",
+      "cat": "rejection",
+      "input": "질소 XANES 측정해줘",
+      "desc": "N K-edge (0.40 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.39,
+      "response": {
+        "actions": [],
+        "explanation": "질소(N) K-edge 에너지는 0.400 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 질소 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_06",
+      "cat": "rejection",
+      "input": "Ag K-edge XAFS 측정해",
+      "desc": "Ag K-edge (25.5 keV) at boundary -- should warn",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 31.39,
+      "response": {
+        "actions": [],
+        "explanation": "Ag K-edge 에너지는 25.5 keV로, 이 빔라인의 최대 에너지(25.0 keV)를 초과합니다. Ag K-edge XAFS는 측정할 수 없습니다. 대안으로 Ag L3-edge (3.351 keV)가 있지만, 이는 빔라인의 최소 에너지(5 keV)보다 낮아 측정이 불가능합니다. Ag 분석에는 다른 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_07",
+      "cat": "rejection",
+      "input": "우라늄 분석해줘",
+      "desc": "Uranium not in standard database",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.32,
+      "response": {
+        "actions": [],
+        "explanation": "우라늄(U) 분석은 U L3-edge (17.5 keV) XANES/XAFS 또는 XRF로 수행할 수 있습니다. 다음 중 하나를 선택해주세요:\n\n1. **U L3-edge XANES**: 'U L3 XANES 해줘'\n2. **U XRF 이미징**: 'U XRF 2D 맵 측정해줘'\n\n추가 정보가 필요하시면 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_08",
+      "cat": "rejection",
+      "input": "시료 사진 찍어줘",
+      "desc": "Optical imaging not available",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 28.43,
+      "response": {
+        "actions": [],
+        "explanation": "이 빔라인에서는 시료 사진 촬영 기능이 없습니다. XRF 이미징, XRD 패턴, 빔 프로파일은 측정 가능하지만, 시료의 광학 이미지는 촬영할 수 없습니다. XRF 원소 분포 이미지나 XRD 패턴을 원하시면 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_01",
+      "cat": "korean_variant",
+      "input": "구리 K 흡수단 XAFS 돌려줘",
+      "desc": "Korean 'absorption edge' phrasing",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.34,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와 차이가 1.021 keV로 2 keV 이하이므로 광학 정렬 없이 바로 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_02",
+      "cat": "korean_variant",
+      "input": "니켈 산화 상태 확인",
+      "desc": "Ni oxidation state check (terse)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.14,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ni",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ni K-edge (8.333 keV) XANES로 Ni의 산화 상태를 분석합니다. Ni의 산화 상태(Ni0, Ni2+, Ni3+)는 near-edge 구조에서 구분할 수 있습니다. 현재 에너지(10 keV)에서 8.333 keV로 변경 후 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_03",
+      "cat": "korean_variant",
+      "input": "형광 이미징 하고 싶어요",
+      "desc": "Polite XRF imaging request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 30.42,
+      "response": {
+        "actions": [],
+        "explanation": "형광 이미징(XRF 맵핑)을 준비하겠습니다. 다음 파라미터를 알려주세요:\n- 스캔 범위 (µm, 예: 10×10)\n- 포인트 수 (예: 41×41)\n- 측정할 원소 (예: Fe, Cu 등)\n\n또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 41pt, 현재 에너지 10 keV)으로 실행합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_04",
+      "cat": "korean_variant",
+      "input": "에너지 바꿔주세요. 9 keV로요.",
+      "desc": "Polite energy change with period",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.04,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              9
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 9 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_05",
+      "cat": "korean_variant",
+      "input": "빔 정렬 한번 해볼까?",
+      "desc": "Casual question form alignment",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.45,
+      "response": {
+        "actions": [
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          }
+        ],
+        "explanation": "전체 빔라인 정렬(7단계)을 시작합니다. 현재 에너지는 10 keV, SSA 수평/수직 갭은 50 um입니다. 정렬이 완료되면 빔 품질이 개선됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_06",
+      "cat": "korean_variant",
+      "input": "SSA 좀 넓혀줄래?",
+      "desc": "Informal SSA widen request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.97,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              100
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              100
+            ]
+          }
+        ],
+        "explanation": "SSA 수평/수직 갭을 100 um로 넓혔습니다. 현재 설정: 수평 100 um, 수직 100 um. 더 넓히시거나 좁히시려면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_07",
+      "cat": "korean_variant",
+      "input": "스캔 멈춰!",
+      "desc": "Stop scan command",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 3.8,
+      "response": {
+        "actions": [
+          {
+            "fn": "queueStop",
+            "args": []
+          }
+        ],
+        "explanation": "현재 실행 중인 스캔을 중지합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_08",
+      "cat": "korean_variant",
+      "input": "이거 다시 해줘",
+      "desc": "Repeat last action -- context-dependent",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.84,
+      "response": {
+        "actions": [],
+        "explanation": "죄송합니다, 요청하신 내용이 명확하지 않습니다. 다시 한 번 구체적으로 말씀해 주시겠어요?",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "sigest_01",
+      "cat": "signal_est",
+      "input": "Cu 100ppm 시료에서 XRF 신호가 충분할까?",
+      "desc": "Cu 100ppm XRF signal sufficiency",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.43,
+      "response": {
+        "actions": [
+          {
+            "fn": "estimateSignal",
+            "args": [
+              "xrf",
+              "Cu",
+              100,
+              null,
+              null,
+              10
+            ]
+          }
+        ],
+        "explanation": "현재 빔라인 설정에서 Cu XRF 신호를 추정합니다. 100 ppm, 두께 10 um 시료 기준입니다. 10 keV 에너지, SSA 수평/수직 갭 50 um 조건에서의 예상 신호입니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "sigest_02",
+      "cat": "signal_est",
+      "input": "Au 10ppm 박막 시료 신호 예상치",
+      "desc": "Au 10ppm thin film signal estimate",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.39,
+      "response": {
+        "actions": [
+          {
+            "fn": "estimateSignal",
+            "args": [
+              "xrf",
+              "Au",
+              10,
+              null,
+              null,
+              100
+            ]
+          }
+        ],
+        "explanation": "Au L3-edge (11.919 keV) XRF 신호를 추정합니다. Au 10 ppm 박막 시료, 두께 100 um 기준입니다. Au K-edge는 80.7 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "sigest_03",
+      "cat": "signal_est",
+      "input": "Fe 50% 시료 XAFS 자기흡수 문제 없어?",
+      "desc": "Fe 50% self-absorption concern",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 28.15,
+      "response": {
+        "actions": [],
+        "explanation": "Fe XAFS 자기흡수(self-absorption)는 시료 두께와 농도에 따라 달라집니다. Fe K-edge (7.112 keV)에서 50% 농도의 시료는 두께가 얇아야 자기흡수가 적습니다. 두께가 10 µm 이하이면 일반적으로 문제가 없습니다. 두께가 더 두꺼우면 자기흡수로 인해 흡수단이 왜곡될 수 있으므로, 두께를 확인해 주세요. 현재 빔 에너지는 10 keV로 설정되어 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "sigest_04",
+      "cat": "signal_est",
+      "input": "Mn 500ppm에서 검출 한계가 어떻게 돼?",
+      "desc": "Mn 500ppm detection limit inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.57,
+      "response": {
+        "actions": [
+          {
+            "fn": "estimateSignal",
+            "args": [
+              "xrf",
+              "Mn",
+              500,
+              null,
+              null,
+              10
+            ]
+          }
+        ],
+        "explanation": "Mn XRF 신호를 500 ppm, 두께 10 um 기준으로 추정합니다. 현재 빔라인 설정(10 keV, SSA 50x50 um)에서의 예상 신호를 계산합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "sigest_05",
+      "cat": "signal_est",
+      "input": "Pt L3 XRF를 할건데 Ir 간섭이 있을까?",
+      "desc": "Pt-Ir spectral interference question",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 33.01,
+      "response": {
+        "actions": [],
+        "explanation": "Pt L3-edge (11.564 keV) XRF를 실행하시려면 '실행해줘'라고 말씀해 주세요. Ir K-edge는 14.1 keV로, 이 에너지에서 Ir 형광선이 여기되지 않으므로 간섭은 없습니다. Ir L3-edge는 1.7 keV로 매우 낮아 측정되지 않습니다. 따라서 Pt L3 XRF에서는 Ir 간섭이 없습니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "blknow_01",
+      "cat": "bl_knowledge",
+      "input": "이 빔라인 에너지 범위가 어떻게 돼?",
+      "desc": "Beamline energy range inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 24.66,
+      "response": {
+        "actions": [],
+        "explanation": "이 빔라인의 에너지 범위는 5.0 keV에서 25.0 keV입니다. 예를 들어, 인(P) K-edge는 2.145 keV로 이 범위 밖에 있어 측정할 수 없습니다. 5.0 keV 이상의 에너지를 가진 원소의 K-edge나 L3-edge를 측정할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "blknow_02",
+      "cat": "bl_knowledge",
+      "input": "KB 미러 초점 거리가 얼마야?",
+      "desc": "KB mirror focal distance inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 29.1,
+      "response": {
+        "actions": [],
+        "explanation": "KB 미러의 초점 거리는 에너지에 따라 달라지며, 이 빔라인에서는 에너지에 따라 자동으로 초점이 맞춰집니다. 현재 에너지가 10 keV일 때, KB 미러의 수직 초점 거리는 약 10.5 m, 수평 초점 거리는 약 11.2 m입니다. 이 초점 거리는 빔라인의 광학 설계에 따라 고정되어 있으며, 사용자가 직접 조정할 수 없습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "blknow_03",
+      "cat": "bl_knowledge",
+      "input": "DCM Si(111)이랑 Si(311) 차이가 뭐야?",
+      "desc": "DCM Si(111) vs Si(311) difference",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 31.38,
+      "response": {
+        "actions": [],
+        "explanation": "Si(111)과 Si(311)은 결정면의 차이입니다. Si(111)은 저에너지 영역(1.839 keV)의 K-edge를 가지므로 이 빔라인(5~25 keV)에서는 사용할 수 없습니다. Si(311)은 고에너지 영역의 K-edge를 가지므로 사용할 수 있습니다. Si(311)은 고에너지 측정에 적합한 결정면입니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "blknow_04",
+      "cat": "bl_knowledge",
+      "input": "이 빔라인에서 할 수 있는 실험 종류를 알려줘",
+      "desc": "List available experiment types",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 201.92,
+      "response": {
+        "actions": [],
+        "explanation": "이 빔라인에서 가능한 실험 기법은 다음과 같습니다:\n\n1. **XAFS(X-ray Absorption Fine Structure)**\n   - XANES(흡수단 근처 고해상도) 및 EXAFS(흡수단 이후 구조 분석)\n   - 예: Fe K-edge XAFS, Co K-edge XANES\n\n2. **XRF Imaging(X-ray Fluorescence Mapping)**\n   - 2D 래스터 스캔으로 원소 분포 이미징\n   - 예: Cu, Ni, Zn 등의 분포 측정\n\n3. **Powder XRD(X-ray Diffraction)**\n   - 결정 구조 분석, 상(phase) 분석\n   - 예: 분말 시료의 격자 상수 측정\n\n4. **Nano XRF Line Scan**\n   - 나노빔(~50 nm)으로 원소 라인 프로파일 측정\n\n5. **Energy Scan**\n   - 에너지 범위를 스캔하여 흡수/회절 특성 분석\n\n6. **Point Measurement(Counting)**\n   - 단일 포인트의 XRF/XRD 신호 측정\n\n7. **XANES(X-ray Absorption Near Edge Structure)**\n   - XAFS보다 더 세밀한 흡수단 분석 (0.25 eV 분해능)\n\n8. **Multi-Region Energy Scan**\n   - 여러 에너지 영역을 다른 스텝 크기로 스캔\n\n9. **Fly Scan(Continuous Motion Scan)**\n   - 고속 연속 스캔 (현재는 스텝 스캔 방식)\n\n10. **Line Scan(Arbitrary Direction)**\n   - 임의 방향의 1D 스캔\n\n11. **Auto-Tune(Iterative Centroid Alignment)**\n   - 반복 센트로이드 기반 자동 정렬\n\n12. **Adaptive Energy Scan**\n   - 흡수단 근처에서 자동 밀도 증가\n\n13. **Relative Alignment Scan**\n   - 현위치 기준 상대 스캔\n\n14. **Fermat Spiral Scan**\n   - 효율적인 2D 스캔 경로\n\n15. **Relative Raster Scan**\n   - 현위치 기준 상대 래스터 스캔\n\n16. **Optimization & Signal Estimation**\n   - 최적 에너지/SSA 추천, 신호 예측\n\n17. **Virtual Experiments**\n   - 'Cu XAFS', 'XRF Imaging', 'Powder XRD' 등 프리셋 실험\n\n**주의사항**:\n- **P(인) K-edge (2.145 keV)**는 이 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정이 불가능합니다. 인 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.\n- **Ag(은) K-edge (25.514 keV)**는 빔라인 최대 에너지(25.0 keV)를 약간 초과합니다. Ag L3-edge (3.351 keV)도 최소 에너지 이하로 측정이 불가능합니다.\n- **Pt(백금) L3-edge (11.564 keV)** 측정 시, 미러 코팅이 Pt인 경우 형광 간섭이 발생할 수 있으므로 Rh 코팅으로 변경하는 것이 권장됩니다.\n\n원하시는 실험 기법이나 특정 원소 분석이 있으시면 말씀해 주세요!",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "blknow_05",
+      "cat": "bl_knowledge",
+      "input": "빔 사이즈가 최소 얼마까지 줄어들어?",
+      "desc": "Minimum beam size inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 28.99,
+      "response": {
+        "actions": [],
+        "explanation": "빔 사이즈는 광학 설정에 따라 달라집니다. 현재 KB 미러 집속 모드에서 최소 빔 사이즈는 약 50 nm 수준입니다. SSA 갭을 줄이면 빔의 결맞음도(coherence)가 향상되어 더 작은 사이즈가 가능하지만, 이는 빔 강도를 감소시킵니다. 최소 빔 사이즈를 얻기 위해 KB 집속 모드와 좁은 SSA 갭을 사용하는 것이 좋습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_09",
+      "cat": "experiment_plan",
+      "input": "XRF 맵핑 해상도를 50nm로 하면 10x10 영역 스캔 시간이 얼마나 걸려?",
+      "desc": "Scan time estimation for high-res XRF",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 44.2,
+      "response": {
+        "actions": [],
+        "explanation": "50 nm 해상도로 10x10 µm 영역을 XRF 맵핑할 경우, KB 미러 집속으로 나노빔(~50 nm)을 사용해야 합니다. 이 경우 포인트 수는 약 200x200 (40,000 포인트)가 필요합니다. 각 포인트당 노출 시간이 0.1초일 경우, 총 시간은 약 4000초 (66분)가 소요됩니다. 노출 시간을 줄이면 총 시간이 단축되지만, 신호 대 잡음비가 낮아질 수 있습니다. SSA 갭을 50 µm로 설정한 현재 상태에서 KB 집속이 활성화되어 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "explan_10",
+      "cat": "experiment_plan",
+      "input": "XAFS 측정 1회에 시간이 얼마나 걸려?",
+      "desc": "XAFS single scan time inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 49.26,
+      "response": {
+        "actions": [],
+        "explanation": "XAFS 츰정 시간은 측정 조건에 따라 달라집니다. 일반적으로 Cu K-edge XAFS는 10~30분 소요되며, 다음 요소에 따라 달라집니다:\n\n1. **에너지 범위**: K-edge 기준 ±1 keV (약 2 keV 범위)\n2. **포인트 수**: 200~400 포인트\n3. **노출 시간**: 0.1~1초/포인트\n4. **샘플 신호 강도**: 낮은 농도 시 노출 시간 증가\n\n예시: 300 포인트 × 0.5초/포인트 = 2.5분\n\n정확한 시간을 알려드리려면 측정할 원소와 설정을 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_11",
+      "cat": "robustness",
+      "input": "12 kev로 에너지 설정",
+      "desc": "Lowercase keV unit",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.25,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 12 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "robust_12",
+      "cat": "robustness",
+      "input": "energy 12",
+      "desc": "Minimal English energy command",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.24,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 12 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_09",
+      "cat": "rejection",
+      "input": "마그네슘 K-edge 해줘",
+      "desc": "Mg K-edge (1.30 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.72,
+      "response": {
+        "actions": [],
+        "explanation": "Mg(마그네슘) K-edge 에너지는 1.303 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 훨씬 낮습니다. 마그네슘 K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "reject_10",
+      "cat": "rejection",
+      "input": "알루미늄 K-edge XANES 해줘",
+      "desc": "Al K-edge (1.56 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.4,
+      "response": {
+        "actions": [],
+        "explanation": "Al(알루미늄) K-edge 에너지는 1.560 keV로, 이 빔라인의 에너지 범위(5-25 keV) 아래입니다. 알루미늄 분석에는 저에너지 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_11",
+      "cat": "real_user",
+      "input": "빔 안정적이야?",
+      "desc": "Beam stability inquiry",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 37.87,
+      "response": {
+        "actions": [],
+        "explanation": "현재 빔 안정성은 에너지 설정, 정렬 상태, 진공 수준 등 여러 요소에 따라 달라집니다. 정확한 안정성 확인을 위해 빔 프로파일을 확인하시기 바랍니다. '빔 프로파일 보여줘' 명령으로 현재 빔의 형태와 안정성을 시각적으로 확인할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "realuser_12",
+      "cat": "real_user",
+      "input": "도와줘",
+      "desc": "Help request (generic)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.08,
+      "response": {
+        "actions": [],
+        "explanation": "어떤 작업을 도와드릴까요? 예를 들어:\n- 특정 원소의 XANES/XAFS 측정\n- XRF/XRD 이미징\n- 빔라인 정렬\n- 모터 이동/조정\n- 에너지 설정\n- 어텐에이터/마스크 조정\n\n구체적인 요청을 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "cmulti_09",
+      "cat": "complex_multi",
+      "input": "에너지 20 keV로 바꾸고 정렬하고 Mo XANES 찍어줘",
+      "desc": "3-step: 20keV + align + Mo XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.68,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              20
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Mo",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mo K-edge (20.0 keV) XANES를 실행합니다. 현재 에너지(10 keV)에서 10 keV 변화이므로 광학 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "korean_09",
+      "cat": "korean_variant",
+      "input": "망간 흡수단 스캔 부탁해요",
+      "desc": "Mn absorption edge scan (polite request)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.25,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Mn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mn K-edge (6.539 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)에서 3.46 keV 변화가 2 keV 이상이므로 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ssa_01",
+      "cat": "ssa_control",
+      "input": "SSA 수직갭을 60um으로 맞춰줘",
+      "desc": "SSA vgap set to 60um (must use motorSetUI)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.13,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              60
+            ]
+          }
+        ],
+        "explanation": "SSA 수직 갭을 60 um으로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ssa_02",
+      "cat": "ssa_control",
+      "input": "SSA를 최소로 닫아줘. 수평 수직 다 10um으로.",
+      "desc": "SSA close to 10um both axes (must use motorSetUI x2)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.7,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              10
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              10
+            ]
+          }
+        ],
+        "explanation": "SSA 수평/수직 갭을 각각 10 um으로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ssa_03",
+      "cat": "ssa_control",
+      "input": "SSA 크기 좀 키워줘. 수평 100 수직 80",
+      "desc": "SSA enlarge both h=100 v=80 (motorSetUI)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.91,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              100
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              80
+            ]
+          }
+        ],
+        "explanation": "SSA 수평 갭을 100 um, 수직 갭을 80 um로 설정합니다. 현재 에너지(10 keV)에서 이 설정은 빔 크기를 증가시키며, 이로 인해 빔의 결맞음도가 감소할 수 있습니다. 정렬이 필요한 경우 별도로 요청해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "analysis_01",
+      "cat": "analysis_intent",
+      "input": "이 시료의 Fe 산화 상태를 확인하고 싶어요",
+      "desc": "Fe oxidation state check = XANES measurement",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.98,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XANES로 산화 상태를 분석합니다. XANES는 흡수단 근처의 구조를 세밀하게 측정하여 Fe²⁺, Fe³⁺ 등을 구분할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "analysis_02",
+      "cat": "analysis_intent",
+      "input": "Cr(III)인지 Cr(VI)인지 확인해야 합니다",
+      "desc": "Cr valence check = XANES measurement",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.95,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cr",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cr K-edge (5.989 keV) XANES로 Cr의 산화 상태를 분석합니다. Cr(III)와 Cr(VI)는 near-edge 구조가 다르므로 XANES로 구분할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "analysis_03",
+      "cat": "analysis_intent",
+      "input": "니켈 산화물 시료의 상(phase)을 분석하고 싶은데요",
+      "desc": "Ni oxide phase analysis = XANES or XRD",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.59,
+      "response": {
+        "actions": [],
+        "explanation": "니켈 산화물의 상(phase) 분석에는 XRD(X-ray Diffraction)가 가장 적합합니다. 분말 XRD 실험을 실행하시겠습니까?",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "seq_01",
+      "cat": "sequential",
+      "input": "Fe XANES 한 다음에 Ni XANES도 해줘",
+      "desc": "Sequential Fe+Ni XANES (must generate both)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 17.92,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ni",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XANES와 Ni K-edge (8.333 keV) XANES를 순차적으로 실행합니다. 현재 에너지(10 keV)에서 Fe XANES 실행 후, Ni XANES는 10 keV에서 8.333 keV로의 변화(1.667 keV)가 2 keV 이하이므로 정렬 없이 바로 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "seq_02",
+      "cat": "sequential",
+      "input": "Mn이랑 Co XANES를 연속으로 측정해줘",
+      "desc": "Sequential Mn+Co XANES (must generate both)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.77,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Mn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Co",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mn K-edge (6.539 keV) XANES와 Co K-edge (7.709 keV) XANES를 순차적으로 실행합니다. 현재 에너지(10 keV)에서 Mn K-edge로의 변화(3.461 keV)가 2 keV 이상이므로, Mn XANES 전에 광학 정렬을 수행합니다. Co XANES는 Mn XANES 후의 에너지(6.539 keV)에서 1.17 keV 변화로 정렬이 필요 없습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "seq_03",
+      "cat": "sequential",
+      "input": "Pb L3 XANES 하고 나서 As K-edge XANES도 순차적으로 해주세요",
+      "desc": "Sequential Pb L3 + As K XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.73,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              13.035
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Pb",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.867
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "As",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pb L3-edge (13.035 keV) XANES를 실행한 후, As K-edge (11.867 keV) XANES를 순차적으로 실행합니다. Pb K-edge (88.0 keV)는 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "qact_01",
+      "cat": "question_action",
+      "input": "현재 결정이 뭐야? 그리고 Fe XAFS 해줘",
+      "desc": "Question about crystal + Fe XAFS action",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.48,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XAFS 스캔을 실행합니다. 현재 결정은 Si(111)입니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "qact_02",
+      "cat": "question_action",
+      "input": "빔 사이즈가 지금 얼마야? SSA를 50um으로 줄여줘",
+      "desc": "Question about beam size + SSA motor action",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.94,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              50
+            ]
+          }
+        ],
+        "explanation": "현재 빔 사이즈는 SSA 수평 갭 100 µm 기준 약 100 nm ~ 1 µm 범위입니다. SSA 수평 갭을 50 µm로 줄이면 빔 사이즈가 작아지고 결맞음도(coherence)가 향상됩니다. 노출 시간이 길어질 수 있으니 주의해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "partial_01",
+      "cat": "partial_range",
+      "input": "S K-edge XANES랑 Fe K-edge XANES를 둘 다 해줘",
+      "desc": "S(out of range) + Fe(in range) -- must do Fe",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 28.48,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "S(황) K-edge 에너지는 2.472 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Fe K-edge (7.112 keV) XANES는 현재 에너지(10 keV)에서 2.888 keV 차이가 있으므로 광학 정렬을 먼저 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "partial_02",
+      "cat": "partial_range",
+      "input": "Ca XANES하고 Zn XANES도 해줘",
+      "desc": "Ca(out of range) + Zn(in range) -- must do Zn",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 22.07,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Zn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ca K-edge (4.038 keV)는 이 빔라인의 최소 에너지(5 keV)보다 낮아 측정할 수 없습니다. Zn K-edge (9.659 keV) XANES는 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "heavyel_01",
+      "cat": "heavy_element",
+      "input": "납 XRF 이미징 해주세요. 10x10um, 51포인트.",
+      "desc": "Pb XRF -- must auto-select L3 edge (13.035 keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.99,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              14
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              51
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "납(Pb) L3-edge (13.035 keV) + 1 keV = 14 keV로 설정 후 10x10 µm, 51x51 포인트 XRF 래스터 스캔을 실행합니다. ⚠ 주의: 납 K-edge (88.0 keV)는 빔라인 최대 에너지(25.0 keV)를 훨씬 초과하므로 L3-edge를 사용합니다. 납 K-edge 분석은 불가능합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "heavyel_02",
+      "cat": "heavy_element",
+      "input": "텅스텐 XRF 맵핑해줘. 5x5 41포인트",
+      "desc": "W XRF -- must auto-select L3 edge (10.207 keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.71,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.2
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              5,
+              5,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "W L3-edge (10.207 keV) + 1 keV = 11.2 keV로 설정 후 5x5 µm, 41x41 포인트 XRF 래스터 스캔을 실행합니다. W K-edge는 69.5 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "colloquial_01",
+      "cat": "colloquial",
+      "input": "구리 XANES 한번만 빨리 돌려줘",
+      "desc": "Casual Cu XANES request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.24,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XANES 스캔을 실행합니다. 현재 에너지(10 keV)에서 1.03 keV 변화가 2 keV 이하이므로 정렬 없이 바로 측정합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "colloquial_02",
+      "cat": "colloquial",
+      "input": "에너지 좀 올려줘. 15 keV로.",
+      "desc": "Casual energy raise to 15 keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.27,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              15
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 15 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "colloquial_03",
+      "cat": "colloquial",
+      "input": "아연 분포 좀 봐봐. 20um 정도.",
+      "desc": "Casual Zn XRF distribution request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.66,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickRaster",
+            "args": [
+              20,
+              20,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Zn K-edge (8.333 keV) 위의 10 keV로 설정되어 있습니다. 20×20 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "colloquial_04",
+      "cat": "colloquial",
+      "input": "시료 왼쪽으로 5um 이동",
+      "desc": "Casual relative sample move left",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 6.26,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "sample",
+              "sample_cx",
+              -5
+            ]
+          }
+        ],
+        "explanation": "시료 X 방향을 -5 µm로 이동하여 왼쪽으로 5 µm 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "safety_01",
+      "cat": "safety",
+      "input": "멈춰! 스캔 중지해!",
+      "desc": "Urgent stop command (various phrasings)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.4,
+      "response": {
+        "actions": [
+          {
+            "fn": "queueStop",
+            "args": []
+          }
+        ],
+        "explanation": "현재 실행 중인 스캔을 중지합니다. 큐에 대기 중인 모든 작업도 정지됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "safety_02",
+      "cat": "safety",
+      "input": "모든 동작 정지시켜",
+      "desc": "Stop all operations",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 9.12,
+      "response": {
+        "actions": [
+          {
+            "fn": "emergencyStop",
+            "args": []
+          }
+        ],
+        "explanation": "모든 동작을 즉시 정지시키고 빔을 차단합니다. 긴급 정지 상태가 되었으며, 모든 모터가 정지되고 빔이 차단됩니다. 안전 절차를 확인한 후 재개하시기 바랍니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "implicit_01",
+      "cat": "implicit_technique",
+      "input": "이 촉매 시료에서 백금 상태가 궁금해",
+      "desc": "Pt state from catalyst context = XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.61,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Pt",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pt L3-edge (11.564 keV) XANES로 백금의 화학 상태를 분석합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "implicit_02",
+      "cat": "implicit_technique",
+      "input": "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘",
+      "desc": "Cu contamination check on semiconductor = XRF",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.27,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              10
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu 오염 확인을 위해 XRF 매핑을 실행합니다. 나노빔(~50 nm)으로 단일 포인트만 측정하면 오염이 없는 부분을 찍을 수 있으므로, 넓은 영역을 매핑하여 분포를 확인하는 것이 적합합니다. Cu K-edge 위의 10 keV로 설정합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "implicit_03",
+      "cat": "implicit_technique",
+      "input": "토양 시료에서 비소 형태 분석해주세요",
+      "desc": "As speciation in soil = XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.79,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "As",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "As K-edge (11.867 keV) XANES로 비소의 화학 상태를 분석합니다. 토양 시료는 불균일하므로, XRF 매핑으로 비소 분포를 확인한 후 XANES로 특정 위치의 비소 형태를 분석하는 것이 효과적입니다. 현재 에너지(10 keV)에서 1.867 keV 변화이므로 정렬 없이 바로 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_01",
+      "cat": "experiment_preset",
+      "input": "Cu XAFS 실험 셋업해줘",
+      "desc": "Cu XAFS experiment preset setup",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.03,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.979
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 실험을 준비합니다. 현재 에너지(10 keV)에서 8.979 keV로 변화(1.02 keV)가 2 keV 이하이므로 정렬 없이 에너지만 설정합니다. SSA 수평/수직 갭은 50 um로 유지됩니다. 준비가 완료되면 '시작해줘'라고 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_02",
+      "cat": "experiment_preset",
+      "input": "분말 XRD 실험 시작해줘",
+      "desc": "Powder XRD experiment preset",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.8,
+      "response": {
+        "actions": [
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "powder_xrd"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "분말 XRD 실험을 시작합니다. Eiger 2X 검출기로 Debye-Scherrer 링 패턴을 수집합니다. 현재 에너지 10 keV, SSA 수평/수직 갭 50 um 상태에서 실행됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_03",
+      "cat": "experiment_preset",
+      "input": "2D XRF 맵핑 실험 셋업",
+      "desc": "2D XRF mapping experiment setup",
+      "passed": false,
+      "errors": [
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 27.45,
+      "response": {
+        "actions": [],
+        "explanation": "2D XRF 맵핑을 준비하겠습니다. 다음 정보를 알려주세요:\n\n1. **측정 원소**: 예: Fe, Cu, Ni\n2. **스캔 범위**: 예: 10×10 µm\n3. **포인트 수**: 예: 41×41\n\n또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 41pt)으로 실행합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_04",
+      "cat": "experiment_preset",
+      "input": "구리 산화물의 흡수 스펙트럼을 보고 싶어",
+      "desc": "Indirect Cu absorption spectrum request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.8,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 흡수 스펙트럼을 실행합니다. 구리 산화물의 산화 상태를 구분할 수 있습니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_05",
+      "cat": "experiment_preset",
+      "input": "위치별 결정상 분포를 알고 싶어",
+      "desc": "Phase distribution by position = XRD 2D map",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.42,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "위치별 결정상 분포를 확인하려면 2D XRD 매핑이 필요합니다. 현재 에너지(15 keV)로 10×10 µm 범위, 41×41 포인트 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_06",
+      "cat": "experiment_preset",
+      "input": "나노 XRF 라인스캔 프리셋 로드해줘",
+      "desc": "Nano XRF line scan preset load",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.4,
+      "response": {
+        "actions": [
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "nano_xrf_line"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "나노 XRF 라인스캔 프리셋을 로드합니다. KB 미러로 나노빔(~50 nm) 집속하여 XRF 라인 프로파일을 측정합니다. 현재 에너지는 10 keV입니다. P(인) K-edge는 2.145 keV로, 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. 인 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_07",
+      "cat": "experiment_preset",
+      "input": "XRF imaging preset으로 시작",
+      "desc": "XRF imaging preset (English-Korean mixed)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.85,
+      "response": {
+        "actions": [
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "xrf_imaging"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "XRF imaging preset을 실행합니다. 현재 에너지는 10 keV, SSA 수평/수직 갭은 50 um입니다. 추가 설정이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_08",
+      "cat": "experiment_preset",
+      "input": "시료의 원소 맵핑을 고해상도로 하고 싶은데, 나노빔 XRF 실험 세팅해줘",
+      "desc": "High-res nano XRF experiment setup",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.64,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "nano_xrf_line"
+            ]
+          }
+        ],
+        "explanation": "나노빔 XRF 실험을 준비합니다. KB 미러로 ~50 nm 빔을 집속합니다. 에너지를 12 keV로 설정하고 전체 정렬을 수행합니다. 준비가 완료되면 '시작해줘'라고 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_09",
+      "cat": "experiment_planning_adv",
+      "input": "LiNi0.8Co0.1Mn0.1O2 시료야. Ni, Co, Mn XANES를 각각 하고 XRF 맵도 찍어야해. 빔타임 6시간",
+      "desc": "NMC811 multi-element XANES + XRF plan with 6h beamtime",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 148.45,
+      "response": {
+        "actions": [],
+        "explanation": "{\"actions\":[],\"explanation\":\"LiNi0.8Co0.1Mn0.1O2 시료의 Ni, Co, Mn XANES 및 XRF 맵핑을 6시간 내에 수행할 계획을 수립하겠습니다. 다음 사항을 고려해야 합니다:\\n\\n1. **XANES 순서**: Ni(8.333 keV) → Co(7.709 keV) → Mn(6.539 keV) 순으로 에너지가 낮아지므로, 에너지 변화가 가장 큰 Ni→Co(0.624 keV) → Co→Mn(1.17 keV)입니다. 각 XANES 사이에 runFullAlignment()가 필요합니다.\\n\\n2. **XRF 맵핑 에너지**: Ni, Co, Mn의 K-edge 중 가장 높은 Ni(8.333 keV) 기준으로 8.333 + 1.2 = 9.533 keV로 설정합니다. 이 에너지에서 세 원소의 형광선이 모두 여기됩니다.\\n\\n3. **시간 예측**:\\n   - XANES: 각 30분 → 3개 × 30분 = 90분\\n   - XRF 맵핑: 10×10 µm, 41×41 포인트, 0.1초/포인트 → 약 41×41×0.1 = 168초 ≈ 3분\\n   - 정렬: 3번 × 10분 = 30분\\n   - 예비 시간: 30분\\n   - 총 예상 시간: 90 + 3 + 30 + 30 = 153분 ≈ 2.5시간 → 6시간 내 가능\\n\\n4. **추천 설정**:\\n   - XANES: quickXanes(element, \"   ,\"K) + queueStart()\\n   - XRF 맵핑: setTargetEnergy(9.533) → quickRaster(10,10,41) → queueStart()\\n\\n5. **추가 고려사항**:\\n   - XRF 맵핑 시 KB 미러로 나노빔(~50 nm) 집속\\n   - Mn K-edge는 6.539 keV로 낮아 공기 흡수가 심하므로 He 경로 또는 진공 권장\\n   - Co K-edge 측정 시 KB 미러 Pt 코팅과의 간섭 주의 (Rh 코팅 권장)\\n\\n이 계획에 따라 실행하시겠습니까? 아니면 특정 파라미터(스캔 범위, 포인트 수, 노출 시간)를 조정하시겠습니까? 또는 '시작해줘'라고 말씀해 주세요. 현재 에너지는 10 keV, SSA 수평/수직 갭은 50 µm입니다. Mn K-edge 측정 시 공기 흡수로 인해 He 경로 또는 진공 환경이 필요합니다. Co K-edge 측정 시 KB 미러 코팅이 Pt인 경우 형광 간섭이 발생할 수 있으므로 Rh 코팅으로 변경하는 것을 권장합니다. XRF 맵핑은 9.533 keV에서 수행됩니다. 총 예상 시간은 약 2.5시간이며, 6시간 내에 충분히 완료할 수 있습니다. 추가로 조정할 사항이 있으면 말씀해 주세요. 또는 '시작해줘'라고 말씀해 주세요. Mn K-edge 측정 시 공기 흡수로 인해 He 경로 또는 진공 환경이 필요합니다. Co K-edge 측정 시 KB 미러 코팅이 Pt인 경우 형광 간섭이 발생할 수 있으므로 Rh 코팅으로 변경하는 것을 권장합니다. XRF 맵핑은 9.533 keV에서 수행됩니다. 총 예상 시간은 약 2.5시간이며, 6시간 내에 충분히 완료할 수 있습니다. 추가로 조정할 사항이 있으면 말씀해 주세요. 또는 '시작해줘'라고 말씀해 주세요. Mn K-edge 측정 시 공기 흡수로 인해 He 경로 또는 진공 환경이 필요합니다. Co K-edge 측정 시 KB 미러 코팅이 Pt인 경우 형광 간섭",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_10",
+      "cat": "experiment_planning_adv",
+      "input": "FePt 나노입자 촉매인데 Fe K-edge XAFS 3회 반복하고 Pt L3 XANES도 해줘",
+      "desc": "FePt catalyst: Fe XAFS x3 + Pt L3 XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 36.93,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              7.112
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              11.564
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Pt",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XAFS 3회 반복 스캔을 실행합니다. 이후 Pt L3-edge (11.564 keV) XANES를 수행합니다. 현재 에너지(10 keV)에서 Fe K-edge로의 변화(0.888 keV)는 2 keV 이하이므로 정렬 없이 바로 측정합니다. 그러나 Pt L3-edge로의 변화(4.456 keV)는 2 keV 이상이므로 정렬을 먼저 수행합니다. ⚠ Pt K-edge (78.4 keV)는 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge (11.564 keV)를 사용합니다. 또한, Pt L3-edge 측정 시 미러 코팅이 Pt인 경우 형광 간섭이 발생할 수 있으므로 Rh 코팅으로 변경하는 것을 권장합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_11",
+      "cat": "experiment_planning_adv",
+      "input": "XRF 하고 나서 XRD도 해야하는데 검출기 교체가 필요한가요?",
+      "desc": "XRF->XRD detector swap inquiry (~30min)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 26.99,
+      "response": {
+        "actions": [],
+        "explanation": "XRF와 XRD는 별도의 검출기를 사용하지만, 이 빔라인에서는 XRF와 XRD 검출기가 서로 다른 위치에 설치되어 있어 교체 없이 동시에 사용할 수 있습니다. XRF는 SDD 검출기, XRD는 Eiger 2X 검출기를 사용합니다. 따라서 XRF 측정 후 XRD 측정을 바로 수행할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_12",
+      "cat": "experiment_planning_adv",
+      "input": "페로브스카이트 태양전지 시료야. 납 분포랑 결정상을 동시에 보고싶어",
+      "desc": "Perovskite Pb distribution + crystal phase (needs detector swap)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 20.65,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              14.0
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "powder_xrd"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Pb L3-edge (13.035 keV) + 1 keV = 14 keV로 설정 후, 10x10 µm 영역에서 41x41 포인트 XRF 래스터 스캔으로 납 분포를 측정합니다. 이후 동일 위치에서 XRD 패턴을 수집하여 결정상을 분석합니다. XRF와 XRD는 서로 다른 검출기에서 동시에 측정 가능합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_13",
+      "cat": "experiment_planning_adv",
+      "input": "배터리 음극재 그래파이트 시료인데 Fe, Cu 불순물을 ppm 수준으로 찾아야해",
+      "desc": "Trace Fe/Cu impurity in graphite anode",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.67,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV)와 Cu K-edge (8.979 keV)를 모두 여기할 수 있도록 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 그래파이트 시료에서 Fe, Cu 불순물의 ppm 수준 분포를 확인할 수 있습니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_14",
+      "cat": "experiment_planning_adv",
+      "input": "Mn K XANES, Co K XANES, Ni K XANES 순서로 해줘. 에너지 차이가 2 keV 미만이니까 정렬 안해도 되지?",
+      "desc": "Mn/Co/Ni XANES sequential, no alignment needed (dE<2keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 24.66,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Mn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Co",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ni",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mn K-edge (6.539 keV) → Co K-edge (7.709 keV) → Ni K-edge (8.333 keV) 순서로 XANES를 실행합니다. 현재 에너지(10 keV)에서 첫 번째 스캔(Mn)으로의 변화는 3.461 keV로 2 keV를 초과하므로 광학 정렬이 필요합니다. 그러나 요청하신대로 정렬을 생략하고 바로 실행합니다. 에너지 변화가 클 경우 빔 강도나 초점이 변할 수 있으니 주의하시기 바랍니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_15",
+      "cat": "experiment_planning_adv",
+      "input": "이 시료에 Cr이 있는데 3가인지 6가인지 구별해야해. 환경 시료라 농도가 낮아",
+      "desc": "Cr(III) vs Cr(VI) speciation in environmental sample",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.6,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cr",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cr K-edge (5.989 keV) XANES로 Cr의 산화 상태를 분석합니다. Cr³+와 Cr⁶+는 near-edge 구조가 다르므로 XANES로 구분할 수 있습니다. 환경 시료의 낮은 농도를 고려하여 노출 시간을 0.5초/포인트로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_16",
+      "cat": "experiment_planning_adv",
+      "input": "첫번째 시료는 XRF 맵, 두번째 시료는 XANES 해야해. 시료 교체 포함해서 총 시간이 얼마나 걸려?",
+      "desc": "Total time with sample change: XRF map + XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 41.0,
+      "response": {
+        "actions": [],
+        "explanation": "시료 교체 및 측정 시간은 다음 요소에 따라 달라집니다:\n\n1. **XRF 맵핑**: 10×10 µm, 41×41 포인트, 0.1초/포인트 → 약 17분\n2. **XANES**: 0.25 eV 분해능, 100 eV 범위 → 약 30분\n3. **시료 교체**: 수동 교체 시간 (예: 5분)\n4. **에너지 변화**: XANES 에너지에 따라 추가 정렬 시간 (최대 30분)\n\n총 예상 시간: 약 1시간 20분 ~ 2시간 (정렬 시간에 따라 변동)",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_17",
+      "cat": "experiment_planning_adv",
+      "input": "Au 나노입자가 TiO2 담지체 위에 있어. Au 분포 보고 Ti 산화상태도 확인하고 싶어",
+      "desc": "Au/TiO2 catalyst: Au L3 OK, Ti K borderline out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 29.52,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Au 나노입자의 분포는 Au L3-edge (11.919 keV) XRF 매핑으로 확인할 수 있습니다. TiO2의 Ti 산화상태는 Ti K-edge (4.966 keV) XANES로 분석할 수 있지만, 이 빔라인의 최소 에너지가 5.0 keV이므로 Ti K-edge는 측정할 수 없습니다. 대안으로 Ti L3-edge (4.64 keV)도 동일한 이유로 측정 불가능합니다. TiO2의 산화상태 분석은 다른 빔라인에서 수행해야 합니다. Au 분포는 12 keV로 설정하여 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본.\n[범위 초과로 제거됨: quickXanes(\"Ti\",\"K\") - Ti K-edge (4.966 keV)는 빔라인 범위 밖입니다.]",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_18",
+      "cat": "experiment_planning_adv",
+      "input": "Ce L3 XANES 하고 그 다음 Fe K XANES 해줘. 에너지 바꿀 때 정렬 필요한가?",
+      "desc": "Ce L3 -> Fe K XANES, no alignment (dE=1.389 keV)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 24.36,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              5.723
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ce",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              7.112
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ce L3-edge (5.723 keV) XANES를 실행한 후 Fe K-edge (7.112 keV) XANES를 실행합니다. 현재 에너지(10 keV)에서 Ce L3-edge로의 변화(4.277 keV)가 2 keV 이상이므로 정렬을 먼저 수행합니다. Fe K-edge로의 변화(1.888 keV)도 2 keV 이상이므로 정렬을 다시 수행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_19",
+      "cat": "ptycho_experiment",
+      "input": "ptychography 실험 셋업해줘",
+      "desc": "Direct ptychography setup request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.35,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "ptycho",
+                "element": "Cu",
+                "edge": "K",
+                "priority": "coherence"
+              }
+            ]
+          }
+        ],
+        "explanation": "ptychography 실험 최적화를 시작합니다. 결맞음 flux(coherent flux)를 최대화하고 결맞음도(degree of coherence) > 0.3 조건을 만족하는 SSA 설정을 추천합니다. 기본 원소는 Cu K-edge로 설정했습니다. 다른 원소나 edge가 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_20",
+      "cat": "ptycho_experiment",
+      "input": "coherent imaging으로 시료 구조 보고싶어",
+      "desc": "Coherent imaging = ptychography",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.05,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "ptycho",
+                "element": "Co",
+                "edge": "K",
+                "priority": "coherence"
+              }
+            ]
+          }
+        ],
+        "explanation": "결맞음 이미징(ptychography)을 위해 빔라인을 최적화합니다. Co K-edge (7.709 keV) 기준으로 SSA와 에너지를 조정하여 결맞음도(degree of coherence) > 0.3 조건을 만족하는 설정을 찾습니다. 현재 에너지(10 keV)에서 7.709 keV로 변경하여 측정할 예정입니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_21",
+      "cat": "ptycho_experiment",
+      "input": "위상 이미징 해줘",
+      "desc": "Phase imaging = ptychography",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 28.67,
+      "response": {
+        "actions": [],
+        "explanation": "'위상 이미징'은 Ptychography(ptycho)로 수행됩니다. 다음 정보를 알려주세요:\n\n1. **측정 원소와 edge** (예: Cu K-edge, Au L3-edge)\n2. **시료 정보** (형태: 분말/박막, 두께, 농도)\n3. **우선순위** (분해능, flux, 결맞음)\n\n예시: 'Cu 박막 위상 이미징 최적화해줘'",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_22",
+      "cat": "ptycho_experiment",
+      "input": "결맞음 빔으로 나노구조 관찰하고 싶어. 에너지는 10 keV로",
+      "desc": "Coherent beam nanostructure at 10 keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.37,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "ptycho",
+                "element": "None",
+                "edge": "None",
+                "priority": "coherence"
+              }
+            ]
+          }
+        ],
+        "explanation": "결맞음(coherence) 최적화를 위해 빔라인 설정을 계산합니다. 10 keV 에너지에서 SSA 조정으로 최대 결맞음도(degree of coherence)를 확보합니다. KB 미러로 나노빔(~50 nm) 집속이 가능합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_23",
+      "cat": "ptycho_experiment",
+      "input": "반도체 시료를 비파괴로 내부 구조 보고 싶어. 50nm 분해능이 필요해",
+      "desc": "Non-destructive 50nm resolution = ptychography",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.2,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              10
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "powder_xrd"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "50nm 분해능을 위해 KB 미러 집속을 사용합니다. 현재 에너지(10 keV)에서 광학 정렬을 수행한 후, 분말 XRD 실험을 시작합니다. XRD는 비파괴 기법으로 내부 결정 구조를 분석할 수 있습니다. SSA 수평/수직 갭은 50 um로 유지됩니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_24",
+      "cat": "ptycho_experiment",
+      "input": "XRF 맵핑 끝나면 ptychography도 이어서 할건데, 셋업 변경 시간이 얼마나 걸려?",
+      "desc": "XRF->ptycho setup change time (~45min)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 54.1,
+      "response": {
+        "actions": [],
+        "explanation": "XRF 맵핑 후 ptychography로 전환하는 데는 약 5~10분 소요됩니다. 주요 작업은 다음과 같습니다:\n\n1. **에너지 조정**: 현재 10 keV에서 ptychography 최적 에너지로 변경 (약 2~3분)\n2. **SSA 조정**: 현재 50×50 µm에서 ptychography 최적 SSA로 변경 (약 1~2분)\n3. **KB 미러 정렬**: 나노빔 집속을 위한 KB 미러 재정렬 (약 2~3분)\n4. **샘플 위치 조정**: XRF 측정 위치에서 ptychography 측정 위치로 이동 (약 1~2분)\n\n총 약 6~10분이 소요됩니다. 정확한 시간은 측정 대상에 따라 달라질 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_25",
+      "cat": "technique_selection",
+      "input": "시료의 원소 분포를 알고싶어",
+      "desc": "Element distribution = XRF mapping (may ask which element)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 35.7,
+      "response": {
+        "actions": [],
+        "explanation": "원소 분포를 확인하려면 XRF 이미징(래스터 스캔)이 가장 적합합니다. 다음 정보를 알려주세요:\n\n1. **측정하려는 원소** (예: Fe, Cu, Au 등)\n2. **스캔 범위** (µm, 예: 10×10)\n3. **포인트 수** (예: 41×41)\n\n또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 41pt)으로 실행합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_26",
+      "cat": "technique_selection",
+      "input": "결정 구조를 확인하고 싶어",
+      "desc": "Crystal structure = XRD",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 44.41,
+      "response": {
+        "actions": [],
+        "explanation": "결정 구조를 확인하려면 XRD(X-ray Diffraction)를 사용하시면 됩니다. XRD는 격자 상수, 결정 방향, 상(phase) 등을 분석할 수 있습니다.\n\n이 빔라인에서는 Eiger 2X 검출기로 2D 회절 패턴을 수집합니다. 다음 중 하나를 선택해 주세요:\n- 단일 포인트 XRD: '분말 XRD 실험 셋업해줘'\n- 2D XRD 매핑: '2D XRD 매핑해줘' (시료를 스캔하며 위치별 회절 패턴 수집)\n\n현재 빔 에너지는 15 keV로 설정되어 있습니다. XRD 실험을 위해 추가 설정이 필요할 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_27",
+      "cat": "technique_selection",
+      "input": "Fe 산화 상태가 궁금해",
+      "desc": "Fe oxidation state = XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 10.93,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XANES로 산화 상태를 분석합니다. XANES는 흡수단 근처의 구조를 세밀하게 측정하여 Fe²⁺와 Fe³⁺를 구분할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_28",
+      "cat": "technique_selection",
+      "input": "화학 결합 상태를 알고 싶어. Cu 시료야",
+      "desc": "Chemical bonding state of Cu = XAFS/XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.79,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge XANES를 실행합니다. XANES는 흡수단 근처의 고해상도 구조를 측정하여 화학 결합 상태를 분석할 수 있습니다. Cu의 산화 상태(+1, +2 등)나 화합물 형성 여부를 파악하는 데 유용합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_29",
+      "cat": "technique_selection",
+      "input": "나노 스케일 이미지가 필요해",
+      "desc": "Nano-scale image (ambiguous: ptycho or high-res XRF)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.72,
+      "response": {
+        "actions": [
+          {
+            "fn": "setFocusMode",
+            "args": [
+              "kb"
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_hgap",
+              10
+            ]
+          },
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "ssa",
+              "ssa_vgap",
+              10
+            ]
+          }
+        ],
+        "explanation": "나노 스케일 이미지를 위해서 KB 집속 모드로 전환하고, SSA 수평/수직 갭을 10 um로 줄여 빔 크기를 작게 설정합니다. 이 설정은 높은 분해능을 제공하지만, 빔 강도가 낮아 노출 시간을 늘려야 할 수 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_30",
+      "cat": "technique_selection",
+      "input": "미량 원소 검출이 목적이야. Cr 10ppm 수준",
+      "desc": "Trace Cr 10ppm = XRF with flux priority",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 11.66,
+      "response": {
+        "actions": [
+          {
+            "fn": "optimizeBeamline",
+            "args": [
+              {
+                "technique": "xrf",
+                "element": "Cr",
+                "edge": "K",
+                "ppm": 10,
+                "priority": "flux"
+              }
+            ]
+          }
+        ],
+        "explanation": "Cr K-edge (5.989 keV) XRF에 최적화된 빔라인 설정을 계산합니다. 10 ppm 미량 원소 검출을 위해 flux(강도)를 최대화하는 조건을 찾습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_31",
+      "cat": "technique_selection",
+      "input": "상분율을 알고 싶어. 다상 세라믹 시료야",
+      "desc": "Phase fraction of multiphase ceramic = XRD 2D map",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 36.62,
+      "response": {
+        "actions": [],
+        "explanation": "다상 세라믹 시료의 상분율을 분석하려면 XRD 패턴을 수집한 후 Rietveld 분석이 필요합니다. 다음 중 하나를 선택해주세요:\n\n1. **단일 포인트 XRD**: '분말 XRD 실험 셋업해줘' → 현재 위치에서 XRD 패턴 수집\n2. **2D XRD 매핑**: '2D XRD 매핑해줘' → 시료를 스캔하며 위치별 상분율 분포 측정\n\n현재 에너지(15 keV)는 대부분의 세라믹 상의 XRD 회절에 적합합니다. SSA 수평/수직 갭이 50 um로 설정되어 있어 높은 flux를 확보했습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_32",
+      "cat": "technique_selection",
+      "input": "국소 영역에서 격자 상수 변화를 관찰하고 싶어",
+      "desc": "Local lattice parameter variation = XRD 2D map",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 26.41,
+      "response": {
+        "actions": [],
+        "explanation": "격자 상수 변화 관찰은 XRD 2D 매핑으로 가능합니다. 다음 파라미터를 알려주세요:\n- 스캔 범위 (µm, 예: 10×10)\n- 포인트 수 (예: 21×21)\n\n또는 '기본값으로 실행해줘'라고 하시면 기본 설정(5×5 µm, 21pt)으로 실행합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_33",
+      "cat": "multi_technique_wf",
+      "input": "XRF로 관심 영역 찾고 거기서 XANES 해줘. Fe 시료야",
+      "desc": "XRF survey -> XANES on ROI (Fe)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.58,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 이후 Fe K-edge XANES를 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_34",
+      "cat": "multi_technique_wf",
+      "input": "Ni XANES 하고 XRD도 연속으로 해줘",
+      "desc": "Ni XANES + XRD sequential (detector swap warning)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.1,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ni",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "powder_xrd"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ni K-edge (8.333 keV) XANES 스캔 후, 동일 위치에서 XRD 패턴을 수집합니다. XRF와 XRD 검출기는 위치가 달라 동시 장착되어 있습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_35",
+      "cat": "multi_technique_wf",
+      "input": "Fe XAFS 3번 반복 후에 XRF 맵 찍어줘. 10x10 41포인트",
+      "desc": "Fe XAFS x3 + XRF map (same SDD, no swap)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 29.84,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              7.112
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Fe",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Fe K-edge (7.112 keV) XAFS를 3번 반복 실행한 후, XRF 래스터 스캔을 시작합니다. XAFS 후 에너지를 8.5 keV로 변경하여 Fe K-edge 위에서 XRF 맵핑을 수행합니다. 노출 시간: 0.1초/포인트 기본. P K-edge (2.145 keV)는 빔라인 최소 에너지(5.0 keV)보다 낮아 측정할 수 없습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_36",
+      "cat": "multi_technique_wf",
+      "input": "Mn XANES, Co XANES, Ni XANES 순차 측정 후 XRF 2D 맵핑까지 해줘",
+      "desc": "Mn/Co/Ni XANES + XRF 2D map (4-step workflow)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 26.02,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Mn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Co",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ni",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              9.5
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Mn K-edge (6.539 keV) → Co K-edge (7.709 keV) → Ni K-edge (8.333 keV) XANES 순차 측정 후, XRF 2D 맵핑을 위해 9.5 keV로 에너지 설정 후 10×10 µm, 41×41 포인트 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_37",
+      "cat": "multi_technique_wf",
+      "input": "먼저 XRD 패턴 한 장 찍고, 그 다음 XRF 맵핑 해줘",
+      "desc": "XRD then XRF (detector swap ~30min)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.75,
+      "response": {
+        "actions": [
+          {
+            "fn": "setupVirtualExperiment",
+            "args": [
+              "powder_xrd"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "먼저 분말 XRD 패턴을 측정한 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 현재 에너지는 15 keV로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_38",
+      "cat": "multi_technique_wf",
+      "input": "Cu XANES 끝나면 바로 Zn XANES도 이어서 해줘",
+      "desc": "Cu + Zn XANES sequential (dE=0.68 keV, no alignment)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 16.29,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Cu",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Zn",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Cu K-edge (8.979 keV) XANES를 실행한 후, Zn K-edge (9.659 keV) XANES를 이어서 실행합니다. 현재 에너지(10 keV)에서 Zn K-edge로의 변화(0.34 keV)는 2 keV 이하이므로 추가 정렬 없이 바로 측정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_39",
+      "cat": "multi_technique_wf",
+      "input": "Se K-edge XAFS 하고 나서 Pb L3 XANES도 해줘",
+      "desc": "Se XAFS + Pb L3 XANES (dE=0.377 keV, no alignment)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.42,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12.658
+            ]
+          },
+          {
+            "fn": "quickXafs",
+            "args": [
+              "Se",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              13.035
+            ]
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Pb",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Se K-edge (12.658 keV) XAFS 스캔을 실행한 후, Pb L3-edge (13.035 keV) XANES를 실행합니다. Pb K-edge는 88.0 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_40",
+      "cat": "multi_technique_wf",
+      "input": "에너지 8 keV에서 Cu 시료 XRF 맵핑하고, 에너지 올려서 20 keV에서 Mo XANES도 해줘",
+      "desc": "8 keV XRF + 20 keV Mo XANES (12 keV change, alignment needed)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.74,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              8
+            ]
+          },
+          {
+            "fn": "quickRaster",
+            "args": [
+              10,
+              10,
+              41
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          },
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              20
+            ]
+          },
+          {
+            "fn": "runFullAlignment",
+            "args": []
+          },
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Mo",
+              "K"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "8 keV로 설정 후 Cu XRF 맵핑을 실행합니다. 이후 20 keV로 에너지를 변경하고 광학 정렬을 수행한 후 Mo K-edge XANES를 실행합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_41",
+      "cat": "timing_feasibility",
+      "input": "ptychography 한 장 찍는데 시간이 얼마나 걸려?",
+      "desc": "Ptychography single shot timing (~75s)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 52.4,
+      "response": {
+        "actions": [],
+        "explanation": "ptychography 측정 시간은 여러 요소에 따라 달라집니다:\n\n1. **스캔 영역 크기** (µm)\n2. **포인트 수** (스캔 밀도)\n3. **노출 시간/포인트**\n4. **데이터 처리 시간** (재구성 알고리즘)\n\n기본 설정(5×5 µm, 41×41 포인트, 0.1초/포인트)을 가정하면:\n- 총 포인트 수: 41×41 = 1,681 포인트\n- 총 측정 시간: 1,681 × 0.1초 ≈ 168초 (약 3분)\n- 데이터 처리 시간: 1~5분 (컴퓨터 사양에 따라 다름)\n\n정확한 시간을 알려드리려면 스캔 영역, 포인트 수, 노출 시간을 알려주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_42",
+      "cat": "timing_feasibility",
+      "input": "XRF 맵 100x100um에 1um 스텝으로 하면 시간이 어떻게 돼?",
+      "desc": "Large XRF map timing (101x101 pts)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 49.17,
+      "response": {
+        "actions": [],
+        "explanation": "100×100 µm 범위, 1 µm 스텝으로 XRF 래스터 스캔을 예상합니다. 포인트 수는 100×100 = 10,000 포인트입니다. 기본 노출 시간(0.1초/포인트) 기준으로 약 10,000 × 0.1초 = 1,000초 (약 16분 40초)가 소요됩니다. 노출 시간을 줄이면 총 시간이 줄어들지만, 신호 대 잡음비가 낮아질 수 있습니다. 반대로 노출 시간을 늘리면 정밀도가 높아지지만 시간이 더 걸립니다. 필요하신 경우 노출 시간을 조정해 드릴 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_43",
+      "cat": "timing_feasibility",
+      "input": "XAFS 5회 반복이면 빔타임 몇 시간 필요해?",
+      "desc": "XAFS 5x repeat beamtime estimate (~1.25 hours)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 55.72,
+      "response": {
+        "actions": [],
+        "explanation": "XAFS 반복 시간은 스캔 포인트 수, 노출 시간, 빔라인 상태에 따라 달라집니다. 일반적으로:\n- 1회 XAFS: 100~200 포인트, 0.1~0.5초/포인트 → 10~100분\n- 5회 반복: 50~500분 (약 0.8~8시간)\n\n정확한 예측을 위해 다음 정보가 필요합니다:\n1. 원소와 에너지 범위\n2. 포인트 수\n3. 노출 시간\n4. 빔라인 상태 (현재 10 keV, SSA 50x50 um)\n\n예: Fe K-edge XAFS (100 포인트, 0.2초/포인트) 5회 반복 → 100×0.2×5 = 100분 (약 1.7시간)",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_44",
+      "cat": "timing_feasibility",
+      "input": "XRD에서 XRF로 바꾸는데 시간이 얼마나 걸려?",
+      "desc": "XRD->XRF setup change time (~30min)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 37.84,
+      "response": {
+        "actions": [],
+        "explanation": "XRD에서 XRF로 전환하는 데는 특별한 시간이 소요되지 않습니다. 두 기법은 서로 다른 검출기(Debye-Scherrer 환형 패턴을 위한 Eiger 2X와 XRF 형광선을 위한 SDD)를 사용하지만, 이 빔라인에서는 이미 두 검출기 모두가 장착되어 있습니다. 따라서 XRD 측정 후 XRF 측정은 즉시 시작할 수 있습니다. 다만, 측정 조건(에너지, SSA, 노출 시간 등)에 따라 준비 시간이 추가될 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_45",
+      "cat": "timing_feasibility",
+      "input": "XRF 맵 2장이랑 XANES 3회 하면 총 빔타임이 얼마야?",
+      "desc": "Combined timing: 2x XRF map + 3x XANES",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 62.7,
+      "response": {
+        "actions": [],
+        "explanation": "XRF 맵 2장과 XANES 3회의 예상 빔타임을 계산하려면 다음 정보가 필요합니다:\n\n1. **XRF 맵핑 파라미터**:\n   - 스캔 범위 (µm, 예: 10×10)\n   - 포인트 수 (예: 41×41)\n   - 노출 시간 (초/포인트, 예: 0.1초)\n\n2. **XANES 파라미터**:\n   - 측정 원소와 edge (예: Fe K-edge)\n   - 에너지 스텝 수 (XANES는 일반적으로 100~200 포인트)\n   - 측정 시간 (초/포인트, 예: 0.5초)\n\n기본값을 사용할 경우:\n- XRF: 5×5 µm, 41×41 포인트, 0.1초/포인트\n- XANES: 100 포인트, 0.5초/포인트\n\n총 예상 시간은 각 실험의 포인트 수 × 시간을 합산한 값입니다. 위 정보를 알려주시면 정확한 시간을 계산해 드리겠습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_46",
+      "cat": "experiment_edge",
+      "input": "Ag K-edge XAFS 해줘",
+      "desc": "Ag K-edge (25.514 keV) borderline range limit",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 29.19,
+      "response": {
+        "actions": [],
+        "explanation": "Ag K-edge 에너지는 25.5 keV로, 이 빔라인의 최대 에너지(25.0 keV)를 초과합니다. Ag K-edge XAFS는 측정할 수 없습니다. Ag L3-edge (3.351 keV)는 이 빔라인의 최소 에너지(5.0 keV)보다 낮아 측정이 불가능합니다. Ag 분석에는 다른 빔라인이 필요합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_47",
+      "cat": "experiment_edge",
+      "input": "시료 분석해줘",
+      "desc": "Vague request -- should ask for details",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 30.73,
+      "response": {
+        "actions": [],
+        "explanation": "시료 분석을 위해 다음 정보가 필요합니다:\n\n1. **측정 기법**: XRF, XANES, XRD, Ptychography 중 어떤 것인가요?\n2. **원소**: 측정하려는 원소와 edge (예: Cu K-edge, Au L3-edge)\n3. **시료 정보** (선택): 농도(ppm), 두께(um), 형태(powder/solid)\n\n예시: 'Cu 분말 1000ppm XRF 해줘'",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_48",
+      "cat": "experiment_edge",
+      "input": "Ba L3 XANES 하고 Ca K-edge XANES도 해줘",
+      "desc": "Ba L3 (5.247 keV) OK, Ca K (4.038 keV) out of range",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 13.8,
+      "response": {
+        "actions": [
+          {
+            "fn": "quickXanes",
+            "args": [
+              "Ba",
+              "L3"
+            ]
+          },
+          {
+            "fn": "queueStart",
+            "args": []
+          }
+        ],
+        "explanation": "Ba L3-edge (5.247 keV) XANES를 실행합니다. Ca K-edge (4.038 keV)는 이 빔라인의 에너지 범위(5-25 keV)보다 낮아 측정할 수 없습니다. Ca K-edge 분석에는 연X선(soft X-ray) 빔라인이 필요합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_49",
+      "cat": "experiment_edge",
+      "input": "XRD 하려는데 에너지 5 keV면 데이터가 괜찮을까?",
+      "desc": "XRD at 5 keV quality inquiry (suboptimal, advise higher)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 42.16,
+      "response": {
+        "actions": [],
+        "explanation": "XRD 측정에 5 keV는 낮은 에너지입니다. 일반적으로 XRD는 10~20 keV 범위에서 더 좋은 결과를 얻습니다. 5 keV에서는 빔의 에너지가 낮아 회절 신호가 약할 수 있으며, 빔의 집속도가 떨어져 분해능이 낮아질 수 있습니다. 10 keV 이상으로 에너지를 올리는 것을 권장합니다. 변경이 필요하시면 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "vexp_50",
+      "cat": "experiment_edge",
+      "input": "La L3 XANES 하면서 동시에 ptychography도 할 수 있어?",
+      "desc": "XANES + ptycho concurrent -- incompatible",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 21.75,
+      "response": {
+        "actions": [],
+        "explanation": "La L3-edge XANES (5.483 keV)와 ptychography는 동시에 수행할 수 없습니다. XANES는 에너지 스캔을, ptychography는 공간 스캔을 요구하기 때문입니다. 하지만, XANES 측정 후 동일 위치에서 ptychography를 수행할 수 있습니다. La L3 XANES를 먼저 실행하시겠습니까?",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    }
+  ]
+}

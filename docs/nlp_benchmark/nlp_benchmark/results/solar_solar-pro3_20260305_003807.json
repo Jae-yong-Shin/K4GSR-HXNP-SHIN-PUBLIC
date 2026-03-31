@@ -1,0 +1,96 @@
+{
+  "engine": "solar",
+  "model": "solar-pro3",
+  "timestamp": "2026-03-05T00:38:07.246632",
+  "total": 3,
+  "pass": 3,
+  "fail": 0,
+  "pass_rate": 100.0,
+  "total_time_s": 4.8,
+  "latency": {
+    "avg": 1.584,
+    "min": 1.508,
+    "max": 1.639,
+    "p95": 1.639
+  },
+  "per_category": {
+    "motor": {
+      "pass": 3,
+      "fail": 0,
+      "total": 3,
+      "avg_time": 1.584
+    }
+  },
+  "details": [
+    {
+      "id": "motor_01",
+      "cat": "motor",
+      "input": "에너지를 12 keV로 설정해",
+      "desc": "Energy set to 12 keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 1.6,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          }
+        ],
+        "explanation": "현재 에너지(10 keV)에서 12 keV로 변경합니다. 에너지 변화가 2 keV 이하이므로 정렬은 필요하지 않습니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "motor_02",
+      "cat": "motor",
+      "input": "M1 피치를 2.5로 이동해",
+      "desc": "M1 pitch move to 2.5 mrad",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 1.64,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "m1",
+              "m1_pitch",
+              2.5
+            ]
+          }
+        ],
+        "explanation": "M1 피치를 2.5 mrad로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "motor_03",
+      "cat": "motor",
+      "input": "시료 X를 100 이동해",
+      "desc": "Sample X motor move",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 1.51,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "sample",
+              "sample_cx",
+              100
+            ]
+          }
+        ],
+        "explanation": "시료 X 좌표를 100 µm 이동시킵니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    }
+  ]
+}

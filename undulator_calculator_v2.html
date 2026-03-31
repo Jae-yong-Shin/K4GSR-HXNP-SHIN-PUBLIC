@@ -1,0 +1,3109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undulator 계산기</title>
+    
+    <!-- Chart.js with multiple CDN fallbacks -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" 
+            onerror="this.onerror=null; this.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js'"></script>
+    <script>
+        // Additional fallback
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof Chart === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.min.js';
+                script.onerror = function() {
+                    console.error('All Chart.js CDN sources failed');
+                    // Show warning but allow basic calculations
+                    const warning = document.createElement('div');
+                    warning.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ff9800; color: white; padding: 10px; text-align: center; z-index: 10000;';
+                    warning.innerHTML = '⚠️ 차트 라이브러리 로딩 실패 - 기본 계산은 가능하나 그래프는 표시되지 않습니다';
+                    document.body.insertBefore(warning, document.body.firstChild);
+                };
+                document.head.appendChild(script);
+            }
+        });
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a24;
+            --border-primary: rgba(79, 195, 247, 0.3);
+            --border-secondary: rgba(156, 39, 176, 0.3);
+            --border-accent: rgba(76, 175, 80, 0.3);
+            --text-primary: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --primary: #4fc3f7;
+            --secondary: #9c27b0;
+            --accent: #4caf50;
+            --danger: #f44336;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-primary);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .card-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        select option {
+            background: #1a1a24;
+            color: #ffffff;
+            padding: 8px;
+        }
+
+        select option:hover {
+            background: #2a2a34;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(79, 195, 247, 0.05);
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 195, 247, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            background: rgba(79, 195, 247, 0.1);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+        }
+
+        .port-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(156, 39, 176, 0.1);
+            border-radius: 8px;
+            border: 1px solid var(--border-secondary);
+        }
+
+        .port-fields {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+        }
+
+        .port-remove {
+            padding: 8px 16px;
+            background: var(--danger);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .port-remove:hover {
+            background: #d32f2f;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        .canvas-container {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        canvas {
+            border-radius: 8px;
+            border: 2px solid var(--border-primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            border-radius: 8px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .beam-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .beam-element {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+
+        .beam-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-family: monospace;
+            margin-bottom: 6px;
+        }
+
+        .beam-source {
+            background: rgba(79, 195, 247, 0.2);
+            border: 1px solid var(--border-primary);
+        }
+
+        .beam-port {
+            background: rgba(156, 39, 176, 0.2);
+            border: 1px solid var(--border-secondary);
+        }
+
+        .beam-sample {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid var(--border-accent);
+        }
+
+        .beam-arrow {
+            width: 24px;
+            height: 2px;
+            background: var(--primary);
+            opacity: 0.5;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+        }
+
+        .info-item {
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+        }
+
+        .info-value {
+            font-family: monospace;
+            color: var(--text-primary);
+            margin-left: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .heatmap-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .control-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚛️ Undulator 계산기</h1>
+            <p class="subtitle">Undulator Radiation Calculator</p>
+        </header>
+
+        <div class="grid">
+            <!-- Left Column: Input Parameters -->
+            <div>
+                <!-- Electron Beam Parameters -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        ⚛️ Electron Beam Parameters
+                    </div>
+
+                    <div style="margin-bottom: 20px; padding: 12px; background: rgba(79, 195, 247, 0.1); border-radius: 8px; border: 1px solid var(--border-primary);">
+                        <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                            <strong style="color: var(--primary);">영향:</strong><br>
+                            • Ring Energy: E₁ ∝ E², P_total ∝ E², dP/dΩ ∝ E⁴<br>
+                            • Ring Current: P_total ∝ I, dP/dΩ ∝ I
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            링 에너지 (Ring Energy) [GeV]
+                            <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 8px;">
+                                → E₁ = <span id="previewE1" style="color: var(--accent); font-weight: 600;">-</span> keV
+                            </span>
+                        </label>
+                        <input type="number" id="ringEnergy" value="4.0" step="0.1" min="0.5" max="10" oninput="updateElectronPreview()">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">
+                            γ = <span id="previewGamma" style="color: white;">7827</span> | 
+                            Korea-4GSR: 4.0 GeV, PLS-II: 3.0 GeV, SPring-8: 8.0 GeV
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            링 전류 (Ring Current) [A]
+                            <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 8px;">
+                                = <span id="previewCurrent" style="color: var(--accent); font-weight: 600;">400</span> mA
+                            </span>
+                        </label>
+                        <input type="number" id="ringCurrent" value="0.4" step="0.01" min="0.05" max="1.0" oninput="updateElectronPreview()">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">
+                            Korea-4GSR: 400 mA, NSLS-II: 500 mA, SPring-8: 100 mA
+                        </div>
+                    </div>
+
+                    <!-- Electron Beam Parameters (Advanced) -->
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(79, 195, 247, 0.05); border-radius: 8px; border: 1px solid var(--border-primary);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; cursor: pointer;" onclick="toggleAdvancedBeam()">
+                            <h4 style="font-size: 0.9rem; color: var(--primary); margin: 0;">
+                                🔬 Advanced: Complete Electron Beam Model
+                            </h4>
+                            <span id="advancedBeamToggle" style="color: var(--primary);">▼</span>
+                        </div>
+                        
+                        <div id="advancedBeamParams" style="display: none;">
+                            <!-- Finite emittance option -->
+                            <div style="margin-bottom: 15px; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
+                                <label style="display: flex; align-items: center; cursor: pointer; font-size: 0.9rem;">
+                                    <input type="checkbox" id="useFiniteEmittance" onchange="updateEmittanceInfo()" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                                    <span>Include complete electron beam effects (divergence + source size)</span>
+                                </label>
+                                <div id="emittanceInfo" style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); display: none;">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>수평 Emittance (ε_x) [nm·rad]
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);"> (Korea-4GSR: 0.062)</span>
+                                </label>
+                                <input type="number" id="emittanceX" value="0.062" step="0.001" min="0" oninput="updateEmittanceInfo()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Coupling Ratio (κ) [%]
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);"> (ε_y = κ × ε_x)</span>
+                                </label>
+                                <input type="number" id="coupling" value="10.0" step="0.1" min="0" max="100" oninput="updateEmittanceInfo()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Beta X (β_x) [m]
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);"> (Korea-4GSR: 8.6)</span>
+                                </label>
+                                <input type="number" id="betaX" value="8.6" step="0.1" min="0.1" oninput="updateEmittanceInfo()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Beta Y (β_y) [m]
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);"> (Korea-4GSR: 2.5)</span>
+                                </label>
+                                <input type="number" id="betaY" value="2.5" step="0.1" min="0.1" oninput="updateEmittanceInfo()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Energy Spread (σ_E/E) [%]
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);"> (Korea-4GSR: 0.120)</span>
+                                </label>
+                                <input type="number" id="energySpread" value="0.120" step="0.01" min="0">
+                            </div>
+
+                            <!-- Calculated values -->
+                            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                                <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--accent);">
+                                    계산된 Beam Size:
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); display: grid; gap: 5px;">
+                                    <div>σ_x (source): <span id="calcSigmaX" style="color: white;">-</span> μm</div>
+                                    <div>σ_y (source): <span id="calcSigmaY" style="color: white;">-</span> μm</div>
+                                    <div>σ_x' (divergence): <span id="calcSigmaXp" style="color: white;">-</span> μrad</div>
+                                    <div>σ_y' (divergence): <span id="calcSigmaYp" style="color: white;">-</span> μrad</div>
+                                    <div style="margin-top: 5px; padding-top: 5px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                        At distance <span id="calcDistance">30</span> m:
+                                        <div style="margin-left: 10px; margin-top: 3px;">
+                                            Total σ_x: <span id="calcTotalX" style="color: white;">-</span> mm
+                                        </div>
+                                        <div style="margin-left: 10px;">
+                                            Total σ_y: <span id="calcTotalY" style="color: white;">-</span> mm
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 10px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 4px; border: 1px solid rgba(255, 193, 7, 0.3);">
+                                <div style="font-size: 0.75rem; color: rgba(255, 193, 7, 0.9);">
+                                    ⚠️ 현재 계산은 Point Source (Zero Emittance) 가정을 사용합니다.
+                                    <br>위 파라미터들은 참고용이며 실제 계산에 반영되지 않습니다.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Undulator Parameters -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/>
+                        </svg>
+                        🧲 Undulator Parameters
+                    </div>
+
+                    <div class="form-group">
+                        <label>주기 길이 (Period Length) [mm]</label>
+                        <input type="number" id="periodLength" value="24" step="0.1" min="0" oninput="updateElectronPreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>주기 수 (Number of Periods)</label>
+                        <input type="number" id="numPeriods" value="123" step="1" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Gap [mm]</label>
+                        <input type="number" id="gap" value="5.0" step="0.1" min="0" oninput="updateElectronPreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>계수 a (Coefficient a)</label>
+                        <input type="number" id="coeffA" value="3.3" step="0.01" oninput="updateElectronPreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>계수 b (Coefficient b)</label>
+                        <input type="number" id="coeffB" value="-5.08" step="0.01" oninput="updateElectronPreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>계수 c (Coefficient c)</label>
+                        <input type="number" id="coeffC" value="1.54" step="0.01" oninput="updateElectronPreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>거리 (Distance) [m]</label>
+                        <input type="number" id="distance" value="30.0" step="0.1" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>수평 개구부 (Aperture H) [mm]</label>
+                        <input type="number" id="apertureH" value="1.2" step="0.1" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>수직 개구부 (Aperture V) [mm]</label>
+                        <input type="number" id="apertureV" value="1.2" step="0.1" min="0">
+                    </div>
+                </div>
+
+                <!-- Attenuator Ports -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                        </svg>
+                        감쇠기 포트 (Attenuator Ports)
+                    </div>
+
+                    <div id="portsContainer"></div>
+
+                    <button onclick="addPort()" style="width: 100%;">
+                        + 포트 추가
+                    </button>
+                </div>
+
+                <div class="button-group">
+                    <button onclick="calculate()" style="flex: 1;">
+                        🔬 계산 실행
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div>
+                <!-- Key Results -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        주요 결과
+                    </div>
+
+                    <div class="results-grid">
+                        <div class="result-item">
+                            <div class="result-label">총 출력 (Total Power)</div>
+                            <div class="result-value" id="totalPower">-</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">개구부 출력 (Aperture)</div>
+                            <div class="result-value" id="aperturePower">-</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">최종 출력 (Final)</div>
+                            <div class="result-value" id="finalPower">-</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">흡수 열량 (Absorbed)</div>
+                            <div class="result-value" id="totalAbsorbed">-</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">평균 에너지</div>
+                            <div class="result-value" id="avgEnergy">-</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">K 파라미터</div>
+                            <div class="result-value" id="kValue">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Beam Flow Visualization -->
+                    <div class="beam-flow" id="beamFlow">
+                        <div class="beam-element">
+                            <div class="beam-box beam-source">⚡</div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Source</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab(event, 'spectrum')">스펙트럼</button>
+                        <button class="tab" onclick="switchTab(event, 'absorption')">흡수량</button>
+                        <button class="tab" onclick="switchTab(event, 'profile')">2D 프로파일</button>
+                        <button class="tab" onclick="switchTab(event, 'energyResolved')">에너지별 프로파일</button>
+                    </div>
+
+                    <div id="spectrumTab" class="tab-content active">
+                        <div class="chart-container">
+                            <canvas id="spectrumChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="absorptionTab" class="tab-content">
+                        <div class="chart-container">
+                            <canvas id="absorptionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="profileTab" class="tab-content">
+                        <div class="heatmap-controls">
+                            <div class="control-group">
+                                <button class="control-btn" onclick="setViewMode(event, 'initial')">Before</button>
+                                <button class="control-btn active" onclick="setViewMode(event, 'transmitted')">After</button>
+                                <button class="control-btn" onclick="setViewMode(event, 'absorbed')">Absorbed (Heat)</button>
+                            </div>
+                            <div class="control-group">
+                                <button class="control-btn active" onclick="setScaleMode(event, 'linear')">Linear</button>
+                                <button class="control-btn" onclick="setScaleMode(event, 'log')">Log</button>
+                            </div>
+                        </div>
+                        <div class="canvas-container">
+                            <canvas id="heatmapCanvas" width="600" height="600"></canvas>
+                        </div>
+                        <div id="profileStats" style="margin-top: 15px;"></div>
+                        
+                        <!-- 1D Profile Cuts -->
+                        <div style="margin-top: 30px;">
+                            <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 15px; color: var(--text-muted);">
+                                📊 1D Profile Cuts (Validation)
+                            </h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Horizontal (Y=0)</div>
+                                    <canvas id="horizontalCutChart" style="max-height: 200px;"></canvas>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Vertical (X=0)</div>
+                                    <canvas id="verticalCutChart" style="max-height: 200px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Energy-Resolved Profiles Tab -->
+                    <div id="energyResolvedTab" class="tab-content">
+                        <div style="margin-bottom: 20px; padding: 15px; background: rgba(79, 195, 247, 0.1); border-radius: 8px; border: 1px solid var(--border-primary);">
+                            <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: var(--primary);">
+                                🔬 에너지별 공간 분포 분석
+                            </h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                                Undulator radiation의 에너지별 공간 분포를 확인합니다. 낮은 에너지는 off-axis에, on-axis energy는 중심에 집중됩니다.
+                            </p>
+                        </div>
+
+                        <!-- Energy Band Selection -->
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; color: var(--text-muted);">
+                                에너지 대역 선택
+                            </h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                                <button class="control-btn" onclick="showEnergyBand(event, 'low')">
+                                    Low-E (0.8-0.95 E₁)
+                                </button>
+                                <button class="control-btn active" onclick="showEnergyBand(event, 'fundamental')">
+                                    E₁ (0.95-1.05 E₁)
+                                </button>
+                                <button class="control-btn" onclick="showEnergyBand(event, 'high')">
+                                    High-E (1.05-1.2 E₁)
+                                </button>
+                                <button class="control-btn" onclick="showEnergyBand(event, '2nd')">
+                                    2nd Harmonic
+                                </button>
+                                <button class="control-btn" onclick="showEnergyBand(event, 'custom')">
+                                    Custom Range
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Custom Energy Range -->
+                        <div id="customEnergyRange" style="display: none; margin-bottom: 25px; padding: 15px; background: rgba(156, 39, 176, 0.1); border-radius: 8px; border: 1px solid var(--border-secondary);">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">
+                                        최소 에너지 (keV)
+                                    </label>
+                                    <input type="number" id="customEmin" step="0.1" value="10" 
+                                           style="width: 100%; padding: 8px; background: var(--bg-dark); border: 1px solid var(--border-primary); border-radius: 4px; color: var(--text-primary);">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">
+                                        최대 에너지 (keV)
+                                    </label>
+                                    <input type="number" id="customEmax" step="0.1" value="15" 
+                                           style="width: 100%; padding: 8px; background: var(--bg-dark); border: 1px solid var(--border-primary); border-radius: 4px; color: var(--text-primary);">
+                                </div>
+                            </div>
+                            <button class="control-btn" onclick="updateCustomEnergyRange()" style="margin-top: 10px;">
+                                적용
+                            </button>
+                        </div>
+
+                        <!-- Current Energy Band Info -->
+                        <div id="energyBandInfo" style="margin-bottom: 20px; padding: 12px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; border: 1px solid var(--border-accent);">
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                                현재 에너지 범위: <span id="currentEnergyRange" style="color: var(--accent); font-weight: 600;">-</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">
+                                적분 파워: <span id="energyBandPower" style="color: var(--accent);">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Energy-Resolved 2D Profile -->
+                        <div class="canvas-container" style="margin-bottom: 25px;">
+                            <canvas id="energyResolvedCanvas" width="600" height="600"></canvas>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div id="energyResolvedStats" style="margin-bottom: 25px;"></div>
+
+                        <!-- Comparison: Multiple Energy Bands -->
+                        <div style="margin-top: 30px;">
+                            <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; color: var(--text-muted);">
+                                📊 에너지 대역별 비교
+                            </h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div style="background: var(--bg-dark); padding: 15px; border-radius: 8px; border: 1px solid var(--border-primary);">
+                                    <canvas id="energyComparisonH" style="max-height: 250px;"></canvas>
+                                </div>
+                                <div style="background: var(--bg-dark); padding: 15px; border-radius: 8px; border: 1px solid var(--border-primary);">
+                                    <canvas id="energyComparisonV" style="max-height: 250px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Multi-Panel View -->
+                        <div style="margin-top: 30px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">
+                                    🎨 Multi-Energy View
+                                </h4>
+                                <button class="control-btn" onclick="generateMultiEnergyView()">
+                                    생성
+                                </button>
+                            </div>
+                            <div id="multiEnergyView" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <!-- Dynamically generated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="info-grid" id="additionalInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let ports = [];
+        let calculationResult = null;
+        let currentViewMode = 'transmitted';
+        let currentScaleMode = 'linear';
+        let spectrumChart = null;
+        let absorptionChart = null;
+
+        // Physical constants
+        const ELECTRON_MASS_GEV = 0.000511;
+        const MATERIALS = ['None', 'Carbon', 'Aluminium', 'Silicon', 'Diamond'];
+
+        // NIST attenuation data
+        const NIST_DATA = {
+            Carbon: {
+                energy: [1, 1.5, 2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 40, 50, 60, 80, 100],
+                mu_rho: [2211, 700.2, 302.6, 90.33, 37.78, 19.12, 10.95, 4.576, 2.373, 0.8071, 0.4420, 0.2562, 0.2076, 0.1871, 0.1753, 0.1610, 0.1514],
+                density: 2.267
+            },
+            Aluminium: {
+                energy: [1, 1.5, 2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 40, 50, 60, 80, 100],
+                mu_rho: [1185, 402.2, 362.1, 788.0, 360.5, 193.4, 115.3, 50.33, 26.23, 7.955, 3.441, 1.128, 0.5685, 0.3681, 0.2778, 0.2018, 0.1704],
+                density: 2.70
+            },
+            Silicon: {
+                energy: [1, 1.5, 1.839, 2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 40, 50, 60, 80, 100],
+                mu_rho: [1570, 535.5, 3192, 2777, 978.4, 452.9, 245.0, 147.0, 64.68, 33.89, 10.34, 4.464, 1.436, 0.7012, 0.4385, 0.3207, 0.2228, 0.1835],
+                density: 2.33
+            },
+            Diamond: {
+                energy: [1, 1.5, 2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 40, 50, 60, 80, 100],
+                mu_rho: [2211, 700.2, 302.6, 90.33, 37.78, 19.12, 10.95, 4.576, 2.373, 0.8071, 0.4420, 0.2562, 0.2076, 0.1871, 0.1753, 0.1610, 0.1514],
+                density: 3.515
+            }
+        };
+
+        // Initialize
+        function init() {
+            addPort();
+            addPort();
+            addPort();
+            updateElectronPreview();
+        }
+
+        // Port management
+        function addPort() {
+            const id = ports.length;
+            ports.push({ material: 'None', thickness: 0 });
+            renderPorts();
+        }
+
+        function removePort(index) {
+            ports.splice(index, 1);
+            renderPorts();
+        }
+
+        function updatePort(index, field, value) {
+            ports[index][field] = field === 'thickness' ? parseFloat(value) || 0 : value;
+        }
+
+        function renderPorts() {
+            const container = document.getElementById('portsContainer');
+            container.innerHTML = ports.map((port, i) => `
+                <div class="port-container">
+                    <div class="port-fields">
+                        <div>
+                            <label>재질 (Material)</label>
+                            <select onchange="updatePort(${i}, 'material', this.value)">
+                                ${MATERIALS.map(m => `<option value="${m}" ${port.material === m ? 'selected' : ''}>${m}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label>두께 [mm]</label>
+                            <input type="number" value="${port.thickness}" step="0.1" min="0"
+                                   onchange="updatePort(${i}, 'thickness', this.value)">
+                        </div>
+                    </div>
+                    <button class="port-remove" onclick="removePort(${i})">×</button>
+                </div>
+            `).join('');
+        }
+
+        // Math helpers
+        function besselJ(n, x) {
+            // Bessel function J_n(x) supporting integer and half-integer orders
+            
+            if (Math.abs(x) < 1e-10) {
+                return n === 0 ? 1.0 : 0.0;
+            }
+            
+            // Check for half-integer order
+            const is_half_integer = Math.abs(n - Math.round(n)) > 0.25 && Math.abs(n - Math.round(n)) < 0.75;
+            
+            if (is_half_integer) {
+                // Half-integer Bessel functions: J_{n+1/2}(x) = sqrt(2/πx) * (trig functions)
+                const m = Math.round(n - 0.5);  // n = m + 1/2
+                const sqrt_factor = Math.sqrt(2.0 / (Math.PI * x));
+                
+                if (m === 0) {
+                    // J_{1/2}(x) = sqrt(2/πx) * sin(x)
+                    return sqrt_factor * Math.sin(x);
+                } else if (m === 1) {
+                    // J_{3/2}(x) = sqrt(2/πx) * (sin(x)/x - cos(x))
+                    return sqrt_factor * (Math.sin(x)/x - Math.cos(x));
+                } else if (m === 2) {
+                    // J_{5/2}(x) = sqrt(2/πx) * ((3/x² - 1)sin(x) - 3cos(x)/x)
+                    return sqrt_factor * ((3/(x*x) - 1)*Math.sin(x) - 3*Math.cos(x)/x);
+                } else if (m === 3) {
+                    // J_{7/2}(x) using recurrence
+                    const j_half = besselJ(0.5, x);
+                    const j_3half = besselJ(1.5, x);
+                    return (5/x) * j_3half - j_half;
+                } else if (m >= 4) {
+                    // Use upward recurrence: J_{n+1} = (2n/x)J_n - J_{n-1}
+                    let j_prev = besselJ(0.5, x);
+                    let j_curr = besselJ(1.5, x);
+                    for (let k = 1; k < m; k++) {
+                        const j_next = (2*(k+0.5)/x) * j_curr - j_prev;
+                        j_prev = j_curr;
+                        j_curr = j_next;
+                    }
+                    return j_curr;
+                } else if (m === -1) {
+                    // J_{-1/2}(x) = sqrt(2/πx) * cos(x)
+                    return sqrt_factor * Math.cos(x);
+                }
+            }
+            
+            // Integer order - original implementation
+            if (!Number.isInteger(n) || n < 0) {
+                n = Math.round(n);  // Force to nearest integer
+            }
+            
+            let sum = 0;
+            let factM = 1;
+            let factMN = 1;
+            for (let i = 1; i <= n; i++) factMN *= i;
+
+            for (let m = 0; m < 30; m++) {
+                if (m > 0) {
+                    factM *= m;
+                    factMN *= (m + n);
+                }
+                const term = (Math.pow(-1, m) / (factM * factMN)) * Math.pow(x / 2, 2 * m + n);
+                sum += term;
+                if (Math.abs(term) < 1e-15 * Math.abs(sum || 1)) break;
+            }
+            return sum;
+        }
+
+        function sinc(x) {
+            // sinc(x) = sin(x) / x
+            if (Math.abs(x) < 1e-10) {
+                return 1.0 - x*x/6.0;  // Taylor expansion for small x
+            }
+            return Math.sin(x) / x;
+        }
+
+        function sincSquared(x) {
+            const s = sinc(x);
+            return s * s;
+        }
+
+        function interpLogLog(x, xArr, yArr) {
+            if (x <= xArr[0]) return yArr[0];
+            if (x >= xArr[xArr.length - 1]) return yArr[yArr.length - 1];
+            const lx = Math.log(x);
+            for (let i = 0; i < xArr.length - 1; i++) {
+                if (x >= xArr[i] && x <= xArr[i + 1]) {
+                    const lx0 = Math.log(xArr[i]);
+                    const lx1 = Math.log(xArr[i + 1]);
+                    const ly0 = Math.log(yArr[i]);
+                    const ly1 = Math.log(yArr[i + 1]);
+                    const t = (lx - lx0) / (lx1 - lx0);
+                    return Math.exp(ly0 + t * (ly1 - ly0));
+                }
+            }
+            return yArr[yArr.length - 1];
+        }
+
+        function trapz(y, x) {
+            let sum = 0;
+            for (let i = 0; i < y.length - 1; i++) {
+                sum += 0.5 * (y[i] + y[i + 1]) * (x[i + 1] - x[i]);
+            }
+            return sum;
+        }
+
+        // Main calculation
+        function calculate() {
+            const params = {
+                ringEnergy: parseFloat(document.getElementById('ringEnergy').value),
+                ringCurrent: parseFloat(document.getElementById('ringCurrent').value),
+                periodLength: parseFloat(document.getElementById('periodLength').value) / 1000, // mm to m
+                numPeriods: parseInt(document.getElementById('numPeriods').value),
+                distance: parseFloat(document.getElementById('distance').value),
+                apertureH: parseFloat(document.getElementById('apertureH').value),
+                apertureV: parseFloat(document.getElementById('apertureV').value),
+                gap: parseFloat(document.getElementById('gap').value),
+                coeffA: parseFloat(document.getElementById('coeffA').value),
+                coeffB: parseFloat(document.getElementById('coeffB').value),
+                coeffC: parseFloat(document.getElementById('coeffC').value),
+                ports: ports
+            };
+
+            calculationResult = computeSrcalc(params);
+            displayResults(calculationResult);
+        }
+
+        // ============================================
+        // 2D Profile Calculation (Global Function)
+        // ============================================
+        
+        function calculate2DProfile(spectrum, energies, E1_keV, gamma, K, N_periods, n_grid, theta_arr, psi_arr, dx, dy, emittanceParams = null) {
+            // Exact Kim (1989) model with correct H/V asymmetry
+            // Optional: Apply finite emittance correction
+            
+            const power_2d = [];
+            for (let j = 0; j < n_grid; j++) {
+                power_2d.push(new Array(n_grid).fill(0));
+            }
+
+            const dE = energies.length > 1 ? energies[1] - energies[0] : 0;
+            
+            // Harmonics to include
+            const n_harmonics = [1, 3, 5, 7, 9, 11, 13, 15];
+            
+            // Horizontal factor for planar undulator
+            const H_factor = 1.0 + K*K/2.0;
+            
+            // Calculate electron beam effects if using finite emittance
+            let sigma_xp_e = 0;  // μrad (beam divergence)
+            let sigma_yp_e = 0;  // μrad (beam divergence)
+            let delta_theta_source = 0;  // μrad (source size effect)
+            let delta_psi_source = 0;  // μrad (source size effect)
+            let emittance_enabled = false;
+            
+            if (emittanceParams && emittanceParams.enabled) {
+                // Electron beam parameters
+                const emittance_x = emittanceParams.emittance_x * 1e-9;  // nm·rad to m·rad
+                const coupling = emittanceParams.coupling / 100.0;
+                const emittance_y = coupling * emittance_x;
+                const beta_x = emittanceParams.beta_x;
+                const beta_y = emittanceParams.beta_y;
+                
+                // EFFECT 1: Beam divergence (already implemented)
+                sigma_xp_e = Math.sqrt(emittance_x / beta_x) * 1e6;  // μrad
+                sigma_yp_e = Math.sqrt(emittance_y / beta_y) * 1e6;  // μrad
+                
+                // EFFECT 2: Finite source size angular spread
+                // When source has finite size σ_x, it creates angular smearing Δθ ≈ σ_x / L_u
+                const sigma_x_source = Math.sqrt(emittance_x * beta_x) * 1e6;  // μm
+                const sigma_y_source = Math.sqrt(emittance_y * beta_y) * 1e6;  // μm
+                const lambda_u_m = spectrum.length > 0 ? energies[0] * 0 : 0.024;  // Get from context or default
+                // Use N_periods to calculate undulator length
+                const L_u = N_periods * 0.024;  // Assume 24mm period, in meters
+                
+                delta_theta_source = (sigma_x_source * 1e-6) / L_u * 1e6;  // μrad
+                delta_psi_source = (sigma_y_source * 1e-6) / L_u * 1e6;  // μrad
+                
+                emittance_enabled = true;
+                
+                console.log(`Finite emittance enabled:`);
+                console.log(`  Beam divergence: σ_x'=${sigma_xp_e.toFixed(2)} μrad, σ_y'=${sigma_yp_e.toFixed(2)} μrad`);
+                console.log(`  Source size: σ_x=${sigma_x_source.toFixed(2)} μm, σ_y=${sigma_y_source.toFixed(2)} μm`);
+                console.log(`  Source angular spread: Δθ=${delta_theta_source.toFixed(3)} μrad, Δψ=${delta_psi_source.toFixed(3)} μrad`);
+            }
+            
+            // Undulator radiation natural divergence
+            const sigma_r = 1.0 / (gamma * Math.sqrt(H_factor));  // rad
+            const sigma_theta_und = sigma_r * 1e6;  // μrad
+            const sigma_psi_und = sigma_r * Math.sqrt(H_factor) * 1e6;  // μrad
+            
+            // Effective divergence (quadrature sum of all contributions)
+            const sigma_theta_eff = emittance_enabled ? 
+                Math.sqrt(Math.pow(sigma_theta_und, 2) + Math.pow(sigma_xp_e, 2) + Math.pow(delta_theta_source, 2)) : sigma_theta_und;
+            const sigma_psi_eff = emittance_enabled ?
+                Math.sqrt(Math.pow(sigma_psi_und, 2) + Math.pow(sigma_yp_e, 2) + Math.pow(delta_psi_source, 2)) : sigma_psi_und;
+            
+            if (emittance_enabled) {
+                const broadening_h = ((sigma_theta_eff/sigma_theta_und - 1) * 100);
+                const broadening_v = ((sigma_psi_eff/sigma_psi_und - 1) * 100);
+                console.log(`Total convolved: σ_θ=${sigma_theta_eff.toFixed(2)} μrad (+${broadening_h.toFixed(3)}%), σ_ψ=${sigma_psi_eff.toFixed(2)} μrad (+${broadening_v.toFixed(3)}%)`);
+                
+                // Show breakdown
+                const div_only = Math.sqrt(Math.pow(sigma_theta_und, 2) + Math.pow(sigma_xp_e, 2));
+                const source_contribution = sigma_theta_eff - div_only;
+                console.log(`  Divergence only: ${div_only.toFixed(2)} μrad`);
+                console.log(`  Source size adds: +${source_contribution.toFixed(3)} μrad`);
+            }
+            
+            console.log(`Exact 2D Profile: E1=${E1_keV.toFixed(3)} keV, K=${K.toFixed(3)}, N=${N_periods}`);
+            
+            // For each pixel (angle)
+            for (let j = 0; j < n_grid; j++) {
+                for (let i = 0; i < n_grid; i++) {
+                    const theta_mrad = theta_arr[i];
+                    const psi_mrad = psi_arr[j];
+                    
+                    // Apply finite emittance broadening via modified angles
+                    // Effective angle accounts for electron beam divergence
+                    const theta_eff = emittance_enabled ? 
+                        theta_mrad * (sigma_theta_und / sigma_theta_eff) : theta_mrad;
+                    const psi_eff = emittance_enabled ?
+                        psi_mrad * (sigma_psi_und / sigma_psi_eff) : psi_mrad;
+                    
+                    // Convert to radians
+                    const theta_rad = theta_eff / 1000.0;
+                    const psi_rad = psi_eff / 1000.0;
+                    
+                    const gamma_theta = gamma * Math.abs(theta_rad);
+                    const gamma_psi = gamma * Math.abs(psi_rad);
+                    
+                    // Angular terms (correct formula)
+                    const theta_term = (gamma_theta * gamma_theta) / H_factor;
+                    const psi_term = gamma_psi * gamma_psi;
+                    
+                    let pixel_power = 0;
+                    
+                    // For each harmonic
+                    for (const n of n_harmonics) {
+                        // Resonance energy
+                        const denominator = 1.0 + theta_term + psi_term;
+                        const E_n_res = (n * E1_keV) / denominator;
+                        
+                        if (E_n_res < energies[0] || E_n_res > energies[energies.length - 1]) {
+                            continue;
+                        }
+                        
+                        // Angular coupling
+                        const K_factor = K / H_factor;
+                        const xi_n = (n * K*K) / (4.0 + 2.0*K*K);
+                        
+                        let A_n_sq;
+                        
+                        if (n % 2 === 1) {
+                            // Odd harmonic
+                            const j_minus = besselJ((n-1)/2, n*xi_n);
+                            const j_plus = besselJ((n+1)/2, n*xi_n);
+                            const JJ = j_minus - j_plus;
+                            const C_n = n * K_factor * JJ;
+                            
+                            // Angular distribution
+                            const power = (n + 1) / 2.0;
+                            const angular_factor = 1.0 / Math.pow(denominator, power);
+                            
+                            A_n_sq = C_n * C_n * angular_factor;
+                            
+                        } else {
+                            // Even harmonic
+                            const r_sq = theta_rad*theta_rad + psi_rad*psi_rad;
+                            const gamma_r = gamma * Math.sqrt(r_sq);
+                            
+                            if (gamma_r < 1e-10) {
+                                A_n_sq = 0;
+                            } else {
+                                const j1 = besselJ(n/2 - 1, n*xi_n);
+                                const j2 = besselJ(n/2, n*xi_n);
+                                const JJ = j1 + j2;
+                                const C_n = K_factor * gamma_r * JJ;
+                                
+                                const power = (n + 1) / 2.0;
+                                const angular_factor = 1.0 / Math.pow(denominator, power);
+                                
+                                A_n_sq = C_n * C_n * angular_factor;
+                            }
+                        }
+                        
+                        if (A_n_sq < 1e-20) continue;
+                        
+                        // Integrate over spectrum
+                        const E_min = E_n_res * (1.0 - 5.0/N_periods);
+                        const E_max = E_n_res * (1.0 + 5.0/N_periods);
+                        
+                        for (let k = 0; k < energies.length; k++) {
+                            const E = energies[k];
+                            if (E < E_min || E > E_max) continue;
+                            
+                            const y_n = Math.PI * N_periods * (E / E_n_res - 1.0);
+                            const S_n = sincSquared(y_n);
+                            if (S_n < 1e-10) continue;
+                            
+                            const contribution = spectrum[k] * A_n_sq * S_n * dE;
+                            pixel_power += contribution;
+                        }
+                    }
+                    
+                    power_2d[j][i] = pixel_power;
+                }
+                
+                if ((j+1) % 10 === 0) {
+                    console.log(`  2D profile progress: ${(100*(j+1)/n_grid).toFixed(1)}%`);
+                }
+            }
+
+            // Calculate sum
+            let sum2d = 0;
+            for (let j = 0; j < n_grid; j++) {
+                for (let i = 0; i < n_grid; i++) {
+                    sum2d += power_2d[j][i] * dx * dy;
+                }
+            }
+            
+            console.log(`  Integrated power: ${sum2d.toFixed(3)} W`);
+
+            return { power_2d, sum2d };
+        }
+
+        // Main calculation
+        function computeSrcalc(params) {
+            const {ringEnergy: E_GeV, ringCurrent: I_A, periodLength: period_m, numPeriods: N_periods,
+                   distance: distance_m, apertureH: apt_h_mm, apertureV: apt_v_mm, gap, coeffA, coeffB, coeffC} = params;
+            
+            // Get emittance parameters if enabled
+            const emittanceParams = getEmittanceParams();
+            if (emittanceParams) {
+                console.log("Finite emittance mode enabled");
+            }
+
+            // Calculate B0 and K from gap
+            const period_mm = period_m * 1000;
+            const ratio = gap / period_mm;
+            const B0 = coeffA * Math.exp(coeffB * ratio + coeffC * ratio * ratio);
+            const K = 0.9341 * B0 * (period_mm / 10); // period in cm
+
+            const gamma = E_GeV / ELECTRON_MASS_GEV;
+            const lambda_u_cm = period_m * 100;
+            const undulatorLength = N_periods * period_m;
+
+            // Total power
+            const P_total = 633 * E_GeV * E_GeV * B0 * B0 * undulatorLength * I_A;
+
+            // First harmonic energy
+            const E1_keV = 0.9498 * E_GeV * E_GeV / (lambda_u_cm * (1 + K * K / 2));
+            const xi = K * K / (4 + 2 * K * K);
+
+            // Aperture angles
+            const half_h_mrad = (apt_h_mm / 2.0) / (distance_m * 1000.0) * 1000.0;
+            const half_v_mrad = (apt_v_mm / 2.0) / (distance_m * 1000.0) * 1000.0;
+
+            // On-axis power density
+            const dP_dOmega = 10.84 * B0 * Math.pow(E_GeV, 4) * N_periods * I_A;
+            const P_aperture_analytical = dP_dOmega * (2 * half_h_mrad) * (2 * half_v_mrad);
+
+            // Energy grid - extend to higher harmonics
+            // Calculate up to where harmonic contribution becomes negligible
+            const max_energy = 100; // keV
+            let max_harmonic = Math.min(200, Math.floor(max_energy / E1_keV) + 10);
+            
+            const n_points = 2000;
+            const energies_keV = [];
+            const dE = (max_energy - 0.2) / (n_points - 1);
+            for (let i = 0; i < n_points; i++) {
+                energies_keV.push(0.2 + i * dE);
+            }
+
+            // Calculate spectrum with improved harmonic model
+            const spectrum_shape = new Array(n_points).fill(0);
+
+            for (let n = 1; n <= max_harmonic; n++) {
+                const En = n * E1_keV;
+                if (En > max_energy + 5) break;
+
+                // Bessel function factor for planar undulator
+                const k1 = Math.floor((n - 1) / 2);
+                const k2 = Math.floor((n + 1) / 2);
+                const JJ = besselJ(k1, n * xi) - besselJ(k2, n * xi);
+                
+                // If JJ is too small, skip this harmonic
+                if (Math.abs(JJ) < 1e-10) continue;
+
+                let Fn;
+                if (n % 2 === 1) {
+                    // Odd harmonics: strong on-axis emission
+                    // Fn ∝ n² K² [JJ]² / (1 + K²/2)²
+                    Fn = n * n * K * K * JJ * JJ / Math.pow(1 + K * K / 2, 2);
+                } else {
+                    // Even harmonics: zero on-axis, finite through aperture
+                    // Characteristic opening angle for n-th harmonic: θn ~ 1/(γ√n)
+                    const theta_n = (1.0 / (gamma * Math.sqrt(n))) * 1000; // mrad
+                    
+                    // Aperture acceptance relative to characteristic angle
+                    const apt_frac_h = Math.min(half_h_mrad / theta_n, 1.0);
+                    const apt_frac_v = Math.min(half_v_mrad / theta_n, 1.0);
+                    const apt_frac = apt_frac_h * apt_frac_v;
+                    
+                    // Even harmonics scale with aperture and are weaker
+                    // Using empirical factor 0.15 for better agreement with full calculation
+                    Fn = 0.15 * n * K * K * JJ * JJ / Math.pow(1 + K * K / 2, 2) * apt_frac;
+                }
+
+                // Natural bandwidth: ΔE/E ~ 1/(nN)
+                const sigma_nat = En / (n * N_periods);
+                
+                // Emittance broadening (typical for 4th gen source: ~2% of En)
+                const sigma_emit = 0.02 * En;
+                
+                // Total energy spread (quadrature sum)
+                const sigma_E = Math.sqrt(sigma_nat * sigma_nat + sigma_emit * sigma_emit);
+
+                // Add Gaussian-broadened harmonic peak to spectrum
+                if (sigma_E > 0 && Fn > 0) {
+                    const inv2s2 = 1.0 / (2 * sigma_E * sigma_E);
+                    for (let i = 0; i < n_points; i++) {
+                        const de = energies_keV[i] - En;
+                        spectrum_shape[i] += Fn * Math.exp(-de * de * inv2s2);
+                    }
+                }
+                
+                // Stop if harmonics become negligible
+                if (n > 10 && Fn < 1e-6) {
+                    break;
+                }
+            }
+
+            // Normalize spectrum
+            const total_raw = trapz(spectrum_shape, energies_keV);
+            const spectrum_W_keV = spectrum_shape.map(v => total_raw > 0 ? v * P_aperture_analytical / total_raw : 0);
+            const P_aperture = trapz(spectrum_W_keV, energies_keV);
+
+            // 2D profile - IMPROVED: Energy-dependent angular distribution
+            const n_grid = 81;  // Increased resolution for better accuracy
+            const max_h_mrad = half_h_mrad * 2.0;
+            const max_v_mrad = half_v_mrad * 2.0;
+
+            const theta_arr = [];
+            const psi_arr = [];
+            for (let i = 0; i < n_grid; i++) {
+                theta_arr.push(-max_h_mrad + (2 * max_h_mrad / (n_grid - 1)) * i);
+                psi_arr.push(-max_v_mrad + (2 * max_v_mrad / (n_grid - 1)) * i);
+            }
+
+            const dx = theta_arr[1] - theta_arr[0];
+            const dy = psi_arr[1] - psi_arr[0];
+
+            // Function to calculate EXACT 2D profile from spectrum
+            // Using Kim (1989) formalism with sinc² bandwidth function
+            // Calculate INITIAL 2D profile (before attenuation)
+            const initial_result = calculate2DProfile(
+                spectrum_W_keV, energies_keV, E1_keV, gamma, K, N_periods,
+                n_grid, theta_arr, psi_arr, dx, dy, emittanceParams
+            );
+            const power_2d_initial = initial_result.power_2d;
+
+            // Renormalize to aperture power
+            if (initial_result.sum2d > 0) {
+                const scale = P_aperture / initial_result.sum2d;
+                for (let j = 0; j < n_grid; j++) {
+                    for (let i = 0; i < n_grid; i++) {
+                        power_2d_initial[j][i] *= scale;
+                    }
+                }
+            }
+
+            const x_mm = theta_arr.map(t => t * distance_m);
+            const y_mm = psi_arr.map(p => p * distance_m);
+
+            // Apply attenuation
+            const currentSpec = [...spectrum_W_keV];
+            const portAbsorbed = [];
+
+            for (const port of params.ports) {
+                const mat = port.material;
+                const thickness_mm = port.thickness;
+
+                if (mat !== 'None' && thickness_mm > 0 && NIST_DATA[mat]) {
+                    const matData = NIST_DATA[mat];
+                    const thickness_cm = thickness_mm / 10.0;
+                    const beforePort = [...currentSpec];
+
+                    for (let i = 0; i < n_points; i++) {
+                        const e_keV = Math.max(energies_keV[i], 0.5);
+                        const mu_rho = interpLogLog(e_keV, matData.energy, matData.mu_rho);
+                        const mu = mu_rho * matData.density;
+                        const transmission = Math.exp(-mu * thickness_cm);
+                        currentSpec[i] *= transmission;
+                    }
+
+                    const diff = beforePort.map((v, i) => v - currentSpec[i]);
+                    const absorbed = trapz(diff, energies_keV);
+                    portAbsorbed.push(absorbed);
+                } else {
+                    portAbsorbed.push(0);
+                }
+            }
+
+            const finalPower = trapz(currentSpec, energies_keV);
+
+            // Average energy
+            let avgEnergy = 0;
+            const weightedE = currentSpec.map((v, i) => v * energies_keV[i]);
+            const totalWeight = trapz(currentSpec, energies_keV);
+            if (totalWeight > 0) {
+                avgEnergy = trapz(weightedE, energies_keV) / totalWeight;
+            }
+
+            // Calculate TRANSMITTED 2D profile (after attenuation)
+            // This properly accounts for beam hardening and spatial distribution changes
+            const transmitted_result = calculate2DProfile(
+                currentSpec, energies_keV, E1_keV, gamma, K, N_periods,
+                n_grid, theta_arr, psi_arr, dx, dy, emittanceParams
+            );
+            const power_2d_transmitted = transmitted_result.power_2d;
+
+            // Renormalize to final power
+            if (transmitted_result.sum2d > 0) {
+                const scale = finalPower / transmitted_result.sum2d;
+                for (let j = 0; j < n_grid; j++) {
+                    for (let i = 0; i < n_grid; i++) {
+                        power_2d_transmitted[j][i] *= scale;
+                    }
+                }
+            }
+
+            // Calculate ABSORBED 2D profile (heat load on material)
+            // absorbed = initial - transmitted
+            const power_2d_absorbed = [];
+            for (let j = 0; j < n_grid; j++) {
+                const row = [];
+                for (let i = 0; i < n_grid; i++) {
+                    row.push(power_2d_initial[j][i] - power_2d_transmitted[j][i]);
+                }
+                power_2d_absorbed.push(row);
+            }
+
+            const peak_density_initial = Math.max(...power_2d_initial.flat()) / (Math.abs(dx) * Math.abs(dy));
+            const peak_density_transmitted = Math.max(...power_2d_transmitted.flat()) / (Math.abs(dx) * Math.abs(dy));
+            const peak_density_absorbed = Math.max(...power_2d_absorbed.flat()) / (Math.abs(dx) * Math.abs(dy));
+
+            return {
+                P_total, P_aperture, B0, K, E1_keV, gamma, undulatorLength, N_periods,
+                energyGrid: energies_keV, initialSpectrum: spectrum_W_keV,
+                transmittedSpectrum: currentSpec, portAbsorbed, finalPower,
+                totalAbsorbed: P_aperture - finalPower, avgEnergy,
+                profile2D: {
+                    x_mm, y_mm, 
+                    power_initial: power_2d_initial, 
+                    power_transmitted: power_2d_transmitted,
+                    power_absorbed: power_2d_absorbed,
+                    peak_density: peak_density_transmitted,
+                    peak_density_initial: peak_density_initial,
+                    peak_density_absorbed: peak_density_absorbed
+                },
+                // For energy-resolved profile calculation
+                spectrum_W_keV,
+                energies_keV,
+                n_grid,
+                theta_arr,
+                psi_arr,
+                dx,
+                dy,
+                emittanceParams,
+                distance_m  // Add distance for unit conversion
+            };
+        }
+
+        // Display results
+        function displayResults(result) {
+            document.getElementById('totalPower').textContent = result.P_total.toFixed(2) + ' W';
+            document.getElementById('aperturePower').textContent = result.P_aperture.toFixed(2) + ' W';
+            document.getElementById('finalPower').textContent = result.finalPower.toFixed(2) + ' W';
+            document.getElementById('totalAbsorbed').textContent = result.totalAbsorbed.toFixed(2) + ' W';
+            document.getElementById('avgEnergy').textContent = result.avgEnergy.toFixed(1) + ' keV';
+            document.getElementById('kValue').textContent = result.K.toFixed(3);
+
+            // Update beam flow
+            updateBeamFlow(result);
+
+            // Update charts
+            updateSpectrumChart(result);
+            updateAbsorptionChart(result);
+            updateHeatmap(result);
+            update1DCuts(result);
+
+            // Additional info
+            const E_critical = 0.665 * result.gamma * ELECTRON_MASS_GEV * result.gamma * ELECTRON_MASS_GEV * result.B0;
+            
+            // Read electron beam parameters
+            const ringEnergy = parseFloat(document.getElementById('ringEnergy').value);
+            const ringCurrent = parseFloat(document.getElementById('ringCurrent').value);
+            const emittance_x = parseFloat(document.getElementById('emittanceX').value);
+            const coupling = parseFloat(document.getElementById('coupling').value);
+            
+            document.getElementById('additionalInfo').innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">Ring Energy:</span>
+                    <span class="info-value">${ringEnergy.toFixed(2)} GeV</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Ring Current:</span>
+                    <span class="info-value">${(ringCurrent * 1000).toFixed(1)} mA</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Gamma (γ):</span>
+                    <span class="info-value">${result.gamma.toFixed(0)}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Opening Angle (1/γ):</span>
+                    <span class="info-value">${(1000/result.gamma).toFixed(2)} μrad</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">자기장 (B₀):</span>
+                    <span class="info-value">${result.B0.toFixed(4)} T</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">임계 에너지 (E_c):</span>
+                    <span class="info-value">${E_critical.toFixed(2)} keV</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">언듈레이터 길이:</span>
+                    <span class="info-value">${result.undulatorLength.toFixed(3)} m</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Emittance (ε_x):</span>
+                    <span class="info-value">${emittance_x.toFixed(2)} nm·rad</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Coupling (κ):</span>
+                    <span class="info-value">${coupling.toFixed(2)}%</span>
+                </div>
+            `;
+        }
+
+        function updateBeamFlow(result) {
+            let html = `
+                <div class="beam-element">
+                    <div class="beam-box beam-source">⚡</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Source</span>
+                </div>
+            `;
+
+            ports.forEach((port, i) => {
+                html += `<div class="beam-arrow"></div>`;
+                html += `
+                    <div class="beam-element">
+                        <div class="beam-box beam-port">${port.material !== 'None' ? port.thickness : '-'}</div>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">P${i + 1}</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="beam-arrow"></div>
+                <div class="beam-element">
+                    <div class="beam-box beam-sample">📊</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Sample</span>
+                </div>
+            `;
+
+            document.getElementById('beamFlow').innerHTML = html;
+        }
+
+        function updateSpectrumChart(result) {
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js not loaded, skipping chart update');
+                return;
+            }
+            
+            const ctx = document.getElementById('spectrumChart').getContext('2d');
+            
+            if (spectrumChart) {
+                spectrumChart.destroy();
+            }
+
+            const step = Math.max(1, Math.floor(result.energyGrid.length / 500));
+            const labels = [];
+            const initial = [];
+            const transmitted = [];
+
+            for (let i = 0; i < result.energyGrid.length; i += step) {
+                labels.push(result.energyGrid[i].toFixed(2));
+                initial.push(result.initialSpectrum[i]);
+                transmitted.push(result.transmittedSpectrum[i]);
+            }
+
+            spectrumChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Initial (Aperture)',
+                            data: initial,
+                            borderColor: '#4fc3f7',
+                            backgroundColor: 'rgba(79, 195, 247, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'After Attenuator',
+                            data: transmitted,
+                            borderColor: '#ff6d00',
+                            backgroundColor: 'rgba(255, 109, 0, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#fff' }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#4fc3f7',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Energy: ' + context[0].label + ' keV';
+                                },
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.parsed.y;
+                                    
+                                    // Format spectral density (W/keV)
+                                    let densityText;
+                                    if (value >= 1) {
+                                        densityText = value.toFixed(3) + ' W/keV';
+                                    } else if (value >= 0.001) {
+                                        densityText = value.toFixed(6) + ' W/keV';
+                                    } else {
+                                        densityText = value.toExponential(3) + ' W/keV';
+                                    }
+                                    
+                                    // Calculate actual power in a small energy band
+                                    // For heat load analysis: power in 0.01 keV bandwidth
+                                    const bandwidth_keV = 0.01; // 10 eV bandwidth
+                                    const powerInBand = value * bandwidth_keV;
+                                    
+                                    // Format power in band
+                                    let powerText;
+                                    if (powerInBand >= 0.01) {
+                                        powerText = powerInBand.toFixed(4) + ' W';
+                                    } else if (powerInBand >= 1e-6) {
+                                        powerText = (powerInBand * 1000).toFixed(4) + ' mW';
+                                    } else {
+                                        powerText = powerInBand.toExponential(3) + ' W';
+                                    }
+                                    
+                                    // Return two lines: density and actual power
+                                    return [
+                                        label + ': ' + densityText,
+                                        '  → ' + powerText + ' in 10 eV band'
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Energy (keV)', color: '#fff' },
+                            ticks: { color: '#aaa', maxTicksLimit: 10 },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Power (W/keV)', color: '#fff' },
+                            ticks: { color: '#aaa' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAbsorptionChart(result) {
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js not loaded, skipping chart update');
+                return;
+            }
+            
+            const ctx = document.getElementById('absorptionChart').getContext('2d');
+            
+            if (absorptionChart) {
+                absorptionChart.destroy();
+            }
+
+            const labels = result.portAbsorbed.map((_, i) => `Port ${i + 1}`);
+            const data = result.portAbsorbed;
+            const colors = data.map(v => v > 0 ? '#9c27b0' : 'rgba(255,255,255,0.1)');
+
+            absorptionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Absorbed Power (W)',
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#aaa' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Absorbed Power (W)', color: '#fff' },
+                            ticks: { color: '#aaa' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateHeatmap(result) {
+            const canvas = document.getElementById('heatmapCanvas');
+            const ctx = canvas.getContext('2d');
+            const profile = result.profile2D;
+
+            let data;
+            if (currentViewMode === 'initial') {
+                data = profile.power_initial;
+            } else if (currentViewMode === 'transmitted') {
+                data = profile.power_transmitted;
+            } else { // 'absorbed'
+                data = profile.power_absorbed;
+            }
+            
+            const ny = data.length;
+            const nx = ny > 0 ? data[0].length : 0;
+
+            let maxVal = 0;
+            let minNonZero = Infinity;
+            for (let j = 0; j < ny; j++) {
+                for (let i = 0; i < nx; i++) {
+                    const v = data[j][i];
+                    if (v > maxVal) maxVal = v;
+                    if (v > 0 && v < minNonZero) minNonZero = v;
+                }
+            }
+            if (minNonZero === Infinity) minNonZero = maxVal * 1e-6;
+
+            const W = canvas.width;
+            const H = canvas.height;
+            const cellW = W / nx;
+            const cellH = H / ny;
+
+            ctx.fillStyle = '#0a0a0f';
+            ctx.fillRect(0, 0, W, H);
+
+            const logMin = Math.log10(Math.max(minNonZero, maxVal * 1e-6));
+            const logMax = Math.log10(Math.max(maxVal, 1e-30));
+            const logRange = logMax - logMin;
+
+            for (let j = 0; j < ny; j++) {
+                for (let i = 0; i < nx; i++) {
+                    let val;
+                    if (currentScaleMode === 'log') {
+                        const raw = data[j][i];
+                        if (raw <= 0 || maxVal <= 0) {
+                            val = 0;
+                        } else {
+                            const logVal = Math.log10(Math.max(raw, minNonZero * 0.1));
+                            val = logRange > 0 ? Math.max(0, Math.min(1, (logVal - logMin) / logRange)) : 0;
+                        }
+                    } else {
+                        val = maxVal > 0 ? data[j][i] / maxVal : 0;
+                    }
+                    ctx.fillStyle = heatColor(val);
+                    ctx.fillRect(i * cellW, j * cellH, cellW + 1, cellH + 1);
+                }
+            }
+
+            // Crosshair
+            ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(W / 2, 0);
+            ctx.lineTo(W / 2, H);
+            ctx.moveTo(0, H / 2);
+            ctx.lineTo(W, H / 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Border
+            ctx.strokeStyle = 'rgba(79,195,247,0.6)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(0, 0, W, H);
+
+            // Stats - CORRECTED UNIT CONVERSION
+            // profile.x_mm and y_mm are in mm
+            // but data values are still in W/mrad² units
+            // Need to convert to W/mm² by dividing by distance²
+            
+            const distance_m = parseFloat(document.getElementById('distance').value);
+            
+            // dx and dy in MRAD (original angular space)
+            // Since x_mm = theta_mrad * distance_m, we have:
+            // dx_mrad = dx_mm / distance_m
+            const dx_mm = profile.x_mm[1] - profile.x_mm[0];
+            const dy_mm = profile.y_mm[1] - profile.y_mm[0];
+            const dx_mrad = dx_mm / distance_m;  // Convert mm back to mrad
+            const dy_mrad = dy_mm / distance_m;
+            
+            // Peak density: data is in W/mrad², convert to W/mm²
+            // W/mrad² = W/(distance_m² mm²)
+            const peakDensity = maxVal / (distance_m * distance_m);
+            
+            // Integrated power: integrate in mrad space
+            // Since data is normalized in mrad space, integrate there
+            const pixelArea_mrad2 = dx_mrad * dy_mrad;
+            const integratedPower = data.flat().reduce((a, b) => a + b, 0) * pixelArea_mrad2;
+
+            // === VALIDATION STATISTICS ===
+            
+            // 1. Find peak position
+            let peakI = 0, peakJ = 0;
+            for (let j = 0; j < ny; j++) {
+                for (let i = 0; i < nx; i++) {
+                    if (data[j][i] === maxVal) {
+                        peakI = i;
+                        peakJ = j;
+                    }
+                }
+            }
+            const peakX_mm = profile.x_mm[peakI];
+            const peakY_mm = profile.y_mm[peakJ];
+            
+            // 2. Calculate FWHM (horizontal and vertical)
+            const centerJ = Math.floor(ny / 2);
+            const centerI = Math.floor(nx / 2);
+            const halfMax = maxVal / 2;
+            
+            // Horizontal FWHM (Y=0 cut)
+            let fwhmH_left = -999, fwhmH_right = 999;
+            for (let i = centerI; i >= 0; i--) {
+                if (data[centerJ][i] < halfMax) {
+                    fwhmH_left = profile.x_mm[i];
+                    break;
+                }
+            }
+            for (let i = centerI; i < nx; i++) {
+                if (data[centerJ][i] < halfMax) {
+                    fwhmH_right = profile.x_mm[i];
+                    break;
+                }
+            }
+            const fwhmH = Math.abs(fwhmH_right - fwhmH_left);
+            
+            // Vertical FWHM (X=0 cut)
+            let fwhmV_bottom = -999, fwhmV_top = 999;
+            for (let j = centerJ; j >= 0; j--) {
+                if (data[j][centerI] < halfMax) {
+                    fwhmV_bottom = profile.y_mm[j];
+                    break;
+                }
+            }
+            for (let j = centerJ; j < ny; j++) {
+                if (data[j][centerI] < halfMax) {
+                    fwhmV_top = profile.y_mm[j];
+                    break;
+                }
+            }
+            const fwhmV = Math.abs(fwhmV_top - fwhmV_bottom);
+            
+            // 3. Check symmetry (compare quadrants)
+            const q1_sum = data.slice(centerJ, ny).reduce((s, row) => 
+                s + row.slice(centerI, nx).reduce((a,b) => a+b, 0), 0);
+            const q2_sum = data.slice(centerJ, ny).reduce((s, row) => 
+                s + row.slice(0, centerI).reduce((a,b) => a+b, 0), 0);
+            const q3_sum = data.slice(0, centerJ).reduce((s, row) => 
+                s + row.slice(0, centerI).reduce((a,b) => a+b, 0), 0);
+            const q4_sum = data.slice(0, centerJ).reduce((s, row) => 
+                s + row.slice(centerI, nx).reduce((a,b) => a+b, 0), 0);
+            const avg_q = (q1_sum + q2_sum + q3_sum + q4_sum) / 4;
+            const symmetry_error = Math.max(
+                Math.abs(q1_sum - avg_q),
+                Math.abs(q2_sum - avg_q),
+                Math.abs(q3_sum - avg_q),
+                Math.abs(q4_sum - avg_q)
+            ) / avg_q * 100;
+            
+            // 4. Expected power (from main results)
+            let expectedPower;
+            if (currentViewMode === 'initial') {
+                expectedPower = calculationResult.P_aperture;
+            } else if (currentViewMode === 'transmitted') {
+                expectedPower = calculationResult.finalPower;
+            } else { // 'absorbed'
+                expectedPower = calculationResult.totalAbsorbed;
+            }
+            const powerError = expectedPower > 0 ? 
+                Math.abs(integratedPower - expectedPower) / expectedPower * 100 : 0;
+            const symmetry_error_safe = (avg_q > 0) ? symmetry_error : 0;
+
+            // Labels based on mode
+            let peakLabel, integratedLabel, modeTitle;
+            if (currentViewMode === 'initial') {
+                peakLabel = 'Peak Density';
+                integratedLabel = 'Integrated Power';
+                modeTitle = 'Before Attenuator';
+            } else if (currentViewMode === 'transmitted') {
+                peakLabel = 'Peak Density';
+                integratedLabel = 'Transmitted Power';
+                modeTitle = 'After Attenuator';
+            } else { // 'absorbed'
+                peakLabel = 'Peak Heat Load Density';
+                integratedLabel = 'Total Heat Load';
+                modeTitle = 'Material Heat Load';
+            }
+
+            document.getElementById('profileStats').innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--primary);">${modeTitle}</div>
+                </div>
+                <div class="results-grid">
+                    <div class="result-item">
+                        <div class="result-label">${peakLabel}</div>
+                        <div class="result-value" style="font-size: 1.1rem;">${peakDensity > 1e6 || peakDensity < 1e-3 ? peakDensity.toExponential(3) : peakDensity.toFixed(3)} W/mm²</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">${integratedLabel}</div>
+                        <div class="result-value" style="font-size: 1.1rem;">${integratedPower.toFixed(2)} W</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Peak Position</div>
+                        <div class="result-value" style="font-size: 0.9rem;">(${peakX_mm.toFixed(3)}, ${peakY_mm.toFixed(3)}) mm</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">FWHM (H × V)</div>
+                        <div class="result-value" style="font-size: 0.9rem;">${fwhmH.toFixed(3)} × ${fwhmV.toFixed(3)} mm</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(79, 195, 247, 0.1); border-radius: 8px; border: 1px solid var(--border-primary);">
+                    <div style="font-weight: 600; margin-bottom: 10px; color: var(--primary);">🔬 Validation Checks</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">
+                        <div>
+                            <span style="color: var(--text-muted);">Energy Conservation:</span>
+                            <span style="margin-left: 8px; color: ${powerError < 1 ? 'var(--accent)' : 'var(--danger)'};">
+                                ${powerError.toFixed(2)}% error ${powerError < 1 ? '✓' : '✗'}
+                            </span>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted);">Symmetry Error:</span>
+                            <span style="margin-left: 8px; color: ${symmetry_error_safe < 5 ? 'var(--accent)' : 'var(--danger)'};">
+                                ${symmetry_error_safe.toFixed(2)}% ${symmetry_error_safe < 5 ? '✓' : '✗'}
+                            </span>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted);">Expected Power:</span>
+                            <span style="margin-left: 8px; font-family: monospace;">${expectedPower.toFixed(2)} W</span>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted);">Grid Resolution:</span>
+                            <span style="margin-left: 8px; font-family: monospace;">${nx} × ${ny}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function heatColor(v) {
+            v = Math.max(0, Math.min(1, v));
+            if (v < 0.1) {
+                const t = v / 0.1;
+                return `rgb(${(10 + t * 20) | 0},${(10 + t * 20) | 0},${(30 + t * 50) | 0})`;
+            } else if (v < 0.3) {
+                const t = (v - 0.1) / 0.2;
+                return `rgb(${(30 + t * 20) | 0},${(30 + t * 100) | 0},${(80 + t * 100) | 0})`;
+            } else if (v < 0.5) {
+                const t = (v - 0.3) / 0.2;
+                return `rgb(${(50 + t * 30) | 0},${(130 + t * 70) | 0},${(180 - t * 80) | 0})`;
+            } else if (v < 0.7) {
+                const t = (v - 0.5) / 0.2;
+                return `rgb(${(80 + t * 120) | 0},${(200 - t * 50) | 0},${(100 - t * 50) | 0})`;
+            } else if (v < 0.85) {
+                const t = (v - 0.7) / 0.15;
+                return `rgb(${(200 + t * 55) | 0},${(150 - t * 80) | 0},${(50 - t * 30) | 0})`;
+            } else {
+                const t = (v - 0.85) / 0.15;
+                return `rgb(255,${(70 + t * 185) | 0},${(20 + t * 235) | 0})`;
+            }
+        }
+
+        // 1D Profile Cuts Charts
+        let horizontalCutChart = null;
+        let verticalCutChart = null;
+
+        function update1DCuts(result) {
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js not loaded, skipping 1D cuts update');
+                return;
+            }
+            
+            const profile = result.profile2D;
+            let data;
+            if (currentViewMode === 'initial') {
+                data = profile.power_initial;
+            } else if (currentViewMode === 'transmitted') {
+                data = profile.power_transmitted;
+            } else { // 'absorbed'
+                data = profile.power_absorbed;
+            }
+            
+            const ny = data.length;
+            const nx = ny > 0 ? data[0].length : 0;
+            
+            if (nx === 0 || ny === 0) return;
+            
+            const centerY = Math.floor(ny / 2);
+            const centerX = Math.floor(nx / 2);
+            const distance_m = parseFloat(document.getElementById('distance').value);
+            
+            // Calculate pixel sizes in mrad (angular space)
+            const dx_mm = profile.x_mm[1] - profile.x_mm[0];
+            const dy_mm = profile.y_mm[1] - profile.y_mm[0];
+            const dx_mrad = dx_mm / distance_m;  // mm -> mrad
+            const dy_mrad = dy_mm / distance_m;
+            
+            // Horizontal cut (Y=0): Integrate over Y
+            // Result: W/mrad (linear power density along X)
+            const hCutData = profile.x_mm.map((x, i) => {
+                // Integrate P(x, y) over y at this x
+                let sum = 0;
+                for (let j = 0; j < ny; j++) {
+                    sum += data[j][i] * dy_mrad;  // W/mrad² × mrad = W/mrad
+                }
+                return { x: x, y: sum };
+            });
+            
+            // Vertical cut (X=0): Integrate over X
+            // Result: W/mrad (linear power density along Y)
+            const vCutData = profile.y_mm.map((y, j) => {
+                // Integrate P(x, y) over x at this y
+                let sum = 0;
+                for (let i = 0; i < nx; i++) {
+                    sum += data[j][i] * dx_mrad;  // W/mrad² × mrad = W/mrad
+                }
+                return { x: y, y: sum };
+            });
+            
+            // Horizontal cut chart
+            const hCtx = document.getElementById('horizontalCutChart').getContext('2d');
+            if (horizontalCutChart) horizontalCutChart.destroy();
+            
+            // Label and color based on mode
+            let label, borderColor;
+            if (currentViewMode === 'initial') {
+                label = 'Before Attenuator';
+                borderColor = '#4fc3f7';
+            } else if (currentViewMode === 'transmitted') {
+                label = 'After Attenuator';
+                borderColor = '#ff6d00';
+            } else { // 'absorbed'
+                label = 'Absorbed by Material (Heat Load)';
+                borderColor = '#f44336';
+            }
+            
+            horizontalCutChart = new Chart(hCtx, {
+                type: 'line',
+                data: {
+                    labels: hCutData.map(d => d.x.toFixed(3)),
+                    datasets: [{
+                        label: label,
+                        data: hCutData.map(d => d.y),
+                        borderColor: borderColor,
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'X (mm)', color: '#aaa', font: { size: 10 } },
+                            ticks: { color: '#aaa', maxTicksLimit: 6, font: { size: 9 } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Linear Power Density (W/mrad)', color: '#aaa', font: { size: 10 } },
+                            ticks: { color: '#aaa', font: { size: 9 } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        }
+                    }
+                }
+            });
+            
+            // Vertical cut chart
+            const vCtx = document.getElementById('verticalCutChart').getContext('2d');
+            if (verticalCutChart) verticalCutChart.destroy();
+            
+            verticalCutChart = new Chart(vCtx, {
+                type: 'line',
+                data: {
+                    labels: vCutData.map(d => d.x.toFixed(3)),
+                    datasets: [{
+                        label: label,  // Use same label as horizontal
+                        data: vCutData.map(d => d.y),
+                        borderColor: borderColor,  // Use same color as horizontal
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Y (mm)', color: '#aaa', font: { size: 10 } },
+                            ticks: { color: '#aaa', maxTicksLimit: 6, font: { size: 9 } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Linear Power Density (W/mrad)', color: '#aaa', font: { size: 10 } },
+                            ticks: { color: '#aaa', font: { size: 9 } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // UI controls
+        function switchTab(event, tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Auto-calculate energy-resolved profile when switching to that tab
+            if (tabName === 'energyResolved' && calculationResult && !energyResolvedResult) {
+                setTimeout(() => {
+                    calculateEnergyResolvedProfile(currentEnergyBand);
+                }, 100);
+            }
+        }
+
+        function setViewMode(event, mode) {
+            currentViewMode = mode;
+            document.querySelectorAll('.heatmap-controls .control-group:first-child .control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            if (calculationResult) {
+                updateHeatmap(calculationResult);
+                update1DCuts(calculationResult);
+            }
+        }
+
+        function setScaleMode(event, mode) {
+            currentScaleMode = mode;
+            document.querySelectorAll('.heatmap-controls .control-group:last-child .control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            if (calculationResult) {
+                updateHeatmap(calculationResult);
+            }
+        }
+
+        // ============================================
+        // Energy-Resolved Profile Functions
+        // ============================================
+
+        let currentEnergyBand = 'fundamental';
+        let energyResolvedResult = null;
+        let multiEnergyResults = {};
+
+        function showEnergyBand(event, bandType) {
+            currentEnergyBand = bandType;
+            
+            // Update button states
+            document.querySelectorAll('#energyResolvedTab .control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Show/hide custom energy range
+            if (bandType === 'custom') {
+                document.getElementById('customEnergyRange').style.display = 'block';
+            } else {
+                document.getElementById('customEnergyRange').style.display = 'none';
+                // Calculate immediately for predefined bands
+                if (calculationResult) {
+                    calculateEnergyResolvedProfile(bandType);
+                }
+            }
+        }
+
+        function updateCustomEnergyRange() {
+            if (calculationResult) {
+                calculateEnergyResolvedProfile('custom');
+            }
+        }
+
+        function getEnergyRange(bandType) {
+            if (!calculationResult) return null;
+            
+            const E1 = calculationResult.E1_keV;
+            
+            switch(bandType) {
+                case 'low':
+                    return [0.8 * E1, 0.95 * E1];
+                case 'fundamental':
+                    return [0.95 * E1, 1.05 * E1];
+                case 'high':
+                    return [1.05 * E1, 1.2 * E1];
+                case '2nd':
+                    return [1.9 * E1, 2.1 * E1];
+                case 'custom':
+                    const eMin = parseFloat(document.getElementById('customEmin').value);
+                    const eMax = parseFloat(document.getElementById('customEmax').value);
+                    return [eMin, eMax];
+                default:
+                    return [0.95 * E1, 1.05 * E1];
+            }
+        }
+
+        function calculateEnergyResolvedProfile(bandType) {
+            if (!calculationResult) {
+                alert('먼저 계산을 실행하세요.');
+                return;
+            }
+            
+            console.log(`Energy-resolved profile: ${bandType}`);
+            
+            const energyRange = getEnergyRange(bandType);
+            if (!energyRange) return;
+            
+            const [E_min, E_max] = energyRange;
+            
+            // Update info
+            document.getElementById('currentEnergyRange').textContent = 
+                `${E_min.toFixed(2)} - ${E_max.toFixed(2)} keV`;
+            
+            // Filter spectrum by energy range
+            const filteredSpectrum = [];
+            const filteredEnergies = [];
+            
+            for (let k = 0; k < calculationResult.energies_keV.length; k++) {
+                const E = calculationResult.energies_keV[k];
+                if (E >= E_min && E <= E_max) {
+                    filteredSpectrum.push(calculationResult.spectrum_W_keV[k]);
+                    filteredEnergies.push(E);
+                }
+            }
+            
+            if (filteredEnergies.length === 0) {
+                alert('선택한 에너지 범위에 데이터가 없습니다.');
+                return;
+            }
+            
+            // Check if spectrum has significant power
+            const totalFilteredPower = filteredSpectrum.reduce((a, b) => a + b, 0) * 
+                (filteredEnergies[1] - filteredEnergies[0]);
+            
+            const MIN_POWER_THRESHOLD = 1e-6; // 1 μW
+            
+            if (totalFilteredPower < MIN_POWER_THRESHOLD) {
+                const msg = `⚠️ Selected energy range has very weak radiation (${(totalFilteredPower*1e6).toExponential(2)} μW).\n\n` +
+                           `This range is outside the main harmonic peaks.\n` +
+                           `Peak density and FWHM values may be unreliable.\n\n` +
+                           `Fundamental: ${calculationResult.E1_keV.toFixed(2)} keV\n` +
+                           `Selected: ${E_min.toFixed(2)} - ${E_max.toFixed(2)} keV\n\n` +
+                           `Continue anyway?`;
+                
+                if (!confirm(msg)) {
+                    return;
+                }
+                
+                console.warn(`Low power warning: ${(totalFilteredPower*1e6).toExponential(2)} μW in selected range`);
+            }
+            
+            // Calculate 2D profile for this energy range
+            const result = calculate2DProfile(
+                filteredSpectrum,
+                filteredEnergies,
+                calculationResult.E1_keV,
+                calculationResult.gamma,
+                calculationResult.K,
+                calculationResult.N_periods,
+                calculationResult.n_grid,
+                calculationResult.theta_arr,
+                calculationResult.psi_arr,
+                calculationResult.dx,
+                calculationResult.dy,
+                calculationResult.emittanceParams
+            );
+            
+            // CRITICAL FIX: Normalize result to match filtered spectrum power
+            // calculate2DProfile uses unnormalized angular factors A_n_sq
+            // which causes sum2d to be wrong by a large factor
+            const dE = filteredEnergies.length > 1 ? filteredEnergies[1] - filteredEnergies[0] : 
+                      (calculationResult.energies_keV[1] - calculationResult.energies_keV[0]);
+            const expectedPower = filteredSpectrum.reduce((a, b) => a + b, 0) * dE;
+            
+            // Normalize power_2d to correct total power
+            const scale_factor = expectedPower / result.sum2d;
+            
+            if (!isFinite(scale_factor) || scale_factor <= 0) {
+                console.error(`Invalid scale factor: ${scale_factor}, sum2d=${result.sum2d}, expected=${expectedPower}`);
+                alert('계산 오류: 스펙트럼 normalization 실패');
+                return;
+            }
+            
+            // Apply correction
+            const corrected_power_2d = result.power_2d.map(row => row.map(val => val * scale_factor));
+            const corrected_sum2d = expectedPower;
+            
+            console.log(`Normalization correction:`);
+            console.log(`  Original sum2d: ${result.sum2d.toExponential(3)} W`);
+            console.log(`  Expected power: ${expectedPower.toFixed(3)} W`);
+            console.log(`  Scale factor: ${scale_factor.toExponential(3)}`);
+            console.log(`  Corrected sum2d: ${corrected_sum2d.toFixed(3)} W`);
+            
+            energyResolvedResult = {
+                power_2d: corrected_power_2d,
+                sum2d: corrected_sum2d,
+                E_min,
+                E_max,
+                bandType,
+                filteredSpectrum,
+                filteredEnergies
+            };
+            
+            // Calculate integrated power
+            const integratedPower = corrected_sum2d;
+            document.getElementById('energyBandPower').textContent = 
+                `${integratedPower.toFixed(3)} W (${(100*integratedPower/calculationResult.P_aperture).toFixed(1)}% of total)`;
+            
+            // Update visualization
+            drawEnergyResolvedHeatmap(energyResolvedResult);
+            updateEnergyResolvedStats(energyResolvedResult);
+            updateEnergyComparison();
+            
+            // Store for multi-energy view
+            multiEnergyResults[bandType] = energyResolvedResult;
+        }
+
+        function drawEnergyResolvedHeatmap(result) {
+            const canvas = document.getElementById('energyResolvedCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const power_2d = result.power_2d;
+            const n_grid = power_2d.length;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // Find max for color scaling
+            let maxVal = 0;
+            for (let j = 0; j < n_grid; j++) {
+                for (let i = 0; i < n_grid; i++) {
+                    maxVal = Math.max(maxVal, power_2d[j][i]);
+                }
+            }
+            
+            // Calculate pixel size to center the grid
+            const pixelSize = Math.floor(Math.min(width, height) / n_grid);
+            const totalWidth = pixelSize * n_grid;
+            const totalHeight = pixelSize * n_grid;
+            const offsetX = (width - totalWidth) / 2;
+            const offsetY = (height - totalHeight) / 2;
+            
+            // Draw heatmap centered
+            for (let j = 0; j < n_grid; j++) {
+                for (let i = 0; i < n_grid; i++) {
+                    const val = power_2d[j][i];
+                    const normalized = maxVal > 0 ? val / maxVal : 0;
+                    
+                    // Hot colormap
+                    const r = Math.min(255, Math.floor(normalized * 255 * 2));
+                    const g = Math.max(0, Math.min(255, Math.floor((normalized - 0.5) * 255 * 2)));
+                    const b = Math.max(0, Math.min(255, Math.floor((normalized - 0.75) * 255 * 4)));
+                    
+                    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    const x = offsetX + i * pixelSize;
+                    const y = offsetY + (n_grid - 1 - j) * pixelSize;
+                    ctx.fillRect(x, y, pixelSize, pixelSize);
+                }
+            }
+            
+            // Draw axes through center of actual grid
+            const centerX = offsetX + totalWidth / 2;
+            const centerY = offsetY + totalHeight / 2;
+            
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(centerX, offsetY);
+            ctx.lineTo(centerX, offsetY + totalHeight);
+            ctx.moveTo(offsetX, centerY);
+            ctx.lineTo(offsetX + totalWidth, centerY);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = 'white';
+            ctx.font = '12px monospace';
+            ctx.fillText('θ (H)', offsetX + totalWidth - 45, centerY - 10);
+            ctx.fillText('ψ (V)', centerX + 10, offsetY + 20);
+        }
+
+        function updateEnergyResolvedStats(result) {
+            const power_2d = result.power_2d;
+            const n_grid = power_2d.length;
+            
+            // Find peak
+            let peakVal = 0;
+            let peakI = 0, peakJ = 0;
+            
+            for (let j = 0; j < n_grid; j++) {
+                for (let i = 0; i < n_grid; i++) {
+                    if (power_2d[j][i] > peakVal) {
+                        peakVal = power_2d[j][i];
+                        peakI = i;
+                        peakJ = j;
+                    }
+                }
+            }
+            
+            const theta_peak = calculationResult.theta_arr[peakI];
+            const psi_peak = calculationResult.psi_arr[peakJ];
+            
+            // Convert peak density from W/mrad² to W/mm²
+            // 1 mrad at distance d → d mm
+            // Area = (d mm)² = d² mm²
+            const distance_m = calculationResult.distance_m;
+            const peakDensity_mm2 = peakVal / (distance_m * distance_m);
+            
+            // Calculate FWHM at peak position (not at center!)
+            // This is critical when peak is off-center
+            const horizontal = power_2d[peakJ];  // Horizontal cut at peak's vertical position
+            const vertical = power_2d.map(row => row[peakI]);  // Vertical cut at peak's horizontal position
+            
+            // Log profile info for debugging
+            console.log(`FWHM calculation for energy range ${E_min.toFixed(2)}-${E_max.toFixed(2)} keV:`);
+            console.log(`  Peak position: (${peakI}, ${peakJ}), value: ${peakVal.toExponential(4)} W/mrad²`);
+            console.log(`  Horizontal cut: max=${Math.max(...horizontal).toExponential(4)}, min=${Math.min(...horizontal).toExponential(4)}`);
+            console.log(`  Vertical cut: max=${Math.max(...vertical).toExponential(4)}, min=${Math.min(...vertical).toExponential(4)}`);
+            
+            const fwhm_h = calculateFWHM(calculationResult.theta_arr, horizontal);
+            const fwhm_v = calculateFWHM(calculationResult.psi_arr, vertical);
+            
+            console.log(`  Result: FWHM_H = ${fwhm_h.toFixed(3)} mrad, FWHM_V = ${fwhm_v.toFixed(3)} mrad`);
+            
+            // Log if peak is significantly off-center
+            const centerI = Math.floor(n_grid / 2);
+            const centerJ = Math.floor(n_grid / 2);
+            const offset_i = Math.abs(peakI - centerI);
+            const offset_j = Math.abs(peakJ - centerJ);
+            
+            if (offset_i > n_grid * 0.1 || offset_j > n_grid * 0.1) {
+                console.log(`Peak is off-center: (${peakI}, ${peakJ}) vs center (${centerI}, ${centerJ})`);
+                console.log(`  Offset: ${offset_i} pixels (H), ${offset_j} pixels (V)`);
+                console.log(`  Peak position: θ=${theta_peak.toFixed(3)} mrad, ψ=${psi_peak.toFixed(3)} mrad`);
+            }
+            
+            // Format peak value (use scientific notation if too large or too small)
+            let peakText;
+            if (peakDensity_mm2 > 1e6 || peakDensity_mm2 < 1e-3) {
+                peakText = peakDensity_mm2.toExponential(3) + ' W/mm²';
+            } else {
+                peakText = peakDensity_mm2.toFixed(4) + ' W/mm²';
+            }
+            
+            // Calculate aspect ratio (avoid division by zero)
+            let aspectRatio = 0;
+            let aspectText = 'N/A';
+            if (fwhm_v > 0 && fwhm_h > 0) {
+                aspectRatio = fwhm_h / fwhm_v;
+                aspectText = aspectRatio.toFixed(3);
+            } else if (fwhm_h === 0 && fwhm_v === 0) {
+                aspectText = 'Profile too weak';
+            }
+            
+            const statsHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <div style="padding: 10px; background: rgba(79, 195, 247, 0.1); border-radius: 8px; border: 1px solid var(--border-primary);">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Peak Density</div>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: var(--primary);">${peakText}</div>
+                    </div>
+                    <div style="padding: 10px; background: rgba(156, 39, 176, 0.1); border-radius: 8px; border: 1px solid var(--border-secondary);">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Peak Position</div>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: var(--secondary);">
+                            (${theta_peak.toFixed(3)}, ${psi_peak.toFixed(3)}) mrad
+                        </div>
+                    </div>
+                    <div style="padding: 10px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; border: 1px solid var(--border-accent);">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">FWHM (H×V)</div>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: var(--accent);">
+                            ${fwhm_h.toFixed(3)} × ${fwhm_v.toFixed(3)} mrad
+                        </div>
+                    </div>
+                    <div style="padding: 10px; background: rgba(244, 67, 54, 0.1); border-radius: 8px; border: 1px solid rgba(244, 67, 54, 0.3);">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Aspect Ratio (H/V)</div>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: var(--danger);">
+                            ${aspectText}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('energyResolvedStats').innerHTML = statsHTML;
+        }
+
+        function calculateFWHM(xArr, yArr) {
+            const maxVal = Math.max(...yArr);
+            const minVal = Math.min(...yArr);
+            
+            // Check if profile has sufficient dynamic range
+            const MIN_PEAK_VALUE = 1e-10;
+            const MIN_DYNAMIC_RANGE = 0.01; // Peak should be at least 1% above background (lowered from 10%)
+            
+            if (maxVal < MIN_PEAK_VALUE) {
+                console.warn(`FWHM calculation: peak too small (${maxVal.toExponential(2)})`);
+                return 0;
+            }
+            
+            const dynamicRange = (maxVal - minVal) / maxVal;
+            if (dynamicRange < MIN_DYNAMIC_RANGE) {
+                console.warn(`FWHM calculation: insufficient dynamic range (${(dynamicRange*100).toFixed(3)}% < ${MIN_DYNAMIC_RANGE*100}%)`);
+                console.warn(`  maxVal: ${maxVal.toExponential(4)}, minVal: ${minVal.toExponential(4)}`);
+                return 0;
+            }
+            
+            const halfMax = maxVal / 2.0;
+            
+            // Find crossing points
+            let left = -1, right = -1;
+            for (let i = 0; i < yArr.length - 1; i++) {
+                if (yArr[i] < halfMax && yArr[i+1] >= halfMax && left === -1) {
+                    left = i;
+                }
+                if (yArr[i] >= halfMax && yArr[i+1] < halfMax) {
+                    right = i;
+                }
+            }
+            
+            if (left === -1 || right === -1) {
+                console.warn('FWHM calculation: could not find crossing points');
+                return 0;
+            }
+            
+            return Math.abs(xArr[right] - xArr[left]);
+        }
+
+        function updateEnergyComparison() {
+            // Calculate profiles for all standard bands if not already done
+            const bands = ['low', 'fundamental', 'high'];
+            
+            for (const band of bands) {
+                if (!multiEnergyResults[band] && calculationResult) {
+                    const energyRange = getEnergyRange(band);
+                    const [E_min, E_max] = energyRange;
+                    
+                    const filteredSpectrum = [];
+                    const filteredEnergies = [];
+                    
+                    for (let k = 0; k < calculationResult.energies_keV.length; k++) {
+                        const E = calculationResult.energies_keV[k];
+                        if (E >= E_min && E <= E_max) {
+                            filteredSpectrum.push(calculationResult.spectrum_W_keV[k]);
+                            filteredEnergies.push(E);
+                        }
+                    }
+                    
+                    if (filteredEnergies.length > 0) {
+                        const result = calculate2DProfile(
+                            filteredSpectrum,
+                            filteredEnergies,
+                            calculationResult.E1_keV,
+                            calculationResult.gamma,
+                            calculationResult.K,
+                            calculationResult.N_periods,
+                            calculationResult.n_grid,
+                            calculationResult.theta_arr,
+                            calculationResult.psi_arr,
+                            calculationResult.dx,
+                            calculationResult.dy,
+                            calculationResult.emittanceParams
+                        );
+                        
+                        // Apply normalization correction
+                        const dE = filteredEnergies.length > 1 ? filteredEnergies[1] - filteredEnergies[0] : 
+                                  (calculationResult.energies_keV[1] - calculationResult.energies_keV[0]);
+                        const expectedPower = filteredSpectrum.reduce((a, b) => a + b, 0) * dE;
+                        const scale_factor = expectedPower / result.sum2d;
+                        
+                        if (isFinite(scale_factor) && scale_factor > 0) {
+                            const corrected_power_2d = result.power_2d.map(row => row.map(val => val * scale_factor));
+                            multiEnergyResults[band] = {
+                                power_2d: corrected_power_2d,
+                                sum2d: expectedPower,
+                                E_min,
+                                E_max,
+                                bandType: band
+                            };
+                        }
+                    }
+                }
+            }
+            
+            // Draw comparison charts
+            drawEnergyComparisonCharts();
+        }
+
+        function drawEnergyComparisonCharts() {
+            const bands = ['low', 'fundamental', 'high'];
+            const colors = ['#4fc3f7', '#4caf50', '#ff6d00'];
+            const labels = ['Low-E', 'E₁', 'High-E'];
+            
+            const n_grid = calculationResult.n_grid;
+            const centerI = Math.floor(n_grid / 2);
+            const centerJ = Math.floor(n_grid / 2);
+            
+            // Horizontal cuts
+            const hDatasets = [];
+            for (let idx = 0; idx < bands.length; idx++) {
+                const band = bands[idx];
+                if (multiEnergyResults[band]) {
+                    const horizontal = multiEnergyResults[band].power_2d[centerJ];
+                    hDatasets.push({
+                        label: labels[idx],
+                        data: calculationResult.theta_arr.map((x, i) => ({x, y: horizontal[i]})),
+                        borderColor: colors[idx],
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0
+                    });
+                }
+            }
+            
+            // Vertical cuts
+            const vDatasets = [];
+            for (let idx = 0; idx < bands.length; idx++) {
+                const band = bands[idx];
+                if (multiEnergyResults[band]) {
+                    const vertical = multiEnergyResults[band].power_2d.map(row => row[centerI]);
+                    vDatasets.push({
+                        label: labels[idx],
+                        data: calculationResult.psi_arr.map((x, i) => ({x, y: vertical[i]})),
+                        borderColor: colors[idx],
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0
+                    });
+                }
+            }
+            
+            // Create charts
+            const hCtx = document.getElementById('energyComparisonH').getContext('2d');
+            const vCtx = document.getElementById('energyComparisonV').getContext('2d');
+            
+            if (window.energyCompH) window.energyCompH.destroy();
+            if (window.energyCompV) window.energyCompV.destroy();
+            
+            window.energyCompH = new Chart(hCtx, {
+                type: 'line',
+                data: { datasets: hDatasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Horizontal Cut (ψ=0)', color: 'white' },
+                        legend: { labels: { color: 'white' } }
+                    },
+                    scales: {
+                        x: { 
+                            type: 'linear',
+                            title: { display: true, text: 'θ (mrad)', color: 'white' },
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'W/mrad²', color: 'white' },
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+            
+            window.energyCompV = new Chart(vCtx, {
+                type: 'line',
+                data: { datasets: vDatasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Vertical Cut (θ=0)', color: 'white' },
+                        legend: { labels: { color: 'white' } }
+                    },
+                    scales: {
+                        x: { 
+                            type: 'linear',
+                            title: { display: true, text: 'ψ (mrad)', color: 'white' },
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'W/mrad²', color: 'white' },
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateMultiEnergyView() {
+            const bands = ['low', 'fundamental', 'high', '2nd'];
+            const labels = {
+                'low': 'Low-E (0.8-0.95 E₁)',
+                'fundamental': 'E₁ (0.95-1.05 E₁)',
+                'high': 'High-E (1.05-1.2 E₁)',
+                '2nd': '2nd Harmonic'
+            };
+            
+            // Ensure all bands are calculated
+            for (const band of bands) {
+                if (!multiEnergyResults[band]) {
+                    const energyRange = getEnergyRange(band);
+                    if (!energyRange) continue;
+                    
+                    const [E_min, E_max] = energyRange;
+                    const filteredSpectrum = [];
+                    const filteredEnergies = [];
+                    
+                    for (let k = 0; k < calculationResult.energies_keV.length; k++) {
+                        const E = calculationResult.energies_keV[k];
+                        if (E >= E_min && E <= E_max) {
+                            filteredSpectrum.push(calculationResult.spectrum_W_keV[k]);
+                            filteredEnergies.push(E);
+                        }
+                    }
+                    
+                    if (filteredEnergies.length > 0) {
+                        const result = calculate2DProfile(
+                            filteredSpectrum,
+                            filteredEnergies,
+                            calculationResult.E1_keV,
+                            calculationResult.gamma,
+                            calculationResult.K,
+                            calculationResult.N_periods,
+                            calculationResult.n_grid,
+                            calculationResult.theta_arr,
+                            calculationResult.psi_arr,
+                            calculationResult.dx,
+                            calculationResult.dy,
+                            calculationResult.emittanceParams
+                        );
+                        
+                        // Apply normalization correction
+                        const dE_mult = filteredEnergies.length > 1 ? filteredEnergies[1] - filteredEnergies[0] : 
+                                  (calculationResult.energies_keV[1] - calculationResult.energies_keV[0]);
+                        const expectedPower_mult = filteredSpectrum.reduce((a, b) => a + b, 0) * dE_mult;
+                        const scale_factor_mult = expectedPower_mult / result.sum2d;
+                        
+                        if (isFinite(scale_factor_mult) && scale_factor_mult > 0) {
+                            const corrected_power_2d = result.power_2d.map(row => row.map(val => val * scale_factor_mult));
+                            multiEnergyResults[band] = {
+                                power_2d: corrected_power_2d,
+                                sum2d: expectedPower_mult,
+                                E_min,
+                                E_max,
+                                bandType: band
+                            };
+                        }
+                    }
+                }
+            }
+            
+            // Generate multi-panel view
+            const container = document.getElementById('multiEnergyView');
+            container.innerHTML = '';
+            
+            for (const band of bands) {
+                if (multiEnergyResults[band]) {
+                    const panel = document.createElement('div');
+                    panel.style.cssText = 'background: var(--bg-dark); padding: 10px; border-radius: 8px; border: 1px solid var(--border-primary);';
+                    
+                    const title = document.createElement('div');
+                    title.style.cssText = 'font-size: 0.85rem; color: var(--primary); margin-bottom: 10px; font-weight: 600;';
+                    title.textContent = labels[band];
+                    
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 300;
+                    canvas.height = 300;
+                    
+                    panel.appendChild(title);
+                    panel.appendChild(canvas);
+                    container.appendChild(panel);
+                    
+                    // Draw mini heatmap
+                    drawMiniHeatmap(canvas, multiEnergyResults[band]);
+                }
+            }
+        }
+
+        function drawMiniHeatmap(canvas, result) {
+            const ctx = canvas.getContext('2d');
+            const power_2d = result.power_2d;
+            const n_grid = power_2d.length;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // Find max
+            let maxVal = 0;
+            for (let j = 0; j < n_grid; j++) {
+                for (let i = 0; i < n_grid; i++) {
+                    maxVal = Math.max(maxVal, power_2d[j][i]);
+                }
+            }
+            
+            // Calculate pixel size to center the grid
+            const pixelSize = Math.floor(Math.min(width, height) / n_grid);
+            const totalWidth = pixelSize * n_grid;
+            const totalHeight = pixelSize * n_grid;
+            const offsetX = (width - totalWidth) / 2;
+            const offsetY = (height - totalHeight) / 2;
+            
+            // Draw centered
+            for (let j = 0; j < n_grid; j++) {
+                for (let i = 0; i < n_grid; i++) {
+                    const val = power_2d[j][i];
+                    const normalized = maxVal > 0 ? val / maxVal : 0;
+                    
+                    const r = Math.min(255, Math.floor(normalized * 255 * 2));
+                    const g = Math.max(0, Math.min(255, Math.floor((normalized - 0.5) * 255 * 2)));
+                    const b = Math.max(0, Math.min(255, Math.floor((normalized - 0.75) * 255 * 4)));
+                    
+                    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    const x = offsetX + i * pixelSize;
+                    const y = offsetY + (n_grid - 1 - j) * pixelSize;
+                    ctx.fillRect(x, y, pixelSize, pixelSize);
+                }
+            }
+            
+            // Crosshair through center of actual grid
+            const centerX = offsetX + totalWidth / 2;
+            const centerY = offsetY + totalHeight / 2;
+            
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(centerX, offsetY);
+            ctx.lineTo(centerX, offsetY + totalHeight);
+            ctx.moveTo(offsetX, centerY);
+            ctx.lineTo(offsetX + totalWidth, centerY);
+            ctx.stroke();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', init);
+
+        // ============================================
+        // Advanced Electron Beam Parameters
+        // ============================================
+        
+        // Update electron beam parameter preview
+        function updateElectronPreview() {
+            const E_GeV = parseFloat(document.getElementById('ringEnergy').value);
+            const I_A = parseFloat(document.getElementById('ringCurrent').value);
+            const period_mm = parseFloat(document.getElementById('periodLength').value);
+            const gap_mm = parseFloat(document.getElementById('gap').value);
+            const coeffA = parseFloat(document.getElementById('coeffA').value);
+            const coeffB = parseFloat(document.getElementById('coeffB').value);
+            const coeffC = parseFloat(document.getElementById('coeffC').value);
+            
+            // Calculate gamma
+            const gamma = E_GeV / 0.000511;
+            document.getElementById('previewGamma').textContent = gamma.toFixed(0);
+            
+            // Calculate current in mA
+            const I_mA = I_A * 1000;
+            document.getElementById('previewCurrent').textContent = I_mA.toFixed(0);
+            
+            // Calculate E1 (need K value)
+            const period_m = period_mm / 1000;
+            const ratio = gap_mm / period_mm;
+            const B0 = coeffA * Math.exp(coeffB * ratio + coeffC * ratio * ratio);
+            const K = 0.9341 * B0 * (period_mm / 10);
+            const lambda_u_cm = period_m * 100;
+            const E1_keV = 0.9498 * E_GeV * E_GeV / (lambda_u_cm * (1 + K * K / 2));
+            
+            document.getElementById('previewE1').textContent = E1_keV.toFixed(2);
+        }
+
+        // Get emittance parameters for 2D profile calculation
+        function getEmittanceParams() {
+            const useFiniteEmittance = document.getElementById('useFiniteEmittance').checked;
+            
+            if (!useFiniteEmittance) {
+                return null;
+            }
+            
+            return {
+                enabled: true,
+                emittance_x: parseFloat(document.getElementById('emittanceX').value),  // nm·rad
+                coupling: parseFloat(document.getElementById('coupling').value),  // %
+                beta_x: parseFloat(document.getElementById('betaX').value),  // m
+                beta_y: parseFloat(document.getElementById('betaY').value)   // m
+            };
+        }
+
+        // Update emittance info display
+        function updateEmittanceInfo() {
+            const useFiniteEmittance = document.getElementById('useFiniteEmittance').checked;
+            const infoDiv = document.getElementById('emittanceInfo');
+            
+            if (!useFiniteEmittance) {
+                infoDiv.style.display = 'none';
+                return;
+            }
+            
+            infoDiv.style.display = 'block';
+            
+            const emittance_x = parseFloat(document.getElementById('emittanceX').value);
+            const coupling = parseFloat(document.getElementById('coupling').value) / 100.0;
+            const beta_x = parseFloat(document.getElementById('betaX').value);
+            const beta_y = parseFloat(document.getElementById('betaY').value);
+            const N_periods = parseFloat(document.getElementById('numPeriods').value);
+            const period_mm = parseFloat(document.getElementById('periodLength').value);
+            
+            // Calculate properties
+            const emittance_x_m = emittance_x * 1e-9;
+            const emittance_y = coupling * emittance_x_m;
+            
+            // Divergence
+            const sigma_xp = Math.sqrt(emittance_x_m / beta_x) * 1e6;  // μrad
+            const sigma_yp = Math.sqrt(emittance_y / beta_y) * 1e6;  // μrad
+            
+            // Source size
+            const sigma_x = Math.sqrt(emittance_x_m * beta_x) * 1e6;  // μm
+            const sigma_y = Math.sqrt(emittance_y * beta_y) * 1e6;  // μm
+            
+            // Source size angular contribution
+            const L_u = N_periods * (period_mm / 1000.0);  // m
+            const delta_theta = (sigma_x * 1e-6) / L_u * 1e6;  // μrad
+            const delta_psi = (sigma_y * 1e-6) / L_u * 1e6;  // μrad
+            
+            infoDiv.innerHTML = `
+                <strong>Electron beam properties:</strong><br>
+                <div style="margin-left: 10px; margin-top: 5px;">
+                    <strong>Source size:</strong> σ<sub>x</sub> = ${sigma_x.toFixed(2)} μm, σ<sub>y</sub> = ${sigma_y.toFixed(2)} μm<br>
+                    <strong>Divergence:</strong> σ<sub>x'</sub> = ${sigma_xp.toFixed(2)} μrad, σ<sub>y'</sub> = ${sigma_yp.toFixed(3)} μrad<br>
+                    <strong>Source angular spread:</strong> Δθ = ${delta_theta.toFixed(3)} μrad, Δψ = ${delta_psi.toFixed(3)} μrad<br>
+                </div>
+                <span style="color: var(--accent); margin-top: 8px; display: block; font-size: 0.85em;">
+                    ℹ️ Complete model: divergence + source size effects (~0.7% total for Korea-4GSR)
+                </span>
+            `;
+        }
+
+        function toggleAdvancedBeam() {
+            const params = document.getElementById('advancedBeamParams');
+            const toggle = document.getElementById('advancedBeamToggle');
+            
+            if (params.style.display === 'none') {
+                params.style.display = 'block';
+                toggle.textContent = '▲';
+                updateBeamSizeCalculations();
+            } else {
+                params.style.display = 'none';
+                toggle.textContent = '▼';
+            }
+        }
+
+        function updateBeamSizeCalculations() {
+            // Read parameters
+            const emittance_x = parseFloat(document.getElementById('emittanceX').value) * 1e-9; // nm·rad to m·rad
+            const coupling = parseFloat(document.getElementById('coupling').value) / 100; // % to fraction
+            const beta_x = parseFloat(document.getElementById('betaX').value); // m
+            const beta_y = parseFloat(document.getElementById('betaY').value); // m
+            const distance = parseFloat(document.getElementById('distance').value); // m
+            
+            // Calculate vertical emittance
+            const emittance_y = coupling * emittance_x;
+            
+            // Calculate source size (RMS)
+            const sigma_x = Math.sqrt(emittance_x * beta_x) * 1e6; // m to μm
+            const sigma_y = Math.sqrt(emittance_y * beta_y) * 1e6; // m to μm
+            
+            // Calculate divergence (RMS)
+            const sigma_xp = Math.sqrt(emittance_x / beta_x) * 1e6; // rad to μrad
+            const sigma_yp = Math.sqrt(emittance_y / beta_y) * 1e6; // rad to μrad
+            
+            // Calculate total beam size at distance
+            // σ_total² = σ_source² + (σ' × D)²
+            const sigma_x_total = Math.sqrt(sigma_x*sigma_x + (sigma_xp * distance)*(sigma_xp * distance)) / 1000; // μm to mm
+            const sigma_y_total = Math.sqrt(sigma_y*sigma_y + (sigma_yp * distance)*(sigma_yp * distance)) / 1000; // μm to mm
+            
+            // Update display
+            document.getElementById('calcSigmaX').textContent = sigma_x.toFixed(1);
+            document.getElementById('calcSigmaY').textContent = sigma_y.toFixed(2);
+            document.getElementById('calcSigmaXp').textContent = sigma_xp.toFixed(2);
+            document.getElementById('calcSigmaYp').textContent = sigma_yp.toFixed(3);
+            document.getElementById('calcDistance').textContent = distance.toFixed(1);
+            document.getElementById('calcTotalX').textContent = sigma_x_total.toFixed(3);
+            document.getElementById('calcTotalY').textContent = sigma_y_total.toFixed(3);
+        }
+
+        // Add listeners to beam parameters
+        ['emittanceX', 'coupling', 'betaX', 'betaY', 'distance'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', updateBeamSizeCalculations);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+{
+  "engine": "vllm",
+  "model": "Qwen/Qwen3-32B",
+  "timestamp": "2026-03-26T18:14:04.901225",
+  "total": 9,
+  "pass": 0,
+  "fail": 9,
+  "pass_rate": 0.0,
+  "total_time_s": 103.0,
+  "latency": {
+    "avg": 11.442,
+    "min": 6.858,
+    "max": 17.965,
+    "p95": 17.965
+  },
+  "per_category": {
+    "scan": {
+      "pass": 0,
+      "fail": 9,
+      "total": 9,
+      "avg_time": 11.442
+    }
+  },
+  "details": [
+    {
+      "id": "scan_01",
+      "cat": "scan",
+      "input": "구리 K-edge XAFS 측정해줘",
+      "desc": "Cu K-edge XAFS with queueStart",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXafs' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 17.96,
+      "response": {
+        "actions": [],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와 목표 에너지(8.979 keV)의 차이가 1.021 keV로 2 keV 이하이므로 추가 정렬은 필요 없습니다. XAFS는 흡수 스펙트럼의 전체 구조를 측정하여 화학 상태, 전자 구조, 배위 환경을 분석합니다. 노출 시간: 0.1초/포인트 기본.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_02",
+      "cat": "scan",
+      "input": "철 XANES 측정해줘",
+      "desc": "Fe K-edge XANES with queueStart",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Fe' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 15.55,
+      "response": {
+        "actions": [],
+        "explanation": "Fe K-edge (7.112 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 현재 에너지(10 keV)에서 Fe K-edge(7.112 keV)로 2.888 keV 감소하므로, 정렬이 필요합니다. 정렬 후 XANES 측정이 시작됩니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_03",
+      "cat": "scan",
+      "input": "10x10 범위에 41포인트로 철 XRF 2D 맵 측정해줘",
+      "desc": "Fe XRF 2D map with params (energy+raster+queue)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 14.64,
+      "response": {
+        "actions": [],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_04",
+      "cat": "scan",
+      "input": "시료를 (0,0)에서 (10,5)까지 라인스캔해줘",
+      "desc": "Line scan (0,0)-(10,5)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickLineScan' not found in sequence. Got: []",
+        "Args missing expected value '0' in all actions: []",
+        "Args missing expected value '0' in all actions: []",
+        "Args missing expected value '10' in all actions: []",
+        "Args missing expected value '5' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 8.32,
+      "response": {
+        "actions": [],
+        "explanation": "시료 (0,0)→(10,5) µm 대각선 라인스캔 (51포인트)을 실행합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_05",
+      "cat": "scan",
+      "input": "M1 피치를 1~4 mrad에서 고속스캔해줘",
+      "desc": "M1 pitch fly scan 1-4 mrad",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickFlyScan' not found in sequence. Got: []",
+        "Args missing expected value 'm1' in all actions: []",
+        "Args missing expected value 'pitch' in all actions: []",
+        "Args missing expected value '1' in all actions: []",
+        "Args missing expected value '4' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 6.86,
+      "response": {
+        "actions": [],
+        "explanation": "M1 피치를 1~4 mrad 범위에서 101 포인트로 고속 스캔합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_06",
+      "cat": "scan",
+      "input": "철 K-edge 주변 적응형 에너지 스캔해줘",
+      "desc": "Fe K-edge adaptive energy scan",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickAdaptiveScan' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 7.62,
+      "response": {
+        "actions": [],
+        "explanation": "Fe K-edge (7.112 keV) 주변을 적응형으로 스캔합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_07",
+      "cat": "scan",
+      "input": "DCM 세타 현위치 기준 +/-0.5도 정렬 스캔해줘",
+      "desc": "DCM theta relative alignment scan",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRelAlign' not found in sequence. Got: []",
+        "Args missing expected value 'dcm' in all actions: []",
+        "Args missing expected value 'theta' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 11.1,
+      "response": {
+        "actions": [],
+        "explanation": "DCM 세타를 현위치 기준 ±0.5도 범위(총 1.0도)에서 21포인트 정렬 스캔합니다. 정렬 대상은 DCM 모노크로메이터의 세타 각도입니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_08",
+      "cat": "scan",
+      "input": "현위치에서 페르마 나선 스캔해줘",
+      "desc": "Fermat spiral scan",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickFermat' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 7.43,
+      "response": {
+        "actions": [],
+        "explanation": "현재 시료 위치에서 10×10 µm 페르마 나선 스캔을 실행합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_09",
+      "cat": "scan",
+      "input": "현위치 기준 5x5 래스터 스캔해줘",
+      "desc": "Relative raster 5x5 scan",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRelRaster' not found in sequence. Got: []",
+        "Args missing expected value '5' in all actions: []",
+        "Args missing expected value '5' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 13.51,
+      "response": {
+        "actions": [],
+        "explanation": "현재 위치 기준 5×5 µm 범위, 21×21 포인트의 상대 래스터 스캔을 실행합니다. SSA 수평/수직 갭은 50 µm로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본입니다. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1840 @@
+{
+  "reviewer": "Changwan Ha",
+  "model": "Qwen/Qwen3-32B",
+  "date": "2026-03-01",
+  "exported_at": "2026-03-05T08:40:14.699Z",
+  "total": 228,
+  "reviewed": 228,
+  "summary": {
+    "ok": 153,
+    "wrong": 26,
+    "missing": 45,
+    "unnecessary": 4
+  },
+  "items": {
+    "motor_01": {
+      "cat": "motor",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "너가 행동한 액션에 대해서 설명해줘야 내가 옳고 그름을 판단할 수 있어.",
+      "prompt": "에너지를 12 keV로 설정해",
+      "actions": "setTargetEnergy(12)"
+    },
+    "motor_02": {
+      "cat": "motor",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "야 프롬프트에 단위가 명시되지 않았는데, 너가 마음대로 mrad을 가면 안되고, 나한테 물어봐야지. 어떤 2.5 인지 너가 마음대로 추론해서 가면 위험해.",
+      "prompt": "M1 피치를 2.5로 이동해",
+      "actions": "motorSetUI(m1, m1_pitch, 2.5)"
+    },
+    "motor_03": {
+      "cat": "motor",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "프롬프트에 단위가 없는데, 너가 마음대로 마이크로미터를 가면 안되지. 단위를 요청해서 확인 과정을 거치도록 해.",
+      "prompt": "시료 X를 100 이동해",
+      "actions": "motorSetUI(sample, sample_cx, 100)"
+    },
+    "scan_01": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "프롬프트에 에너지 범위가 없잖아. 너가 어떻게 측정을 시작하는거야? 어디서 어디까지 측정을 어떻게 할건데? 어떤 속도로?",
+      "prompt": "구리 K-edge XAFS 측정해줘",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "scan_02": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "프롬프트에 에너지 범위가 없잖아. 너가 어떻게 측정을 시작하는거야? 근처에 대한 범위를 명확하게 제시 하던지, 요청하던지 해야해. 어떻게 측정할지에 대해 이야기해준건 좋았어.",
+      "prompt": "철 XANES 측정해줘",
+      "actions": "quickXanes(Fe, K) -> queueStart()"
+    },
+    "scan_03": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "나쁘지않은 설명이긴 하지만, 자세한 설명은 이용자의 사용을 도울 수 있어. 예를 들어 한 포인트의 픽셀이 얼마만큼의 크기로 측정 되는지, 빔 노출 시간은 어떻게 되는지 말이야. 그리고 프롬프트에 현재 빔 포지션의 위치가 명확히 정의되지 않았는데, 현위치에서 시작한다는 설명도 추가되는 것이 좋다.",
+      "prompt": "10x10 범위에 41포인트로 철 XRF 2D 맵 측정해줘",
+      "actions": "setTargetEnergy(8.5) -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "scan_04": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "프롬프트에서 이야기한게 마이크로미터 단위인지 불명확해, 어떤 기준으로 10, 5 라인스캔할지, 어떤 분해능으로 측정할지 조금 더 명확한 프롬프트를 요청해야해.",
+      "prompt": "시료를 (0,0)에서 (10,5)까지 라인스캔해줘",
+      "actions": "quickLineScan(0, 0, 10, 5, 51) -> queueStart()"
+    },
+    "scan_05": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "부정확한 프롬프트 임에도, 스캔 포인트를 나눠서 스캔했다는 건 좋은 선택이야. 하지만 여기서 더 좋은 선택지가 되려면 101포인트가 어떤 분해능인지 또는 어떤 step 단위로 스캔되는지 알려주면 좋아",
+      "prompt": "M1 피치를 1~4 mrad에서 고속스캔해줘",
+      "actions": "quickFlyScan(m1, pitch, 1, 4, 101) -> queueStart()"
+    },
+    "scan_06": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "흡수든 근처에서 자동으로 조절되는 밀도에 대해 상세한 설명이 좋을 듯 해. 이용자에게 충분한 step인지 알려줄 필요가 있어.",
+      "prompt": "철 K-edge 주변 적응형 에너지 스캔해줘",
+      "actions": "quickAdaptiveScan(6.9, 7.5, 0.1, 5.0) -> queueStart()"
+    },
+    "scan_07": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "어떤 목적으로 DCM 세타를 스캔하는지 프롬프트에서 제시되어야해, 예를 들어 에너지 정렬을 위한 스캔인지, secondary crystal detuening인지 목적에 따라 다른 스캔이 진행되어야 할 것으로 보여.",
+      "prompt": "DCM 세타 현위치 기준 +/-0.5도 정렬 스캔해줘",
+      "actions": "quickRelAlign(dcm, theta, 1.0, 21) -> queueStart()"
+    },
+    "scan_08": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "의견 없음.",
+      "prompt": "현위치에서 페르마 나선 스캔해줘",
+      "actions": "quickFermat(10, 10, 0.5) -> queueStart()"
+    },
+    "scan_09": {
+      "cat": "scan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "현위치 기준 5x5 래스터 스캔해줘",
+      "actions": "quickRelRaster(5, 5, 21, 21) -> queueStart()"
+    },
+    "align_01": {
+      "cat": "alignment",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "광학 정렬에 어떤 광학 장치를 정렬할지 알려주면 좋고, 그 후 스캔을 진행하는 건지 아닌지도 명확하게 해주는 것이 좋아.",
+      "prompt": "Mo K-edge XAFS 측정해줘",
+      "actions": "setTargetEnergy(20) -> runFullAlignment() -> quickXafs(Mo, K) -> queueStart()"
+    },
+    "align_02": {
+      "cat": "alignment",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "철 XRF 2D 맵 측정해줘",
+      "actions": "(empty)"
+    },
+    "align_03": {
+      "cat": "alignment",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "빔정렬에 무슨 단계가 포함되어있는지 상세하게 설명해줘야해. 빔 정렬은 빔타임 시작 단계에서 가장 꼼꼼하게 확인해야하는 과정 중 하나기 때문에 모든 과정이 어떻게 진행 되는지 상세히 설명 되어야해.",
+      "prompt": "전체 빔 정렬 시작",
+      "actions": "runFullAlignment()"
+    },
+    "align_04": {
+      "cat": "alignment",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "무엇을 기준으로 자동정렬 할지 요청하거나, 추천/제안에 따라 진행하는 것을 알려줘야해. 어떤 기준으로 최적화된 자동정렬을 진행할지가 중요한 부분이야.",
+      "prompt": "M1 피치 자동 정렬해줘",
+      "actions": "quickAutoTune(m1, pitch, 1.0, 4.0, ic1_current) -> queueStart()"
+    },
+    "multi_01": {
+      "cat": "multi",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "→ 전체 정렬 → 과정에서 무엇이 진행되는지 알려줘. 그리고 빔 프로파일은 어떤 장치를 활용해서 어떤 방식으로 진행할지 설명해줘.",
+      "prompt": "12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘",
+      "actions": "setTargetEnergy(12) -> runFullAlignment() -> showBeamProfile(sample)"
+    },
+    "opt_01": {
+      "cat": "optimize",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Cu 분말 1000ppm XRF 최적화해줘",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Cu', 'edge': 'K', 'ppm': 1000, 'sampleType': 'powder', 'priority': 'balanced'})"
+    },
+    "opt_02": {
+      "cat": "optimize",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "철 시료인데 가장 좋은 분해능으로 XRF 맵핑하고 싶어",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Fe', 'edge': 'K', 'priority': 'resolution'})"
+    },
+    "opt_03": {
+      "cat": "optimize",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Ti K-edge XANES 하려는데 시료가 SrTiO3 분말이야",
+      "actions": "(empty)"
+    },
+    "opt_04": {
+      "cat": "optimize",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "SSA를 추천하고 그다음 액션이 없는데?",
+      "prompt": "ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야",
+      "actions": "optimizeBeamline({'technique': 'ptycho', 'element': 'Cu', 'edge': 'K', 'sampleType': 'solid', 'thickness_um': 1, 'priority': 'coherence'})"
+    },
+    "opt_05": {
+      "cat": "optimize",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "현재 빔라인 설정에 대해서도 알려주면 추후 어떻게 변경되었는디 로그를 알 수 있을 테고, 나아가서 어떤 설정으로 바꾸는 것이 적절한지 알려주는 행위까지 해주면 좋아.",
+      "prompt": "지금 셋업에서 Cu 신호 얼마나 나와?",
+      "actions": "estimateSignal(xrf, Cu, 10000, 10, 50, 10)"
+    },
+    "opt_06": {
+      "cat": "optimize",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "최적화된 설정이 무엇인지 알려줘.",
+      "prompt": "W L3-edge XRF 해줘. 시료가 WC 분말이야",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'W', 'edge': 'L3', 'ppm': 500000, 'sampleType': 'powder', 'priority': 'balanced'})"
+    },
+    "opt_07": {
+      "cat": "optimize",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "빔라인 최적화해줘",
+      "actions": "(empty)"
+    },
+    "atten_01": {
+      "cat": "attenmask",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "어떤 위치에 있는 어테뉴에이터 인지 설명해주는 것이 좋아. 만약 두개, 세개가 장착된 빔라인이 있을 수 있으니 말이야.",
+      "prompt": "어테뉴에이터에 Carbon 1mm 넣어줘",
+      "actions": "setAttenFilter(0, material, Carbon) -> setAttenFilter(0, thickness, 1.0)"
+    },
+    "atten_02": {
+      "cat": "attenmask",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "어떤 위치에 있는 어테뉴에이터 인지 설명해주는 것이 좋아. 만약 두개, 세개가 장착된 빔라인이 있을 수 있으니 말이야.",
+      "prompt": "어테뉴에이터 전부 빼",
+      "actions": "setAttenFilter(0, material, None) -> setAttenFilter(0, thickness, 0) -> setAttenFilter(1, material, None) -> setAttenFilter(1, thickness, 0) -> setAttenFilter(2, material, None) -> setAttenFilter(2, thickness, 0) -> setAttenFilter(3, material, None) -> setAttenFilter(3, thickness, 0)"
+    },
+    "mask_01": {
+      "cat": "attenmask",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "movable mask를 1mm x 1mm로 이동시켜",
+      "actions": "maskAperUpdate(mmask, h, 1) -> maskAperUpdate(mmask, v, 1)"
+    },
+    "mask_02": {
+      "cat": "attenmask",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "고정 마스크 수평갭 2mm, 수직갭 3mm",
+      "actions": "maskAperUpdate(fmask, h, 2) -> maskAperUpdate(fmask, v, 3)"
+    },
+    "info_01": {
+      "cat": "info",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRD가 뭐야?",
+      "actions": "(empty)"
+    },
+    "info_02": {
+      "cat": "info",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "네가 할 수 있는 명령들을 정리해봐",
+      "actions": "(empty)"
+    },
+    "info_03": {
+      "cat": "info",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "어떤 범위를 스캔해서 보여줄지 자세한 설명 필요.",
+      "prompt": "빔 프로파일 보여줘",
+      "actions": "showBeamProfile(sample)"
+    },
+    "param_01": {
+      "cat": "param",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "2D XRD 매핑해줘",
+      "actions": "(empty)"
+    },
+    "param_02": {
+      "cat": "param",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "철 XRF 2D 맵 측정해줘",
+      "actions": "(empty)"
+    },
+    "sample_01": {
+      "cat": "scientist",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "측정 조건에 대한 상세한 설명이 더 필요. 빔 크기 등.",
+      "prompt": "NMC 622 배터리 시료를 nano XRF로 분석하고 싶어. Ni, Mn, Co를 측정해야 해",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Ni', 'edge': 'K', 'sampleType': 'powder', 'priority': 'balanced'})"
+    },
+    "sample_02": {
+      "cat": "scientist",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "확인을 위한 빔 조건에 대해서도 알려줘야 나중에 로그를 보면 어떤 조건에서 확인했는지 알 수 있어.",
+      "prompt": "Au L3-edge XRF 신호가 충분할지 확인해줘. 50 ppm 시료야",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Au', 'edge': 'L3', 'ppm': 50, 'priority': 'flux'})"
+    },
+    "batt_01": {
+      "cat": "battery",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "배터리 양극재에서 Ni, Mn, Co 원소 분포를 XRF 맵핑으로 측정하고 싶습니다. 10x10 범위 41포인트로요.",
+      "actions": "setTargetEnergy(8.5) -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "batt_02": {
+      "cat": "battery",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "현재 에너지 10 keV 에서 7.1 keV를 측정하려면 DCM 정렬을 다시 해야지",
+      "prompt": "LiFePO4 시료 철 K-edge XAFS 측정해주세요.",
+      "actions": "quickXafs(Fe, K) -> queueStart()"
+    },
+    "batt_03": {
+      "cat": "battery",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "전고체 전해질 시료인데, 황의 화학 상태를 확인하고 싶어요.",
+      "actions": "(empty)"
+    },
+    "batt_04": {
+      "cat": "battery",
+      "auto_passed": false,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "양극재에 구리 오염이 있는지 확인해주세요. 10ppm 수준이에요.",
+      "actions": "quickXanes(Cu, K) -> queueStart()"
+    },
+    "batt_05": {
+      "cat": "battery",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "충방전 후 양극재 결정상 분포를 2D XRD 맵으로 측정하고 싶어요. 15 keV에서 10x10 21포인트로.",
+      "actions": "setTargetEnergy(15) -> quickRaster(10, 10, 21) -> queueStart()"
+    },
+    "cata_01": {
+      "cat": "catalyst",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Pt/C 연료전지 촉매에서 백금 산화 상태를 XANES로 확인해주세요.",
+      "actions": "quickXanes(Pt, L3) -> queueStart()"
+    },
+    "cata_02": {
+      "cat": "catalyst",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "CeO2 담지체의 세륨 L3 엣지 XANES 측정해주세요.",
+      "actions": "quickXanes(Ce, L3) -> queueStart()"
+    },
+    "cata_03": {
+      "cat": "catalyst",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "스캔 방식 이 표기되지 않음",
+      "prompt": "니켈 촉매 반응 중 산화 상태가 변하는지 적응형 에너지 스캔으로 확인하고 싶어요.",
+      "actions": "quickAdaptiveScan(8.0, 9.0, 0.1, 5.0) -> queueStart()"
+    },
+    "semi_01": {
+      "cat": "semiconductor",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "빔라인 최소화 과정에 대해 언급해줘, 어떤 장치를 조절해서 최적화하는 지 알아야해",
+      "prompt": "반도체 칩 단면에서 구리 배선 분포를 XRF 맵핑해주세요. 분해능을 최대로 해주세요.",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Cu', 'edge': 'K', 'priority': 'resolution'})"
+    },
+    "semi_02": {
+      "cat": "semiconductor",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "격자 변경에 대한 브래그 정보 없음, 라킹 스캔 없음, 검출기 정보 없음",
+      "prompt": "에피택셜 박막의 격자 변형을 nano-XRD로 맵핑해주세요. 에너지는 15 keV로.",
+      "actions": "setTargetEnergy(15) -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "geo_01": {
+      "cat": "geology",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "스캔 범위에 대한 정보가 없어. 너가 10 부터 12 이상을 스캔하는지 어디까지 스캔하는지 몰라. 그리고 설명에 오타가 있어. 11.867 인데 1.867로 명시됨.",
+      "prompt": "오염 토양 시료에서 비소의 화학종을 XANES로 구분해주세요.",
+      "actions": "quickXanes(As, K) -> queueStart()"
+    },
+    "geo_02": {
+      "cat": "geology",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "형광 모드 설정이 어떻게 되어있는지 설명 필요. 어떤  검출기 사용 하는지 의견 필요.",
+      "prompt": "사장석 시료에서 스트론튬 분포를 XRF 라인스캔으로 확인해주세요. (0,0)에서 (20,0)까지 51포인트.",
+      "actions": "setTargetEnergy(17) -> quickLineScan(0, 0, 20, 0, 51) -> queueStart()"
+    },
+    "geo_03": {
+      "cat": "geology",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "XANES와 XRF중 어떤 측정이 좋을지 추론이 가능하다면 제안해보는 것도 좋음. 3가 6가를 구분하기에 적절한 에너지 분해능인지 알아야하므로 에너지 스텝에 대한 명시도 필요.",
+      "prompt": "광산 폐기물에서 6가 크롬과 3가 크롬을 구분하고 싶어요. Cr XANES 해주세요.",
+      "actions": "quickXanes(Cr, K) -> queueStart()"
+    },
+    "env_01": {
+      "cat": "environment",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "14 keV 설정이 XANES 목적에 맞지 않음",
+      "prompt": "비산재 입자에서 납 분포를 XRF로 확인하고, Pb L3 XANES도 해주세요.",
+      "actions": "setTargetEnergy(14) -> quickRaster(10, 10, 41) -> queueStart() -> quickXanes(Pb, L3) -> queueStart()"
+    },
+    "env_02": {
+      "cat": "environment",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "XRF 맵핑을 통해 Zn hot spot을 찾고 난뒤 위치/분포를 확인하고 XANES를 진행하는 것이 좋지 않아?",
+      "prompt": "하수 슬러지에서 아연의 화학 상태를 알고 싶어요.",
+      "actions": "quickXanes(Zn, K) -> queueStart()"
+    },
+    "bio_01": {
+      "cat": "biology",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "Zn K-edge는 약 9.659–9.668 keV이므로 Zn 형광을 제대로 여기시키지 못해 Zn XRF 이미징이 거의 불가능하거나 매우 약함. Zn을 타겟으로 하려면 10 keV 이상필요",
+      "prompt": "동결건조한 세포 시료에서 철과 아연 분포를 나노 XRF로 이미징해주세요. 5x5 41포인트.",
+      "actions": "setTargetEnergy(8.5) -> quickRaster(5, 5, 41) -> queueStart()"
+    },
+    "bio_02": {
+      "cat": "biology",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "Cu 분포를 어떤 방식으로 측정하는 지도 명시해주면 좋겠어",
+      "prompt": "신경세포 수상돌기에서 Cu 분포를 페르마 나선 스캔으로 측정해주세요.",
+      "actions": "setTargetEnergy(9.5) -> quickFermat(10, 10, 0.5) -> queueStart()"
+    },
+    "mat_01": {
+      "cat": "materials",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "페로브스카이트 태양전지에서 납 분포의 불균일성을 XRF 맵핑해주세요. 10x10 41포인트.",
+      "actions": "setTargetEnergy(14) -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "mat_02": {
+      "cat": "materials",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "에너지가 부족하지 않나? 이부분은 재확인 해봐야겠지만, 9 keV가 모든 원소의 XRF를 맵핑하기에 충분한지 의문. 형광을 제대로 여기하려면 10 keV 이상은 되어야 할 것 같은데, 아니면 어떤 에너지를 사용할지 요청하는 것도 방법일듯.",
+      "prompt": "고엔트로피 합금 시료에서 Fe, Co, Ni, Cr, Mn 원소 분포를 동시에 XRF 맵핑해주세요. 10x10 41포인트.",
+      "actions": "setTargetEnergy(9.0) -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "mat_03": {
+      "cat": "materials",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "구리 산화물 시료가 Cu2O인지 CuO인지 구분하고 싶어요.",
+      "actions": "quickXanes(Cu, K) -> queueStart()"
+    },
+    "edge_01": {
+      "cat": "edgecase",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "인(P) K-edge XANES 해주세요.",
+      "actions": "(empty)"
+    },
+    "edge_02": {
+      "cat": "edgecase",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "텅스텐 K-edge XAFS 측정해줘.",
+      "actions": "(empty)"
+    },
+    "edge_03": {
+      "cat": "edgecase",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "금 시료 XRF 해주세요. 5x5 41포인트.",
+      "actions": "setTargetEnergy(13) -> quickRaster(5, 5, 41) -> queueStart()"
+    },
+    "edge_04": {
+      "cat": "edgecase",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "대부분의 프롬프트가 간단해서 간단한 명령이 실행되는 듯 하나, 어떤 성형의 XAFS인지 프롬프트에서 명시하도록 유도해야해, 예를 들어 지금 빔 크긱가 나노사이즈인데, 이런 종류의 일반적인 XAFS 스캔이 과연 의미가 있는지, 스스로 판단할 수 있어야해. 아니라면 XRF 측정을 통해 특정 부분의 XAFS 측정을 원하는 건지 확인하거나 말이지.",
+      "prompt": "Cu K-edge XAFS 돌려줘",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "edge_05": {
+      "cat": "edgecase",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XANES랑 EXAFS 차이가 뭐예요?",
+      "actions": "(empty)"
+    },
+    "edge_06": {
+      "cat": "edgecase",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "금 L3 엣지가 몇 keV예요?",
+      "actions": "(empty)"
+    },
+    "edge_07": {
+      "cat": "edgecase",
+      "auto_passed": true,
+      "verdict": "Unnecessary action",
+      "comment": "액션 자체는 큰 문제가 없지만, 어떤 상황일지 모르는데 불필요한 설명이 기입되어 있음.",
+      "prompt": "Pt L3-edge XANES 측정해주세요.",
+      "actions": "quickXanes(Pt, L3) -> queueStart()"
+    },
+    "ops_01": {
+      "cat": "operations",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Si(311)로 변경해주세요.",
+      "actions": "setCrystal(311)"
+    },
+    "ops_02": {
+      "cat": "operations",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "SSA 수평갭을 30 마이크로미터로 줄여주세요.",
+      "actions": "motorSetUI(ssa, ssa_hgap, 30)"
+    },
+    "ops_03": {
+      "cat": "operations",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "긴급 정지!",
+      "actions": "emergencyStop()"
+    },
+    "workflow_01": {
+      "cat": "workflow",
+      "auto_passed": false,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "SrTiO3 시료에서 Ti K-edge XANES 하고 나서 Sr K-edge XANES도 해주세요.",
+      "actions": "(empty)"
+    },
+    "workflow_02": {
+      "cat": "workflow",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "측정 요청 프롬프트 인데 최적화 까지만 진행하고 측정 액션이 없음",
+      "prompt": "Cu 1000ppm 분말 시료 XRF 최적화해서 10x10 41포인트로 측정까지 해주세요.",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Cu', 'edge': 'K', 'ppm': 1000, 'sampleType': 'powder', 'priority': 'balanced'})"
+    },
+    "held_01": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "현위치, 일반적, 기본적 세팅의 XANES 측정이 아니라면 실험 조건에 대한 확인을 위해 빔 크기에 대한 확인/요청이 필요하다보고 봄",
+      "prompt": "Zn K흡수단 XANES 스펙트럼을 찍어줘",
+      "actions": "quickXanes(Zn, K) -> queueStart()"
+    },
+    "held_02": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "X선 에너지를 9.5 keV로 맞춰주실래요?",
+      "actions": "setTargetEnergy(9.5)"
+    },
+    "held_03": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "M2 미러 pitch angle을 3.0 mrad로 조절해줘",
+      "actions": "motorSetUI(m2, m2_pitch, 3.0)"
+    },
+    "held_04": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "현위치, 일반적, 기본적 세팅의 측정이 아니라면, 시료 위치, 빔크기 등의 확인/요청이 선행되는 것이 필요함.",
+      "prompt": "코발트 흡수 스펙트럼 좀 볼 수 있을까요?",
+      "actions": "quickXafs(Co, K) -> queueStart()"
+    },
+    "held_05": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "selenium XRF 이미지를 20um x 20um 영역에서 31포인트로 얻고 싶어",
+      "actions": "setTargetEnergy(13.5) -> quickRaster(20, 20, 31) -> queueStart()"
+    },
+    "held_06": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "빔 세기를 줄이고 싶은데 어테뉴에이터에 알루미늄 0.5mm 집어넣어줘",
+      "actions": "setAttenFilter(0, material, Aluminium) -> setAttenFilter(0, thickness, 0.5)"
+    },
+    "held_07": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Bragg 법칙이 뭔지 알려줘",
+      "actions": "(empty)"
+    },
+    "held_08": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "칼슘 K-edge 측정이 가능한가요?",
+      "actions": "(empty)"
+    },
+    "held_09": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "프롬프트 두 연속 동작을 명령하였지만, 10 keV 에너지가 적절한지 확인 요청을 하고 진행해야 한다고 봄.",
+      "prompt": "지금 빔 에너지가 몇이야? 그리고 As XANES 해줘",
+      "actions": "quickXanes(As, K) -> queueStart()"
+    },
+    "held_10": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "시료 위치를 x=150, y=-50으로 옮겨주세요",
+      "actions": "motorSetUI(sample, sample_cx, 150) -> motorSetUI(sample, sample_cy, -50)"
+    },
+    "held_11": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "Mn K-edge 와 현재 에너지의 괴리가 큰데 바로 실행한다는 것은 잘못됨. 적절한 에너지로 변경해서 시작해야지.",
+      "prompt": "Mn oxidation state를 확인하려면 어떻게 해야하죠?",
+      "actions": "quickXanes(Mn, K) -> queueStart()"
+    },
+    "held_12": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "SSA를 완전히 열어줘",
+      "actions": "motorSetUI(ssa, ssa_hgap, 200) -> motorSetUI(ssa, ssa_vgap, 200)"
+    },
+    "held_13": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "현재 에너지가 몇이길래 8.5로 바꾸는거지? 액션은 큰 문제가 없어보이긴 해.",
+      "prompt": "Fe K-edge XRF로 10x10 um 영역 빠르게 스캔해줘. 21포인트면 충분해",
+      "actions": "setTargetEnergy(8.5) -> quickRaster(10, 10, 21) -> queueStart()"
+    },
+    "held_14": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "현재 에너지가 어디야? 에너지 변경 또는 확인이 우선 되어야해.",
+      "prompt": "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘",
+      "actions": "quickXanes(Cu, K) -> queueStart() -> quickXanes(Zn, K) -> queueStart()"
+    },
+    "held_15": {
+      "cat": "heldout",
+      "auto_passed": true,
+      "verdict": "Unnecessary action",
+      "comment": "Ce K-edge는 40.4 keV로 빔라인 최대 에너지(25 keV)를 초과하므로 L3-edge를 사용해야 합니다.  불필요함., 에너지 설정 하겠습니까 물어봐야함.",
+      "prompt": "Ce L3 XANES를 찍으려면 에너지를 얼마로 해야 해?",
+      "actions": "setTargetEnergy(5.723)"
+    },
+    "explan_01": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "NMC622 양극재야. Ni 30%, Co 10%, Mn 10%. 빔타임 8시간.",
+      "actions": "(empty)"
+    },
+    "explan_02": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "시료가 SrTiO3 단결정인데 Ti, Sr 둘 다 분석해야해",
+      "actions": "(empty)"
+    },
+    "explan_03": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "Unnecessary action",
+      "comment": "5×5 µm, 41×41 포인트로 스캔합니다. 명령하지않은 액션",
+      "prompt": "Pt/C 촉매 50ppm인데 XRF로 보일까?",
+      "actions": "setTargetEnergy(11.564) -> quickRaster(5, 5, 41) -> queueStart()"
+    },
+    "explan_04": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "2D XRF 맵핑 후에 2D XRD도 해야하는데 시간이 얼마나 걸려?",
+      "actions": "(empty)"
+    },
+    "explan_05": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "ptychography랑 XRF를 동시에 할 수 있어?",
+      "actions": "(empty)"
+    },
+    "explan_06": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "nano-XANES랑 XRF 맵핑 동시에 되나?",
+      "actions": "(empty)"
+    },
+    "explan_07": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "빔타임 4시간인데 Cu XAFS 3회 반복이랑 XRF 맵핑 둘 다 가능해?",
+      "actions": "(empty)"
+    },
+    "explan_08": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "검출기 교체 시간이 얼마나 걸려?",
+      "actions": "(empty)"
+    },
+    "explan_09": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRF 맵핑 해상도를 50nm로 하면 10x10 영역 스캔 시간이 얼마나 걸려?",
+      "actions": "(empty)"
+    },
+    "explan_10": {
+      "cat": "experiment_plan",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XAFS 측정 1회에 시간이 얼마나 걸려?",
+      "actions": "(empty)"
+    },
+    "realuser_01": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "이 시료 좀 봐줘. Cu 시료야",
+      "actions": "(empty)"
+    },
+    "realuser_02": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "형광 맵 좀 찍어줘. 10마이크로 범위",
+      "actions": "(empty)"
+    },
+    "realuser_03": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "이 에너지에서 시료 신호가 얼마나 되는지 확인해봐",
+      "actions": "(empty)"
+    },
+    "realuser_04": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "SSA 수평/수직 갭을 20 um으로 줄이면 빔이 잘려서 더 약한 빔이 나오는게 아닐까?",
+      "prompt": "좀 더 세게 빔 때려줘",
+      "actions": "motorSetUI(ssa, ssa_hgap, 20) -> motorSetUI(ssa, ssa_vgap, 20)"
+    },
+    "realuser_05": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "빔 사이즈를 최소로 줄여줘",
+      "actions": "motorSetUI(ssa, ssa_hgap, 10) -> motorSetUI(ssa, ssa_vgap, 10)"
+    },
+    "realuser_06": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "빔라인의 가능 여부(검출기, 에너지 적합도) 등을 확인 하지 않고 시작함.",
+      "prompt": "결정 구조가 궁금해. XRD 한 번 찍어봐",
+      "actions": "setupVirtualExperiment(powder_xrd) -> queueStart()"
+    },
+    "realuser_07": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "이전 스캔 결과 보여줘",
+      "actions": "(empty)"
+    },
+    "realuser_08": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "왼쪽이 음의 방향이 가능한거야?",
+      "prompt": "시료를 좀 더 왼쪽으로 옮겨줘",
+      "actions": "motorSetUI(sample, sample_cx, -100)"
+    },
+    "realuser_09": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "지금 몇 keV야?",
+      "actions": "(empty)"
+    },
+    "realuser_10": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "어떤 실험을 할 수 있어?",
+      "actions": "(empty)"
+    },
+    "realuser_11": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "빔 안정적이야?",
+      "actions": "(empty)"
+    },
+    "realuser_12": {
+      "cat": "real_user",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "도와줘",
+      "actions": "(empty)"
+    },
+    "cmulti_01": {
+      "cat": "complex_multi",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "에너지 15 keV로 바꾸고, SSA 30으로 줄이고, XRF 맵 10x10 41포인트 찍어줘",
+      "actions": "setTargetEnergy(15) -> motorSetUI(ssa, ssa_hgap, 30) -> motorSetUI(ssa, ssa_vgap, 30) -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "cmulti_02": {
+      "cat": "complex_multi",
+      "auto_passed": false,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Si(311)로 바꾸고 Se K-edge XAFS 측정해줘",
+      "actions": "(empty)"
+    },
+    "cmulti_03": {
+      "cat": "complex_multi",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "무슨 정렬을 하는지 부정확함.",
+      "prompt": "M1, M2 정렬 순서대로 해줘",
+      "actions": "runMirrorAlignUI(m1) -> runMirrorAlignUI(m2)"
+    },
+    "cmulti_04": {
+      "cat": "complex_multi",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "현재 에너지 에서 Cu 측정을 위한 에너지 변경 없어짐.",
+      "prompt": "Cu XANES 찍고, 에너지를 Fe로 바꿔서 XANES도 찍어줘",
+      "actions": "quickXanes(Cu, K) -> queueStart() -> setTargetEnergy(7.112) -> runFullAlignment() -> quickXanes(Fe, K) -> queueStart()"
+    },
+    "cmulti_05": {
+      "cat": "complex_multi",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRF 맵핑하고 관심 영역에서 XANES 포인트 스캔해줘",
+      "actions": "(empty)"
+    },
+    "cmulti_06": {
+      "cat": "complex_multi",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "에너지 변경이 순차적으로 되었는지 액션에 설명 되어야함.",
+      "prompt": "Pb L3 XANES하고 As K-edge XANES도 연속으로 해줘",
+      "actions": "quickXanes(Pb, L3) -> queueStart() -> quickXanes(As, K) -> queueStart()"
+    },
+    "cmulti_07": {
+      "cat": "complex_multi",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "광학 정렬 이후 실험 측정 액션이 없음.",
+      "prompt": "어테뉴에이터 Al 0.3mm 넣고 나서 Cr XANES 측정해줘",
+      "actions": "setAttenFilter(0, material, Aluminium) -> setAttenFilter(0, thickness, 0.3) -> quickXanes(Cr, K) -> queueStart()"
+    },
+    "cmulti_08": {
+      "cat": "complex_multi",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "빔 프로파일을 보여주는 액션이 빠졌음.",
+      "prompt": "12 keV로 설정하고 빔 프로파일 보여주고 XRF 맵 찍어줘",
+      "actions": "setTargetEnergy(12) -> showBeamProfile(sample) -> quickRaster(5, 5, 41) -> queueStart()"
+    },
+    "cmulti_09": {
+      "cat": "complex_multi",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "에너지 20 keV로 바꾸고 정렬하고 Mo XANES 찍어줘",
+      "actions": "setTargetEnergy(20) -> runFullAlignment() -> quickXanes(Mo, K) -> queueStart()"
+    },
+    "robust_01": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "에너지를 12keV로 설정해줘",
+      "actions": "setTargetEnergy(12)"
+    },
+    "robust_02": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "2 keV 이하의 에너지 차이에서는 정렬이 필요없는게 맞아? 확인 해야할 것 같은데, 일반적인 상황에서 찍는다면 타겟 에너지로 이동하고 거기에서 에너지 범위 스캔을 진행하는게 맞지 않나?",
+      "prompt": "copper K-edge XAFS해줘",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "robust_03": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "현재 에너지에 대한 의견이 없고, 실험 조건에 대한 확인을 진행해야해.",
+      "prompt": "Fe xanes",
+      "actions": "quickXanes(Fe, K) -> queueStart()"
+    },
+    "robust_04": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XAFS 해",
+      "actions": "(empty)"
+    },
+    "robust_05": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "2 keV 이하의 에너지 차이에서는 정렬이 필요없는게 맞아? 확인 해야할 것 같은데, 일반적인 상황에서 찍는다면 타겟 에너지로 이동하고 거기에서 에너지 범위 스캔을 진행하는게 맞지 않나?",
+      "prompt": "Cu K-edge XAFS",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "robust_06": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "뭐를 조정해야 설정 하는지 알려줘. 가상의 에너지만 설정하는 건지 실제 장치가 설정되는 건지 알아야지.",
+      "prompt": "에너지 8.333 keV로 맞춰줘",
+      "actions": "setTargetEnergy(8.333)"
+    },
+    "robust_07": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "현재 에너지(10 keV)와 차이가 0.021 keV로 작아  는 계산이 틀림. quickxafs 를 위해 어떤 장치가 작동 되는지 의견 필요. 에너지 범위 확인 필요. 실험조건 등.",
+      "prompt": "quickXafs Cu K",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "robust_08": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Cu, Fe, Zn 다원소 맵핑 10x10",
+      "actions": "(empty)"
+    },
+    "robust_09": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "에너지를 -5 keV로",
+      "actions": "(empty)"
+    },
+    "robust_10": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "설정할수 없다는 액션 설명이 나와야함.",
+      "prompt": "에너지를 100 keV로",
+      "actions": "(empty)"
+    },
+    "robust_11": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "12 kev로 에너지 설정",
+      "actions": "setTargetEnergy(12)"
+    },
+    "robust_12": {
+      "cat": "robustness",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "12 가 무슨 의미 인지 확인 필요.",
+      "prompt": "energy 12",
+      "actions": "setTargetEnergy(12)"
+    },
+    "reject_01": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Si K-edge XANES 해줘",
+      "actions": "(empty)"
+    },
+    "reject_02": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "산소 K-edge XANES 측정해줘",
+      "actions": "(empty)"
+    },
+    "reject_03": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "리튬 흡수 스펙트럼 측정해줘",
+      "actions": "(empty)"
+    },
+    "reject_04": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "탄소 K-edge XAFS 해줘",
+      "actions": "(empty)"
+    },
+    "reject_05": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "질소 XANES 측정해줘",
+      "actions": "(empty)"
+    },
+    "reject_06": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "대안으로 Ag L3-edge (3.351 keV)를 사용 역시 에너지 범위 벗어나므로 불가. CCM으로 에너지를 어떻게 높여?",
+      "prompt": "Ag K-edge XAFS 측정해",
+      "actions": "(empty)"
+    },
+    "reject_07": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "우라늄 분석해줘",
+      "actions": "(empty)"
+    },
+    "reject_08": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "시료 사진 찍어줘",
+      "actions": "(empty)"
+    },
+    "reject_09": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "마그네슘 K-edge 해줘",
+      "actions": "(empty)"
+    },
+    "reject_10": {
+      "cat": "rejection",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "불가 의견 없음.",
+      "prompt": "알루미늄 K-edge XANES 해줘",
+      "actions": "(empty)"
+    },
+    "korean_01": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "2 keV 이하의 에너지 차이에서는 정렬이 필요없는게 맞아? 확인 해야할 것 같은데, 일반적인 상황에서 찍는다면 타겟 에너지로 이동하고 거기에서 에너지 범위 스캔을 진행하는게 맞지 않나?",
+      "prompt": "구리 K 흡수단 XAFS 돌려줘",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "korean_02": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "측정 할까요? 없음.",
+      "prompt": "니켈 산화 상태 확인",
+      "actions": "quickXanes(Ni, K) -> queueStart()"
+    },
+    "korean_03": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "형광 이미징 하고 싶어요",
+      "actions": "(empty)"
+    },
+    "korean_04": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "어떤 장치를 변경하는지 알려줘",
+      "prompt": "에너지 바꿔주세요. 9 keV로요.",
+      "actions": "setTargetEnergy(9)"
+    },
+    "korean_05": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "정렬에 대한 단계적 액션 결과도 나타내줘.",
+      "prompt": "빔 정렬 한번 해볼까?",
+      "actions": "runFullAlignment()"
+    },
+    "korean_06": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "SSA 좀 넓혀줄래?",
+      "actions": "motorSetUI(ssa, ssa_hgap, 50) -> motorSetUI(ssa, ssa_vgap, 50)"
+    },
+    "korean_07": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "스캔 멈춰!",
+      "actions": "queueAbort()"
+    },
+    "korean_08": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "이거 다시 해줘",
+      "actions": "(empty)"
+    },
+    "korean_09": {
+      "cat": "korean_variant",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "정렬 수행 후 스캔 실행 명령 없음.",
+      "prompt": "망간 흡수단 스캔 부탁해요",
+      "actions": "quickXafs(Mn, K) -> queueStart()"
+    },
+    "sigest_01": {
+      "cat": "signal_est",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Cu 100ppm 시료에서 XRF 신호가 충분할까?",
+      "actions": "estimateSignal(xrf, Cu, 100, None, None, 10)"
+    },
+    "sigest_02": {
+      "cat": "signal_est",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Au 10ppm 박막 시료 신호 예상치",
+      "actions": "estimateSignal(xrf, Au, L3, 10, flux, None)"
+    },
+    "sigest_03": {
+      "cat": "signal_est",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Fe 50% 시료 XAFS 자기흡수 문제 없어?",
+      "actions": "(empty)"
+    },
+    "sigest_04": {
+      "cat": "signal_est",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Mn 500ppm에서 검출 한계가 어떻게 돼?",
+      "actions": "estimateSignal(xrf, Mn, 500, None, None, 10)"
+    },
+    "sigest_05": {
+      "cat": "signal_est",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Pt L3 XRF를 할건데 Ir 간섭이 있을까?",
+      "actions": "setTargetEnergy(11.564) -> quickRaster(5, 5, 41) -> queueStart()"
+    },
+    "blknow_01": {
+      "cat": "bl_knowledge",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "이 빔라인 에너지 범위가 어떻게 돼?",
+      "actions": "(empty)"
+    },
+    "blknow_02": {
+      "cat": "bl_knowledge",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "KB 미러 초점 거리가 얼마야?",
+      "actions": "(empty)"
+    },
+    "blknow_03": {
+      "cat": "bl_knowledge",
+      "auto_passed": true,
+      "verdict": "Unnecessary action",
+      "comment": "하지만 Si K-edge는 1.839 keV로 이 빔라인의 최소 에너지(5 keV)보다 낮아 Si 결정을 사용할 수 없습니다. 이 빔라인에서는 다른 결정(예: Ge, Ga, As 등)을 사용해야 합니다.?",
+      "prompt": "DCM Si(111)이랑 Si(311) 차이가 뭐야?",
+      "actions": "(empty)"
+    },
+    "blknow_04": {
+      "cat": "bl_knowledge",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "이 빔라인에서 할 수 있는 실험 종류를 알려줘",
+      "actions": "(empty)"
+    },
+    "blknow_05": {
+      "cat": "bl_knowledge",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "빔 사이즈가 최소 얼마까지 줄어들어?",
+      "actions": "(empty)"
+    },
+    "ssa_01": {
+      "cat": "ssa_control",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "SSA 수직갭을 60um으로 맞춰줘",
+      "actions": "motorSetUI(ssa, ssa_vgap, 60)"
+    },
+    "ssa_02": {
+      "cat": "ssa_control",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "SSA를 최소로 닫아줘. 수평 수직 다 10um으로.",
+      "actions": "motorSetUI(ssa, ssa_hgap, 10) -> motorSetUI(ssa, ssa_vgap, 10)"
+    },
+    "ssa_03": {
+      "cat": "ssa_control",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "SSA 크기 좀 키워줘. 수평 100 수직 80",
+      "actions": "motorSetUI(ssa, ssa_hgap, 100) -> motorSetUI(ssa, ssa_vgap, 80)"
+    },
+    "analysis_01": {
+      "cat": "analysis_intent",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "이 시료의 Fe 산화 상태를 확인하고 싶어요",
+      "actions": "quickXanes(Fe, K) -> queueStart()"
+    },
+    "analysis_02": {
+      "cat": "analysis_intent",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Cr(III)인지 Cr(VI)인지 확인해야 합니다",
+      "actions": "quickXanes(Cr, K) -> queueStart()"
+    },
+    "analysis_03": {
+      "cat": "analysis_intent",
+      "auto_passed": false,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "니켈 산화물 시료의 상(phase)을 분석하고 싶은데요",
+      "actions": "(empty)"
+    },
+    "seq_01": {
+      "cat": "sequential",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "Fe 측정을 위한 에너지로 변경해야지.",
+      "prompt": "Fe XANES 한 다음에 Ni XANES도 해줘",
+      "actions": "quickXanes(Fe, K) -> queueStart() -> quickXanes(Ni, K) -> queueStart()"
+    },
+    "seq_02": {
+      "cat": "sequential",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "실험 측정 실행에 대한 액션이 없음.",
+      "prompt": "Mn이랑 Co XANES를 연속으로 측정해줘",
+      "actions": "quickXanes(Mn, K) -> queueStart() -> quickXanes(Co, K) -> queueStart()"
+    },
+    "seq_03": {
+      "cat": "sequential",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "정렬 이후 실행 부재",
+      "prompt": "Pb L3 XANES 하고 나서 As K-edge XANES도 순차적으로 해주세요",
+      "actions": "setTargetEnergy(13.035) -> runFullAlignment() -> quickXanes(Pb, L3) -> queueStart() -> setTargetEnergy(11.867) -> runFullAlignment() -> quickXanes(As, K) -> queueStart()"
+    },
+    "qact_01": {
+      "cat": "question_action",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "에너지 변경 해야한다고 생각함.",
+      "prompt": "현재 결정이 뭐야? 그리고 Fe XAFS 해줘",
+      "actions": "quickXafs(Fe, K) -> queueStart()"
+    },
+    "qact_02": {
+      "cat": "question_action",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "현재 빔사이즈에 대한 답변 없음.",
+      "prompt": "빔 사이즈가 지금 얼마야? SSA를 50um으로 줄여줘",
+      "actions": "motorSetUI(ssa, ssa_hgap, 50)"
+    },
+    "partial_01": {
+      "cat": "partial_range",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "측정 불가 답변은 맞으나, 철 측정을 위한 에너지 변경이 필요함.",
+      "prompt": "S K-edge XANES랑 Fe K-edge XANES를 둘 다 해줘",
+      "actions": "quickXanes(Fe, K) -> queueStart()"
+    },
+    "partial_02": {
+      "cat": "partial_range",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "현재 에너지 정보 없음. 에너지 변경 액션 없음.",
+      "prompt": "Ca XANES하고 Zn XANES도 해줘",
+      "actions": "quickXafs(Zn, K) -> queueStart()"
+    },
+    "heavyel_01": {
+      "cat": "heavy_element",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "납 XRF 이미징 해주세요. 10x10um, 51포인트.",
+      "actions": "setTargetEnergy(14) -> quickRaster(10, 10, 51) -> queueStart()"
+    },
+    "heavyel_02": {
+      "cat": "heavy_element",
+      "auto_passed": false,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "텅스텐 XRF 맵핑해줘. 5x5 41포인트",
+      "actions": "(empty)"
+    },
+    "colloquial_01": {
+      "cat": "colloquial",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "구리 XANES 한번만 빨리 돌려줘",
+      "actions": "quickXanes(Cu, K) -> queueStart()"
+    },
+    "colloquial_02": {
+      "cat": "colloquial",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "에너지 좀 올려줘. 15 keV로.",
+      "actions": "setTargetEnergy(15)"
+    },
+    "colloquial_03": {
+      "cat": "colloquial",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "아연 분포 좀 봐봐. 20um 정도.",
+      "actions": "setTargetEnergy(11.5) -> quickRaster(20, 20, 41) -> queueStart()"
+    },
+    "colloquial_04": {
+      "cat": "colloquial",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "시료 왼쪽으로 5um 이동",
+      "actions": "motorSetUI(sample, sample_cx, -5)"
+    },
+    "safety_01": {
+      "cat": "safety",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "멈춰! 스캔 중지해!",
+      "actions": "queueAbort()"
+    },
+    "safety_02": {
+      "cat": "safety",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "모든 동작 정지시켜",
+      "actions": "emergencyStop()"
+    },
+    "implicit_01": {
+      "cat": "implicit_technique",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "이 촉매 시료에서 백금 상태가 궁금해",
+      "actions": "quickXanes(Pt, L3) -> queueStart()"
+    },
+    "implicit_02": {
+      "cat": "implicit_technique",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "에너지 변경 이 후 필요 액션 이후 스캔 시작 필요",
+      "prompt": "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "implicit_03": {
+      "cat": "implicit_technique",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "토양처럼 불균일 시료에서는 먼저 XRF로 As 핫스팟 찾는게 유리해보임. 따라서 제안을 해주면 더 좋은 실험이 됨.",
+      "prompt": "토양 시료에서 비소 형태 분석해주세요",
+      "actions": "quickXanes(As, K) -> queueStart()"
+    },
+    "vexp_01": {
+      "cat": "experiment_preset",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Cu XAFS 실험 셋업해줘",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "vexp_02": {
+      "cat": "experiment_preset",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "현재 빔 상태에 대한 정보 필요.",
+      "prompt": "분말 XRD 실험 시작해줘",
+      "actions": "setupVirtualExperiment(powder_xrd) -> queueStart()"
+    },
+    "vexp_03": {
+      "cat": "experiment_preset",
+      "auto_passed": false,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "2D XRF 맵핑 실험 셋업",
+      "actions": "(empty)"
+    },
+    "vexp_04": {
+      "cat": "experiment_preset",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "현재 빔 상태에 대한 정보 필요.",
+      "prompt": "구리 산화물의 흡수 스펙트럼을 보고 싶어",
+      "actions": "quickXafs(Cu, K) -> queueStart()"
+    },
+    "vexp_05": {
+      "cat": "experiment_preset",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "위치별 결정상 분포를 알고 싶어",
+      "actions": "(empty)"
+    },
+    "vexp_06": {
+      "cat": "experiment_preset",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "나노 XRF 라인스캔 프리셋 로드해줘",
+      "actions": "setupVirtualExperiment(nano_xrf_line)"
+    },
+    "vexp_07": {
+      "cat": "experiment_preset",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRF imaging preset으로 시작",
+      "actions": "setupVirtualExperiment(xrf_imaging) -> queueStart()"
+    },
+    "vexp_08": {
+      "cat": "experiment_preset",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "대신 Ag L3-edge (3.351 keV)를 사용하거나 Si(311) CCM으로 에너지를 높일 수 있습니다.  는 부정확한 의견이야. 저장링과 삽입장치 한계로 제한 에너지가 설정 된거야.",
+      "prompt": "시료의 원소 맵핑을 고해상도로 하고 싶은데, 나노빔 XRF 실험 세팅해줘",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Ag', 'edge': 'K', 'priority': 'resolution'})"
+    },
+    "vexp_09": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "LiNi0.8Co0.1Mn0.1O2 시료야. Ni, Co, Mn XANES를 각각 하고 XRF 맵도 찍어야해. 빔타임 6시간",
+      "actions": "(empty)"
+    },
+    "vexp_10": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "빔 정보에 대한 표시가 없음",
+      "prompt": "FePt 나노입자 촉매인데 Fe K-edge XAFS 3회 반복하고 Pt L3 XANES도 해줘",
+      "actions": "quickXafs(Fe, K) -> queueStart() -> setTargetEnergy(11.564) -> runFullAlignment() -> quickXanes(Pt, L3) -> queueStart()"
+    },
+    "vexp_11": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "다른 검출기를 사용하는 것이지, 검출기 교체를 필요로 하는 것은 아님.",
+      "prompt": "XRF 하고 나서 XRD도 해야하는데 검출기 교체가 필요한가요?",
+      "actions": "(empty)"
+    },
+    "vexp_12": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "페로브스카이트 태양전지 시료야. 납 분포랑 결정상을 동시에 보고싶어",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Pb', 'edge': 'L3', 'sampleType': 'solid', 'priority': 'balanced'})"
+    },
+    "vexp_13": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": false,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "배터리 음극재 그래파이트 시료인데 Fe, Cu 불순물을 ppm 수준으로 찾아야해",
+      "actions": "(empty)"
+    },
+    "vexp_14": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "정렬 안해되 되지 라는 질문은 요청하는 것이 아니라 물어보는 것이야. 너의 대답이 아니라고 했으므로 정렬을 진행할까요 라고 물어보자.",
+      "prompt": "Mn K XANES, Co K XANES, Ni K XANES 순서로 해줘. 에너지 차이가 2 keV 미만이니까 정렬 안해도 되지?",
+      "actions": "quickXanes(Mn, K) -> queueStart() -> quickXanes(Co, K) -> queueStart() -> quickXanes(Ni, K) -> queueStart()"
+    },
+    "vexp_15": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "어떻게 측정 조건이 설정 되는지 설명 필요",
+      "prompt": "이 시료에 Cr이 있는데 3가인지 6가인지 구별해야해. 환경 시료라 농도가 낮아",
+      "actions": "quickXanes(Cr, K) -> queueStart()"
+    },
+    "vexp_16": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "첫번째 시료는 XRF 맵, 두번째 시료는 XANES 해야해. 시료 교체 포함해서 총 시간이 얼마나 걸려?",
+      "actions": "(empty)"
+    },
+    "vexp_17": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Au 나노입자가 TiO2 담지체 위에 있어. Au 분포 보고 Ti 산화상태도 확인하고 싶어",
+      "actions": "setTargetEnergy(12) -> quickRaster(10, 10, 41) -> queueStart() -> queueStart()"
+    },
+    "vexp_18": {
+      "cat": "experiment_planning_adv",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Ce L3 XANES 하고 그 다음 Fe K XANES 해줘. 에너지 바꿀 때 정렬 필요한가?",
+      "actions": "quickXanes(Ce, L3) -> queueStart() -> quickXanes(Fe, K) -> queueStart()"
+    },
+    "vexp_19": {
+      "cat": "ptycho_experiment",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "ptychography 실험 셋업해줘",
+      "actions": "(empty)"
+    },
+    "vexp_20": {
+      "cat": "ptycho_experiment",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "coherent imaging으로 시료 구조 보고싶어",
+      "actions": "(empty)"
+    },
+    "vexp_21": {
+      "cat": "ptycho_experiment",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "위상 이미징 해줘",
+      "actions": "(empty)"
+    },
+    "vexp_22": {
+      "cat": "ptycho_experiment",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "어떤 설정으로 전환 되는지 현재와 설정 후를 비교해주면 좋을 듯 해.",
+      "prompt": "결맞음 빔으로 나노구조 관찰하고 싶어. 에너지는 10 keV로",
+      "actions": "setFocusMode(coherence) -> motorSetUI(ssa, ssa_hgap, 10) -> motorSetUI(ssa, ssa_vgap, 10)"
+    },
+    "vexp_23": {
+      "cat": "ptycho_experiment",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "반도체 시료를 비파괴로 내부 구조 보고 싶어. 50nm 분해능이 필요해",
+      "actions": "optimizeBeamline({'technique': 'ptycho', 'element': 'Si', 'edge': 'K', 'sampleType': 'solid', 'thickness_um': 1, 'priority': 'coherence'})"
+    },
+    "vexp_24": {
+      "cat": "ptycho_experiment",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRF 맵핑 끝나면 ptychography도 이어서 할건데, 셋업 변경 시간이 얼마나 걸려?",
+      "actions": "(empty)"
+    },
+    "vexp_25": {
+      "cat": "technique_selection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "시료의 원소 분포를 알고싶어",
+      "actions": "(empty)"
+    },
+    "vexp_26": {
+      "cat": "technique_selection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "결정 구조를 확인하고 싶어",
+      "actions": "(empty)"
+    },
+    "vexp_27": {
+      "cat": "technique_selection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Fe 산화 상태가 궁금해",
+      "actions": "quickXanes(Fe, K) -> queueStart()"
+    },
+    "vexp_28": {
+      "cat": "technique_selection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "화학 결합 상태를 알고 싶어. Cu 시료야",
+      "actions": "quickXanes(Cu, K) -> queueStart()"
+    },
+    "vexp_29": {
+      "cat": "technique_selection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "나노 스케일 이미지가 필요해",
+      "actions": "(empty)"
+    },
+    "vexp_30": {
+      "cat": "technique_selection",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "최적화된 설정에 대한 구체적 설명 필요",
+      "prompt": "미량 원소 검출이 목적이야. Cr 10ppm 수준",
+      "actions": "optimizeBeamline({'technique': 'xrf', 'element': 'Cr', 'edge': 'K', 'ppm': 10, 'priority': 'flux'})"
+    },
+    "vexp_31": {
+      "cat": "technique_selection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "상분율을 알고 싶어. 다상 세라믹 시료야",
+      "actions": "(empty)"
+    },
+    "vexp_32": {
+      "cat": "technique_selection",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "국소 영역에서 격자 상수 변화를 관찰하고 싶어",
+      "actions": "(empty)"
+    },
+    "vexp_33": {
+      "cat": "multi_technique_wf",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRF로 관심 영역 찾고 거기서 XANES 해줘. Fe 시료야",
+      "actions": "(empty)"
+    },
+    "vexp_34": {
+      "cat": "multi_technique_wf",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Ni XANES 하고 XRD도 연속으로 해줘",
+      "actions": "quickXanes(Ni, K) -> queueStart() -> quickRaster(5, 5, 21) -> queueStart()"
+    },
+    "vexp_35": {
+      "cat": "multi_technique_wf",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "광학 정렬이 필요해 보여.",
+      "prompt": "Fe XAFS 3번 반복 후에 XRF 맵 찍어줘. 10x10 41포인트",
+      "actions": "setTargetEnergy(7.112) -> quickXafs(Fe, K) -> queueStart() -> quickXafs(Fe, K) -> queueStart() -> quickXafs(Fe, K) -> queueStart() -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "vexp_36": {
+      "cat": "multi_technique_wf",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "quickXanes(Zn, K) 은 Ni 아닌가?",
+      "prompt": "Mn XANES, Co XANES, Ni XANES 순차 측정 후 XRF 2D 맵핑까지 해줘",
+      "actions": "quickXanes(Mn, K) -> queueStart() -> quickXanes(Co, K) -> queueStart() -> quickXanes(Zn, K) -> queueStart() -> setTargetEnergy(9.5) -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "vexp_37": {
+      "cat": "multi_technique_wf",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "XRD 실험 조건에 대한 정보가 없어. 어떤 시료인지 물어보고 시료 정보와 빔 정보를 조합해서 어떤 피크를 보고 싶은지 물어보는 것도 좋은 접근일듯해.",
+      "prompt": "먼저 XRD 패턴 한 장 찍고, 그 다음 XRF 맵핑 해줘",
+      "actions": "setupVirtualExperiment(powder_xrd) -> queueStart() -> setTargetEnergy(15) -> quickRaster(10, 10, 41) -> queueStart()"
+    },
+    "vexp_38": {
+      "cat": "multi_technique_wf",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Cu XANES 끝나면 바로 Zn XANES도 이어서 해줘",
+      "actions": "quickXanes(Cu, K) -> queueStart() -> quickXanes(Zn, K) -> queueStart()"
+    },
+    "vexp_39": {
+      "cat": "multi_technique_wf",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Se K-edge XAFS 하고 나서 Pb L3 XANES도 해줘",
+      "actions": "setTargetEnergy(12.658) -> quickXafs(Se, K) -> queueStart() -> setTargetEnergy(13.035) -> quickXanes(Pb, L3) -> queueStart()"
+    },
+    "vexp_40": {
+      "cat": "multi_technique_wf",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "에너지 8 keV에서 Cu 시료 XRF 맵핑하고, 에너지 올려서 20 keV에서 Mo XANES도 해줘",
+      "actions": "setTargetEnergy(8) -> quickRaster(10, 10, 41) -> queueStart() -> setTargetEnergy(20) -> runFullAlignment() -> quickXanes(Mo, K) -> queueStart()"
+    },
+    "vexp_41": {
+      "cat": "timing_feasibility",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "ptychography 한 장 찍는데 시간이 얼마나 걸려?",
+      "actions": "(empty)"
+    },
+    "vexp_42": {
+      "cat": "timing_feasibility",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRF 맵 100x100um에 1um 스텝으로 하면 시간이 어떻게 돼?",
+      "actions": "(empty)"
+    },
+    "vexp_43": {
+      "cat": "timing_feasibility",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XAFS 5회 반복이면 빔타임 몇 시간 필요해?",
+      "actions": "(empty)"
+    },
+    "vexp_44": {
+      "cat": "timing_feasibility",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRD에서 XRF로 바꾸는데 시간이 얼마나 걸려?",
+      "actions": "(empty)"
+    },
+    "vexp_45": {
+      "cat": "timing_feasibility",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "XRF 맵 2장이랑 XANES 3회 하면 총 빔타임이 얼마야?",
+      "actions": "(empty)"
+    },
+    "vexp_46": {
+      "cat": "experiment_edge",
+      "auto_passed": true,
+      "verdict": "Wrong action",
+      "comment": "대안으로 Ag L3-edge (3.351 keV)를 사용하거나 Si(311) CCM으로 에너지를 높일 수 있습니다. 대답 역시 빔라인 에너지 범위를 벗어나는 구간이야.",
+      "prompt": "Ag K-edge XAFS 해줘",
+      "actions": "(empty)"
+    },
+    "vexp_47": {
+      "cat": "experiment_edge",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "시료 분석해줘",
+      "actions": "(empty)"
+    },
+    "vexp_48": {
+      "cat": "experiment_edge",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "Ba L3 XANES 하고 Ca K-edge XANES도 해줘",
+      "actions": "quickXanes(Ba, L3) -> queueStart()"
+    },
+    "vexp_49": {
+      "cat": "experiment_edge",
+      "auto_passed": true,
+      "verdict": "Missing action",
+      "comment": "시료의 종류에 따라 회절 패턴의 어떤 결정면을 보고 싶은지에 따라 결정해야하므로, 시료의 정보에 대한 질문이 나와야해.",
+      "prompt": "XRD 하려는데 에너지 5 keV면 데이터가 괜찮을까?",
+      "actions": "(empty)"
+    },
+    "vexp_50": {
+      "cat": "experiment_edge",
+      "auto_passed": true,
+      "verdict": "OK",
+      "comment": "",
+      "prompt": "La L3 XANES 하면서 동시에 ptychography도 할 수 있어?",
+      "actions": "(empty)"
+    }
+  }
+}

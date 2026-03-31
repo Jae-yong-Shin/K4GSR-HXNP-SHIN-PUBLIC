@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>K4GSR-PTYCHO Reconstruction UI</title>
+<style>
+/* === K4GSR Beamline CSS Convention === */
+:root{--bg:#0c111a;--s0:#101822;--s1:#151f2e;--s2:#1a2738;--s3:#1f2f44;--b0:rgba(80,160,255,.06);--b1:rgba(80,160,255,.12);--b2:rgba(80,160,255,.22);--ac:#4db8ff;--pr:#a08cff;--pr2:rgba(160,140,255,.15);--am:#f0b840;--gn:#40d89a;--rd:#ff5050;--pk:#e870a0;--t0:#e8eef8;--t2:#6a7f96;--t3:#3d5068;--t3-bright:#5a7a9a;--sn:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;--mn:'IBM Plex Mono','SF Mono','Consolas',monospace;--fs-display:13px;--fs-primary:11px;--fs-secondary:9px;--fs-tertiary:8px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sn);background:var(--bg);color:var(--t0);overflow:hidden;height:100vh}
+.app{display:grid;grid-template-rows:36px 1fr auto;grid-template-columns:1fr var(--rside-w,380px);height:100vh}
+
+/* === Color themes (Beamline convention) === */
+body.theme-light{--bg:#e8eef8;--s0:#f0f3f8;--s1:#dde4ef;--s2:#cdd6e4;--s3:#bcc8da;--b0:rgba(0,40,90,.08);--b1:rgba(0,40,90,.15);--b2:rgba(0,40,90,.25);--t0:#0c111a;--t2:#4a5568;--t3:#7a8a9e;--t3-bright:#6a7f96}
+body.theme-highcon{--bg:#000;--s0:#111;--s1:#1a1a1a;--s2:#222;--s3:#333;--b0:rgba(255,255,255,.15);--b1:rgba(255,255,255,.25);--b2:rgba(255,255,255,.4);--ac:#00e5ff;--pr:#c4b5fd;--am:#ffd600;--gn:#00e676;--rd:#ff1744;--t0:#fff;--t2:#ccc;--t3:#888}
+body.theme-deuter{--gn:#56b4e9;--rd:#e69f00;--pk:#cc79a7;--am:#f0e442}
+body.theme-protan{--gn:#56b4e9;--rd:#e69f00;--pk:#cc79a7;--am:#f0e442}
+body.theme-tritan{--ac:#e69f00;--gn:#009e73;--rd:#d55e00;--pr:#cc79a7;--am:#56b4e9}
+
+/* Bar */
+.bar{grid-column:1/-1;display:flex;align-items:center;padding:0 12px;background:var(--s0);border-bottom:1px solid var(--b1);gap:10px}
+.bar-logo{font-weight:700;font-size:13px;color:var(--ac);letter-spacing:1px}.bar-sub{font-size:10px;color:var(--t2);font-family:var(--mn)}
+.bar-r{margin-left:auto;display:flex;align-items:center;gap:8px}.bar-st{font-size:10px;font-family:var(--mn);display:flex;align-items:center;gap:5px}
+.led{width:6px;height:6px;border-radius:50%;background:var(--rd);box-shadow:0 0 6px var(--rd)}
+.bar-btn{font-size:9px;padding:4px 10px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);border-radius:3px;cursor:pointer;font-family:var(--mn);white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;min-width:50px}.bar-btn:hover{background:var(--s3)}
+.bar-btn.run{background:var(--gn);color:#000;border-color:var(--gn);font-weight:700}.bar-btn.run:hover{background:#50e8aa}
+.bar-btn.run:disabled{opacity:.4;cursor:not-allowed}
+.bar-btn.stop{background:var(--rd);color:#fff;border-color:var(--rd);font-weight:700}.bar-btn.stop:hover{background:#ff3030}
+.bar-btn.stop:disabled{opacity:.3;cursor:not-allowed}
+
+/* View mode menu */
+.view-menu-wrap{position:relative}
+.view-menu{display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:4px 0;min-width:160px;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.view-menu.open{display:block}
+.vm-head{font-size:8px;color:var(--t3);padding:4px 10px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--mn)}
+.vm-item{display:flex;align-items:center;gap:6px;padding:5px 10px;font-size:10px;cursor:pointer;color:var(--t2);font-family:var(--mn);transition:background .1s}
+.vm-item:hover{background:var(--s2);color:var(--t0)}
+.vm-item.active{color:var(--ac)}
+.vm-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--t3);flex-shrink:0}
+.vm-item.active .vm-dot{background:var(--ac);border-color:var(--ac)}
+
+/* Main viewer */
+.main-view{grid-column:1;display:flex;flex-wrap:wrap;gap:2px;padding:4px;background:var(--bg);overflow-y:auto;align-content:start;min-height:0}
+.view-panel{flex:0 0 calc(50% - 1px);aspect-ratio:1;background:var(--s0);border:1px solid var(--b0);border-radius:4px;display:flex;flex-direction:column;overflow:hidden}
+.view-panel .vp-head{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:var(--s1);border-bottom:1px solid var(--b0);flex-shrink:0;gap:6px;min-height:28px}
+.view-panel .vp-head h4{font-size:10px;color:var(--t1);font-family:var(--mn);letter-spacing:.5px;white-space:nowrap;font-weight:600}
+.view-panel canvas{flex:1;min-height:0;width:100%;background:var(--bg)}
+.vp-ctrl{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.vp-cmap,.vp-scale{background:var(--s2);border:1px solid var(--b0);color:var(--ac);font-size:11px;font-family:var(--mn);padding:1px 4px;border-radius:3px;cursor:pointer;height:20px;outline:none}
+.vp-cmap:hover,.vp-scale:hover{color:var(--t0);border-color:var(--ac);background:var(--s3)}
+.vp-cmap:focus,.vp-scale:focus{border-color:var(--ac);box-shadow:0 0 4px var(--ac)}
+.vp-range{font-size:9px;color:var(--t2);font-family:var(--mn);white-space:nowrap}
+.vp-range-input{width:48px;background:var(--s3);border:1px solid var(--b1);color:var(--ac);font-size:9px;font-family:var(--mn);padding:1px 3px;border-radius:3px;text-align:center;outline:none;height:18px}
+.vp-range-input:focus{border-color:var(--ac);box-shadow:0 0 4px var(--ac)}
+.vp-tooltip{position:fixed;z-index:9999;background:rgba(12,17,26,0.93);border:1px solid var(--b1);color:var(--t1);font-size:11px;font-family:var(--mn);padding:5px 9px;border-radius:4px;pointer-events:none;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.6);line-height:1.5}
+
+/* Right sidebar */
+.rside{grid-row:2/4;grid-column:2;border-left:1px solid var(--b1);background:var(--s0);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.resizer-h{position:absolute;left:-3px;top:0;bottom:0;width:6px;cursor:col-resize;z-index:100}.resizer-h:hover,.resizer-h.active{background:rgba(77,184,255,.4)}
+.tabs{display:flex;border-bottom:1px solid var(--b1)}.tab{flex:1;padding:9px 2px;font-size:14px;text-align:center;cursor:pointer;color:var(--t2);font-family:var(--mn);border-bottom:2px solid transparent;transition:background .15s}.tab.active{color:var(--ac);border-bottom-color:var(--ac);background:var(--s1)}.tab:hover{background:var(--s2)}
+.tabcontent{flex:1;overflow-y:auto;padding:8px}.tabpane{display:none}.tabpane.active{display:block}
+
+/* Controls */
+.ctrl-group{margin-bottom:8px;padding:7px 9px;background:var(--s1);border-radius:5px;border:1px solid var(--b0);overflow:hidden}.ctrl-label{font-size:13px;color:var(--t2);margin-bottom:3px;display:flex;justify-content:space-between;font-family:var(--mn)}.ctrl-val{color:var(--ac);font-weight:500}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;background:var(--b1);border-radius:2px;outline:none;margin:5px 0}input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--ac);cursor:pointer}
+select,input[type=number],input[type=text]{width:100%;background:var(--s2);border:1px solid var(--b1);color:var(--t0);padding:5px 8px;border-radius:4px;font-size:13px;font-family:var(--mn)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.section-title{font-size:14px;color:var(--pr);margin:12px 0 5px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--mn)}
+button.sb{background:var(--ac);color:#000;border:none;padding:5px 12px;border-radius:3px;font-size:13px;font-weight:600;cursor:pointer;margin:2px}button.sb.stop{background:var(--rd);color:#fff}
+
+/* Jog buttons (Beamline convention) */
+.ctrl-r2{display:flex;align-items:stretch;gap:1px;margin-top:1px}
+.jog-btn{flex:1;padding:2px 1px;font-size:12px;border:none;border-radius:3px;cursor:pointer;font-family:var(--mn);font-weight:600;text-align:center;line-height:1;transition:background .15s}
+.jog-neg{background:rgba(255,80,80,.15);color:var(--rd)}.jog-neg:hover{background:rgba(255,80,80,.35)}
+.jog-pos{background:rgba(64,216,154,.15);color:var(--gn)}.jog-pos:hover{background:rgba(64,216,154,.35)}
+.ctrl-input{flex:0 0 60px;width:60px;background:var(--s2);color:var(--ac);border:1px solid var(--b1);border-radius:3px;padding:0 4px;text-align:center;font-family:var(--mn);font-size:12px;line-height:1;-moz-appearance:textfield}
+.ctrl-input::-webkit-inner-spin-button,.ctrl-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+
+/* Bottom panels */
+.bpan{grid-column:1;display:flex;gap:0;border-top:1px solid var(--b1);height:160px;overflow:hidden}
+.pn{flex:1;display:flex;flex-direction:column;border-right:1px solid var(--b0);min-width:0}.pn-h{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:var(--s1);border-bottom:1px solid var(--b0);flex-shrink:0}.pn-h h4{font-size:9px;color:var(--t2);font-family:var(--mn);letter-spacing:.5px}.pn-body{flex:1;overflow-y:auto;padding:6px;font-size:10px}
+
+/* Progress */
+.prog-bar{height:4px;background:var(--s2);border-radius:2px;overflow:hidden;margin:4px 0}.prog-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--pr));border-radius:2px;transition:width .3s;width:0}
+
+/* Logbox */
+.logbox{font-family:var(--mn);font-size:10px;color:var(--t2);line-height:1.8}.logbox .ltime{color:var(--t3)}.logbox .linfo{color:var(--ac)}.logbox .lwarn{color:var(--am)}.logbox .lerr{color:var(--rd)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--s0)}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── TOP BAR ── -->
+<div class="bar">
+    <div class="bar-logo">K4GSR-PTYCHO</div>
+    <div class="bar-sub">Reconstruction UI v1.0</div>
+    <div class="bar-r">
+        <span id="gpuStatus" style="font-size:8px;font-family:var(--mn);color:var(--t3)">GPU ?</span>
+        <span class="bar-st"><span class="led" id="connLed"></span><span id="connText" style="font-size:9px">...</span></span>
+        <span id="iterText" style="font-size:9px;font-family:var(--mn);color:var(--t2)"></span>
+        <button class="bar-btn run" id="btnRun" onclick="startReconstruction()">&#9654; Run</button>
+        <button class="bar-btn stop" id="btnStop" onclick="stopReconstruction()" disabled>&#9632; Stop</button>
+        <button class="bar-btn" onclick="addBatchJob()">+ Batch</button>
+        <button class="bar-btn" onclick="window.open('../../K4GSR-Beamline/virtual_beamline_nanoprobe_V4_36_bundle.html','_blank')" title="Open Virtual Beamline" style="background:var(--s2);color:var(--ac);font-size:9px;min-width:40px">BL</button>
+        <button class="bar-btn" onclick="window.open('../../K4GSR-TOMO/web/tomo_ui.html','_blank')" title="Open Tomography Reconstruction UI" style="background:var(--s2);color:var(--ac);font-size:9px;min-width:40px">TOMO</button>
+        <div class="view-menu-wrap">
+            <button class="bar-btn" id="viewModeBtn" onclick="toggleViewMenu()">&#9881; View</button>
+            <div class="view-menu" id="viewMenu">
+                <div class="vm-head">Color Theme</div>
+                <div class="vm-item active" onclick="setTheme('dark')"><span class="vm-dot"></span>Dark (Default)</div>
+                <div class="vm-item" onclick="setTheme('light')"><span class="vm-dot"></span>Light</div>
+                <div class="vm-item" onclick="setTheme('highcon')"><span class="vm-dot"></span>High Contrast</div>
+                <div class="vm-head" style="margin-top:4px">Color Blind Safe</div>
+                <div class="vm-item" onclick="setTheme('deuter')"><span class="vm-dot"></span>Deuteranopia (Red-Green)</div>
+                <div class="vm-item" onclick="setTheme('protan')"><span class="vm-dot"></span>Protanopia (Red)</div>
+                <div class="vm-item" onclick="setTheme('tritan')"><span class="vm-dot"></span>Tritanopia (Blue-Yellow)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MAIN VIEWER (2x2) ── -->
+<div class="main-view">
+    <div class="view-panel">
+        <div class="vp-head">
+            <h4>OBJ AMP</h4>
+            <div class="vp-ctrl">
+                <select class="vp-cmap" onchange="setViewCmap('objAmp',this.value)">
+                    <option value="viridis" selected>viridis</option><option value="inferno">inferno</option><option value="plasma">plasma</option>
+                    <option value="hot">hot</option><option value="gray">gray</option><option value="jet">jet</option><option value="turbo">turbo</option><option value="cool">cool</option>
+                </select>
+                <select class="vp-scale" onchange="setViewScale('objAmp',this.value)">
+                    <option value="robust" selected>Robust</option><option value="auto">Auto</option><option value="fixed">Fixed</option>
+                </select>
+                <span class="vp-range" id="range_objAmp"></span>
+            </div>
+        </div>
+        <canvas id="viewObjAmp" width="256" height="256"></canvas>
+    </div>
+    <div class="view-panel">
+        <div class="vp-head">
+            <h4>OBJ PHASE</h4>
+            <div class="vp-ctrl">
+                <select class="vp-cmap" onchange="setViewCmap('objPhase',this.value)">
+                    <option value="hsv" selected>hsv</option><option value="viridis">viridis</option><option value="inferno">inferno</option><option value="plasma">plasma</option>
+                    <option value="hot">hot</option><option value="gray">gray</option><option value="jet">jet</option><option value="turbo">turbo</option><option value="cool">cool</option>
+                </select>
+                <select class="vp-scale" onchange="setViewScale('objPhase',this.value)">
+                    <option value="auto" selected>Auto</option><option value="robust">Robust</option><option value="fixed">Fixed</option>
+                </select>
+                <span class="vp-range" id="range_objPhase"></span>
+            </div>
+        </div>
+        <canvas id="viewObjPhase" width="256" height="256"></canvas>
+    </div>
+    <div class="view-panel">
+        <div class="vp-head">
+            <h4>PROBE AMP</h4>
+            <div class="vp-ctrl">
+                <select class="vp-cmap" onchange="setViewCmap('prAmp',this.value)">
+                    <option value="hot" selected>hot</option><option value="viridis">viridis</option><option value="inferno">inferno</option><option value="plasma">plasma</option>
+                    <option value="gray">gray</option><option value="jet">jet</option><option value="turbo">turbo</option><option value="cool">cool</option>
+                </select>
+                <select class="vp-scale" onchange="setViewScale('prAmp',this.value)">
+                    <option value="robust" selected>Robust</option><option value="auto">Auto</option><option value="fixed">Fixed</option>
+                </select>
+                <span class="vp-range" id="range_prAmp"></span>
+            </div>
+        </div>
+        <canvas id="viewPrAmp" width="256" height="256"></canvas>
+    </div>
+    <div class="view-panel">
+        <div class="vp-head">
+            <h4>PROBE PHASE</h4>
+            <div class="vp-ctrl">
+                <select class="vp-cmap" onchange="setViewCmap('prPhase',this.value)">
+                    <option value="hsv" selected>hsv</option><option value="viridis">viridis</option><option value="inferno">inferno</option><option value="plasma">plasma</option>
+                    <option value="hot">hot</option><option value="gray">gray</option><option value="jet">jet</option><option value="turbo">turbo</option><option value="cool">cool</option>
+                </select>
+                <select class="vp-scale" onchange="setViewScale('prPhase',this.value)">
+                    <option value="auto" selected>Auto</option><option value="robust">Robust</option><option value="fixed">Fixed</option>
+                </select>
+                <span class="vp-range" id="range_prPhase"></span>
+            </div>
+        </div>
+        <canvas id="viewPrPhase" width="256" height="256"></canvas>
+    </div>
+    <div class="view-panel">
+        <div class="vp-head"><h4>DIFFRACTION SUM</h4></div>
+        <img id="viewFmag" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Diffraction Sum">
+    </div>
+    <div class="view-panel">
+        <div class="vp-head"><h4>SCAN POSITIONS</h4></div>
+        <img id="viewPositions" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Scan Positions">
+    </div>
+</div>
+
+<!-- ── BOTTOM PANELS ── -->
+<div class="bpan">
+    <div class="pn" style="flex:1.2">
+        <div class="pn-h"><h4>ERROR PLOT</h4></div>
+        <div class="pn-body" style="padding:2px"><canvas id="errorCanvas" style="width:100%;height:100%"></canvas></div>
+    </div>
+    <div class="pn" style="flex:0.8">
+        <div class="pn-h"><h4>BATCH QUEUE</h4><button class="sb" onclick="startBatch()" style="font-size:8px;padding:2px 6px">&#9654; Start</button></div>
+        <div class="pn-body" id="batchListBottom" style="font-family:var(--mn)"><div style="color:var(--t3);font-size:10px;padding:8px">No pending jobs</div></div>
+    </div>
+    <div class="pn" style="flex:1">
+        <div class="pn-h"><h4>LOG</h4><button onclick="clearLog()" style="font-size:8px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);border-radius:3px;padding:1px 6px;cursor:pointer">Clr</button></div>
+        <div class="pn-body logbox" id="logBox"></div>
+    </div>
+</div>
+
+<!-- ── RIGHT SIDEBAR ── -->
+<div class="rside" id="rside">
+    <div class="resizer-h" id="resizerH"></div>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('engine')">Engine</div>
+        <div class="tab" onclick="switchTab('data')">Data</div>
+        <div class="tab" onclick="switchTab('batch')">Batch</div>
+        <div class="tab" onclick="switchTab('history')">History</div>
+    </div>
+    <div style="padding:0 6px 2px">
+        <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    </div>
+    <div class="tabcontent">
+
+<!-- TAB: Engine -->
+<div class="tabpane active" id="tab-engine">
+    <div class="ctrl-group">
+        <div class="ctrl-label">Reconstruction Engine<span class="ctrl-val" id="vEngine">DM &rarr; LSQML</span></div>
+        <select id="engineSelect" onchange="onEngineChange(this.value)">
+            <option value="DM">DM (Difference Map)</option>
+            <option value="ML">ML (Maximum Likelihood)</option>
+            <option value="LSQML">LSQML (GPU)</option>
+            <option value="DM_ML" selected>DM &rarr; ML (Pipeline)</option>
+            <option value="DM_LSQML">DM &rarr; LSQML (Pipeline)</option>
+        </select>
+    </div>
+    <div class="ctrl-group" id="gpuRow">
+        <div class="ctrl-label">Use GPU<span class="ctrl-val" id="v_use_gpu">true</span></div>
+        <select onchange="setParam('use_gpu',this.value==='true')">
+            <option value="true" selected>ON</option>
+            <option value="false">OFF (CPU)</option>
+        </select>
+    </div>
+
+    <div class="section-title">Common Parameters</div>
+    <!-- Iterations (shown only for single engines) -->
+    <div class="ctrl-group" id="iterRow">
+        <div class="ctrl-label">Iterations<span class="ctrl-val" id="v_number_iterations">50</span></div>
+        <input type="range" min="1" max="1000" step="1" value="50" id="r_number_iterations" oninput="paramSlide('number_iterations',this.value)">
+        <div class="ctrl-r2">
+            <button class="jog-btn jog-neg" onclick="paramJog('number_iterations',-100)">-100</button>
+            <input type="number" class="ctrl-input" id="i_number_iterations" value="50" onchange="paramInput('number_iterations',this.value)">
+            <button class="jog-btn jog-pos" onclick="paramJog('number_iterations',100)">+100</button>
+        </div>
+    </div>
+    <div class="ctrl-group">
+        <div class="ctrl-label">FFT Relaxation<span class="ctrl-val" id="v_pfft_relaxation">0.100</span></div>
+        <input type="range" min="0" max="0.5" step="0.01" value="0.1" id="r_pfft_relaxation" oninput="paramSlide('pfft_relaxation',this.value)">
+        <div class="ctrl-r2">
+            <button class="jog-btn jog-neg" onclick="paramJog('pfft_relaxation',-0.01)">-0.01</button>
+            <input type="number" class="ctrl-input" id="i_pfft_relaxation" value="0.1" step="0.01" onchange="paramInput('pfft_relaxation',this.value)">
+            <button class="jog-btn jog-pos" onclick="paramJog('pfft_relaxation',0.01)">+0.01</button>
+        </div>
+    </div>
+    <div class="ctrl-group">
+        <div class="ctrl-label">Probe Update Start<span class="ctrl-val" id="v_probe_change_start">1</span></div>
+        <input type="range" min="0" max="50" step="1" value="1" id="r_probe_change_start" oninput="paramSlide('probe_change_start',this.value)">
+        <div class="ctrl-r2">
+            <button class="jog-btn jog-neg" onclick="paramJog('probe_change_start',-1)">-1</button>
+            <input type="number" class="ctrl-input" id="i_probe_change_start" value="1" onchange="paramInput('probe_change_start',this.value)">
+            <button class="jog-btn jog-pos" onclick="paramJog('probe_change_start',1)">+1</button>
+        </div>
+    </div>
+    <div class="ctrl-group">
+        <div class="ctrl-label">Probe Modes<span class="ctrl-val" id="v_probe_modes">1</span></div>
+        <input type="range" min="1" max="5" step="1" value="1" id="r_probe_modes" oninput="paramSlide('probe_modes',this.value)">
+        <div class="ctrl-r2">
+            <button class="jog-btn jog-neg" onclick="paramJog('probe_modes',-1)">-1</button>
+            <input type="number" class="ctrl-input" id="i_probe_modes" value="1" onchange="paramInput('probe_modes',this.value)">
+            <button class="jog-btn jog-pos" onclick="paramJog('probe_modes',1)">+1</button>
+        </div>
+    </div>
+
+    <!-- DM specific -->
+    <div id="dmParams" style="display:none">
+        <div class="section-title">DM Parameters</div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Probe Support Radius<span class="ctrl-val" id="v_probe_support_radius">0.900</span></div>
+            <input type="range" min="0.3" max="1.0" step="0.01" value="0.9" id="r_probe_support_radius" oninput="paramSlide('probe_support_radius',this.value)">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="paramJog('probe_support_radius',-0.01)">-0.01</button>
+                <input type="number" class="ctrl-input" id="i_probe_support_radius" value="0.9" step="0.01" onchange="paramInput('probe_support_radius',this.value)">
+                <button class="jog-btn jog-pos" onclick="paramJog('probe_support_radius',0.01)">+0.01</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ML specific -->
+    <div id="mlParams" style="display:none">
+        <div class="section-title">ML Parameters</div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">CG Iterations<span class="ctrl-val" id="v_opt_iter">50</span></div>
+            <input type="range" min="1" max="100" step="1" value="50" id="r_opt_iter" oninput="paramSlide('opt_iter',this.value)">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="paramJog('opt_iter',-5)">-5</button>
+                <button class="jog-btn jog-neg" onclick="paramJog('opt_iter',-1)">-1</button>
+                <input type="number" class="ctrl-input" id="i_opt_iter" value="50" onchange="paramInput('opt_iter',this.value)">
+                <button class="jog-btn jog-pos" onclick="paramJog('opt_iter',1)">+1</button>
+                <button class="jog-btn jog-pos" onclick="paramJog('opt_iter',5)">+5</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Error Metric<span class="ctrl-val" id="v_opt_errmetric">poisson</span></div>
+            <select onchange="setParam('opt_errmetric',this.value)">
+                <option value="poisson" selected>Poisson</option>
+                <option value="l1">L1</option>
+                <option value="l2">L2</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- LSQML specific -->
+    <div id="lsqmlParams">
+        <div class="section-title">LSQML Parameters</div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Beta LSQ<span class="ctrl-val" id="v_beta_LSQ">0.900</span></div>
+            <input type="range" min="0" max="2" step="0.05" value="0.9" id="r_beta_LSQ" oninput="paramSlide('beta_LSQ',this.value)">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="paramJog('beta_LSQ',-0.05)">-0.05</button>
+                <input type="number" class="ctrl-input" id="i_beta_LSQ" value="0.9" step="0.05" onchange="paramInput('beta_LSQ',this.value)">
+                <button class="jog-btn jog-pos" onclick="paramJog('beta_LSQ',0.05)">+0.05</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Delta P (precond)<span class="ctrl-val" id="v_delta_p">0.100</span></div>
+            <input type="range" min="0" max="1" step="0.01" value="0.1" id="r_delta_p" oninput="paramSlide('delta_p',this.value)">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="paramJog('delta_p',-0.01)">-0.01</button>
+                <input type="number" class="ctrl-input" id="i_delta_p" value="0.1" step="0.01" onchange="paramInput('delta_p',this.value)">
+                <button class="jog-btn jog-pos" onclick="paramJog('delta_p',0.01)">+0.01</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Position Refine Start<span class="ctrl-val" id="v_probe_position_search">0</span></div>
+            <input type="range" min="0" max="50" step="1" value="0" id="r_probe_position_search" oninput="paramSlide('probe_position_search',this.value)">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="paramJog('probe_position_search',-1)">-1</button>
+                <input type="number" class="ctrl-input" id="i_probe_position_search" value="0" onchange="paramInput('probe_position_search',this.value)">
+                <button class="jog-btn jog-pos" onclick="paramJog('probe_position_search',1)">+1</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline params -->
+    <div id="pipelineParams" style="display:none">
+        <div class="section-title">Pipeline Iterations</div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Stage 1: DM Iterations<span class="ctrl-val" id="v_dm_iterations">300</span></div>
+            <input type="range" min="1" max="1000" step="1" value="300" id="r_dm_iterations" oninput="paramSlide('dm_iterations',this.value)">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="paramJog('dm_iterations',-100)">-100</button>
+                <input type="number" class="ctrl-input" id="i_dm_iterations" value="300" onchange="paramInput('dm_iterations',this.value)">
+                <button class="jog-btn jog-pos" onclick="paramJog('dm_iterations',100)">+100</button>
+            </div>
+        </div>
+        <div class="ctrl-group" id="pipelineMlIter" style="display:none">
+            <div class="ctrl-label">Stage 2: ML Iterations<span class="ctrl-val" id="v_ml_iterations">30</span></div>
+            <input type="range" min="1" max="1000" step="1" value="30" id="r_ml_iterations" oninput="paramSlide('ml_iterations',this.value)">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="paramJog('ml_iterations',-100)">-100</button>
+                <input type="number" class="ctrl-input" id="i_ml_iterations" value="30" onchange="paramInput('ml_iterations',this.value)">
+                <button class="jog-btn jog-pos" onclick="paramJog('ml_iterations',100)">+100</button>
+            </div>
+        </div>
+        <div class="ctrl-group" id="pipelineLsqmlIter" style="display:none">
+            <div class="ctrl-label">Stage 2: LSQML Iterations<span class="ctrl-val" id="v_lsqml_iterations">20</span></div>
+            <input type="range" min="1" max="1000" step="1" value="20" id="r_lsqml_iterations" oninput="paramSlide('lsqml_iterations',this.value)">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="paramJog('lsqml_iterations',-100)">-100</button>
+                <input type="number" class="ctrl-input" id="i_lsqml_iterations" value="20" onchange="paramInput('lsqml_iterations',this.value)">
+                <button class="jog-btn jog-pos" onclick="paramJog('lsqml_iterations',100)">+100</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB: Data -->
+<div class="tabpane" id="tab-data">
+    <div class="ctrl-group">
+        <div class="ctrl-label">Data Source<span id="dataStatus" class="ctrl-val" style="color:var(--t3)">Not Loaded</span></div>
+        <select id="dataSourceSelect" onchange="onDataSourceChange(this.value)">
+            <option value="synth" selected>Simulation</option>
+            <option value="h5">HDF5 File (.h5)</option>
+            <option value="mat">MAT File (.mat)</option>
+        </select>
+    </div>
+
+    <!-- Synthetic params -->
+    <div id="synthParams">
+        <div class="section-title">Sample Settings</div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Dataset<span class="ctrl-val" id="vs_dataset_id">6</span></div>
+            <select onchange="setSynthParam('dataset_id',this.value);document.getElementById('vs_dataset_id').textContent=this.value+' ('+this.options[this.selectedIndex].text+')'">
+                <option value="1">Mona Lisa</option>
+                <option value="5">USAF-1951</option>
+                <option value="6" selected>Mandrill</option>
+                <option value="7">Chip Phantom</option>
+                <option value="8">Snellen Chart</option>
+            </select>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Material<span class="ctrl-val" id="vs_material">Au</span></div>
+            <select onchange="STATE.synthParams.material=this.value;document.getElementById('vs_material').textContent=this.value">
+                <option value="Au" selected>Au (Gold)</option>
+                <option value="Cu">Cu (Copper)</option>
+                <option value="W">W (Tungsten)</option>
+                <option value="Pt">Pt (Platinum)</option>
+                <option value="Si">Si (Silicon)</option>
+                <option value="SiO2">SiO2 (Glass)</option>
+            </select>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Energy<span class="ctrl-val" id="vs_energy_keV">6.2 keV</span></div>
+            <input type="range" min="4" max="20" step="0.1" value="6.2" id="r_energy_keV" oninput="synthSlide('energy_keV',this.value);document.getElementById('vs_energy_keV').textContent=parseFloat(this.value).toFixed(1)+' keV'">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="synthJog('energy_keV',-0.5)">-0.5</button>
+                <input type="number" class="ctrl-input" id="i_energy_keV" value="6.2" step="0.1" onchange="synthInput('energy_keV',this.value);document.getElementById('vs_energy_keV').textContent=parseFloat(this.value).toFixed(1)+' keV'">
+                <button class="jog-btn jog-pos" onclick="synthJog('energy_keV',0.5)">+0.5</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Obj height<span class="ctrl-val" id="vs_objheight">1.0 &micro;m</span></div>
+            <input type="range" min="0.1" max="100" step="0.1" value="1.0" id="r_objheight" oninput="setSynthParam('objheight',this.value*1e-6);document.getElementById('vs_objheight').textContent=parseFloat(this.value).toFixed(1)+' \u00b5m'">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="synthJogUm('objheight',-0.1)">-0.1</button>
+                <input type="number" class="ctrl-input" id="i_objheight" value="1.0" step="0.1" onchange="setSynthParam('objheight',this.value*1e-6);document.getElementById('r_objheight').value=this.value;document.getElementById('vs_objheight').textContent=parseFloat(this.value).toFixed(1)+' \u00b5m'">
+                <button class="jog-btn jog-pos" onclick="synthJogUm('objheight',0.1)">+0.1</button>
+            </div>
+        </div>
+
+        <div class="section-title">Scan Settings</div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">asize<span class="ctrl-val" id="vs_asize">128</span></div>
+            <select onchange="setSynthParam('asize',this.value)">
+                <option value="64">64</option>
+                <option value="128" selected>128</option>
+                <option value="192">192</option>
+                <option value="256">256</option>
+            </select>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Scan step<span class="ctrl-val" id="vs_scan_step_um">1.5 &micro;m</span></div>
+            <input type="range" min="0.5" max="5.0" step="0.1" value="1.5" id="r_scan_step_um" oninput="synthSlide('scan_step_um',this.value);document.getElementById('vs_scan_step_um').textContent=parseFloat(this.value).toFixed(1)+' \u00b5m'">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="synthJog('scan_step_um',-0.1)">-0.1</button>
+                <input type="number" class="ctrl-input" id="i_scan_step_um" value="1.5" step="0.1" onchange="synthInput('scan_step_um',this.value);document.getElementById('vs_scan_step_um').textContent=parseFloat(this.value).toFixed(1)+' \u00b5m'">
+                <button class="jog-btn jog-pos" onclick="synthJog('scan_step_um',0.1)">+0.1</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Scan lx<span class="ctrl-val" id="vs_scan_lx_um">10 &micro;m</span></div>
+            <input type="range" min="3" max="30" step="1" value="10" id="r_scan_lx_um" oninput="synthSlide('scan_lx_um',this.value);document.getElementById('vs_scan_lx_um').textContent=this.value+' \u00b5m'">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="synthJog('scan_lx_um',-1)">-1</button>
+                <input type="number" class="ctrl-input" id="i_scan_lx_um" value="10" onchange="synthInput('scan_lx_um',this.value);document.getElementById('vs_scan_lx_um').textContent=this.value+' \u00b5m'">
+                <button class="jog-btn jog-pos" onclick="synthJog('scan_lx_um',1)">+1</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Scan ly<span class="ctrl-val" id="vs_scan_ly_um">10 &micro;m</span></div>
+            <input type="range" min="3" max="30" step="1" value="10" id="r_scan_ly_um" oninput="synthSlide('scan_ly_um',this.value);document.getElementById('vs_scan_ly_um').textContent=this.value+' \u00b5m'">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="synthJog('scan_ly_um',-1)">-1</button>
+                <input type="number" class="ctrl-input" id="i_scan_ly_um" value="10" onchange="synthInput('scan_ly_um',this.value);document.getElementById('vs_scan_ly_um').textContent=this.value+' \u00b5m'">
+                <button class="jog-btn jog-pos" onclick="synthJog('scan_ly_um',1)">+1</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Z (sample-det)<span class="ctrl-val" id="vs_z_m">5.0 m</span></div>
+            <input type="range" min="1" max="10" step="0.5" value="5" id="r_z_m" oninput="synthSlide('z_m',this.value);document.getElementById('vs_z_m').textContent=parseFloat(this.value).toFixed(1)+' m'">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="synthJog('z_m',-0.5)">-0.5</button>
+                <input type="number" class="ctrl-input" id="i_z_m" value="5.0" step="0.5" onchange="synthInput('z_m',this.value);document.getElementById('vs_z_m').textContent=parseFloat(this.value).toFixed(1)+' m'">
+                <button class="jog-btn jog-pos" onclick="synthJog('z_m',0.5)">+0.5</button>
+            </div>
+        </div>
+
+        <div class="section-title">Noise Settings</div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Photons<span class="ctrl-val" id="vs_N_photons">1000</span></div>
+            <input type="range" min="100" max="100000" step="100" value="1000" id="r_N_photons" oninput="synthSlide('N_photons',this.value);document.getElementById('vs_N_photons').textContent=this.value">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="synthJog('N_photons',-100)">-100</button>
+                <input type="number" class="ctrl-input" id="i_N_photons" value="1000" step="100" onchange="synthInput('N_photons',this.value);document.getElementById('vs_N_photons').textContent=this.value">
+                <button class="jog-btn jog-pos" onclick="synthJog('N_photons',100)">+100</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Pos noise &sigma;<span class="ctrl-val" id="vs_noise_sigma">0.0 px</span></div>
+            <input type="range" min="0" max="10" step="0.5" value="0" id="r_noise_sigma" oninput="synthSlide('noise_sigma',this.value);document.getElementById('vs_noise_sigma').textContent=parseFloat(this.value).toFixed(1)+' px'">
+            <div class="ctrl-r2">
+                <button class="jog-btn jog-neg" onclick="synthJog('noise_sigma',-0.5)">-0.5</button>
+                <input type="number" class="ctrl-input" id="i_noise_sigma" value="0" step="0.5" onchange="synthInput('noise_sigma',this.value);document.getElementById('vs_noise_sigma').textContent=parseFloat(this.value).toFixed(1)+' px'">
+                <button class="jog-btn jog-pos" onclick="synthJog('noise_sigma',0.5)">+0.5</button>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div class="ctrl-label">Seed<span class="ctrl-val" id="vs_rng_seed">42</span></div>
+            <input type="number" value="42" id="i_rng_seed" style="width:100%" onchange="setSynthParam('rng_seed',this.value)">
+        </div>
+    </div>
+
+    <!-- HDF5 file path -->
+    <div id="h5Upload" style="display:none">
+        <div class="section-title">HDF5 File Path</div>
+        <div class="ctrl-group">
+            <input type="text" id="h5Path" placeholder="C:\path\to\scan_data.h5" style="font-size:9px">
+        </div>
+        <div style="font-size:8px;color:var(--t3);font-family:var(--mn);padding:4px 2px;line-height:1.6">
+            <div style="color:var(--pr);margin-bottom:2px">Expected HDF5 Structure:</div>
+            <code style="color:var(--t2)">/entry/data/diffraction</code> &mdash; (N, H, W) float<br>
+            <code style="color:var(--t2)">/entry/data/positions</code> &mdash; (N, 2) float [row, col]<br>
+            <div style="margin-top:3px;color:var(--t3)">Optional:</div>
+            <code style="color:var(--t2)">/entry/instrument/probe</code> &mdash; (H, W) complex<br>
+            <code style="color:var(--t2)">/entry/instrument/energy</code> &mdash; scalar (keV)<br>
+            <code style="color:var(--t2)">/entry/instrument/distance</code> &mdash; scalar (m)<br>
+            <code style="color:var(--t2)">/entry/instrument/pixel_size</code> &mdash; scalar (m)
+        </div>
+    </div>
+
+    <!-- MAT file path -->
+    <div id="matUpload" style="display:none">
+        <div class="section-title">MAT File Path</div>
+        <div class="ctrl-group">
+            <input type="text" id="matPath" placeholder="C:\path\to\data.mat" style="font-size:9px">
+        </div>
+        <div style="font-size:8px;color:var(--t3);font-family:var(--mn);padding:4px 2px;line-height:1.6">
+            <div style="color:var(--pr);margin-bottom:2px">Expected MAT Variables:</div>
+            <code style="color:var(--t2)">fmag</code> &mdash; (H, W, N) diffraction magnitudes<br>
+            <code style="color:var(--t2)">positions</code> &mdash; (N, 2) scan positions [row, col]<br>
+            <div style="margin-top:3px;color:var(--t3)">Optional:</div>
+            <code style="color:var(--t2)">probe_init</code> &mdash; (H, W) complex initial probe<br>
+            <code style="color:var(--t2)">object_init</code> &mdash; complex initial object
+        </div>
+    </div>
+
+    <button class="sb" onclick="loadData()" style="width:100%;margin-top:6px;padding:6px">Load Data</button>
+
+    <div id="dataInfoBox" style="margin-top:8px"></div>
+
+</div>
+
+<!-- TAB: Batch -->
+<div class="tabpane" id="tab-batch">
+    <div style="display:flex;gap:4px;margin-bottom:8px">
+        <button class="sb" onclick="addBatchJob()" style="flex:1">+ Add Current</button>
+        <button class="sb" onclick="startBatch()" style="flex:1">&#9654; Start Batch</button>
+        <button class="sb stop" onclick="stopBatch()">&#9632;</button>
+    </div>
+    <div id="batchList"><div style="color:var(--t3);font-size:10px;padding:8px">No pending jobs</div></div>
+</div>
+
+<!-- TAB: History -->
+<div class="tabpane" id="tab-history">
+    <div id="historyList"><div style="color:var(--t3);font-size:10px;padding:8px">No history</div></div>
+</div>
+
+    </div><!-- tabcontent -->
+</div><!-- rside -->
+
+</div><!-- app -->
+
+<!-- JS Modules -->
+<script src="js/01_state.js"></script>
+<script src="js/colormaps.js"></script>
+<script src="js/02_ws.js"></script>
+<script src="js/03_controls.js"></script>
+<script src="js/04_viewer.js"></script>
+<script src="js/05_batch.js"></script>
+<script>
+// ── View mode (theme) management ──
+var THEMES = ['dark','light','highcon','deuter','protan','tritan'];
+
+function setTheme(name) {
+    THEMES.forEach(function(t) { document.body.classList.remove('theme-' + t); });
+    if (name !== 'dark') document.body.classList.add('theme-' + name);
+    // Update menu
+    document.querySelectorAll('#viewMenu .vm-item').forEach(function(el) {
+        el.classList.remove('active');
+    });
+    document.querySelectorAll('#viewMenu .vm-item').forEach(function(el) {
+        if (el.getAttribute('onclick') === "setTheme('" + name + "')") el.classList.add('active');
+    });
+    try { localStorage.setItem('ptycho_theme', name); } catch(e) {}
+    document.getElementById('viewMenu').classList.remove('open');
+}
+
+function toggleViewMenu() {
+    document.getElementById('viewMenu').classList.toggle('open');
+}
+
+// Close menu on outside click
+document.addEventListener('click', function(e) {
+    var wrap = document.querySelector('.view-menu-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('viewMenu').classList.remove('open');
+    }
+});
+
+// ── Param jog/input helpers (engine params) ──
+function paramSlide(key, val) {
+    setParam(key, val);
+    var inp = document.getElementById('i_' + key);
+    if (inp) inp.value = parseFloat(val);
+}
+
+function paramInput(key, val) {
+    var slider = document.getElementById('r_' + key);
+    var v = parseFloat(val);
+    if (isNaN(v)) return;
+    if (slider) {
+        v = Math.max(parseFloat(slider.min), Math.min(v, parseFloat(slider.max)));
+        slider.value = v;
+    }
+    setParam(key, v);
+    var inp = document.getElementById('i_' + key);
+    if (inp) inp.value = v;
+}
+
+function paramJog(key, delta) {
+    var slider = document.getElementById('r_' + key);
+    var inp = document.getElementById('i_' + key);
+    var cur = parseFloat(inp ? inp.value : (slider ? slider.value : 0));
+    var nv = cur + delta;
+    if (slider) nv = Math.max(parseFloat(slider.min), Math.min(nv, parseFloat(slider.max)));
+    // Round to avoid float precision issues
+    var step = slider ? parseFloat(slider.step) : Math.abs(delta);
+    nv = Math.round(nv / step) * step;
+    if (slider) slider.value = nv;
+    if (inp) inp.value = parseFloat(nv.toFixed(6));
+    setParam(key, nv);
+}
+
+// ── Synth param jog/input helpers ──
+function synthSlide(key, val) {
+    setSynthParam(key, val);
+    var inp = document.getElementById('i_' + key);
+    if (inp) inp.value = parseFloat(val);
+}
+
+function synthInput(key, val) {
+    var slider = document.getElementById('r_' + key);
+    var v = parseFloat(val);
+    if (isNaN(v)) return;
+    if (slider) {
+        v = Math.max(parseFloat(slider.min), Math.min(v, parseFloat(slider.max)));
+        slider.value = v;
+    }
+    setSynthParam(key, v);
+    var inp = document.getElementById('i_' + key);
+    if (inp) inp.value = v;
+}
+
+function synthJog(key, delta) {
+    var slider = document.getElementById('r_' + key);
+    var inp = document.getElementById('i_' + key);
+    var cur = parseFloat(inp ? inp.value : (slider ? slider.value : 0));
+    var nv = cur + delta;
+    if (slider) nv = Math.max(parseFloat(slider.min), Math.min(nv, parseFloat(slider.max)));
+    var step = slider ? parseFloat(slider.step) : Math.abs(delta);
+    nv = Math.round(nv / step) * step;
+    if (slider) slider.value = nv;
+    if (inp) inp.value = parseFloat(nv.toFixed(6));
+    setSynthParam(key, nv);
+    // Update display span
+    var disp = document.getElementById('vs_' + key);
+    if (disp) {
+        var unit = '';
+        if (key.indexOf('_um') >= 0) unit = ' \u00b5m';
+        else if (key === 'z_m') unit = ' m';
+        else if (key === 'energy_keV') unit = ' keV';
+        else if (key === 'noise_sigma') unit = ' px';
+        disp.textContent = (nv % 1 === 0 ? nv : parseFloat(nv.toFixed(1))) + unit;
+    }
+}
+
+function synthJogUm(key, delta_um) {
+    // For objheight: slider is in µm, state is in meters
+    var slider = document.getElementById('r_' + key);
+    var inp = document.getElementById('i_' + key);
+    var cur = parseFloat(inp ? inp.value : (slider ? slider.value : 1.0));
+    var nv = cur + delta_um;
+    if (slider) nv = Math.max(parseFloat(slider.min), Math.min(nv, parseFloat(slider.max)));
+    nv = Math.round(nv * 10) / 10;
+    if (slider) slider.value = nv;
+    if (inp) inp.value = nv;
+    setSynthParam(key, nv * 1e-6);
+    var disp = document.getElementById('vs_' + key);
+    if (disp) disp.textContent = nv.toFixed(1) + ' \u00b5m';
+}
+
+// ── Resizable right sidebar (Beamline convention) ──
+(function(){
+    var app = document.querySelector('.app');
+    var rside = document.getElementById('rside');
+    var rH = document.getElementById('resizerH');
+    var rsideW = 380;
+
+    if (rH) {
+        rH.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            rH.classList.add('active');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+            var startX = e.clientX;
+            var startW = rsideW;
+
+            function onMove(e2) {
+                var dx = startX - e2.clientX;
+                rsideW = Math.max(280, Math.min(700, startW + dx));
+                app.style.setProperty('--rside-w', rsideW + 'px');
+                if (rside) rside.style.zoom = rsideW / 380;
+            }
+
+            function onUp() {
+                rH.classList.remove('active');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+                updateErrorPlot();
+            }
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
+    }
+})();
+
+// ── Initialize ──
+window.addEventListener('load', function() {
+    log('info', 'K4GSR-PTYCHO UI v1.0 started');
+
+    // URL param: ws
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('ws')) STATE.wsUrl = params.get('ws');
+
+    // Restore theme
+    try {
+        var saved = localStorage.getItem('ptycho_theme');
+        if (saved && THEMES.indexOf(saved) >= 0) setTheme(saved);
+    } catch(e) {}
+
+    // Check for previous crash — show last breadcrumb AND full event log
+    var crashDbg = localStorage.getItem('_ptycho_crash_dbg');
+    var crashFullLog = localStorage.getItem('_ptycho_crash_log');
+    if (crashDbg && crashDbg.indexOf('page_loaded') !== 0) {
+        // Real crash point (not just a normal page load)
+        console.warn('[CRASH-DBG] Last breadcrumb:', crashDbg);
+        console.warn('[CRASH-DBG] Full log:', crashFullLog);
+        setTimeout(function() {
+            log('warn', 'CRASH: ' + crashDbg);
+            log('warn', 'LOG: ' + (crashFullLog || '(empty)'));
+        }, 500);
+    }
+    // Initialize crash tracking for this session
+    localStorage.setItem('_ptycho_crash_dbg', 'page_loaded');
+    localStorage.setItem('_ptycho_crash_log', 'page_loaded@' + (Date.now() % 100000));
+
+    // Pixel hover tooltip
+    initPanelHover();
+
+    // Connect
+    wsConnect();
+
+    // Resize error canvas
+    window.addEventListener('resize', updateErrorPlot);
+
+    // Initial engine display
+    onEngineChange(STATE.engine);
+});
+</script>
+</body>
+</html>
+</content>
+</invoke>

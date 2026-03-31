@@ -1,0 +1,483 @@
+{
+  "engine": "vllm",
+  "model": "Qwen/Qwen3-32B",
+  "timestamp": "2026-03-26T16:27:43.585285",
+  "total": 21,
+  "pass": 11,
+  "fail": 10,
+  "pass_rate": 52.4,
+  "total_time_s": 306.2,
+  "latency": {
+    "avg": 14.58,
+    "min": 4.13,
+    "max": 111.496,
+    "p95": 17.978
+  },
+  "per_category": {
+    "motor": {
+      "pass": 2,
+      "fail": 1,
+      "total": 3,
+      "avg_time": 7.22
+    },
+    "scan": {
+      "pass": 0,
+      "fail": 9,
+      "total": 9,
+      "avg_time": 11.76
+    },
+    "info": {
+      "pass": 9,
+      "fail": 0,
+      "total": 9,
+      "avg_time": 19.852
+    }
+  },
+  "details": [
+    {
+      "id": "motor_01",
+      "cat": "motor",
+      "input": "에너지를 12 keV로 설정해",
+      "desc": "Energy set to 12 keV",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 4.13,
+      "response": {
+        "actions": [
+          {
+            "fn": "setTargetEnergy",
+            "args": [
+              12
+            ]
+          }
+        ],
+        "explanation": "빔 에너지를 12 keV로 설정합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "motor_02",
+      "cat": "motor",
+      "input": "M1 피치를 2.5로 이동해",
+      "desc": "M1 pitch move to 2.5 mrad",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 5.29,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorSetUI",
+            "args": [
+              "m1",
+              "m1_pitch",
+              2.5
+            ]
+          }
+        ],
+        "explanation": "M1 피치를 2.5 mrad로 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "motor_03",
+      "cat": "motor",
+      "input": "시료 X를 100 이동해",
+      "desc": "Sample X motor move",
+      "passed": false,
+      "errors": [
+        "Expected fn 'motorSetUI' not found in sequence. Got: ['motorMoveRelUI']"
+      ],
+      "elapsed_s": 12.23,
+      "response": {
+        "actions": [
+          {
+            "fn": "motorMoveRelUI",
+            "args": [
+              "sample",
+              "sample_cx",
+              100
+            ]
+          }
+        ],
+        "explanation": "시료 X를 현재 위치에서 100 mm 이동합니다.",
+        "confirmation_required": true,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_01",
+      "cat": "scan",
+      "input": "구리 K-edge XAFS 측정해줘",
+      "desc": "Cu K-edge XAFS with queueStart",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXafs' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 17.98,
+      "response": {
+        "actions": [],
+        "explanation": "Cu K-edge (8.979 keV) XAFS 스캔을 실행합니다. 현재 에너지(10 keV)와 목표 에너지(8.979 keV)의 차이가 1.021 keV로 2 keV 이하이므로 추가 정렬은 필요 없습니다. XAFS는 흡수 스펙트럼의 전체 구조를 측정하여 화학 상태와 전자 구조를 분석합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_02",
+      "cat": "scan",
+      "input": "철 XANES 측정해줘",
+      "desc": "Fe K-edge XANES with queueStart",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Fe' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 15.75,
+      "response": {
+        "actions": [],
+        "explanation": "Fe K-edge (7.112 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 현재 에너지(10 keV)에서 Fe K-edge (7.112 keV)로 2.888 keV 감소하므로, 정렬이 필요합니다. 정렬 후 XANES 측정이 시작됩니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_03",
+      "cat": "scan",
+      "input": "10x10 범위에 41포인트로 철 XRF 2D 맵 측정해줘",
+      "desc": "Fe XRF 2D map with params (energy+raster+queue)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 14.84,
+      "response": {
+        "actions": [],
+        "explanation": "Fe K-edge (7.112 keV) 위의 8.5 keV로 설정 후, 10×10 µm 범위에서 41×41 포인트 XRF 래스터 스캔을 실행합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_04",
+      "cat": "scan",
+      "input": "시료를 (0,0)에서 (10,5)까지 라인스캔해줘",
+      "desc": "Line scan (0,0)-(10,5)",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickLineScan' not found in sequence. Got: []",
+        "Args missing expected value '0' in all actions: []",
+        "Args missing expected value '0' in all actions: []",
+        "Args missing expected value '10' in all actions: []",
+        "Args missing expected value '5' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 8.48,
+      "response": {
+        "actions": [],
+        "explanation": "시료 (0,0)→(10,5) µm 대각선 라인스캔 (51포인트)을 실행합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_05",
+      "cat": "scan",
+      "input": "M1 피치를 1~4 mrad에서 고속스캔해줘",
+      "desc": "M1 pitch fly scan 1-4 mrad",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickFlyScan' not found in sequence. Got: []",
+        "Args missing expected value 'm1' in all actions: []",
+        "Args missing expected value 'pitch' in all actions: []",
+        "Args missing expected value '1' in all actions: []",
+        "Args missing expected value '4' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 6.92,
+      "response": {
+        "actions": [],
+        "explanation": "M1 피치를 1~4 mrad 범위에서 101 포인트로 고속 스캔합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_06",
+      "cat": "scan",
+      "input": "철 K-edge 주변 적응형 에너지 스캔해줘",
+      "desc": "Fe K-edge adaptive energy scan",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickAdaptiveScan' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 8.26,
+      "response": {
+        "actions": [],
+        "explanation": "Fe K-edge (7.112 keV) 주변을 적응형으로 스캔합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_07",
+      "cat": "scan",
+      "input": "DCM 세타 현위치 기준 +/-0.5도 정렬 스캔해줘",
+      "desc": "DCM theta relative alignment scan",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRelAlign' not found in sequence. Got: []",
+        "Args missing expected value 'dcm' in all actions: []",
+        "Args missing expected value 'theta' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 11.56,
+      "response": {
+        "actions": [],
+        "explanation": "DCM 세타를 현위치 기준 ±0.5도 범위(총 1.0도)에서 21포인트로 스캔합니다. 정렬 후 queueStart()로 실행됩니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_08",
+      "cat": "scan",
+      "input": "현위치에서 페르마 나선 스캔해줘",
+      "desc": "Fermat spiral scan",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickFermat' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 8.42,
+      "response": {
+        "actions": [],
+        "explanation": "현재 시료 위치에서 10×10 µm 페르마 나선 스캔을 실행합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "scan_09",
+      "cat": "scan",
+      "input": "현위치 기준 5x5 래스터 스캔해줘",
+      "desc": "Relative raster 5x5 scan",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRelRaster' not found in sequence. Got: []",
+        "Args missing expected value '5' in all actions: []",
+        "Args missing expected value '5' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 13.62,
+      "response": {
+        "actions": [],
+        "explanation": "현재 위치 기준 5×5 µm 범위, 21×21 포인트의 상대 래스터 스캔을 실행합니다. SSA 수평/수직 갭은 50 µm로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본입니다. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "info_01",
+      "cat": "info",
+      "input": "XRD가 뭐야?",
+      "desc": "Info query: XRD explanation",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 12.07,
+      "response": {
+        "actions": [],
+        "explanation": "XRD(X-ray Diffraction, X선 회절)는 결정 구조를 분석하는 기법입니다.\n\nX선이 결정에 입사하면 Bragg 법칙(nλ=2d sinθ)에 따라 특정 각도에서 회절이 발생합니다. 회절 패턴을 분석하면 격자 상수, 결정 구조, 상(phase) 등을 알 수 있습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "info_02",
+      "cat": "info",
+      "input": "네가 할 수 있는 명령들을 정리해봐",
+      "desc": "Info query: list available commands",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 111.5,
+      "response": {
+        "actions": [],
+        "explanation": "{\"actions\":[],\"explanation\":\"저는 K4GSR 나노빔라인의 제어를 담당하는 AI입니다. 다음은 제가 할 수 있는 주요 명령들입니다:\\n\\n### 1. **에너지 설정**\\n- `에너지 X keV로`: setTargetEnergy(X)\\n- `Ce L3 XANES 해줘`: quickXanes(\\\"Ce\\\",\\\"L3\\\")\\n- `Fe K-edge XAFS 해줘`: quickXafs(\\\"Fe\\\",\\\"K\\\")\\n- `에너지 스캔 10~15 keV`: quickEnergyScan(10,15,21)\\n- `적응형 에너지 스캔`: quickAdaptiveScan(10,15,0.1,5.0)\\n\\n### 2. **이미징/맵핑**\\n- `XRF 맵핑 해줘`: quickRaster(10,10,41) → 10×10 µm, 41×41 포인트\\n- `나노 XRF 라인스캔`: setupVirtualExperiment('nano_xrf_line')\\n- `페르마 나선 스캔`: quickFermat(10,10,0.5)\\n- `2D XRD 매핑`: quickRaster(20,20,21) → 20×20 µm, 21×21 포인트\\n\\n### 3. **회절(XRD)**\\n- `분말 XRD 해줘`: setupVirtualExperiment('powder_xrd')\\n- `박막 XRD 해줘`: setupVirtualExperiment('xrd_grazing')\\n- `XRD 매핑`: quickRaster(10,10,21)\\n\\n### 4. **모터 조작**\\n- `M1 피치 X mrad로`: motorSetUI(\\\"m1\\\",\\\"m1_pitch\\\",X)\\n- `시료 X축 X mm로`: motorSetUI(\\\"sample\\\",\\\"sample_cx\\\",X)\\n- `시료 X축 +2 mm`: motorMoveRelUI(\\\"sample\\\",\\\"sample_cx\\\",2.0)\\n- `시료 원점복귀`: homeMotor(\\\"sample\\\",\\\"sample_cx\\\")\\n\\n### 5. **정렬**\\n- `전체 정렬`: runFullAlignment()\\n- `M1 정렬`: runMirrorAlignUI(\\\"m1\\\")\\n- `KB 정렬`: runMirrorAlignUI(\\\"kbv\\\")\\n- `DCM 정렬`: runMirrorAlignUI(\\\"dcm\\\")\\n\\n### 6. **나노스캐너**\\n- `나노 2D 스캔`: nanoScanStep2D(10,10,101,101,0.01) → 10×10 µm, 101×101 포인트, 0.01초/포인트\\n- `나노 플라이 스캔`: nanoScanFly1D('x',20,200,5) → X축 20 µm, 200 포인트, 5 µm/s\\n- `나노 스파이럴 스캔`: nanoScanSpiral(5,0.05,0.01) → 반경 5 µm, 50 nm 간격\\n- `나노 이동`: nanoJog('x',0.5) → X축 +500 nm 이동\\n\\n### 7. **기타**\\n- `빔 프로파일 보여줘`: showBeamProfile(\\\"sample\\\")\\n- `투과율 계산`: showTransmission(\\\"Cu\\\",10) → Cu 10 µm 시료의 투과율\\n- `신호 예측`: estimateSignal(\\\"xrf\\\",\\\"Fe\\\",100,1e12,50,10) → Fe 100 ppm, 50 nm beam, 10 µm 두께\\n- `최적화`: optimizeBeamline({technique:'xrf', element:'Fe', edge:'K', ppm:100, sampleType:'powder', thickness_um:10, priority:'flux'})\\n\\n### 8. **큐 제어**\\n- `측정 시작`: queueStart()\\n- `측정 중지`: queueStop()\\n- `측정 일시정지`: queuePause()\\n- `측정 재개`: queueResume()\\n- `큐 비우기`: queueClear()\\n\\n### 9. **긴급 조치**\\n- `긴급",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "info_03",
+      "cat": "info",
+      "input": "빔 프로파일 보여줘",
+      "desc": "Show beam profile (no confirmation)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.77,
+      "response": {
+        "actions": [
+          {
+            "fn": "showBeamProfile",
+            "args": [
+              "sample"
+            ]
+          }
+        ],
+        "explanation": "시료 위치에서 빔 프로파일을 표시합니다. 다른 위치(IVU, M1, DCM, M2, WBSlit, KBV, KBH, Det)의 프로파일이 필요하시면 말씀해 주세요.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "trans_01",
+      "cat": "info",
+      "input": "Cu 1um 시료의 투과율 보여줘",
+      "desc": "Transmission: Cu 1um simple request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 6.28,
+      "response": {
+        "actions": [
+          {
+            "fn": "showTransmission",
+            "args": [
+              "Cu",
+              1,
+              8.96
+            ]
+          }
+        ],
+        "explanation": "Cu 1 µm 시료의 에너지별 투과율 T(E) 곡선을 표시합니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "trans_02",
+      "cat": "info",
+      "input": "산화철 50um 시료의 투과율 곡선을 보여줘",
+      "desc": "Transmission: Fe2O3 50um (Korean compound name)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.96,
+      "response": {
+        "actions": [
+          {
+            "fn": "showTransmission",
+            "args": [
+              "Fe2O3",
+              50
+            ]
+          }
+        ],
+        "explanation": "Fe2O3 50 µm 시료의 투과율 곡선을 표시합니다. 밀도는 자동 추정됩니다 (5.24 g/cm³).",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "trans_03",
+      "cat": "info",
+      "input": "SiO2 100um의 투과율은 얼마야?",
+      "desc": "Transmission: SiO2 query form",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.97,
+      "response": {
+        "actions": [
+          {
+            "fn": "showTransmission",
+            "args": [
+              "SiO2",
+              100,
+              2.2
+            ]
+          }
+        ],
+        "explanation": "SiO2 100 µm 시료의 투과율을 표시합니다. 밀도는 2.2 g/cm³로 자동 추정됩니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "trans_04",
+      "cat": "info",
+      "input": "Show me the transmission curve for gold 0.5um",
+      "desc": "Transmission: English gold request",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.4,
+      "response": {
+        "actions": [
+          {
+            "fn": "showTransmission",
+            "args": [
+              "Au",
+              0.5,
+              19.3
+            ]
+          }
+        ],
+        "explanation": "Au(금) 0.5 µm 시료의 투과율 T(E) 곡선을 표시합니다. 밀도는 19.3 g/cm³로 설정했습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "trans_05",
+      "cat": "info",
+      "input": "NiO 10um 시료의 투과율을 확인하고 싶어. 밀도는 6.67",
+      "desc": "Transmission: NiO with explicit density",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 7.69,
+      "response": {
+        "actions": [
+          {
+            "fn": "showTransmission",
+            "args": [
+              "NiO",
+              10,
+              6.67
+            ]
+          }
+        ],
+        "explanation": "NiO 10 µm 시료의 투과율을 표시합니다. 밀도는 6.67 g/cm³로 지정하셨습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "trans_07",
+      "cat": "info",
+      "input": "10keV 빔으로 GaAs 5um 시료를 투과시키면 얼마나 투과해?",
+      "desc": "Transmission: GaAs contextual question",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 8.03,
+      "response": {
+        "actions": [
+          {
+            "fn": "showTransmission",
+            "args": [
+              "GaAs",
+              5,
+              5.32
+            ]
+          }
+        ],
+        "explanation": "GaAs 5 µm 시료의 10 keV 빔 투과율을 계산합니다. 밀도는 5.32 g/cm³로 설정했습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    }
+  ]
+}

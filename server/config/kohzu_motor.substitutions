@@ -1,0 +1,37 @@
+# K4GSR BL10 NanoProbe - KOHZU ARIES Motor Substitutions
+# =====================================================
+# This file replaces KOHUZ_ALV1/iocBoot/iocKOHUZ_ALV1/motor.substitutions
+# PV prefix changed from KOHZU:m1~m6 to BL10:SAM:CX/CY/CZ for integration
+# with K4GSR-Beamline server (ophyd/Bluesky/NLP control system).
+#
+# Usage:
+#   1. Copy this file to KOHUZ_ALV1/iocBoot/iocKOHUZ_ALV1/motor.substitutions
+#   2. Rebuild IOC: cd KOHUZ_ALV1 && make
+#   3. Start IOC:   cd iocBoot/iocKOHUZ_ALV1 && ./st.cmd
+#   4. Verify:      caget BL10:SAM:CX.RBV
+#
+# Stage Specifications:
+#   Axis 0 (CX): KOHZU XA07A-L202 Linear X  (±35mm, Lead 1.0mm, SREV 2000)
+#   Axis 1 (CY): KOHZU XA07A-L202 Linear Y  (±35mm, Lead 1.0mm, SREV 2000)
+#   Axis 2 (CZ): KOHZU ZA07A-V1F01 Vertical Z (±10mm, Lead 0.5mm/belt, SREV 1000)
+#
+# Axes 3-5 are reserved for future stages (rotation, tilt, etc.)
+
+file "../../db/KOHZU_Motor.db"
+{
+pattern
+{P,         M,   PORT, ADDR, DESC,                         EGU, DIR, VELO, VBAS, ACCL, MRES,    SREV, UREV, PREC, HLM,   LLM,   DHLM,  DLLM,   UEIP, RDBD,  DLY}
+{BL10:SAM:, CX,  PC0,  0,    "Coarse X (KOHZU XA07A)",    mm,  Pos, 2.0,  0.1,  0.5,  0.0005,  2000, 1.0,  4,    34.0,  -34.0,  35.0,  -35.0,  No,   0.003, 0.1}
+{BL10:SAM:, CY,  PC0,  1,    "Coarse Y (KOHZU XA07A)",    mm,  Pos, 2.0,  0.1,  0.5,  0.0005,  2000, 1.0,  4,    34.0,  -34.0,  35.0,  -35.0,  No,   0.003, 0.1}
+{BL10:SAM:, CZ,  PC0,  2,    "Coarse Z (KOHZU ZA07A)",    mm,  Pos, 1.0,  0.1,  0.5,  0.00025, 1000, 0.25, 4,    9.5,   -9.5,   10.0,  -10.0,  No,   0.003, 0.1}
+}
+
+# Homing method PVs (Method 4: NORG, Method 7: CW Limit, Method 8: CCW Limit)
+file "../../db/KOHZU_HomingMethod.db"
+{
+pattern
+{P,         M,   PORT, ADDR}
+{BL10:SAM:, CX,  PC0,  0}
+{BL10:SAM:, CY,  PC0,  1}
+{BL10:SAM:, CZ,  PC0,  2}
+}

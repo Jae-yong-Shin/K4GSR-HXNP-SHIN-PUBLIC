@@ -1,0 +1,656 @@
+{
+  "engine": "vllm",
+  "model": "Qwen/Qwen3-32B",
+  "timestamp": "2026-03-07T12:20:22.380785",
+  "total": 35,
+  "pass": 7,
+  "fail": 28,
+  "pass_rate": 20.0,
+  "total_time_s": 449.2,
+  "latency": {
+    "avg": 12.834,
+    "min": 3.877,
+    "max": 29.524,
+    "p95": 22.712
+  },
+  "per_category": {
+    "multilingual": {
+      "pass": 7,
+      "fail": 28,
+      "total": 35,
+      "avg_time": 12.834
+    }
+  },
+  "details": [
+    {
+      "id": "ml_zh_01",
+      "cat": "multilingual",
+      "input": "请将能量设置为12 keV",
+      "desc": "Chinese: Set energy to 12 keV",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Args missing expected value '12' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 15.77,
+      "response": {
+        "actions": [],
+        "explanation": "빔 에너지를 12 keV로 설정합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_zh_02",
+      "cat": "multilingual",
+      "input": "测量铜的K边XANES光谱",
+      "desc": "Chinese: Cu K-edge XANES measurement",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 18.3,
+      "response": {
+        "actions": [],
+        "explanation": "Cu K-edge (8.979 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 현재 에너지(10 keV)에서 8.979 keV로 변화(-1.021 keV)가 2 keV 이하이므로 정렬 없이 바로 실행합니다. 노출 시간: 0.1초/포인트 기본.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_zh_03",
+      "cat": "multilingual",
+      "input": "进行二维XRF扫描，范围100x100微米，步長1微米",
+      "desc": "Chinese: 2D XRF raster scan 100x100um step 1um",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRaster' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 15.39,
+      "response": {
+        "actions": [],
+        "explanation": "100×100 µm 범위, 1 µm 간격으로 101×101 포인트 XRF 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_zh_04",
+      "cat": "multilingual",
+      "input": "请进行全自动光束对准",
+      "desc": "Chinese: Full beam alignment",
+      "passed": false,
+      "errors": [
+        "Expected fn 'runFullAlignment' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 6.11,
+      "response": {
+        "actions": [],
+        "explanation": "측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_zh_05",
+      "cat": "multilingual",
+      "input": "将能量设置为50 keV",
+      "desc": "Chinese: Out-of-range energy 50 keV (should reject)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 14.81,
+      "response": {
+        "actions": [],
+        "explanation": "빔라인의 에너지 범위는 5~25 keV입니다. 50 keV는 이 빔라인의 최대 에너지(25 keV)를 훨씬 초과하므로 설정할 수 없습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_ar_01",
+      "cat": "multilingual",
+      "input": "اضبط الطاقة على 8 keV",
+      "desc": "Arabic: Set energy to 8 keV",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Args missing expected value '8' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 3.88,
+      "response": {
+        "actions": [],
+        "explanation": "빔 에너지를 8 keV로 설정합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_ar_02",
+      "cat": "multilingual",
+      "input": "قم بقياس طيف XANES لحافة K للنحاس",
+      "desc": "Arabic: Cu K-edge XANES spectrum",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 11.0,
+      "response": {
+        "actions": [],
+        "explanation": "Cu K-edge (8.979 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 노출 시간: 0.1초/포인트 기본.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_ar_03",
+      "cat": "multilingual",
+      "input": "أجرِ مسح XRF ثنائي الأبعاد 50x50 ميكرومتر بخطوة 2 ميكرومتر",
+      "desc": "Arabic: 2D XRF scan 50x50um step 2um",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRaster' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 13.08,
+      "response": {
+        "actions": [],
+        "explanation": "50×50 µm 범위, 2 µm 간격으로 25×25 포인트 XRF 래스터 스캔을 실행합니다. 현재 에너지 10 keV에서 측정합니다. 노출 시간: 0.1초/포인트 기본. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_ar_04",
+      "cat": "multilingual",
+      "input": "قم بمحاذاة الحزمة الكاملة",
+      "desc": "Arabic: Full beam alignment",
+      "passed": false,
+      "errors": [
+        "Expected fn 'runFullAlignment' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 6.28,
+      "response": {
+        "actions": [],
+        "explanation": "الآن سيتم محاذاة الحزمة الكاملة. يرجى الانتظار حتى تكتمل العملية.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_ar_05",
+      "cat": "multilingual",
+      "input": "اضبط الطاقة على 50 keV",
+      "desc": "Arabic: Out-of-range energy 50 keV (should reject)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.06,
+      "response": {
+        "actions": [],
+        "explanation": "빔라인의 에너지 범위는 5~25 keV입니다. 50 keV는 이 빔라인의 최대 에너지(25 keV)를 훨씬 초과하므로 설정할 수 없습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_hi_01",
+      "cat": "multilingual",
+      "input": "ऊर्जा को 15 keV पर सेट करें",
+      "desc": "Hindi: Set energy to 15 keV",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Args missing expected value '15' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 8.45,
+      "response": {
+        "actions": [],
+        "explanation": "빔 에너지를 15 keV로 설정합니다. 현재 에너지(10 keV)에서 15 keV로 변화(5 keV 차이)가 2 keV 이상이므로 정렬을 먼저 수행합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_hi_02",
+      "cat": "multilingual",
+      "input": "तांबे के K-edge XANES स्पेक्ट्रम मापें",
+      "desc": "Hindi: Cu K-edge XANES measurement",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 15.64,
+      "response": {
+        "actions": [],
+        "explanation": "Cu K-edge (8.979 keV) XANES를 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 현재 에너지(10 keV)에서 8.979 keV로 변화(1.02 keV)가 2 keV 이하이므로 정렬 생략합니다. 노출 시간: 0.1초/포인트 기본.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_hi_03",
+      "cat": "multilingual",
+      "input": "2D XRF रैस्टर स्कैन करें, 80x80 माइक्रोमीटर, स्टेप 1 माइक्रोमीटर",
+      "desc": "Hindi: 2D XRF raster scan 80x80um step 1um",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRaster' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 15.07,
+      "response": {
+        "actions": [],
+        "explanation": "80×80 µm 범위, 1 µm 간격 (81×81 포인트) XRF 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있습니다. SSA 수평/수직 갭은 50 µm로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본입니다. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_hi_04",
+      "cat": "multilingual",
+      "input": "पूर्ण बीम संरेखण करें",
+      "desc": "Hindi: Full beam alignment",
+      "passed": false,
+      "errors": [
+        "Expected fn 'runFullAlignment' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 12.24,
+      "response": {
+        "actions": [],
+        "explanation": "전체 빔 정렬을 시작합니다. 이 과정은 약 15분 정도 소요되며, 빔라인의 모든 주요 구성 요소(M1, DCM, M2, KB 미러 등)의 정렬을 수행합니다. 정렬이 완료되면 빔 품질이 최적화됩니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_hi_05",
+      "cat": "multilingual",
+      "input": "ऊर्जा 50 keV पर सेट करें",
+      "desc": "Hindi: Out-of-range energy 50 keV (should reject)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.3,
+      "response": {
+        "actions": [],
+        "explanation": "빔 에너지를 50 keV로 설정합니다.\n[범위 초과로 제거됨: setTargetEnergy(50.0) - 에너지 50.0 keV는 빔라인 범위(5.0-25.0 keV) 밖입니다.]",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_de_01",
+      "cat": "multilingual",
+      "input": "Bitte die Energie auf 10 keV einstellen",
+      "desc": "German: Set energy to 10 keV",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Args missing expected value '10' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 4.11,
+      "response": {
+        "actions": [],
+        "explanation": "빔 에너지를 10 keV로 설정합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_de_02",
+      "cat": "multilingual",
+      "input": "Messen Sie das Kupfer K-Kante XANES Spektrum",
+      "desc": "German: Cu K-edge XANES measurement",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 9.44,
+      "response": {
+        "actions": [],
+        "explanation": "Cu K-edge (8.979 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_de_03",
+      "cat": "multilingual",
+      "input": "Starten Sie einen 2D XRF-Rasterscan, 100x100 Mikrometer, Schrittweite 2 Mikrometer",
+      "desc": "German: 2D XRF raster scan 100x100um step 2um",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRaster' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 12.12,
+      "response": {
+        "actions": [],
+        "explanation": "100×100 µm 범위, 2 µm 간격 (51×51 포인트)의 2D XRF 래스터 스캔을 시작합니다. 현재 에너지는 10 keV로 설정되어 있습니다. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_de_04",
+      "cat": "multilingual",
+      "input": "Bitte die vollstaendige Strahlausrichtung durchfuehren",
+      "desc": "German: Full beam alignment",
+      "passed": false,
+      "errors": [
+        "Expected fn 'runFullAlignment' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 13.49,
+      "response": {
+        "actions": [],
+        "explanation": "전체 빔 정렬을 시작합니다. 이 과정은 약 10~15분 정도 소요되며, 빔라인의 모든 주요 구성 요소(M1, DCM, M2, KB 미러 등)의 정렬을 수행합니다. 정렬이 완료되면 빔 품질이 최적화되어 측정이 가능해집니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_de_05",
+      "cat": "multilingual",
+      "input": "Stellen Sie die Energie auf 50 keV ein",
+      "desc": "German: Out-of-range energy 50 keV (should reject)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 18.75,
+      "response": {
+        "actions": [],
+        "explanation": "빔라인의 에너지 범위는 5~25 keV입니다. 50 keV는 이 빔라인의 최대 에너지(25 keV)를 훨씬 초과하므로 설정할 수 없습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_fr_01",
+      "cat": "multilingual",
+      "input": "Reglez l'energie a 9 keV s'il vous plait",
+      "desc": "French: Set energy to 9 keV",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Args missing expected value '9' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 3.89,
+      "response": {
+        "actions": [],
+        "explanation": "빔 에너지를 9 keV로 설정합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_fr_02",
+      "cat": "multilingual",
+      "input": "Mesurez le spectre XANES au seuil K du cuivre",
+      "desc": "French: Cu K-edge XANES measurement",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 16.27,
+      "response": {
+        "actions": [],
+        "explanation": "Cu K-edge (8.979 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 현재 에너지(10 keV)에서 8.979 keV로 변화(1.02 keV 차이)가 2 keV 이하이므로 정렬 없이 바로 실행합니다. 노출 시간: 0.1초/포인트 기본.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_fr_03",
+      "cat": "multilingual",
+      "input": "Effectuez un balayage XRF 2D de 60x60 micrometres avec un pas de 1 micrometre",
+      "desc": "French: 2D XRF scan 60x60um step 1um",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRaster' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 12.99,
+      "response": {
+        "actions": [],
+        "explanation": "60×60 µm 범위, 1 µm 간격 (61×61 포인트) XRF 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본입니다. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_fr_04",
+      "cat": "multilingual",
+      "input": "Veuillez effectuer l'alignement complet du faisceau",
+      "desc": "French: Full beam alignment",
+      "passed": false,
+      "errors": [
+        "Expected fn 'runFullAlignment' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 10.24,
+      "response": {
+        "actions": [],
+        "explanation": "전체 빔라인 정렬(7단계)을 시작합니다. 현재 에너지는 10 keV, SSA 수직/수평 갭은 50 µm입니다. 정렬에는 약 30분 소요됩니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_fr_05",
+      "cat": "multilingual",
+      "input": "Reglez l'energie a 50 keV",
+      "desc": "French: Out-of-range energy 50 keV (should reject)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 19.94,
+      "response": {
+        "actions": [],
+        "explanation": "빔라인의 에너지 범위는 5~25 keV입니다. 50 keV는 이 빔라인의 최대 에너지(25 keV)를 훨씬 초과하므로 설정할 수 없습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_th_01",
+      "cat": "multilingual",
+      "input": "ตั้งค่าพลังงานที่ 11 keV",
+      "desc": "Thai: Set energy to 11 keV",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Args missing expected value '11' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 4.79,
+      "response": {
+        "actions": [],
+        "explanation": "พลังงานถูกตั้งค่าเป็น 11 keV\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_th_02",
+      "cat": "multilingual",
+      "input": "วัดสเปกตรัม XANES ที่ขอบ K ของทองแดง",
+      "desc": "Thai: Cu K-edge XANES measurement",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 11.61,
+      "response": {
+        "actions": [],
+        "explanation": "Cu K-edge (8.979 keV) XANES 스캔을 실행합니다. XAFS보다 세밀한 0.25 eV 분해능으로 흡수단 근처를 스캔합니다. 노출 시간: 0.1초/포인트 기본.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_th_03",
+      "cat": "multilingual",
+      "input": "ทำการสแกน XRF 2 มิติ ขนาด 50x50 ไมโครมิเตอร์ สเต็ป 1 ไมโครมิเตอร์",
+      "desc": "Thai: 2D XRF scan 50x50um step 1um",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRaster' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 13.05,
+      "response": {
+        "actions": [],
+        "explanation": "50×50 µm 범위, 1 µm 간격 (51×51 포인트) XRF 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있습니다. 노출 시간: 0.1초/포인트 기본입니다. 변경이 필요하시면 말씀해 주세요.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_th_04",
+      "cat": "multilingual",
+      "input": "ทำการปรับแนวลำแสงอัตโนมัติทั้งหมด",
+      "desc": "Thai: Full beam alignment",
+      "passed": false,
+      "errors": [
+        "Expected fn 'runFullAlignment' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 8.56,
+      "response": {
+        "actions": [],
+        "explanation": "กำลังเริ่มการปรับแนวลำแสงทั้งหมด 7 ขั้นตอน การปรับนี้จะใช้เวลาประมาณ 10-15 นาที\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_th_05",
+      "cat": "multilingual",
+      "input": "ตั้งค่าพลังงานที่ 50 keV",
+      "desc": "Thai: Out-of-range energy 50 keV (should reject)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 15.53,
+      "response": {
+        "actions": [],
+        "explanation": "빔라인의 에너지 범위는 5~25 keV입니다. 50 keV는 허용 범위를 벗어났기 때문에 설정할 수 없습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_es_01",
+      "cat": "multilingual",
+      "input": "Ajuste la energia a 7 keV por favor",
+      "desc": "Spanish: Set energy to 7 keV",
+      "passed": false,
+      "errors": [
+        "Expected fn 'setTargetEnergy' not found in sequence. Got: []",
+        "Args missing expected value '7' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 3.89,
+      "response": {
+        "actions": [],
+        "explanation": "빔 에너지를 7 keV로 설정합니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_es_02",
+      "cat": "multilingual",
+      "input": "Mida el espectro XANES del borde K del cobre",
+      "desc": "Spanish: Cu K-edge XANES measurement",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickXanes' not found in sequence. Got: []",
+        "Args missing expected value 'Cu' in all actions: []",
+        "Args missing expected value 'K' in all actions: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 29.52,
+      "response": {
+        "actions": [],
+        "explanation": "Cobre K-edge (8.979 keV) XANES espectro es una técnica para analizar la estructura electrónica y el estado de oxidación del cobre. El espectro XANES se obtiene escaneando la energía alrededor del borde K del cobre con una resolución de 0.25 eV, lo que permite observar detalles finos en la región del borde de absorción. Para ejecutar esta medición, necesito confirmar la preparación de la muestra.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_es_03",
+      "cat": "multilingual",
+      "input": "Realice un escaneo XRF 2D de 100x100 micrometros con paso de 2 micrometros",
+      "desc": "Spanish: 2D XRF raster scan 100x100um step 2um",
+      "passed": false,
+      "errors": [
+        "Expected fn 'quickRaster' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 16.87,
+      "response": {
+        "actions": [],
+        "explanation": "100×100 µm 범위, 2 µm 간격 (51×51 포인트) XRF 래스터 스캔을 실행합니다. 현재 에너지는 10 keV로 설정되어 있습니다. 이 에너지는 여러 원소의 형광선을 여기할 수 있습니다. 측정 전에 원하는 원소를 확인하시고, 필요시 에너지를 조정해 주세요. 노출 시간: 0.1초/포인트 기본.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_es_04",
+      "cat": "multilingual",
+      "input": "Por favor, realice la alineacion completa del haz",
+      "desc": "Spanish: Full beam alignment",
+      "passed": false,
+      "errors": [
+        "Expected fn 'runFullAlignment' not found in sequence. Got: []",
+        "Expected confirmation_required=True, got False"
+      ],
+      "elapsed_s": 11.02,
+      "response": {
+        "actions": [],
+        "explanation": "전체 빔 정렬을 시작합니다. 이 과정은 7단계로 이루어져 있으며, 빔의 수직/수평 위치, 미러 각도, 슬릿 위치 등을 최적화합니다. 정렬이 완료되면 빔 품질이 개선됩니다.\n\n측정을 시작하기 전에 시료 준비 상태를 확인해야 합니다.\n다음 정보를 알려주세요:\n1. 시료 마운트 방법 (pellet, thin film, bulk, TEM grid 등)\n2. In-situ 셋업 여부 (가열, 냉각, 가스 환경 등)\n3. 시료 준비 프리셋 번호 (모르시면 조건을 말씀해주세요)\n4. 투과/반사 측정 모드",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    },
+    {
+      "id": "ml_es_05",
+      "cat": "multilingual",
+      "input": "Ajuste la energia a 50 keV",
+      "desc": "Spanish: Out-of-range energy 50 keV (should reject)",
+      "passed": true,
+      "errors": [],
+      "elapsed_s": 22.71,
+      "response": {
+        "actions": [],
+        "explanation": "빔라인의 에너지 범위는 5~25 keV입니다. 50 keV는 이 빔라인의 최대 에너지(25 keV)를 훨씬 초과하므로 설정할 수 없습니다.",
+        "confirmation_required": false,
+        "type": "nlp_response"
+      }
+    }
+  ]
+}

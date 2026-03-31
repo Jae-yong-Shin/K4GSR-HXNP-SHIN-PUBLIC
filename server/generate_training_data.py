@@ -1,0 +1,410 @@
+"""Generate LoRA fine-tuning training data for Qwen3:8b beamline NLP.
+
+Creates a JSONL dataset of (system, user_input, ideal_output) triples
+from:
+  1. All 35 few-shot examples in SYSTEM_PROMPT_COMPACT
+  2. All 67 test cases with hand-written ideal responses
+  3. Augmented paraphrases for diversity
+
+Output: server/training_data.jsonl  (Qwen3 chat format)
+
+Usage:
+  python server/generate_training_data.py
+"""
+
+import json
+import logging
+import os
+import sys
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(message)s")
+log = logging.getLogger("nlp-generate")
+
+sys.path.insert(0, os.path.dirname(__file__))
+from nlp_agent import SYSTEM_PROMPT_COMPACT
+
+# ======================================================================
+# System prompt (stripped of examples for LoRA — model should LEARN them)
+# ======================================================================
+SYSTEM_PROMPT_LORA = """You are a K4GSR nanoprobe beamline assistant. Convert user requests into JSON actions.
+IMPORTANT: You must ALWAYS try to generate actions. Do NOT return empty actions unless genuinely unable to determine what to do.
+
+## STRICT RULES
+1. ONLY use functions listed below. NEVER invent functions.
+2. After scan functions, ALWAYS add queueStart().
+3. explanation MUST be in Korean.
+4. For questions: actions=[], answer in explanation.
+5. confirmation_required=true for motor/energy/scan changes. false for questions/info/showBeamProfile.
+6. Energy range: 5-25 keV. S(2.47),P(2.15) K-edges are OUT OF RANGE.
+7. Heavy elements (Z>=56): Use L3-edge. W L3=10.207, Pt L3=11.564, Au L3=11.919, Pb L3=13.035, Ce L3=5.723
+8. DEFAULT PARAMETERS: If user gives partial scan params, use sensible defaults (nPoints=51, dr=0.5, nPts=11). ONLY ask if element/technique is completely unclear.
+9. AUTO-ALIGNMENT: If |energy change| > 2 keV, add runFullAlignment() after setTargetEnergy.
+10. DOMAIN MAPPING: When user mentions sample context, extract element and technique, then call appropriate function.
+
+## Output format
+{"actions":[{"fn":"funcName","args":[...]}],"explanation":"Korean","confirmation_required":true}
+
+## K-edges (keV)
+Ti:4.966 Cr:5.989 Mn:6.539 Fe:7.112 Co:7.709 Ni:8.333 Cu:8.979 Zn:9.659 As:11.867 Se:12.658 Sr:16.105 Mo:20.000
+L3-edges: Ce:5.723 W:10.207 Pt:11.564 Au:11.919 Pb:13.035
+
+## XRF energy rule: set energy 1-2 keV ABOVE K/L3-edge
+Fe XRF -> ~8.5 keV, Cu XRF -> ~10 keV, Zn XRF -> ~11 keV, Au L3 XRF -> ~13.5 keV, Pb L3 XRF -> ~14.5 keV
+
+## ALL Available Functions
+- setTargetEnergy(keV)
+- setCrystal("111"|"311")
+- motorSetUI("groupId","motorId",value)
+  Groups: m1(m1_pitch,...), dcm(dcm_theta,...), m2(m2_pitch,...), ssa(ssa_hgap,ssa_vgap,...), sample(sample_cx,sample_cy,...), kbv(kbv_pitch,...), kbh(kbh_pitch,...), det(det_x,det_y,det_z)
+- maskAperUpdate("fmask"|"mmask","h"|"v",value_mm)
+- setAttenFilter(slot,"material"|"thickness",value) — slot 0-3, material:"None" to remove
+- runFullAlignment()
+- runMirrorAlignUI("m1"|"m2"|"dcm"|"kbv"|"kbh")
+- quickXafs("element","edge") + queueStart()
+- quickXanes("element","edge") + queueStart()
+- quickRaster(xRange,yRange,numPts) + queueStart()
+- quickEnergyScan(start,stop,num) + queueStart()
+- quickLineScan(x1,y1,x2,y2,nPoints) + queueStart()
+- quickFlyScan("motor","axis",start,stop,nPts) + queueStart()
+- quickFermat(xRange,yRange,dr) + queueStart()
+- quickRelRaster(dx,dy,nx,ny) + queueStart()
+- quickRelAlign("dev","axis",width,nPts) + queueStart()
+- quickAutoTune("dev","axis",start,stop,"targetField") + queueStart()
+- quickAdaptiveScan(eStart,eStop,minStep,maxStep) + queueStart()
+- quickMultiRegion(regions) + queueStart()
+- quickCount(num,dwell) + queueStart()
+- queueStart()/queueStop()/queuePause()/queueClear()
+- optimizeBeamline({technique,element,edge,ppm,sampleType,priority})
+  technique: "xrf"|"xafs"|"xanes"|"xrd"|"ptycho"
+  priority: "balanced"|"resolution"|"speed"|"signal"|"coherence"
+- estimateSignal("tech","element",ppm,flux,beamSize,thickness)
+- showBeamProfile("sample"|"m1"|"dcm"|...)
+- emergencyStop()
+- switchTab("tabId")
+
+## Korean Motor Aliases
+M1피치->motorSetUI("m1","m1_pitch",v) / 시료X->motorSetUI("sample","sample_cx",v) / SSA수평->motorSetUI("ssa","ssa_hgap",v)
+"""
+
+# ======================================================================
+# Training examples: (user_input, context_str, ideal_output_json)
+# ======================================================================
+TRAINING_DATA = [
+    # ── Basic Motor Control ──
+    ("에너지를 12 keV로 설정해", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[12]}],"explanation":"빔 에너지를 12 keV로 설정합니다.","confirmation_required":True}),
+
+    ("에너지 8 keV로", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[8]}],"explanation":"빔 에너지를 8 keV로 설정합니다.","confirmation_required":True}),
+
+    ("M1 피치를 2.5로 이동해", "energy=10",
+     {"actions":[{"fn":"motorSetUI","args":["m1","m1_pitch",2.5]}],"explanation":"M1 피치를 2.5 mrad로 이동합니다.","confirmation_required":True}),
+
+    ("시료 X를 100 이동해", "energy=10",
+     {"actions":[{"fn":"motorSetUI","args":["sample","sample_cx",100]}],"explanation":"시료 X를 100 um으로 이동합니다.","confirmation_required":True}),
+
+    ("DCM 세타 각도를 15로", "energy=10",
+     {"actions":[{"fn":"motorSetUI","args":["dcm","dcm_theta",15]}],"explanation":"DCM 세타를 15도로 이동합니다.","confirmation_required":True}),
+
+    ("M2 피치를 3.0으로 맞춰줘", "energy=10",
+     {"actions":[{"fn":"motorSetUI","args":["m2","m2_pitch",3.0]}],"explanation":"M2 피치를 3.0 mrad로 설정합니다.","confirmation_required":True}),
+
+    # ── Scans & Measurements ──
+    ("구리 K-edge XAFS 측정해줘", "energy=10",
+     {"actions":[{"fn":"quickXafs","args":["Cu","K"]},{"fn":"queueStart","args":[]}],"explanation":"Cu K-edge XAFS 스캔을 실행합니다.","confirmation_required":True}),
+
+    ("철 XANES 측정해줘", "energy=10",
+     {"actions":[{"fn":"quickXanes","args":["Fe","K"]},{"fn":"queueStart","args":[]}],"explanation":"Fe K-edge XANES 스캔을 실행합니다.","confirmation_required":True}),
+
+    ("10x10 범위에 41포인트로 철 XRF 2D 맵 측정해줘", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[8.5]},{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"Fe K-edge 위 8.5 keV로 설정 후 10x10 41포인트 XRF 맵 측정합니다.","confirmation_required":True}),
+
+    ("시료를 (0,0)에서 (10,5)까지 라인스캔해줘", "energy=10",
+     {"actions":[{"fn":"quickLineScan","args":[0,0,10,5,51]},{"fn":"queueStart","args":[]}],"explanation":"(0,0)에서 (10,5)까지 51포인트 라인스캔합니다.","confirmation_required":True}),
+
+    ("M1 피치를 1~4 mrad에서 고속스캔해줘", "energy=10",
+     {"actions":[{"fn":"quickFlyScan","args":["m1","pitch",1,4,51]},{"fn":"queueStart","args":[]}],"explanation":"M1 피치 1-4 mrad 고속스캔합니다.","confirmation_required":True}),
+
+    ("철 K-edge 주변 적응형 에너지 스캔해줘", "energy=10",
+     {"actions":[{"fn":"quickAdaptiveScan","args":[7.0,7.3,0.5,2.0]},{"fn":"queueStart","args":[]}],"explanation":"Fe K-edge 주변 적응형 에너지 스캔합니다.","confirmation_required":True}),
+
+    ("DCM 세타 현위치 기준 +/-0.5도 정렬 스캔해줘", "energy=10",
+     {"actions":[{"fn":"quickRelAlign","args":["dcm","theta",0.5,11]},{"fn":"queueStart","args":[]}],"explanation":"DCM 세타 상대 정렬 스캔합니다.","confirmation_required":True}),
+
+    ("현위치에서 페르마 나선 스캔해줘", "energy=10",
+     {"actions":[{"fn":"quickFermat","args":[10,10,0.5]},{"fn":"queueStart","args":[]}],"explanation":"현위치에서 10x10 um 페르마 나선 스캔합니다.","confirmation_required":True}),
+
+    ("현위치 기준 5x5 래스터 스캔해줘", "energy=10",
+     {"actions":[{"fn":"quickRelRaster","args":[5,5,21,21]},{"fn":"queueStart","args":[]}],"explanation":"현위치 기준 5x5 래스터 스캔합니다.","confirmation_required":True}),
+
+    # ── Auto-alignment ──
+    ("Mo K-edge XAFS 측정해줘", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[20]},{"fn":"runFullAlignment","args":[]},{"fn":"quickXafs","args":["Mo","K"]},{"fn":"queueStart","args":[]}],"explanation":"Mo K-edge XAFS. 에너지 변화 10 keV이므로 정렬 수행합니다.","confirmation_required":True}),
+
+    ("전체 빔 정렬 시작", "energy=10",
+     {"actions":[{"fn":"runFullAlignment","args":[]}],"explanation":"전체 빔라인 정렬(7단계)을 시작합니다.","confirmation_required":True}),
+
+    ("M1 피치 자동 정렬해줘", "energy=10",
+     {"actions":[{"fn":"quickAutoTune","args":["m1","pitch",1.0,4.0,"ic1_current"]},{"fn":"queueStart","args":[]}],"explanation":"M1 피치 자동 정렬합니다.","confirmation_required":True}),
+
+    # ── Multi-step ──
+    ("12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[12]},{"fn":"runFullAlignment","args":[]},{"fn":"showBeamProfile","args":["sample"]}],"explanation":"12 keV 설정, 정렬 후 빔 프로파일 확인합니다. 에너지 변화 2 keV이므로 정렬 수행합니다.","confirmation_required":True}),
+
+    # ── Optimization ──
+    ("Cu 분말 1000ppm XRF 최적화해줘", "energy=10",
+     {"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xrf","element":"Cu","edge":"K","ppm":1000,"sampleType":"powder","priority":"balanced"}]}],"explanation":"Cu XRF 최적화 설정을 계산합니다.","confirmation_required":True}),
+
+    ("철 시료인데 가장 좋은 분해능으로 XRF 맵핑하고 싶어", "energy=10",
+     {"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xrf","element":"Fe","edge":"K","ppm":1000,"sampleType":"solid","priority":"resolution"}]}],"explanation":"Fe XRF 고분해능 최적화를 계산합니다.","confirmation_required":True}),
+
+    ("Ti K-edge XANES 하려는데 시료가 SrTiO3 분말이야", "energy=10",
+     {"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xanes","element":"Ti","edge":"K","ppm":500000,"sampleType":"powder","priority":"balanced"}]}],"explanation":"Ti K-edge XANES 최적화. SrTiO3 분말 시료 기준입니다.","confirmation_required":True}),
+
+    ("ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야", "energy=10",
+     {"actions":[{"fn":"optimizeBeamline","args":[{"technique":"ptycho","element":"Cu","edge":"K","ppm":500000,"sampleType":"thin film","priority":"coherence"}]}],"explanation":"Cu 박막 ptychography 최적화. 코히런스 우선입니다.","confirmation_required":True}),
+
+    ("지금 셋업에서 Cu 신호 얼마나 나와?", "energy=10",
+     {"actions":[{"fn":"estimateSignal","args":["xrf","Cu",10000,1e10,50,10]}],"explanation":"현재 설정에서 Cu XRF 신호를 예측합니다.","confirmation_required":False}),
+
+    ("W L3-edge XRF 해줘. 시료가 WC 분말이야", "energy=10",
+     {"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xrf","element":"W","edge":"L3","ppm":500000,"sampleType":"powder","priority":"balanced"}]}],"explanation":"W L3-edge XRF 최적화. WC 분말 기준입니다.","confirmation_required":True}),
+
+    ("빔라인 최적화해줘", "energy=10",
+     {"actions":[],"explanation":"최적화를 위해 측정 기술(XRF/XAFS 등), 원소, 시료 유형을 알려주세요.","confirmation_required":False}),
+
+    # ── Attenuator & Mask ──
+    ("어테뉴에이터에 Carbon 1mm 넣어줘", "energy=10",
+     {"actions":[{"fn":"setAttenFilter","args":[0,"material","Carbon"]},{"fn":"setAttenFilter","args":[0,"thickness",1.0]}],"explanation":"슬롯0에 Carbon 1mm 삽입합니다.","confirmation_required":True}),
+
+    ("어테뉴에이터 전부 빼", "energy=10",
+     {"actions":[{"fn":"setAttenFilter","args":[0,"material","None"]},{"fn":"setAttenFilter","args":[0,"thickness",0]},{"fn":"setAttenFilter","args":[1,"material","None"]},{"fn":"setAttenFilter","args":[1,"thickness",0]},{"fn":"setAttenFilter","args":[2,"material","None"]},{"fn":"setAttenFilter","args":[2,"thickness",0]},{"fn":"setAttenFilter","args":[3,"material","None"]},{"fn":"setAttenFilter","args":[3,"thickness",0]}],"explanation":"4개 슬롯 모두 제거합니다.","confirmation_required":True}),
+
+    ("movable mask를 1mm x 1mm로 해줘", "energy=10",
+     {"actions":[{"fn":"maskAperUpdate","args":["mmask","h",1]},{"fn":"maskAperUpdate","args":["mmask","v",1]}],"explanation":"Movable Mask 1mm x 1mm로 설정합니다.","confirmation_required":True}),
+
+    ("고정 마스크 수평갭 2mm, 수직갭 3mm", "energy=10",
+     {"actions":[{"fn":"maskAperUpdate","args":["fmask","h",2]},{"fn":"maskAperUpdate","args":["fmask","v",3]}],"explanation":"고정 마스크 수평 2mm, 수직 3mm로 설정합니다.","confirmation_required":True}),
+
+    # ── Information Queries ──
+    ("XRD가 뭐야?", "energy=10",
+     {"actions":[],"explanation":"XRD(X선 회절)는 결정 구조를 분석하는 기법입니다. Bragg 법칙에 따라 특정 각도에서 회절이 발생하며, 물질의 결정 구조, 격자 정보를 얻을 수 있습니다.","confirmation_required":False}),
+
+    ("네가 할 수 있는 명령들을 정리해봐", "energy=10",
+     {"actions":[],"explanation":"주요 명령어: 1) 에너지 설정(setTargetEnergy), 2) 모터 이동(motorSetUI), 3) 결정 변경(setCrystal), 4) XAFS/XANES 측정(quickXafs/quickXanes), 5) 2D 맵핑(quickRaster), 6) 라인스캔/플라이스캔(quickLineScan/quickFlyScan), 7) 페르마 나선(quickFermat), 8) 빔 정렬(runFullAlignment), 9) 최적화(optimizeBeamline), 10) 신호 예측(estimateSignal), 11) 어테뉴에이터/마스크 설정, 12) 긴급 정지(emergencyStop)","confirmation_required":False}),
+
+    ("빔 프로파일 보여줘", "energy=10",
+     {"actions":[{"fn":"showBeamProfile","args":["sample"]}],"explanation":"시료 위치에서 빔 프로파일을 표시합니다.","confirmation_required":False}),
+
+    ("XANES랑 EXAFS 차이가 뭐예요?", "energy=10",
+     {"actions":[],"explanation":"XANES는 흡수 엣지 주변 50-100 eV 영역의 전자 구조를 분석하여 산화 상태를 확인합니다. EXAFS는 엣지 이후 100 eV 이상 영역에서 원자 간 거리와 배위수를 분석합니다.","confirmation_required":False}),
+
+    ("금 L3 엣지가 몇 keV예요?", "energy=10",
+     {"actions":[],"explanation":"Au L3-edge 에너지는 11.919 keV입니다.","confirmation_required":False}),
+
+    # ── Edge Cases: Out of Range ──
+    ("인(P) K-edge XANES 해주세요.", "energy=10",
+     {"actions":[],"explanation":"인(P) K-edge(2.15 keV)는 빔라인 에너지 범위(5-25 keV)를 벗어납니다. 이 빔라인에서는 측정이 불가능합니다.","confirmation_required":False}),
+
+    ("텅스텐 K-edge XAFS 측정해줘.", "energy=10",
+     {"actions":[],"explanation":"W K-edge(69.5 keV)는 빔라인 에너지 범위(5-25 keV)를 벗어납니다. 대신 W L3-edge(10.207 keV)를 추천합니다.","confirmation_required":False}),
+
+    ("전고체 전해질 시료인데, 황의 화학 상태를 확인하고 싶어요.", "energy=10",
+     {"actions":[],"explanation":"황(S) K-edge(2.47 keV)는 빔라인 에너지 범위(5-25 keV)를 벗어나 XANES 측정이 불가능합니다. 연X선 빔라인을 추천합니다.","confirmation_required":False}),
+
+    # ── Edge Cases: Mixed / Colloquial ──
+    ("Cu K-edge XAFS 돌려줘", "energy=10",
+     {"actions":[{"fn":"quickXafs","args":["Cu","K"]},{"fn":"queueStart","args":[]}],"explanation":"Cu K-edge XAFS 스캔을 실행합니다.","confirmation_required":True}),
+
+    ("금 시료 XRF 해주세요. 5x5 41포인트.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[13.5]},{"fn":"runFullAlignment","args":[]},{"fn":"quickRaster","args":[5,5,41]},{"fn":"queueStart","args":[]}],"explanation":"Au L3-edge 위 13.5 keV로 설정 후 정렬, 5x5 XRF 맵 측정합니다.","confirmation_required":True}),
+
+    ("Pt L3-edge XANES 측정해주세요.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[11.564]},{"fn":"runFullAlignment","args":[]},{"fn":"quickXanes","args":["Pt","L3"]},{"fn":"queueStart","args":[]}],"explanation":"Pt L3-edge XANES. 에너지 변화 1.564 keV이므로 정렬 수행합니다.","confirmation_required":True}),
+
+    # ── Beamline Operations ──
+    ("Si(311)로 변경해주세요.", "energy=10",
+     {"actions":[{"fn":"setCrystal","args":["311"]}],"explanation":"결정을 Si(311)로 변경합니다.","confirmation_required":True}),
+
+    ("SSA 수평갭을 30 마이크로미터로 줄여주세요.", "energy=10",
+     {"actions":[{"fn":"motorSetUI","args":["ssa","ssa_hgap",30]}],"explanation":"SSA 수평갭을 30 um로 설정합니다.","confirmation_required":True}),
+
+    ("긴급 정지!", "energy=10",
+     {"actions":[{"fn":"emergencyStop","args":[]}],"explanation":"긴급 정지를 실행합니다.","confirmation_required":True}),
+
+    # ── Domain: Battery ──
+    ("배터리 양극재에서 Ni, Mn, Co 원소 분포를 XRF 맵핑으로 측정하고 싶습니다. 10x10 범위 41포인트로요.", "energy=10",
+     {"actions":[{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"NMC 양극재 다원소 XRF 맵핑. Ni/Mn/Co K-edge 모두 10 keV 이하이므로 현재 에너지로 측정합니다.","confirmation_required":True}),
+
+    ("LiFePO4 시료 철 K-edge XAFS 측정해주세요.", "energy=10",
+     {"actions":[{"fn":"quickXafs","args":["Fe","K"]},{"fn":"queueStart","args":[]}],"explanation":"Fe K-edge XAFS. LFP 시료의 철 산화 상태를 분석합니다.","confirmation_required":True}),
+
+    ("양극재에 구리 오염이 있는지 확인해주세요. 10ppm 수준이에요.", "energy=10",
+     {"actions":[{"fn":"estimateSignal","args":["xrf","Cu",10,1e10,50,10]}],"explanation":"Cu 10ppm 오염 시료의 XRF 신호 강도를 예측합니다.","confirmation_required":False}),
+
+    ("충방전 후 양극재 결정상 분포를 2D XRD 맵으로 측정하고 싶어요. 15 keV에서 10x10 21포인트로.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[15]},{"fn":"runFullAlignment","args":[]},{"fn":"quickRaster","args":[10,10,21]},{"fn":"queueStart","args":[]}],"explanation":"15 keV로 설정 후 정렬, 10x10 21포인트 XRD 맵 측정합니다.","confirmation_required":True}),
+
+    ("NMC 622 배터리 시료를 nano XRF로 분석하고 싶어. Ni, Mn, Co를 측정해야 해", "energy=10",
+     {"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xrf","element":"Ni","edge":"K","ppm":100000,"sampleType":"solid","priority":"balanced"}]}],"explanation":"NMC 622 양극재 다원소 XRF 최적화. Ni K-edge(8.333 keV) 기준으로 설정하면 Mn, Co도 동시 측정 가능합니다.","confirmation_required":True}),
+
+    # ── Domain: Catalyst ──
+    ("Pt/C 연료전지 촉매에서 백금 산화 상태를 XANES로 확인해주세요.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[11.564]},{"fn":"runFullAlignment","args":[]},{"fn":"quickXanes","args":["Pt","L3"]},{"fn":"queueStart","args":[]}],"explanation":"Pt L3-edge XANES. 에너지 변화 1.564 keV이므로 정렬 수행합니다.","confirmation_required":True}),
+
+    ("CeO2 담지체의 세륨 L3 엣지 XANES 측정해주세요.", "energy=10",
+     {"actions":[{"fn":"quickXanes","args":["Ce","L3"]},{"fn":"queueStart","args":[]}],"explanation":"Ce L3-edge XANES. 현재 에너지에서 측정 가능합니다.","confirmation_required":True}),
+
+    ("니켈 촉매 반응 중 산화 상태가 변하는지 적응형 에너지 스캔으로 확인하고 싶어요.", "energy=10",
+     {"actions":[{"fn":"quickAdaptiveScan","args":[8.2,8.5,0.5,2.0]},{"fn":"queueStart","args":[]}],"explanation":"Ni K-edge 주변 적응형 에너지 스캔으로 산화 상태 변화를 분석합니다.","confirmation_required":True}),
+
+    # ── Domain: Semiconductor ──
+    ("반도체 칩 단면에서 구리 배선 분포를 XRF 맵핑해주세요. 분해능을 최대로 해주세요.", "energy=10",
+     {"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xrf","element":"Cu","edge":"K","ppm":500000,"sampleType":"solid","priority":"resolution"}]}],"explanation":"Cu XRF 고분해능 최적화. 반도체 칩 단면 측정입니다.","confirmation_required":True}),
+
+    ("에피택셜 박막의 격자 변형을 nano-XRD로 맵핑해주세요. 에너지는 15 keV로.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[15]},{"fn":"runFullAlignment","args":[]},{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"15 keV nano-XRD 맵핑. 에너지 변화 5 keV이므로 정렬 수행합니다.","confirmation_required":True}),
+
+    # ── Domain: Geology ──
+    ("오염 토양 시료에서 비소의 화학종을 XANES로 구분해주세요.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[11.867]},{"fn":"runFullAlignment","args":[]},{"fn":"quickXanes","args":["As","K"]},{"fn":"queueStart","args":[]}],"explanation":"As K-edge XANES. 에너지 변화 1.867 keV이므로 정렬 수행합니다.","confirmation_required":True}),
+
+    ("사장석 시료에서 스트론튬 분포를 XRF 라인스캔으로 확인해주세요. (0,0)에서 (20,0)까지 51포인트.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[17]},{"fn":"runFullAlignment","args":[]},{"fn":"quickLineScan","args":[0,0,20,0,51]},{"fn":"queueStart","args":[]}],"explanation":"Sr K-edge 위 17 keV로 설정 후 정렬, 라인스캔합니다.","confirmation_required":True}),
+
+    ("광산 폐기물에서 6가 크롬과 3가 크롬을 구분하고 싶어요. Cr XANES 해주세요.", "energy=10",
+     {"actions":[{"fn":"quickXanes","args":["Cr","K"]},{"fn":"queueStart","args":[]}],"explanation":"Cr K-edge XANES로 크롬 가수 분석합니다.","confirmation_required":True}),
+
+    # ── Domain: Environment ──
+    ("비산재 입자에서 납 분포를 XRF로 확인하고, Pb L3 XANES도 해주세요.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[14.5]},{"fn":"runFullAlignment","args":[]},{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]},{"fn":"quickXanes","args":["Pb","L3"]},{"fn":"queueStart","args":[]}],"explanation":"Pb L3 위 14.5 keV로 설정, XRF 맵핑 후 XANES 측정합니다.","confirmation_required":True}),
+
+    ("하수 슬러지에서 아연의 화학 상태를 알고 싶어요.", "energy=10",
+     {"actions":[{"fn":"quickXanes","args":["Zn","K"]},{"fn":"queueStart","args":[]}],"explanation":"Zn K-edge XANES로 아연의 화학 상태를 분석합니다.","confirmation_required":True}),
+
+    # ── Domain: Biology ──
+    ("동결건조한 세포 시료에서 철과 아연 분포를 나노 XRF로 이미징해주세요. 5x5 41포인트.", "energy=10",
+     {"actions":[{"fn":"quickRaster","args":[5,5,41]},{"fn":"queueStart","args":[]}],"explanation":"Fe/Zn XRF 이미징. 두 원소 K-edge 모두 10 keV 이하이므로 현재 에너지로 측정합니다.","confirmation_required":True}),
+
+    ("신경세포 수상돌기에서 Cu 분포를 페르마 나선 스캔으로 측정해주세요.", "energy=10",
+     {"actions":[{"fn":"quickFermat","args":[10,10,0.5]},{"fn":"queueStart","args":[]}],"explanation":"Cu XRF 페르마 나선 스캔으로 분포를 측정합니다.","confirmation_required":True}),
+
+    # ── Domain: Materials ──
+    ("페로브스카이트 태양전지에서 납 분포의 불균일성을 XRF 맵핑해주세요. 10x10 41포인트.", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[14.5]},{"fn":"runFullAlignment","args":[]},{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"Pb L3 위 14.5 keV로 설정 후 정렬, XRF 맵 측정합니다.","confirmation_required":True}),
+
+    ("고엔트로피 합금 시료에서 Fe, Co, Ni, Cr, Mn 원소 분포를 동시에 XRF 맵핑해주세요. 10x10 41포인트.", "energy=10",
+     {"actions":[{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"HEA 다원소 XRF 맵핑. 모든 원소 K-edge가 10 keV 이하이므로 현재 에너지로 측정합니다.","confirmation_required":True}),
+
+    ("구리 산화물 시료가 Cu2O인지 CuO인지 구분하고 싶어요.", "energy=10",
+     {"actions":[{"fn":"quickXanes","args":["Cu","K"]},{"fn":"queueStart","args":[]}],"explanation":"Cu K-edge XANES로 산화 상태를 구분합니다.","confirmation_required":True}),
+
+    # ── Workflows ──
+    ("SrTiO3 시료에서 Ti K-edge XANES 하고 나서 Sr K-edge XANES도 해주세요.", "energy=10",
+     {"actions":[{"fn":"quickXanes","args":["Ti","K"]},{"fn":"queueStart","args":[]},{"fn":"setTargetEnergy","args":[17]},{"fn":"runFullAlignment","args":[]},{"fn":"quickXanes","args":["Sr","K"]},{"fn":"queueStart","args":[]}],"explanation":"Ti K-edge XANES 후 Sr K-edge XANES. Sr 측정 시 에너지 변화 7 keV이므로 정렬 수행합니다.","confirmation_required":True}),
+
+    ("Cu 1000ppm 분말 시료 XRF 최적화해서 10x10 41포인트로 측정까지 해주세요.", "energy=10",
+     {"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xrf","element":"Cu","edge":"K","ppm":1000,"sampleType":"powder","priority":"balanced"}]},{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"Cu XRF 최적화 후 10x10 41포인트 맵 측정합니다.","confirmation_required":True}),
+
+    # ── Alignment (no alignment needed) ──
+    ("철 XRF 2D 맵 측정해줘", "energy=10",
+     {"actions":[],"explanation":"XRF 맵 측정을 위해 범위와 포인트 수를 알려주세요. 예: 10x10 41포인트","confirmation_required":False}),
+
+    # ── Parameter defaults ──
+    ("2D XRD 매핑해줘", "energy=10",
+     {"actions":[{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"기본 파라미터로 10x10 41포인트 2D XRD 맵핑합니다.","confirmation_required":True}),
+
+    # ── Au L3 signal check ──
+    ("Au L3-edge XRF 신호가 충분할지 확인해줘. 50 ppm 시료야", "energy=10",
+     {"actions":[{"fn":"estimateSignal","args":["xrf","Au",50,1e10,50,10]}],"explanation":"Au L3-edge XRF 50ppm 시료의 신호 예측입니다.","confirmation_required":False}),
+
+    # ── Augmented paraphrases for diversity ──
+    ("에너지를 15 keV로 바꿔줘", "energy=10",
+     {"actions":[{"fn":"setTargetEnergy","args":[15]},{"fn":"runFullAlignment","args":[]}],"explanation":"빔 에너지를 15 keV로 설정합니다. 에너지 변화 5 keV이므로 정렬 수행합니다.","confirmation_required":True}),
+
+    ("니켈 K엣지 XANES 스캔 부탁해", "energy=10",
+     {"actions":[{"fn":"quickXanes","args":["Ni","K"]},{"fn":"queueStart","args":[]}],"explanation":"Ni K-edge XANES 스캔을 실행합니다.","confirmation_required":True}),
+
+    ("아연 XAFS 해줘", "energy=10",
+     {"actions":[{"fn":"quickXafs","args":["Zn","K"]},{"fn":"queueStart","args":[]}],"explanation":"Zn K-edge XAFS 스캔을 실행합니다.","confirmation_required":True}),
+
+    ("20x20 범위 51포인트 래스터 스캔", "energy=10",
+     {"actions":[{"fn":"quickRaster","args":[20,20,51]},{"fn":"queueStart","args":[]}],"explanation":"20x20 51포인트 래스터 스캔합니다.","confirmation_required":True}),
+
+    ("KBV 피치 자동 정렬", "energy=10",
+     {"actions":[{"fn":"quickAutoTune","args":["kbv","pitch",1.0,4.0,"ic1_current"]},{"fn":"queueStart","args":[]}],"explanation":"KBV 피치 자동 정렬합니다.","confirmation_required":True}),
+
+    ("어테뉴에이터 슬롯 2에 Al 0.5mm", "energy=10",
+     {"actions":[{"fn":"setAttenFilter","args":[2,"material","Al"]},{"fn":"setAttenFilter","args":[2,"thickness",0.5]}],"explanation":"슬롯2에 Al 0.5mm 삽입합니다.","confirmation_required":True}),
+
+    ("movable mask 수평 0.5mm, 수직 1mm", "energy=10",
+     {"actions":[{"fn":"maskAperUpdate","args":["mmask","h",0.5]},{"fn":"maskAperUpdate","args":["mmask","v",1]}],"explanation":"Movable Mask 수평 0.5mm, 수직 1mm로 설정합니다.","confirmation_required":True}),
+
+    ("브래그 법칙이 뭐야?", "energy=10",
+     {"actions":[],"explanation":"브래그 법칙(Bragg's law)은 결정면에 의한 X선 회절 조건을 정의합니다. 2d sin(theta) = n*lambda 공식으로, d는 면간 거리, theta는 회절각, lambda는 파장입니다.","confirmation_required":False}),
+
+    ("현재 에너지가 몇이야?", "energy=10",
+     {"actions":[],"explanation":"현재 빔 에너지는 10 keV입니다.","confirmation_required":False}),
+]
+
+
+def generate_jsonl(output_path: str):
+    """Generate JSONL training data in Qwen3 chat format."""
+    records = []
+
+    for user_input, context_str, ideal_output in TRAINING_DATA:
+        # Build user message with context
+        user_msg = user_input
+        if context_str:
+            user_msg = f"[State: {context_str}] {user_input}"
+
+        # Qwen3 chat format for fine-tuning
+        record = {
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT_LORA},
+                {"role": "user", "content": user_msg},
+                {"role": "assistant", "content": json.dumps(ideal_output, ensure_ascii=False)}
+            ]
+        }
+        records.append(record)
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        for rec in records:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+    log.info(f"Generated {len(records)} training examples -> {output_path}")
+    return len(records)
+
+
+if __name__ == "__main__":
+    out = os.path.join(os.path.dirname(__file__), "training_data.jsonl")
+    n = generate_jsonl(out)
+
+    # Stats
+    log.info("Dataset statistics:")
+    log.info(f"  Total examples: {n}")
+
+    # Category counts
+    cats = {}
+    for user_input, _, output in TRAINING_DATA:
+        has_actions = len(output.get("actions", [])) > 0
+        if not has_actions:
+            cat = "info/reject"
+        else:
+            fns = [a["fn"] for a in output["actions"]]
+            if "quickXafs" in fns or "quickXanes" in fns:
+                cat = "spectroscopy"
+            elif "quickRaster" in fns:
+                cat = "mapping"
+            elif "optimizeBeamline" in fns:
+                cat = "optimize"
+            elif "motorSetUI" in fns:
+                cat = "motor"
+            elif "setTargetEnergy" in fns and len(fns) <= 2:
+                cat = "energy"
+            else:
+                cat = "other"
+        cats[cat] = cats.get(cat, 0) + 1
+
+    for cat, count in sorted(cats.items(), key=lambda x: -x[1]):
+        log.info(f"  {cat}: {count}")

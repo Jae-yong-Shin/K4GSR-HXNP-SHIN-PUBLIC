@@ -1,11 +1,3 @@
----
-title: "Project README"
-category: other
-status: current
-updated: 2026-03-16
-tags: [readme]
-summary: "프로젝트 소개, Quick Start, 아키텍처, 로드맵"
----
 # K4GSR Hard X-ray Nanoprobe Virtual Beamline
 
 **Korea-4GSR ID10 Hard X-ray Nanoprobe (HXNP)** virtual beamline control system with physics simulation, virtual experiments, NLP chat, and EPICS integration.

@@ -290,7 +290,3 @@ K4GSR-Beamline/
 ## License
 
 [Apache License 2.0](LICENSE)
-
-## Contributors
-
-- **Jae-yong Shin** - Project lead, UI/Physics development

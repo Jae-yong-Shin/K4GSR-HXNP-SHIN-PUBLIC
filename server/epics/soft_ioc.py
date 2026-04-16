@@ -424,8 +424,7 @@ class BL10BeamlineIOC(PVGroup):
             12.5 + math.sin(now * 0.01) * 0.3)
 
         # BPM noise: +/- 0.005
-        for pv in (self.xbpm1_x, self.xbpm1_y,
-                   self.xbpm2_x, self.xbpm2_y):
+        for pv in (self.xbpm1_x, self.xbpm1_y):
             await pv.write((random.random() - 0.5) * 0.01)
 
         # IC1: small noise around 1e-9

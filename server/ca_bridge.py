@@ -80,6 +80,8 @@ class CABridge:
         self._timeout = timeout
         self._soft_port = soft_port
         self._hw_groups_ports: Dict[str, int] = hw_groups_ports or {}
+        # PVStore-compatible attributes (used by pv_broadcast_loop)
+        self.scan_rate: float = 0.1  # broadcast loop interval (seconds)
         self._lock = threading.Lock()
         self._changed: Dict[str, Dict[str, Any]] = {}
         self._values: Dict[str, float] = {}
@@ -89,6 +91,7 @@ class CABridge:
         self._ca_pvs: Dict[str, Any] = {}      # ca_name -> caproto PV object
         self._hw_pvs: Set[str] = set()
         self._subscriptions = []                # keep refs to prevent GC
+        self._callbacks = []                    # hold callback refs (caproto uses weakref)
         self._running = True
 
         # Classify PVs and identify hw_pvs
@@ -208,9 +211,11 @@ class CABridge:
                     def _cb(sub, response):
                         self._on_rbv_change(mn, response)
                     return _cb
+                cb = _make_rbv_cb(motor_name)
                 sub = ca_pv.subscribe(data_type='time')
-                sub.add_callback(_make_rbv_cb(motor_name))
+                sub.add_callback(cb)
                 self._subscriptions.append(sub)
+                self._callbacks.append(cb)  # hold ref to prevent GC
                 n_subs += 1
             except Exception as e:
                 log.warning(f"CA subscribe failed for {rbv_name}: {e}")
@@ -226,9 +231,11 @@ class CABridge:
                     def _cb(sub, response):
                         self._on_status_change(pn, response)
                     return _cb
+                cb = _make_status_cb(pv_name)
                 sub = ca_pv.subscribe(data_type='time')
-                sub.add_callback(_make_status_cb(pv_name))
+                sub.add_callback(cb)
                 self._subscriptions.append(sub)
+                self._callbacks.append(cb)  # hold ref to prevent GC
                 n_subs += 1
             except Exception as e:
                 log.warning(f"CA subscribe failed for {name}: {e}")

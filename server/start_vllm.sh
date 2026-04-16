@@ -30,5 +30,5 @@ python3 -m vllm.entrypoints.openai.api_server \
     --enable-prefix-caching \
     --gpu-memory-utilization 0.90 \
     --port "$PORT" \
-    --disable-log-requests \
+    --no-enable-log-requests \
     --trust-remote-code

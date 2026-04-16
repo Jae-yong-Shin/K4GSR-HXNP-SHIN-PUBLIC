@@ -677,6 +677,15 @@ def _postprocess_response(result: dict, current_energy_keV: float = 0,
 
     result["actions"] = corrected
 
+    # Force confirmation_required=true when actions are present
+    # (any state-changing operation needs user confirmation)
+    _INFO_ONLY_FNS = {"showBeamProfile", "showTransmission", "switchTab",
+                       "estimateSignal", "queryHardwareStatus", "nanoStatus"}
+    if corrected:
+        has_state_change = any(a.get("fn") not in _INFO_ONLY_FNS for a in corrected)
+        if has_state_change:
+            result["confirmation_required"] = True
+
     # Add warning about removed functions
     if removed:
         warning = "(" + ", ".join(removed) + " -- not valid, removed)"
@@ -2952,10 +2961,36 @@ class VLLMBackend:
             "response_format": {"type": "json_object"},
         }
 
+        _model_lower = self.model.lower()
+
         # Qwen3: disable thinking mode to prevent invalid JSON
-        if "qwen3" in self.model.lower() or "qwen" in self.model.lower():
-            # Add /no_think to system message
+        if "qwen3" in _model_lower or "qwen" in _model_lower:
             api_msgs[0]["content"] = "/no_think\n" + api_msgs[0]["content"]
+
+        # Gemma 4: vLLM does not support response_format for Gemma models;
+        # remove it to avoid 400 errors. Increase max_tokens for reasoning.
+        # Add explicit JSON + confirmation_required reinforcement.
+        if "gemma-4" in _model_lower or "gemma4" in _model_lower or "gemma" in _model_lower:
+            body.pop("response_format", None)
+            body["max_tokens"] = max(max_tokens, 2048)
+            # Gemma tends to omit confirmation_required and return empty actions
+            # for indirect requests. Reinforce these rules.
+            _gemma_suffix = (
+                "\n\n[CRITICAL RULES FOR JSON OUTPUT]\n"
+                "1. You MUST output ONLY valid JSON. No markdown, no ```json blocks, no extra text.\n"
+                "2. confirmation_required MUST be true for ANY action that changes beamline state "
+                "(motor moves, energy changes, scans, alignments, experiments). "
+                "Only set false for pure info/status queries with actions:[].\n"
+                "3. When user mentions element analysis (산화상태, 화학결합, speciation, phase ID, "
+                "contamination check, distribution), this IS a measurement request. "
+                "Map to the correct technique (XANES for oxidation/bonding, XRF for distribution) "
+                "and generate actions. Do NOT return empty actions.\n"
+                "4. For XRF of heavy elements (Au, Pb, W, Pt): you MUST add "
+                "setTargetEnergy(edge+1.5) BEFORE quickRaster because the energy must be "
+                "set above the L3-edge to excite fluorescence.\n"
+                "5. Multi-step commands (A하고 B해줘): generate ALL actions in sequence."
+            )
+            api_msgs[0]["content"] = api_msgs[0]["content"] + _gemma_suffix
 
         headers = {
             "Content-Type": "application/json"

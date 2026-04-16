@@ -629,8 +629,17 @@ function renderScannerTab() {
   var _scanGrid = 'display:grid;grid-template-columns:30px 36px 1fr 1fr 32px;' +
     'gap:3px;align-items:center;margin-bottom:3px';
 
+  // Scan type selector
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">';
+  h += '<label style="font-size:8px;color:var(--t2);flex-shrink:0">Type:</label>';
+  h += '<select id="nano_scan_type" onchange="_nanoScanTypeChanged()" style="' + _scanSel + '">' +
+    '<option value="step2d" selected>Step 2D</option>' +
+    '<option value="fly1d">Fly 1D</option>' +
+    '<option value="fermat">Fermat Spiral</option></select>';
+  h += '</div>';
+
   // Column headers (CSS grid aligned)
-  h += '<div style="' + _scanGrid + ';margin-bottom:2px">';
+  h += '<div id="nano_scan_grid_hdr" style="' + _scanGrid + ';margin-bottom:2px">';
   h += '<span></span><span style="font-size:7px;color:var(--t3);text-align:center">Axis</span>';
   h += '<span style="font-size:7px;color:var(--t3);text-align:center">Start</span>';
   h += '<span style="font-size:7px;color:var(--t3);text-align:center">Stop</span>';
@@ -680,6 +689,20 @@ function renderScannerTab() {
   h += '</div>';
   h += '<div id="nano_scan_bar_text" style="font-size:8px;color:var(--t3);' +
     'text-align:right;margin-top:2px">Idle</div>';
+
+  // 2D scan heatmap canvas
+  h += '<div id="nano_scan_heatmap_wrap" style="margin-top:6px;display:none">';
+  h += '<div style="font-size:8px;color:var(--t2);margin-bottom:2px">Scan Result</div>';
+  h += '<div style="position:relative;width:100%;aspect-ratio:1;background:var(--bg);' +
+    'border:1px solid var(--b1);border-radius:3px;overflow:hidden">';
+  h += '<canvas id="nano_scan_heatmap" style="width:100%;height:100%"></canvas>';
+  h += '</div>';
+  h += '<div style="display:flex;justify-content:space-between;font-size:7px;color:var(--t3);margin-top:2px">';
+  h += '<span id="nano_hm_min">0</span>';
+  h += '<span id="nano_hm_label">Intensity (a.u.)</span>';
+  h += '<span id="nano_hm_max">1</span>';
+  h += '</div>';
+  h += '</div>';
 
   h += '</div>';  // end scan section
 
@@ -1221,7 +1244,139 @@ function _nanoStreamRender() {
   };
 })();
 
-console.log('[V4.36] Nano scanner panel ready');
+// ===== Scan Type Switcher =====
+window._nanoScanTypeChanged = function() {
+  var sel = document.getElementById('nano_scan_type');
+  var type = sel ? sel.value : 'step2d';
+  var slowRow = document.getElementById('nano_scan_slow_axis') ?
+    document.getElementById('nano_scan_slow_axis').parentElement : null;
+  var hdr = document.getElementById('nano_scan_grid_hdr');
+  // Show/hide slow axis row for 1D scans
+  if (slowRow) slowRow.style.display = (type === 'fly1d') ? 'none' : '';
+  // Update labels for Fermat
+  var fastLabel = slowRow ? slowRow.previousElementSibling : null;
+  if (fastLabel && fastLabel.querySelector && fastLabel.querySelector('label')) {
+    fastLabel.querySelector('label').textContent = (type === 'fermat') ? 'Range:' : 'Fast:';
+  }
+};
+
+// ===== 2D Scan Heatmap Rendering =====
+var _nanoHeatmapData = null;
+
+window._nanoHeatmapUpdate = function(data, nFast, nSlow) {
+  var wrap = document.getElementById('nano_scan_heatmap_wrap');
+  var canvas = document.getElementById('nano_scan_heatmap');
+  if (!wrap || !canvas) return;
+  wrap.style.display = '';
+  _nanoHeatmapData = { values: data, nFast: nFast, nSlow: nSlow };
+  var ctx = canvas.getContext('2d');
+  var w = canvas.parentElement.clientWidth;
+  var h = canvas.parentElement.clientHeight || w;
+  canvas.width = w; canvas.height = h;
+  var min = Infinity, max = -Infinity;
+  for (var i = 0; i < data.length; i++) {
+    if (data[i] < min) min = data[i];
+    if (data[i] > max) max = data[i];
+  }
+  var range = max - min || 1;
+  var cw = w / nFast, ch = h / nSlow;
+  for (var sy = 0; sy < nSlow; sy++) {
+    for (var sx = 0; sx < nFast; sx++) {
+      var idx = sy * nFast + sx;
+      var v = (idx < data.length) ? (data[idx] - min) / range : 0;
+      // Viridis-like: dark purple → blue → green → yellow
+      var r = Math.round(255 * Math.min(1, Math.max(0, 1.5 * v - 0.5)));
+      var g = Math.round(255 * Math.min(1, Math.max(0, v < 0.5 ? 2 * v : 1)));
+      var b = Math.round(255 * Math.min(1, Math.max(0, v < 0.5 ? 0.5 + v : 1.5 - v)));
+      ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+      ctx.fillRect(sx * cw, sy * ch, Math.ceil(cw), Math.ceil(ch));
+    }
+  }
+  var minEl = document.getElementById('nano_hm_min');
+  var maxEl = document.getElementById('nano_hm_max');
+  if (minEl) minEl.textContent = min.toFixed(1);
+  if (maxEl) maxEl.textContent = max.toFixed(1);
+};
+
+// Hook scan progress to update heatmap incrementally
+var _origNanoUpdateScanUI = _nanoUpdateScanUI;
+_nanoUpdateScanUI = function() {
+  _origNanoUpdateScanUI();
+  // Show heatmap wrap when scanning starts
+  var wrap = document.getElementById('nano_scan_heatmap_wrap');
+  if (wrap && NANO_SCANNER.scanning) wrap.style.display = '';
+};
+
+// ===== Mock Scan Mode (for when hardware is disconnected) =====
+window._nanoMockScan = function() {
+  var el = function(id) { return document.getElementById(id); };
+  var nFast = parseInt((el('nano_scan_n_fast') || {}).value, 10) || 21;
+  var nSlow = parseInt((el('nano_scan_n_slow') || {}).value, 10) || 21;
+  var total = nFast * nSlow;
+  var data = [];
+  // Generate mock Gaussian peak data
+  var cx = nFast / 2, cy = nSlow / 2;
+  var sx = nFast / 5, sy = nSlow / 5;
+  for (var iy = 0; iy < nSlow; iy++) {
+    for (var ix = 0; ix < nFast; ix++) {
+      var dx = (ix - cx) / sx, dy = (iy - cy) / sy;
+      data.push(1000 * Math.exp(-0.5 * (dx * dx + dy * dy)) + 50 * Math.random());
+    }
+  }
+  // Simulate progressive scan
+  NANO_SCANNER.scanning = true;
+  NANO_SCANNER.scanProgress = 0;
+  NANO_SCANNER.scanTotal = total;
+  _nanoUpdateScanUI();
+  var step = 0;
+  var partialData = [];
+  var mockTimer = setInterval(function() {
+    var batch = Math.min(nFast, total - step);
+    for (var b = 0; b < batch; b++) {
+      partialData.push(data[step + b]);
+    }
+    step += batch;
+    NANO_SCANNER.scanProgress = step;
+    _nanoUpdateScanUI();
+    _nanoHeatmapUpdate(partialData, nFast, Math.ceil(step / nFast));
+    if (step >= total) {
+      clearInterval(mockTimer);
+      NANO_SCANNER.scanning = false;
+      _nanoUpdateScanUI();
+      _nanoHeatmapUpdate(data, nFast, nSlow);
+    }
+  }, 50);
+};
+
+// Override _nanoScanStart to fall back to mock when disconnected
+var _origNanoScanStart = _nanoScanStart;
+_nanoScanStart = function() {
+  if (NANO_SCANNER.connected) {
+    _origNanoScanStart();
+  } else {
+    // Mock mode: simulate scan locally
+    if (typeof log === 'function') log('info', 'Nano: starting mock scan (hardware not connected)');
+    _nanoMockScan();
+  }
+};
+
+// Enable Start button even when disconnected (mock mode)
+var _origNanoUpdateScanUI2 = _nanoUpdateScanUI;
+_nanoUpdateScanUI = function() {
+  _origNanoUpdateScanUI2();
+  var startBtn = document.getElementById('nano_scan_start_btn');
+  if (startBtn && !NANO_SCANNER.scanning) {
+    startBtn.disabled = false;
+    startBtn.style.opacity = '1';
+    if (!NANO_SCANNER.connected) {
+      startBtn.textContent = 'Mock Scan';
+    } else {
+      startBtn.textContent = 'Start Scan';
+    }
+  }
+};
+
+console.log('[V4.36] Nano scanner panel ready (with scan heatmap + mock mode)');
 
 // ESM bridge: expose module-scoped vars to globalThis
 if(typeof NANO_SCANNER!=="undefined")globalThis.NANO_SCANNER=NANO_SCANNER;
@@ -1236,6 +1391,9 @@ if(typeof _nanoJog!=="undefined")globalThis._nanoJog=_nanoJog;
 if(typeof _nanoMoveAbs!=="undefined")globalThis._nanoMoveAbs=_nanoMoveAbs;
 if(typeof _nanoScanAbort!=="undefined")globalThis._nanoScanAbort=_nanoScanAbort;
 if(typeof _nanoScanStart!=="undefined")globalThis._nanoScanStart=_nanoScanStart;
+if(typeof _nanoScanTypeChanged!=="undefined")globalThis._nanoScanTypeChanged=_nanoScanTypeChanged;
+if(typeof _nanoHeatmapUpdate!=="undefined")globalThis._nanoHeatmapUpdate=_nanoHeatmapUpdate;
+if(typeof _nanoMockScan!=="undefined")globalThis._nanoMockScan=_nanoMockScan;
 if(typeof _nanoSend!=="undefined")globalThis._nanoSend=_nanoSend;
 if(typeof _nanoSendWarnTime!=="undefined")globalThis._nanoSendWarnTime=_nanoSendWarnTime;
 if(typeof _nanoSetPollRate!=="undefined")globalThis._nanoSetPollRate=_nanoSetPollRate;

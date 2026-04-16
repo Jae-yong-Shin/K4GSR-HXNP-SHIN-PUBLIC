@@ -267,6 +267,7 @@ def test_mu_rho_vs_nist():
         print(f"  {desc:<35} {js_mu:>10.1f} {nist_mu:>12.1f} {error_pct:>7.1f}% {status:>8}")
 
     print(f"\n  Result: {passed}/{passed+failed} passed (tolerance: 30%)")
+    assert failed == 0, f"test_mu_rho_vs_nist: {failed} of {passed+failed} cases exceeded 30% tolerance"
     return passed, failed
 
 
@@ -321,6 +322,7 @@ def test_compound_mu_rho_vs_nist():
         print(f"  {desc:<25} {js_mu:>10.1f} {nist_mu:>12.1f} {error_pct:>7.1f}% {status:>8}")
 
     print(f"\n  Result: {passed}/{passed+failed} passed (tolerance: 30%)")
+    assert failed == 0, f"test_compound_mu_rho_vs_nist: {failed} of {passed+failed} cases exceeded 30% tolerance"
     return passed, failed
 
 
@@ -377,6 +379,7 @@ def test_transmission_values():
         print(f"  {desc:<25} {T_js:>10.4e} {T_nist:>10.4e} {muT_js:>8.3f} {muT_nist:>10.3f} {error_pct:>6.1f}% {status:>8}")
 
     print(f"\n  Result: {passed}/{passed+failed} passed (tolerance: 50% on T)")
+    assert failed == 0, f"test_transmission_values: {failed} of {passed+failed} cases exceeded 50% tolerance"
     return passed, failed
 
 
@@ -427,6 +430,7 @@ def test_edge_behavior():
         print(f"  {desc:<15} {mu_below:>10.1f} {mu_above:>10.1f} {jump:>11.1f}x {expected:>10} {status:>8}")
 
     print(f"\n  Result: {passed}/{passed+failed} passed")
+    assert failed == 0, f"test_edge_behavior: {failed} of {passed+failed} cases failed edge-jump check"
     return passed, failed
 
 
@@ -494,6 +498,7 @@ def test_optimal_thickness():
         print(f"  {desc:<25} {opt_um:>10.2f} {min_um:>8.2f} {max_um:>8.2f} {T_opt:>7.1%} {status:>8}")
 
     print(f"\n  Result: {passed}/{passed+failed} passed")
+    assert failed == 0, f"test_optimal_thickness: {failed} of {passed+failed} cases failed physics sanity check"
     return passed, failed
 
 
@@ -533,6 +538,7 @@ def test_density_database():
         print(f"  {mat:<12} {db_val:>10.2f} {ref_val:>10.2f} {error_pct:>7.1f}% {status:>8}")
 
     print(f"\n  Result: {passed}/{passed+failed} passed (tolerance: 2%)")
+    assert failed == 0, f"test_density_database: {failed} of {passed+failed} cases exceeded 2% tolerance"
     return passed, failed
 
 

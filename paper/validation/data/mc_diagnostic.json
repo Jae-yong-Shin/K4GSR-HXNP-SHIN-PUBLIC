@@ -1,0 +1,66 @@
+[
+  {
+    "label": "1. Baseline (hybrid Fresnel ON)",
+    "fwhm_h_nm": 501.0649338583072,
+    "fwhm_v_nm": 503.3069121099906,
+    "fwhm_h_std_nm": 13.824429204782453,
+    "fwhm_v_std_nm": 117.83685947318837,
+    "n_survived_mean": 2793
+  },
+  {
+    "label": "2. Hybrid Fresnel OFF (geometric KB only)",
+    "fwhm_h_nm": 200.0,
+    "fwhm_v_nm": 200.0,
+    "fwhm_h_std_nm": 0.0,
+    "fwhm_v_std_nm": 0.0,
+    "n_survived_mean": 2779.3333333333335
+  },
+  {
+    "label": "3. SSA diffraction OFF (slit geometry only)",
+    "fwhm_h_nm": 520.530516987797,
+    "fwhm_v_nm": 421.1354503372588,
+    "fwhm_h_std_nm": 21.097358377356677,
+    "fwhm_v_std_nm": 239.53069441460616,
+    "n_survived_mean": 2801
+  },
+  {
+    "label": "3b. SSA=5000um (negligible diffraction, geometry same as large slit)",
+    "fwhm_h_nm": 495.22226157873695,
+    "fwhm_v_nm": 360.14942658523637,
+    "fwhm_h_std_nm": 10.417568029133681,
+    "fwhm_v_std_nm": 203.71596661586878,
+    "n_survived_mean": 3641.3333333333335
+  },
+  {
+    "label": "4. Pure geometric (no SSA diff, no KB hybrid, SSA=5000um)",
+    "fwhm_h_nm": 200.0,
+    "fwhm_v_nm": 200.0,
+    "fwhm_h_std_nm": 0.0,
+    "fwhm_v_std_nm": 0.0,
+    "n_survived_mean": 3652.3333333333335
+  },
+  {
+    "label": "6. SSA=10um baseline",
+    "fwhm_h_nm": 513.8007578085279,
+    "fwhm_v_nm": 204.91324349186436,
+    "fwhm_h_std_nm": 52.2431489782721,
+    "fwhm_v_std_nm": 137.26073152350608,
+    "n_survived_mean": 346.3333333333333
+  },
+  {
+    "label": "6. SSA=50um baseline",
+    "fwhm_h_nm": 500.028997049993,
+    "fwhm_v_nm": 227.04276333168997,
+    "fwhm_h_std_nm": 22.58870511349672,
+    "fwhm_v_std_nm": 120.58941842805703,
+    "n_survived_mean": 2784.3333333333335
+  },
+  {
+    "label": "6. SSA=200um baseline",
+    "fwhm_h_nm": 526.1710801694999,
+    "fwhm_v_nm": 355.76942246090005,
+    "fwhm_h_std_nm": 12.394120748838601,
+    "fwhm_v_std_nm": 203.63977896082613,
+    "n_survived_mean": 3527.3333333333335
+  }
+]

@@ -14,6 +14,24 @@
 
   var _xbpmOpen = false;
   var _xbpmTimer = null;
+  var _xbpmRefreshMs = 1000;  // UI refresh interval (ms), adjustable
+
+  // Expose setter for refresh rate control
+  window._setXbpmRefreshRate = function(hz) {
+    var ms = Math.round(1000 / hz);
+    if (ms < 50) ms = 50;         // clamp min 20 Hz (50 ms)
+    if (ms > 5000) ms = 5000;     // clamp max 0.2 Hz (5 s)
+    _xbpmRefreshMs = ms;
+    if (_xbpmTimer) {
+      clearInterval(_xbpmTimer);
+      _xbpmTimer = setInterval(_updateXbpmMonitor, _xbpmRefreshMs);
+    }
+    var lbl = document.getElementById('xbpm_refresh_label');
+    if (lbl) {
+      var hzShown = Math.round(1000 / _xbpmRefreshMs * 10) / 10;
+      lbl.textContent = hzShown + ' Hz';
+    }
+  };
 
   window.toggleXbpmPopup = function() {
     var el = document.getElementById('xbpmPopup');
@@ -23,7 +41,7 @@
     if (_xbpmOpen) {
       _renderXbpmCards();
       _updateXbpmMonitor();
-      if (!_xbpmTimer) _xbpmTimer = setInterval(_updateXbpmMonitor, 1000);
+      if (!_xbpmTimer) _xbpmTimer = setInterval(_updateXbpmMonitor, _xbpmRefreshMs);
       if (!el._resizeAdded) {
         el.style.position = 'fixed';
         var hdrEl = document.getElementById('xbpmPopupHdr');
@@ -113,10 +131,24 @@
           '<span>Pos X: <span class="xv" id="' + xb.id + '_px" style="color:var(--ac)">--</span></span>' +
           '<span>Pos Y: <span class="xv" id="' + xb.id + '_py" style="color:var(--ac)">--</span></span>' +
         '</div>';
-        // Bias + Freq row
+        // Bias + HW Sample Freq row
         h += '<div style="display:flex;gap:8px;font-size:8px;color:var(--t2)">' +
           '<span>Bias: <span id="' + xb.id + '_bias" style="font-size:7px">--</span></span>' +
-          '<span>Freq: <span id="' + xb.id + '_freq" style="font-size:7px">--</span></span>' +
+          '<span title="Hardware sampling frequency (T4U electrometer)">HW Samp: <span id="' + xb.id + '_freq" style="font-size:7px">--</span></span>' +
+        '</div>';
+        // UI refresh rate control row
+        h += '<div style="display:flex;gap:6px;align-items:center;font-size:8px;color:var(--t2);margin-top:2px" title="How often the UI redraws values (hardware keeps sampling at HW rate)">' +
+          '<span>UI Refresh:</span>' +
+          '<select onchange="window._setXbpmRefreshRate(parseFloat(this.value))" ' +
+            'style="background:var(--bg);color:var(--t1);border:1px solid var(--b1);border-radius:2px;font-size:7px;padding:1px 2px">' +
+            '<option value="0.5">0.5 Hz (2 s)</option>' +
+            '<option value="1" selected>1 Hz (1 s)</option>' +
+            '<option value="2">2 Hz (500 ms)</option>' +
+            '<option value="5">5 Hz (200 ms)</option>' +
+            '<option value="10">10 Hz (100 ms)</option>' +
+            '<option value="20">20 Hz (50 ms)</option>' +
+          '</select>' +
+          '<span id="xbpm_refresh_label" style="font-size:7px;color:var(--ac)">1 Hz</span>' +
         '</div>';
         // MC Simulation collapsible
         var mcId = xb.id + '_mc';

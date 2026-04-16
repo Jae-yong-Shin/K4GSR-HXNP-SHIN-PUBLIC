@@ -1,0 +1,137 @@
+[
+  {
+    "condition": "10keV_SSA50",
+    "energy_keV": 10,
+    "ssa_um": 50,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 47.6,
+    "fwhmH_std": 1.4,
+    "fwhmV_nm": 58.7,
+    "fwhmV_std": 2.0,
+    "nSurvived_mean": 140696,
+    "nFocused_mean": 16560,
+    "all_fwhmH": [
+      47,
+      46.5,
+      46.6,
+      48.2,
+      49.7
+    ],
+    "all_fwhmV": [
+      56,
+      58.1,
+      60.6,
+      60.7,
+      58.1
+    ]
+  },
+  {
+    "condition": "5keV_SSA50",
+    "energy_keV": 5,
+    "ssa_um": 50,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 76.9,
+    "fwhmH_std": 3.5,
+    "fwhmV_nm": 97.2,
+    "fwhmV_std": 2.1,
+    "nSurvived_mean": 134461,
+    "nFocused_mean": 16756,
+    "all_fwhmH": [
+      73,
+      80.6,
+      73.3,
+      79,
+      78.5
+    ],
+    "all_fwhmV": [
+      93.7,
+      96.6,
+      98.5,
+      98.6,
+      98.4
+    ]
+  },
+  {
+    "condition": "20keV_SSA50",
+    "energy_keV": 20,
+    "ssa_um": 50,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 40.7,
+    "fwhmH_std": 1.5,
+    "fwhmV_nm": 45.9,
+    "fwhmV_std": 1.8,
+    "nSurvived_mean": 117194,
+    "nFocused_mean": 13583,
+    "all_fwhmH": [
+      41.2,
+      38.3,
+      40.7,
+      41.3,
+      42.2
+    ],
+    "all_fwhmV": [
+      46.1,
+      46.4,
+      43.1,
+      45.6,
+      48.2
+    ]
+  },
+  {
+    "condition": "10keV_SSA10",
+    "energy_keV": 10,
+    "ssa_um": 10,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 35.6,
+    "fwhmH_std": 2.6,
+    "fwhmV_nm": 42.6,
+    "fwhmV_std": 2.9,
+    "nSurvived_mean": 20197,
+    "nFocused_mean": 2030,
+    "all_fwhmH": [
+      33,
+      32.7,
+      36.9,
+      38.4,
+      36.8
+    ],
+    "all_fwhmV": [
+      43.1,
+      44,
+      42.7,
+      45.6,
+      37.8
+    ]
+  },
+  {
+    "condition": "10keV_SSA200",
+    "energy_keV": 10,
+    "ssa_um": 200,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 52.9,
+    "fwhmH_std": 1.4,
+    "fwhmV_nm": 58.3,
+    "fwhmV_std": 1.0,
+    "nSurvived_mean": 161875,
+    "nFocused_mean": 19195,
+    "all_fwhmH": [
+      51.4,
+      53.1,
+      53,
+      52,
+      55
+    ],
+    "all_fwhmV": [
+      57.8,
+      58.2,
+      60,
+      57.4,
+      58
+    ]
+  }
+]

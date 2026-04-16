@@ -11,7 +11,7 @@ var uPlot=function(){"use strict";const e="u-off",l="u-label",t="width",n="heigh
 // ===== Server Connection Config =====
 // Default: connect to A6000 workstation. Override with ?server=localhost for local dev.
 var _qp = (typeof location !== 'undefined' && location.search) ? new URLSearchParams(location.search) : null;
-var SERVER_HOST = (_qp && _qp.get('server')) || 'localhost';
+var SERVER_HOST = (_qp && _qp.get('server')) || '141.223.48.182';
 var SERVER_WS_PORT = (_qp && _qp.get('wsport')) ? parseInt(_qp.get('wsport')) : 8001;
 
 // Ring & IVU constants
@@ -17630,7 +17630,7 @@ var PTYCHO_WS_PORT = 8765;
 var PTYCHO_WS_URL = 'ws://' +
   ((typeof SERVER_HOST !== 'undefined' && SERVER_HOST !== 'localhost' && SERVER_HOST !== '127.0.0.1')
     ? 'localhost' : 'localhost') + ':' + PTYCHO_WS_PORT;
-// Override via URL param: ?ptycho_host=localhost
+// Override via URL param: ?ptycho_host=141.223.48.182
 (function() {
   var _qp2 = (typeof location !== 'undefined' && location.search) ? new URLSearchParams(location.search) : null;
   if (_qp2 && _qp2.get('ptycho_host')) PTYCHO_WS_URL = 'ws://' + _qp2.get('ptycho_host') + ':' + PTYCHO_WS_PORT;

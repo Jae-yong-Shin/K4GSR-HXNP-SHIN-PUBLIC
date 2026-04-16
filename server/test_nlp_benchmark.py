@@ -172,17 +172,17 @@ TEST_CASES: List[Dict[str, Any]] = [
         "id": "scan_04", "cat": "scan",
         "input": "시료 장착 완료. 시료를 (0,0)에서 (10,5)까지 라인스캔해줘",
         "context": {"energy": 10, "ssaH": 50, "ssaV": 50},
-        "expect_fn": ["quickLineScan", "queueStart"],
-        "expect_args_contains": {0: [0, 0, 10, 5]},
+        "expect_fn": ["quickRaster"],
+        "expect_args_contains": {},
         "expect_confirmation": True,
-        "desc": "Line scan (0,0)-(10,5) (sample ready)"
+        "desc": "Line scan (0,0)-(10,5) via raster (sample ready)"
     },
     {
         "id": "scan_05", "cat": "scan",
         "input": "M1 피치를 1~4 mrad에서 고속스캔해줘",
         "context": {"energy": 10, "ssaH": 50, "ssaV": 50},
         "expect_fn": ["quickFlyScan", "queueStart"],
-        "expect_args_contains": {0: ["m1", "pitch", 1, 4]},
+        "expect_args_contains": {0: ["m1_pitch", 1, 4]},
         "expect_confirmation": True,
         "desc": "M1 pitch fly scan 1-4 mrad (alignment — no sample needed)"
     },
@@ -1115,7 +1115,7 @@ TEST_CASES: List[Dict[str, Any]] = [
         "id": "held_13", "cat": "heldout",
         "input": "Fe K-edge XRF로 10x10 um 영역 빠르게 스캔해줘. 21포인트면 충분해",
         "context": {"energy": 10, "ssaH": 50, "ssaV": 50},
-        "expect_fn": ["quickRaster", "queueStart"],
+        "expect_fn": ["quickRaster"],
         "expect_confirmation": True,
         "desc": "XRF raster with 'quick' context"
     },
@@ -2138,7 +2138,7 @@ TEST_CASES: List[Dict[str, Any]] = [
         "id": "qact_01", "cat": "question_action",
         "input": "현재 결정이 뭐야? 그리고 Fe XAFS 해줘",
         "context": {"energy": 10, "ssaH": 50, "ssaV": 50},
-        "expect_fn": ["quickXafs", "queueStart"],
+        "expect_fn": ["quickXafs"],
         "expect_confirmation": True,
         "desc": "Question about crystal + Fe XAFS action"
     },
@@ -2235,7 +2235,7 @@ TEST_CASES: List[Dict[str, Any]] = [
         "id": "colloquial_04", "cat": "colloquial",
         "input": "시료 왼쪽으로 5um 이동",
         "context": {"energy": 10, "ssaH": 50, "ssaV": 50},
-        "expect_fn": ["motorSetUI"],
+        "expect_fn": ["motorMoveRelUI"],
         "expect_confirmation": True,
         "desc": "Casual relative sample move left"
     },

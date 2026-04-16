@@ -1,0 +1,72 @@
+[
+  {
+    "condition": "10keV_ssa50",
+    "energy_keV": 10.0,
+    "ssa_um": 50,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 41.3,
+    "fwhmH_std": 1.4,
+    "fwhmV_nm": 50.5,
+    "fwhmV_std": 1.7,
+    "nSurvived_mean": 34410,
+    "centroidH_nm": -1.1,
+    "centroidV_nm": 0.1
+  },
+  {
+    "condition": "5keV_ssa50",
+    "energy_keV": 5.0,
+    "ssa_um": 50,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 67.2,
+    "fwhmH_std": 0.9,
+    "fwhmV_nm": 87.1,
+    "fwhmV_std": 2.0,
+    "nSurvived_mean": 35723,
+    "centroidH_nm": -0.7,
+    "centroidV_nm": -0.3
+  },
+  {
+    "condition": "20keV_ssa50",
+    "energy_keV": 20.0,
+    "ssa_um": 50,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 34.3,
+    "fwhmH_std": 0.9,
+    "fwhmV_nm": 37.4,
+    "fwhmV_std": 1.3,
+    "nSurvived_mean": 41973,
+    "centroidH_nm": -0.9,
+    "centroidV_nm": -0.1
+  },
+  {
+    "condition": "10keV_ssa10",
+    "energy_keV": 10.0,
+    "ssa_um": 10,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 29.3,
+    "fwhmH_std": 1.6,
+    "fwhmV_nm": 38.7,
+    "fwhmV_std": 2.7,
+    "nSurvived_mean": 4726,
+    "centroidH_nm": -0.1,
+    "centroidV_nm": -0.3
+  },
+  {
+    "condition": "10keV_ssa200",
+    "energy_keV": 10.0,
+    "ssa_um": 200,
+    "nRays": 500000,
+    "nRepeats": 5,
+    "fwhmH_nm": 46.2,
+    "fwhmH_std": 1.0,
+    "fwhmV_nm": 51.2,
+    "fwhmV_std": 1.1,
+    "nSurvived_mean": 40115,
+    "centroidH_nm": -1.9,
+    "centroidV_nm": -0.0
+  }
+]

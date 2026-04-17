@@ -10,7 +10,7 @@ summary: "v1.0 벤치마크 계획 (완료됨). 최종 결과: vLLM Qwen3-32B 97
 
 ## 1. Current Status
 
-### 1.1 Model Availability (Workstation: 141.223.48.182)
+### 1.1 Model Availability (Workstation: <VLLM_WORKSTATION_IP>)
 | Model | Size | Status |
 |-------|------|--------|
 | qwen3:8b | 4.9 GB | Tested (56.1%) |

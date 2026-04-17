@@ -71,3 +71,28 @@ paper/figures/fig4_mc_vs_shadow4.tif
 # Note: _bundle.html is tracked in git so collaborators can open it directly.
 # Rebuild with: python Scripts/build.py --bundle --html virtual_beamline_nanoprobe_V4_36.html
 dist/
+
+# Ptycho large files
+ptycho/matlab_ref/*.npy
+ptycho/matlab_ref/*.mat
+ptycho/results/history/
+ptycho/_old_tests/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Backups
+*.bak
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+!.env.example

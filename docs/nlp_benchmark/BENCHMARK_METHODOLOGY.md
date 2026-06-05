@@ -28,6 +28,7 @@ who may not have X-ray expertise. The NLP module must:
 ### 1.2 Test Suite Version
 - **Version**: v2.0 (154 test cases, 28 categories)
 - **Previous**: v1.0 (82 test cases, 20 categories)
+- **Headline (paper)**: v2.1, 228 test cases, 44 categories (frozen snapshot: `nlp_benchmark_228_snapshot.json`)
 - **Date**: 2026-02-28
 
 ---
@@ -269,3 +270,4 @@ Results are saved to `server/benchmark_results/` as JSON with:
 |---------|------|---------|
 | v1.0 | 2026-02-27 | Initial 82 tests, 20 categories |
 | v2.0 | 2026-02-28 | Expanded to 154 tests, 28 categories. Added experiment planning, robustness, rejection, real-user scenarios. Multi-engine benchmark runner. |
+| v2.1 | 2026-03-05 | Final headline configuration (228 tests, 44 categories). The frozen snapshot used for the published 98.2% (224/228) accuracy is `nlp_benchmark_228_snapshot.json`; the live suite has since grown beyond this set. |

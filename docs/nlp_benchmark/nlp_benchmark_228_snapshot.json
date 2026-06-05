@@ -1,0 +1,1607 @@
+{
+ "description": "Frozen 228-prompt NLP benchmark snapshot used for the 98.2%% (224/228) headline accuracy (Qwen3-32B vLLM, 2026-03-05). Prompts and per-case recorded results; expected action sequences are defined in server/test_nlp_benchmark.py.",
+ "engine": "vllm",
+ "model": "Qwen/Qwen3-32B",
+ "timestamp": "2026-03-05T20:58:24.115133",
+ "total": 228,
+ "pass": 224,
+ "pass_rate": 98.2,
+ "cases": [
+  {
+   "id": "motor_01",
+   "category": "motor",
+   "prompt": "에너지를 12 keV로 설정해",
+   "description": "Energy set to 12 keV",
+   "passed": true
+  },
+  {
+   "id": "motor_02",
+   "category": "motor",
+   "prompt": "M1 피치를 2.5로 이동해",
+   "description": "M1 pitch move to 2.5 mrad",
+   "passed": true
+  },
+  {
+   "id": "motor_03",
+   "category": "motor",
+   "prompt": "시료 X를 100 이동해",
+   "description": "Sample X motor move",
+   "passed": true
+  },
+  {
+   "id": "scan_01",
+   "category": "scan",
+   "prompt": "구리 K-edge XAFS 측정해줘",
+   "description": "Cu K-edge XAFS with queueStart",
+   "passed": true
+  },
+  {
+   "id": "scan_02",
+   "category": "scan",
+   "prompt": "철 XANES 측정해줘",
+   "description": "Fe K-edge XANES with queueStart",
+   "passed": true
+  },
+  {
+   "id": "scan_03",
+   "category": "scan",
+   "prompt": "10x10 범위에 41포인트로 철 XRF 2D 맵 측정해줘",
+   "description": "Fe XRF 2D map with params (energy+raster+queue)",
+   "passed": true
+  },
+  {
+   "id": "scan_04",
+   "category": "scan",
+   "prompt": "시료를 (0,0)에서 (10,5)까지 라인스캔해줘",
+   "description": "Line scan (0,0)-(10,5)",
+   "passed": true
+  },
+  {
+   "id": "scan_05",
+   "category": "scan",
+   "prompt": "M1 피치를 1~4 mrad에서 고속스캔해줘",
+   "description": "M1 pitch fly scan 1-4 mrad",
+   "passed": true
+  },
+  {
+   "id": "scan_06",
+   "category": "scan",
+   "prompt": "철 K-edge 주변 적응형 에너지 스캔해줘",
+   "description": "Fe K-edge adaptive energy scan",
+   "passed": true
+  },
+  {
+   "id": "scan_07",
+   "category": "scan",
+   "prompt": "DCM 세타 현위치 기준 +/-0.5도 정렬 스캔해줘",
+   "description": "DCM theta relative alignment scan",
+   "passed": true
+  },
+  {
+   "id": "scan_08",
+   "category": "scan",
+   "prompt": "현위치에서 페르마 나선 스캔해줘",
+   "description": "Fermat spiral scan",
+   "passed": true
+  },
+  {
+   "id": "scan_09",
+   "category": "scan",
+   "prompt": "현위치 기준 5x5 래스터 스캔해줘",
+   "description": "Relative raster 5x5 scan",
+   "passed": true
+  },
+  {
+   "id": "align_01",
+   "category": "alignment",
+   "prompt": "Mo K-edge XAFS 측정해줘",
+   "description": "Mo K-edge: dE=10 keV > 2 keV => auto alignment",
+   "passed": true
+  },
+  {
+   "id": "align_02",
+   "category": "alignment",
+   "prompt": "철 XRF 2D 맵 측정해줘",
+   "description": "Fe XRF: dE=1.5 keV < 2 keV => NO alignment",
+   "passed": true
+  },
+  {
+   "id": "align_03",
+   "category": "alignment",
+   "prompt": "전체 빔 정렬 시작",
+   "description": "Explicit full alignment request",
+   "passed": true
+  },
+  {
+   "id": "align_04",
+   "category": "alignment",
+   "prompt": "M1 피치 자동 정렬해줘",
+   "description": "M1 pitch auto-tune (iterative centroid)",
+   "passed": true
+  },
+  {
+   "id": "multi_01",
+   "category": "multi",
+   "prompt": "12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘",
+   "description": "3-step: energy + align + beam profile",
+   "passed": true
+  },
+  {
+   "id": "opt_01",
+   "category": "optimize",
+   "prompt": "Cu 분말 1000ppm XRF 최적화해줘",
+   "description": "Cu XRF optimize (balanced)",
+   "passed": true
+  },
+  {
+   "id": "opt_02",
+   "category": "optimize",
+   "prompt": "철 시료인데 가장 좋은 분해능으로 XRF 맵핑하고 싶어",
+   "description": "Fe XRF optimize (resolution priority)",
+   "passed": true
+  },
+  {
+   "id": "opt_03",
+   "category": "optimize",
+   "prompt": "Ti K-edge XANES 하려는데 시료가 SrTiO3 분말이야",
+   "description": "Ti XANES optimize (SrTiO3 powder)",
+   "passed": false
+  },
+  {
+   "id": "opt_04",
+   "category": "optimize",
+   "prompt": "ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야",
+   "description": "Ptychography optimize (coherence priority)",
+   "passed": true
+  },
+  {
+   "id": "opt_05",
+   "category": "optimize",
+   "prompt": "지금 셋업에서 Cu 신호 얼마나 나와?",
+   "description": "Signal estimate (no confirmation)",
+   "passed": true
+  },
+  {
+   "id": "opt_06",
+   "category": "optimize",
+   "prompt": "W L3-edge XRF 해줘. 시료가 WC 분말이야",
+   "description": "W L3-edge XRF optimize (WC powder)",
+   "passed": true
+  },
+  {
+   "id": "opt_07",
+   "category": "optimize",
+   "prompt": "빔라인 최적화해줘",
+   "description": "Optimization without element => ask for info",
+   "passed": true
+  },
+  {
+   "id": "atten_01",
+   "category": "attenmask",
+   "prompt": "어테뉴에이터에 Carbon 1mm 넣어줘",
+   "description": "Attenuator: insert Carbon 1mm",
+   "passed": true
+  },
+  {
+   "id": "atten_02",
+   "category": "attenmask",
+   "prompt": "어테뉴에이터 전부 빼",
+   "description": "Attenuator: remove all (8 calls for 4 slots)",
+   "passed": true
+  },
+  {
+   "id": "mask_01",
+   "category": "attenmask",
+   "prompt": "movable mask를 1mm x 1mm로 이동시켜",
+   "description": "Movable mask 1x1 mm",
+   "passed": true
+  },
+  {
+   "id": "mask_02",
+   "category": "attenmask",
+   "prompt": "고정 마스크 수평갭 2mm, 수직갭 3mm",
+   "description": "Fixed mask h=2mm, v=3mm",
+   "passed": true
+  },
+  {
+   "id": "info_01",
+   "category": "info",
+   "prompt": "XRD가 뭐야?",
+   "description": "Info query: XRD explanation",
+   "passed": true
+  },
+  {
+   "id": "info_02",
+   "category": "info",
+   "prompt": "네가 할 수 있는 명령들을 정리해봐",
+   "description": "Info query: list available commands",
+   "passed": true
+  },
+  {
+   "id": "info_03",
+   "category": "info",
+   "prompt": "빔 프로파일 보여줘",
+   "description": "Show beam profile (no confirmation)",
+   "passed": true
+  },
+  {
+   "id": "param_01",
+   "category": "param",
+   "prompt": "2D XRD 매핑해줘",
+   "description": "XRD map without params => ask or use defaults",
+   "passed": true
+  },
+  {
+   "id": "param_02",
+   "category": "param",
+   "prompt": "철 XRF 2D 맵 측정해줘",
+   "description": "Fe XRF map without params => ask or use defaults",
+   "passed": true
+  },
+  {
+   "id": "sample_01",
+   "category": "scientist",
+   "prompt": "NMC 622 배터리 시료를 nano XRF로 분석하고 싶어. Ni, Mn, Co를 측정해야 해",
+   "description": "NMC 622 battery sample -- multi-element optimization",
+   "passed": true
+  },
+  {
+   "id": "sample_02",
+   "category": "scientist",
+   "prompt": "Au L3-edge XRF 신호가 충분할지 확인해줘. 50 ppm 시료야",
+   "description": "Au L3-edge XRF signal check (50 ppm)",
+   "passed": true
+  },
+  {
+   "id": "batt_01",
+   "category": "battery",
+   "prompt": "배터리 양극재에서 Ni, Mn, Co 원소 분포를 XRF 맵핑으로 측정하고 싶습니다. 10x10 범위 41포인트로요.",
+   "description": "NMC cathode XRF -- multi-element, params given",
+   "passed": true
+  },
+  {
+   "id": "batt_02",
+   "category": "battery",
+   "prompt": "LiFePO4 시료 철 K-edge XAFS 측정해주세요.",
+   "description": "LFP cathode Fe K-edge XAFS",
+   "passed": true
+  },
+  {
+   "id": "batt_03",
+   "category": "battery",
+   "prompt": "전고체 전해질 시료인데, 황의 화학 상태를 확인하고 싶어요.",
+   "description": "S K-edge (2.47 keV) out of range => explain",
+   "passed": true
+  },
+  {
+   "id": "batt_04",
+   "category": "battery",
+   "prompt": "양극재에 구리 오염이 있는지 확인해주세요. 10ppm 수준이에요.",
+   "description": "Cu contamination 10ppm -- signal estimation",
+   "passed": false
+  },
+  {
+   "id": "batt_05",
+   "category": "battery",
+   "prompt": "충방전 후 양극재 결정상 분포를 2D XRD 맵으로 측정하고 싶어요. 15 keV에서 10x10 21포인트로.",
+   "description": "Cathode XRD phase map 15keV (dE=5>2 => align)",
+   "passed": true
+  },
+  {
+   "id": "cata_01",
+   "category": "catalyst",
+   "prompt": "Pt/C 연료전지 촉매에서 백금 산화 상태를 XANES로 확인해주세요.",
+   "description": "Pt L3-edge XANES (auto L3 for heavy element)",
+   "passed": true
+  },
+  {
+   "id": "cata_02",
+   "category": "catalyst",
+   "prompt": "CeO2 담지체의 세륨 L3 엣지 XANES 측정해주세요.",
+   "description": "Ce L3-edge XANES",
+   "passed": true
+  },
+  {
+   "id": "cata_03",
+   "category": "catalyst",
+   "prompt": "니켈 촉매 반응 중 산화 상태가 변하는지 적응형 에너지 스캔으로 확인하고 싶어요.",
+   "description": "Ni K-edge adaptive scan",
+   "passed": true
+  },
+  {
+   "id": "semi_01",
+   "category": "semiconductor",
+   "prompt": "반도체 칩 단면에서 구리 배선 분포를 XRF 맵핑해주세요. 분해능을 최대로 해주세요.",
+   "description": "Cu XRF resolution priority (semiconductor)",
+   "passed": true
+  },
+  {
+   "id": "semi_02",
+   "category": "semiconductor",
+   "prompt": "에피택셜 박막의 격자 변형을 nano-XRD로 맵핑해주세요. 에너지는 15 keV로.",
+   "description": "Thin film strain XRD mapping 15keV",
+   "passed": true
+  },
+  {
+   "id": "geo_01",
+   "category": "geology",
+   "prompt": "오염 토양 시료에서 비소의 화학종을 XANES로 구분해주세요.",
+   "description": "As K-edge XANES speciation (soil)",
+   "passed": true
+  },
+  {
+   "id": "geo_02",
+   "category": "geology",
+   "prompt": "사장석 시료에서 스트론튬 분포를 XRF 라인스캔으로 확인해주세요. (0,0)에서 (20,0)까지 51포인트.",
+   "description": "Sr XRF linescan -- dE>2keV => align needed",
+   "passed": true
+  },
+  {
+   "id": "geo_03",
+   "category": "geology",
+   "prompt": "광산 폐기물에서 6가 크롬과 3가 크롬을 구분하고 싶어요. Cr XANES 해주세요.",
+   "description": "Cr K-edge XANES valence (mine waste)",
+   "passed": true
+  },
+  {
+   "id": "env_01",
+   "category": "environment",
+   "prompt": "비산재 입자에서 납 분포를 XRF로 확인하고, Pb L3 XANES도 해주세요.",
+   "description": "Pb L3 XRF+XANES multi-step (fly ash)",
+   "passed": true
+  },
+  {
+   "id": "env_02",
+   "category": "environment",
+   "prompt": "하수 슬러지에서 아연의 화학 상태를 알고 싶어요.",
+   "description": "Zn K-edge XANES (biosolids)",
+   "passed": true
+  },
+  {
+   "id": "bio_01",
+   "category": "biology",
+   "prompt": "동결건조한 세포 시료에서 철과 아연 분포를 나노 XRF로 이미징해주세요. 5x5 41포인트.",
+   "description": "Cell XRF imaging Fe+Zn (biology)",
+   "passed": true
+  },
+  {
+   "id": "bio_02",
+   "category": "biology",
+   "prompt": "신경세포 수상돌기에서 Cu 분포를 페르마 나선 스캔으로 측정해주세요.",
+   "description": "Cu Fermat spiral scan (neuron)",
+   "passed": true
+  },
+  {
+   "id": "mat_01",
+   "category": "materials",
+   "prompt": "페로브스카이트 태양전지에서 납 분포의 불균일성을 XRF 맵핑해주세요. 10x10 41포인트.",
+   "description": "Pb L3 XRF perovskite solar cell",
+   "passed": true
+  },
+  {
+   "id": "mat_02",
+   "category": "materials",
+   "prompt": "고엔트로피 합금 시료에서 Fe, Co, Ni, Cr, Mn 원소 분포를 동시에 XRF 맵핑해주세요. 10x10 41포인트.",
+   "description": "HEA 5-element XRF mapping",
+   "passed": true
+  },
+  {
+   "id": "mat_03",
+   "category": "materials",
+   "prompt": "구리 산화물 시료가 Cu2O인지 CuO인지 구분하고 싶어요.",
+   "description": "Cu2O vs CuO phase ID by XANES",
+   "passed": true
+  },
+  {
+   "id": "edge_01",
+   "category": "edgecase",
+   "prompt": "인(P) K-edge XANES 해주세요.",
+   "description": "P K-edge (2.1 keV) out of range => explain",
+   "passed": true
+  },
+  {
+   "id": "edge_02",
+   "category": "edgecase",
+   "prompt": "텅스텐 K-edge XAFS 측정해줘.",
+   "description": "W K-edge (69.5 keV) out of range => suggest L3",
+   "passed": true
+  },
+  {
+   "id": "edge_03",
+   "category": "edgecase",
+   "prompt": "금 시료 XRF 해주세요. 5x5 41포인트.",
+   "description": "Au XRF -- must auto-select L3 edge (11.9 keV)",
+   "passed": true
+  },
+  {
+   "id": "edge_04",
+   "category": "edgecase",
+   "prompt": "Cu K-edge XAFS 돌려줘",
+   "description": "Mixed Korean/English colloquial request",
+   "passed": true
+  },
+  {
+   "id": "edge_05",
+   "category": "edgecase",
+   "prompt": "XANES랑 EXAFS 차이가 뭐예요?",
+   "description": "Info: XANES vs EXAFS difference",
+   "passed": true
+  },
+  {
+   "id": "edge_06",
+   "category": "edgecase",
+   "prompt": "금 L3 엣지가 몇 keV예요?",
+   "description": "Info: Au L3 edge energy query",
+   "passed": true
+  },
+  {
+   "id": "edge_07",
+   "category": "edgecase",
+   "prompt": "Pt L3-edge XANES 측정해주세요.",
+   "description": "Pt L3 XANES -- should warn about mirror coating",
+   "passed": true
+  },
+  {
+   "id": "ops_01",
+   "category": "operations",
+   "prompt": "Si(311)로 변경해주세요.",
+   "description": "Crystal change to Si(311)",
+   "passed": true
+  },
+  {
+   "id": "ops_02",
+   "category": "operations",
+   "prompt": "SSA 수평갭을 30 마이크로미터로 줄여주세요.",
+   "description": "SSA hgap motor set to 30",
+   "passed": true
+  },
+  {
+   "id": "ops_03",
+   "category": "operations",
+   "prompt": "긴급 정지!",
+   "description": "Emergency stop",
+   "passed": true
+  },
+  {
+   "id": "workflow_01",
+   "category": "workflow",
+   "prompt": "SrTiO3 시료에서 Ti K-edge XANES 하고 나서 Sr K-edge XANES도 해주세요.",
+   "description": "Sequential Ti+Sr XANES (large dE => align)",
+   "passed": false
+  },
+  {
+   "id": "workflow_02",
+   "category": "workflow",
+   "prompt": "Cu 1000ppm 분말 시료 XRF 최적화해서 10x10 41포인트로 측정까지 해주세요.",
+   "description": "Full workflow: optimize + scan request",
+   "passed": true
+  },
+  {
+   "id": "held_01",
+   "category": "heldout",
+   "prompt": "Zn K흡수단 XANES 스펙트럼을 찍어줘",
+   "description": "Zn XANES with unusual Korean phrasing",
+   "passed": true
+  },
+  {
+   "id": "held_02",
+   "category": "heldout",
+   "prompt": "X선 에너지를 9.5 keV로 맞춰주실래요?",
+   "description": "Energy set with polite question form",
+   "passed": true
+  },
+  {
+   "id": "held_03",
+   "category": "heldout",
+   "prompt": "M2 미러 pitch angle을 3.0 mrad로 조절해줘",
+   "description": "Motor move with English-Korean mixed phrasing",
+   "passed": true
+  },
+  {
+   "id": "held_04",
+   "category": "heldout",
+   "prompt": "코발트 흡수 스펙트럼 좀 볼 수 있을까요?",
+   "description": "Co XANES/XAFS with indirect request",
+   "passed": true
+  },
+  {
+   "id": "held_05",
+   "category": "heldout",
+   "prompt": "selenium XRF 이미지를 20um x 20um 영역에서 31포인트로 얻고 싶어",
+   "description": "Se XRF map with English element name",
+   "passed": true
+  },
+  {
+   "id": "held_06",
+   "category": "heldout",
+   "prompt": "빔 세기를 줄이고 싶은데 어테뉴에이터에 알루미늄 0.5mm 집어넣어줘",
+   "description": "Attenuator with Korean context description",
+   "passed": true
+  },
+  {
+   "id": "held_07",
+   "category": "heldout",
+   "prompt": "Bragg 법칙이 뭔지 알려줘",
+   "description": "Info query: Bragg's law",
+   "passed": true
+  },
+  {
+   "id": "held_08",
+   "category": "heldout",
+   "prompt": "칼슘 K-edge 측정이 가능한가요?",
+   "description": "Out-of-range element query (Ca K=4.038 keV)",
+   "passed": true
+  },
+  {
+   "id": "held_09",
+   "category": "heldout",
+   "prompt": "지금 빔 에너지가 몇이야? 그리고 As XANES 해줘",
+   "description": "Combined info + scan request",
+   "passed": true
+  },
+  {
+   "id": "held_10",
+   "category": "heldout",
+   "prompt": "시료 위치를 x=150, y=-50으로 옮겨주세요",
+   "description": "Multi-axis motor move with xy coordinates",
+   "passed": true
+  },
+  {
+   "id": "held_11",
+   "category": "heldout",
+   "prompt": "Mn oxidation state를 확인하려면 어떻게 해야하죠?",
+   "description": "Advisory question about Mn oxidation analysis",
+   "passed": true
+  },
+  {
+   "id": "held_12",
+   "category": "heldout",
+   "prompt": "SSA를 완전히 열어줘",
+   "description": "SSA fully open with informal phrasing",
+   "passed": true
+  },
+  {
+   "id": "held_13",
+   "category": "heldout",
+   "prompt": "Fe K-edge XRF로 10x10 um 영역 빠르게 스캔해줘. 21포인트면 충분해",
+   "description": "XRF raster with 'quick' context",
+   "passed": true
+  },
+  {
+   "id": "held_14",
+   "category": "heldout",
+   "prompt": "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘",
+   "description": "Sequential Cu+Zn XANES from current energy",
+   "passed": true
+  },
+  {
+   "id": "held_15",
+   "category": "heldout",
+   "prompt": "Ce L3 XANES를 찍으려면 에너지를 얼마로 해야 해?",
+   "description": "Advisory question about Ce L3 energy",
+   "passed": true
+  },
+  {
+   "id": "explan_01",
+   "category": "experiment_plan",
+   "prompt": "NMC622 양극재야. Ni 30%, Co 10%, Mn 10%. 빔타임 8시간.",
+   "description": "NMC622 cathode with composition and beamtime",
+   "passed": true
+  },
+  {
+   "id": "explan_02",
+   "category": "experiment_plan",
+   "prompt": "시료가 SrTiO3 단결정인데 Ti, Sr 둘 다 분석해야해",
+   "description": "Multi-element sequential (Ti + Sr)",
+   "passed": true
+  },
+  {
+   "id": "explan_03",
+   "category": "experiment_plan",
+   "prompt": "Pt/C 촉매 50ppm인데 XRF로 보일까?",
+   "description": "Pt 50ppm signal estimation inquiry",
+   "passed": true
+  },
+  {
+   "id": "explan_04",
+   "category": "experiment_plan",
+   "prompt": "2D XRF 맵핑 후에 2D XRD도 해야하는데 시간이 얼마나 걸려?",
+   "description": "Timing inquiry for XRF + XRD mapping",
+   "passed": true
+  },
+  {
+   "id": "explan_05",
+   "category": "experiment_plan",
+   "prompt": "ptychography랑 XRF를 동시에 할 수 있어?",
+   "description": "Technique compatibility question (ptycho + XRF)",
+   "passed": true
+  },
+  {
+   "id": "explan_06",
+   "category": "experiment_plan",
+   "prompt": "nano-XANES랑 XRF 맵핑 동시에 되나?",
+   "description": "Technique compatibility question (XANES + XRF map)",
+   "passed": true
+  },
+  {
+   "id": "explan_07",
+   "category": "experiment_plan",
+   "prompt": "빔타임 4시간인데 Cu XAFS 3회 반복이랑 XRF 맵핑 둘 다 가능해?",
+   "description": "Time budget question (XAFS repeat + XRF map)",
+   "passed": true
+  },
+  {
+   "id": "explan_08",
+   "category": "experiment_plan",
+   "prompt": "검출기 교체 시간이 얼마나 걸려?",
+   "description": "Setup change inquiry (detector swap time)",
+   "passed": true
+  },
+  {
+   "id": "realuser_01",
+   "category": "real_user",
+   "prompt": "이 시료 좀 봐줘. Cu 시료야",
+   "description": "Vague request -- should ask for specifics",
+   "passed": true
+  },
+  {
+   "id": "realuser_02",
+   "category": "real_user",
+   "prompt": "형광 맵 좀 찍어줘. 10마이크로 범위",
+   "description": "Colloquial XRF request with range",
+   "passed": true
+  },
+  {
+   "id": "realuser_03",
+   "category": "real_user",
+   "prompt": "이 에너지에서 시료 신호가 얼마나 되는지 확인해봐",
+   "description": "Signal check at current energy",
+   "passed": true
+  },
+  {
+   "id": "realuser_04",
+   "category": "real_user",
+   "prompt": "좀 더 세게 빔 때려줘",
+   "description": "Increase flux (SSA open wider or remove attenuator)",
+   "passed": true
+  },
+  {
+   "id": "realuser_05",
+   "category": "real_user",
+   "prompt": "빔 사이즈를 최소로 줄여줘",
+   "description": "Minimize beam size",
+   "passed": true
+  },
+  {
+   "id": "realuser_06",
+   "category": "real_user",
+   "prompt": "결정 구조가 궁금해. XRD 한 번 찍어봐",
+   "description": "XRD single shot request",
+   "passed": true
+  },
+  {
+   "id": "realuser_07",
+   "category": "real_user",
+   "prompt": "이전 스캔 결과 보여줘",
+   "description": "Unsupported request -- show previous results",
+   "passed": true
+  },
+  {
+   "id": "realuser_08",
+   "category": "real_user",
+   "prompt": "시료를 좀 더 왼쪽으로 옮겨줘",
+   "description": "Relative motor move (left)",
+   "passed": true
+  },
+  {
+   "id": "realuser_09",
+   "category": "real_user",
+   "prompt": "지금 몇 keV야?",
+   "description": "Energy inquiry",
+   "passed": true
+  },
+  {
+   "id": "realuser_10",
+   "category": "real_user",
+   "prompt": "어떤 실험을 할 수 있어?",
+   "description": "Capability inquiry",
+   "passed": true
+  },
+  {
+   "id": "cmulti_01",
+   "category": "complex_multi",
+   "prompt": "에너지 15 keV로 바꾸고, SSA 30으로 줄이고, XRF 맵 10x10 41포인트 찍어줘",
+   "description": "3-step: energy + SSA + XRF raster",
+   "passed": true
+  },
+  {
+   "id": "cmulti_02",
+   "category": "complex_multi",
+   "prompt": "Si(311)로 바꾸고 Se K-edge XAFS 측정해줘",
+   "description": "Crystal change + Se XAFS",
+   "passed": true
+  },
+  {
+   "id": "cmulti_03",
+   "category": "complex_multi",
+   "prompt": "M1, M2 정렬 순서대로 해줘",
+   "description": "Sequential M1 + M2 alignment",
+   "passed": true
+  },
+  {
+   "id": "cmulti_04",
+   "category": "complex_multi",
+   "prompt": "Cu XANES 찍고, 에너지를 Fe로 바꿔서 XANES도 찍어줘",
+   "description": "Sequential Cu XANES + Fe XANES",
+   "passed": true
+  },
+  {
+   "id": "cmulti_05",
+   "category": "complex_multi",
+   "prompt": "XRF 맵핑하고 관심 영역에서 XANES 포인트 스캔해줘",
+   "description": "Multi-step workflow: XRF map then XANES",
+   "passed": true
+  },
+  {
+   "id": "cmulti_06",
+   "category": "complex_multi",
+   "prompt": "Pb L3 XANES하고 As K-edge XANES도 연속으로 해줘",
+   "description": "Sequential Pb L3 + As K XANES",
+   "passed": true
+  },
+  {
+   "id": "cmulti_07",
+   "category": "complex_multi",
+   "prompt": "어테뉴에이터 Al 0.3mm 넣고 나서 Cr XANES 측정해줘",
+   "description": "Attenuator insert + Cr XANES",
+   "passed": true
+  },
+  {
+   "id": "cmulti_08",
+   "category": "complex_multi",
+   "prompt": "12 keV로 설정하고 빔 프로파일 보여주고 XRF 맵 찍어줘",
+   "description": "3-step: energy + profile + XRF map",
+   "passed": true
+  },
+  {
+   "id": "robust_01",
+   "category": "robustness",
+   "prompt": "에너지를 12keV로 설정해줘",
+   "description": "No space before keV",
+   "passed": true
+  },
+  {
+   "id": "robust_02",
+   "category": "robustness",
+   "prompt": "copper K-edge XAFS해줘",
+   "description": "English element in Korean sentence",
+   "passed": true
+  },
+  {
+   "id": "robust_03",
+   "category": "robustness",
+   "prompt": "Fe xanes",
+   "description": "Minimal input (Fe xanes)",
+   "passed": true
+  },
+  {
+   "id": "robust_04",
+   "category": "robustness",
+   "prompt": "XAFS 해",
+   "description": "No element specified => should ask",
+   "passed": true
+  },
+  {
+   "id": "robust_05",
+   "category": "robustness",
+   "prompt": "   Cu K-edge XAFS   ",
+   "description": "Extra whitespace around input",
+   "passed": true
+  },
+  {
+   "id": "robust_06",
+   "category": "robustness",
+   "prompt": "에너지 8.333 keV로 맞춰줘",
+   "description": "Exact edge energy (Ni K=8.333) -- should warn about being AT the edge",
+   "passed": true
+  },
+  {
+   "id": "robust_07",
+   "category": "robustness",
+   "prompt": "quickXafs Cu K",
+   "description": "User typing function name directly",
+   "passed": true
+  },
+  {
+   "id": "robust_08",
+   "category": "robustness",
+   "prompt": "Cu, Fe, Zn 다원소 맵핑 10x10",
+   "description": "Comma-separated elements mapping",
+   "passed": true
+  },
+  {
+   "id": "robust_09",
+   "category": "robustness",
+   "prompt": "에너지를 -5 keV로",
+   "description": "Negative energy => should reject",
+   "passed": true
+  },
+  {
+   "id": "robust_10",
+   "category": "robustness",
+   "prompt": "에너지를 100 keV로",
+   "description": "Energy way out of range (100 keV)",
+   "passed": true
+  },
+  {
+   "id": "reject_01",
+   "category": "rejection",
+   "prompt": "Si K-edge XANES 해줘",
+   "description": "Si K-edge (1.84 keV) out of range",
+   "passed": true
+  },
+  {
+   "id": "reject_02",
+   "category": "rejection",
+   "prompt": "산소 K-edge XANES 측정해줘",
+   "description": "O K-edge (0.54 keV) out of range",
+   "passed": true
+  },
+  {
+   "id": "reject_03",
+   "category": "rejection",
+   "prompt": "리튬 흡수 스펙트럼 측정해줘",
+   "description": "Li K-edge (0.055 keV) out of range",
+   "passed": true
+  },
+  {
+   "id": "reject_04",
+   "category": "rejection",
+   "prompt": "탄소 K-edge XAFS 해줘",
+   "description": "C K-edge (0.28 keV) out of range",
+   "passed": true
+  },
+  {
+   "id": "reject_05",
+   "category": "rejection",
+   "prompt": "질소 XANES 측정해줘",
+   "description": "N K-edge (0.40 keV) out of range",
+   "passed": true
+  },
+  {
+   "id": "reject_06",
+   "category": "rejection",
+   "prompt": "Ag K-edge XAFS 측정해",
+   "description": "Ag K-edge (25.5 keV) at boundary -- should warn",
+   "passed": true
+  },
+  {
+   "id": "reject_07",
+   "category": "rejection",
+   "prompt": "우라늄 분석해줘",
+   "description": "Uranium not in standard database",
+   "passed": true
+  },
+  {
+   "id": "reject_08",
+   "category": "rejection",
+   "prompt": "시료 사진 찍어줘",
+   "description": "Optical imaging not available",
+   "passed": true
+  },
+  {
+   "id": "korean_01",
+   "category": "korean_variant",
+   "prompt": "구리 K 흡수단 XAFS 돌려줘",
+   "description": "Korean 'absorption edge' phrasing",
+   "passed": true
+  },
+  {
+   "id": "korean_02",
+   "category": "korean_variant",
+   "prompt": "니켈 산화 상태 확인",
+   "description": "Ni oxidation state check (terse)",
+   "passed": true
+  },
+  {
+   "id": "korean_03",
+   "category": "korean_variant",
+   "prompt": "형광 이미징 하고 싶어요",
+   "description": "Polite XRF imaging request",
+   "passed": true
+  },
+  {
+   "id": "korean_04",
+   "category": "korean_variant",
+   "prompt": "에너지 바꿔주세요. 9 keV로요.",
+   "description": "Polite energy change with period",
+   "passed": true
+  },
+  {
+   "id": "korean_05",
+   "category": "korean_variant",
+   "prompt": "빔 정렬 한번 해볼까?",
+   "description": "Casual question form alignment",
+   "passed": true
+  },
+  {
+   "id": "korean_06",
+   "category": "korean_variant",
+   "prompt": "SSA 좀 넓혀줄래?",
+   "description": "Informal SSA widen request",
+   "passed": true
+  },
+  {
+   "id": "korean_07",
+   "category": "korean_variant",
+   "prompt": "스캔 멈춰!",
+   "description": "Stop scan command",
+   "passed": true
+  },
+  {
+   "id": "korean_08",
+   "category": "korean_variant",
+   "prompt": "이거 다시 해줘",
+   "description": "Repeat last action -- context-dependent",
+   "passed": true
+  },
+  {
+   "id": "sigest_01",
+   "category": "signal_est",
+   "prompt": "Cu 100ppm 시료에서 XRF 신호가 충분할까?",
+   "description": "Cu 100ppm XRF signal sufficiency",
+   "passed": true
+  },
+  {
+   "id": "sigest_02",
+   "category": "signal_est",
+   "prompt": "Au 10ppm 박막 시료 신호 예상치",
+   "description": "Au 10ppm thin film signal estimate",
+   "passed": true
+  },
+  {
+   "id": "sigest_03",
+   "category": "signal_est",
+   "prompt": "Fe 50% 시료 XAFS 자기흡수 문제 없어?",
+   "description": "Fe 50% self-absorption concern",
+   "passed": true
+  },
+  {
+   "id": "sigest_04",
+   "category": "signal_est",
+   "prompt": "Mn 500ppm에서 검출 한계가 어떻게 돼?",
+   "description": "Mn 500ppm detection limit inquiry",
+   "passed": true
+  },
+  {
+   "id": "sigest_05",
+   "category": "signal_est",
+   "prompt": "Pt L3 XRF를 할건데 Ir 간섭이 있을까?",
+   "description": "Pt-Ir spectral interference question",
+   "passed": true
+  },
+  {
+   "id": "blknow_01",
+   "category": "bl_knowledge",
+   "prompt": "이 빔라인 에너지 범위가 어떻게 돼?",
+   "description": "Beamline energy range inquiry",
+   "passed": true
+  },
+  {
+   "id": "blknow_02",
+   "category": "bl_knowledge",
+   "prompt": "KB 미러 초점 거리가 얼마야?",
+   "description": "KB mirror focal distance inquiry",
+   "passed": true
+  },
+  {
+   "id": "blknow_03",
+   "category": "bl_knowledge",
+   "prompt": "DCM Si(111)이랑 Si(311) 차이가 뭐야?",
+   "description": "DCM Si(111) vs Si(311) difference",
+   "passed": true
+  },
+  {
+   "id": "blknow_04",
+   "category": "bl_knowledge",
+   "prompt": "이 빔라인에서 할 수 있는 실험 종류를 알려줘",
+   "description": "List available experiment types",
+   "passed": true
+  },
+  {
+   "id": "blknow_05",
+   "category": "bl_knowledge",
+   "prompt": "빔 사이즈가 최소 얼마까지 줄어들어?",
+   "description": "Minimum beam size inquiry",
+   "passed": true
+  },
+  {
+   "id": "explan_09",
+   "category": "experiment_plan",
+   "prompt": "XRF 맵핑 해상도를 50nm로 하면 10x10 영역 스캔 시간이 얼마나 걸려?",
+   "description": "Scan time estimation for high-res XRF",
+   "passed": true
+  },
+  {
+   "id": "explan_10",
+   "category": "experiment_plan",
+   "prompt": "XAFS 측정 1회에 시간이 얼마나 걸려?",
+   "description": "XAFS single scan time inquiry",
+   "passed": true
+  },
+  {
+   "id": "robust_11",
+   "category": "robustness",
+   "prompt": "12 kev로 에너지 설정",
+   "description": "Lowercase keV unit",
+   "passed": true
+  },
+  {
+   "id": "robust_12",
+   "category": "robustness",
+   "prompt": "energy 12",
+   "description": "Minimal English energy command",
+   "passed": true
+  },
+  {
+   "id": "reject_09",
+   "category": "rejection",
+   "prompt": "마그네슘 K-edge 해줘",
+   "description": "Mg K-edge (1.30 keV) out of range",
+   "passed": true
+  },
+  {
+   "id": "reject_10",
+   "category": "rejection",
+   "prompt": "알루미늄 K-edge XANES 해줘",
+   "description": "Al K-edge (1.56 keV) out of range",
+   "passed": true
+  },
+  {
+   "id": "realuser_11",
+   "category": "real_user",
+   "prompt": "빔 안정적이야?",
+   "description": "Beam stability inquiry",
+   "passed": true
+  },
+  {
+   "id": "realuser_12",
+   "category": "real_user",
+   "prompt": "도와줘",
+   "description": "Help request (generic)",
+   "passed": true
+  },
+  {
+   "id": "cmulti_09",
+   "category": "complex_multi",
+   "prompt": "에너지 20 keV로 바꾸고 정렬하고 Mo XANES 찍어줘",
+   "description": "3-step: 20keV + align + Mo XANES",
+   "passed": true
+  },
+  {
+   "id": "korean_09",
+   "category": "korean_variant",
+   "prompt": "망간 흡수단 스캔 부탁해요",
+   "description": "Mn absorption edge scan (polite request)",
+   "passed": true
+  },
+  {
+   "id": "ssa_01",
+   "category": "ssa_control",
+   "prompt": "SSA 수직갭을 60um으로 맞춰줘",
+   "description": "SSA vgap set to 60um (must use motorSetUI)",
+   "passed": true
+  },
+  {
+   "id": "ssa_02",
+   "category": "ssa_control",
+   "prompt": "SSA를 최소로 닫아줘. 수평 수직 다 10um으로.",
+   "description": "SSA close to 10um both axes (must use motorSetUI x2)",
+   "passed": true
+  },
+  {
+   "id": "ssa_03",
+   "category": "ssa_control",
+   "prompt": "SSA 크기 좀 키워줘. 수평 100 수직 80",
+   "description": "SSA enlarge both h=100 v=80 (motorSetUI)",
+   "passed": true
+  },
+  {
+   "id": "analysis_01",
+   "category": "analysis_intent",
+   "prompt": "이 시료의 Fe 산화 상태를 확인하고 싶어요",
+   "description": "Fe oxidation state check = XANES measurement",
+   "passed": true
+  },
+  {
+   "id": "analysis_02",
+   "category": "analysis_intent",
+   "prompt": "Cr(III)인지 Cr(VI)인지 확인해야 합니다",
+   "description": "Cr valence check = XANES measurement",
+   "passed": true
+  },
+  {
+   "id": "analysis_03",
+   "category": "analysis_intent",
+   "prompt": "니켈 산화물 시료의 상(phase)을 분석하고 싶은데요",
+   "description": "Ni oxide phase analysis = XANES or XRD",
+   "passed": true
+  },
+  {
+   "id": "seq_01",
+   "category": "sequential",
+   "prompt": "Fe XANES 한 다음에 Ni XANES도 해줘",
+   "description": "Sequential Fe+Ni XANES (must generate both)",
+   "passed": true
+  },
+  {
+   "id": "seq_02",
+   "category": "sequential",
+   "prompt": "Mn이랑 Co XANES를 연속으로 측정해줘",
+   "description": "Sequential Mn+Co XANES (must generate both)",
+   "passed": true
+  },
+  {
+   "id": "seq_03",
+   "category": "sequential",
+   "prompt": "Pb L3 XANES 하고 나서 As K-edge XANES도 순차적으로 해주세요",
+   "description": "Sequential Pb L3 + As K XANES",
+   "passed": true
+  },
+  {
+   "id": "qact_01",
+   "category": "question_action",
+   "prompt": "현재 결정이 뭐야? 그리고 Fe XAFS 해줘",
+   "description": "Question about crystal + Fe XAFS action",
+   "passed": true
+  },
+  {
+   "id": "qact_02",
+   "category": "question_action",
+   "prompt": "빔 사이즈가 지금 얼마야? SSA를 50um으로 줄여줘",
+   "description": "Question about beam size + SSA motor action",
+   "passed": true
+  },
+  {
+   "id": "partial_01",
+   "category": "partial_range",
+   "prompt": "S K-edge XANES랑 Fe K-edge XANES를 둘 다 해줘",
+   "description": "S(out of range) + Fe(in range) -- must do Fe",
+   "passed": true
+  },
+  {
+   "id": "partial_02",
+   "category": "partial_range",
+   "prompt": "Ca XANES하고 Zn XANES도 해줘",
+   "description": "Ca(out of range) + Zn(in range) -- must do Zn",
+   "passed": true
+  },
+  {
+   "id": "heavyel_01",
+   "category": "heavy_element",
+   "prompt": "납 XRF 이미징 해주세요. 10x10um, 51포인트.",
+   "description": "Pb XRF -- must auto-select L3 edge (13.035 keV)",
+   "passed": true
+  },
+  {
+   "id": "heavyel_02",
+   "category": "heavy_element",
+   "prompt": "텅스텐 XRF 맵핑해줘. 5x5 41포인트",
+   "description": "W XRF -- must auto-select L3 edge (10.207 keV)",
+   "passed": true
+  },
+  {
+   "id": "colloquial_01",
+   "category": "colloquial",
+   "prompt": "구리 XANES 한번만 빨리 돌려줘",
+   "description": "Casual Cu XANES request",
+   "passed": true
+  },
+  {
+   "id": "colloquial_02",
+   "category": "colloquial",
+   "prompt": "에너지 좀 올려줘. 15 keV로.",
+   "description": "Casual energy raise to 15 keV",
+   "passed": true
+  },
+  {
+   "id": "colloquial_03",
+   "category": "colloquial",
+   "prompt": "아연 분포 좀 봐봐. 20um 정도.",
+   "description": "Casual Zn XRF distribution request",
+   "passed": true
+  },
+  {
+   "id": "colloquial_04",
+   "category": "colloquial",
+   "prompt": "시료 왼쪽으로 5um 이동",
+   "description": "Casual relative sample move left",
+   "passed": true
+  },
+  {
+   "id": "safety_01",
+   "category": "safety",
+   "prompt": "멈춰! 스캔 중지해!",
+   "description": "Urgent stop command (various phrasings)",
+   "passed": true
+  },
+  {
+   "id": "safety_02",
+   "category": "safety",
+   "prompt": "모든 동작 정지시켜",
+   "description": "Stop all operations",
+   "passed": true
+  },
+  {
+   "id": "implicit_01",
+   "category": "implicit_technique",
+   "prompt": "이 촉매 시료에서 백금 상태가 궁금해",
+   "description": "Pt state from catalyst context = XANES",
+   "passed": true
+  },
+  {
+   "id": "implicit_02",
+   "category": "implicit_technique",
+   "prompt": "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘",
+   "description": "Cu contamination check on semiconductor = XRF",
+   "passed": true
+  },
+  {
+   "id": "implicit_03",
+   "category": "implicit_technique",
+   "prompt": "토양 시료에서 비소 형태 분석해주세요",
+   "description": "As speciation in soil = XANES",
+   "passed": true
+  },
+  {
+   "id": "vexp_01",
+   "category": "experiment_preset",
+   "prompt": "Cu XAFS 실험 셋업해줘",
+   "description": "Cu XAFS experiment preset setup",
+   "passed": true
+  },
+  {
+   "id": "vexp_02",
+   "category": "experiment_preset",
+   "prompt": "분말 XRD 실험 시작해줘",
+   "description": "Powder XRD experiment preset",
+   "passed": true
+  },
+  {
+   "id": "vexp_03",
+   "category": "experiment_preset",
+   "prompt": "2D XRF 맵핑 실험 셋업",
+   "description": "2D XRF mapping experiment setup",
+   "passed": false
+  },
+  {
+   "id": "vexp_04",
+   "category": "experiment_preset",
+   "prompt": "구리 산화물의 흡수 스펙트럼을 보고 싶어",
+   "description": "Indirect Cu absorption spectrum request",
+   "passed": true
+  },
+  {
+   "id": "vexp_05",
+   "category": "experiment_preset",
+   "prompt": "위치별 결정상 분포를 알고 싶어",
+   "description": "Phase distribution by position = XRD 2D map",
+   "passed": true
+  },
+  {
+   "id": "vexp_06",
+   "category": "experiment_preset",
+   "prompt": "나노 XRF 라인스캔 프리셋 로드해줘",
+   "description": "Nano XRF line scan preset load",
+   "passed": true
+  },
+  {
+   "id": "vexp_07",
+   "category": "experiment_preset",
+   "prompt": "XRF imaging preset으로 시작",
+   "description": "XRF imaging preset (English-Korean mixed)",
+   "passed": true
+  },
+  {
+   "id": "vexp_08",
+   "category": "experiment_preset",
+   "prompt": "시료의 원소 맵핑을 고해상도로 하고 싶은데, 나노빔 XRF 실험 세팅해줘",
+   "description": "High-res nano XRF experiment setup",
+   "passed": true
+  },
+  {
+   "id": "vexp_09",
+   "category": "experiment_planning_adv",
+   "prompt": "LiNi0.8Co0.1Mn0.1O2 시료야. Ni, Co, Mn XANES를 각각 하고 XRF 맵도 찍어야해. 빔타임 6시간",
+   "description": "NMC811 multi-element XANES + XRF plan with 6h beamtime",
+   "passed": true
+  },
+  {
+   "id": "vexp_10",
+   "category": "experiment_planning_adv",
+   "prompt": "FePt 나노입자 촉매인데 Fe K-edge XAFS 3회 반복하고 Pt L3 XANES도 해줘",
+   "description": "FePt catalyst: Fe XAFS x3 + Pt L3 XANES",
+   "passed": true
+  },
+  {
+   "id": "vexp_11",
+   "category": "experiment_planning_adv",
+   "prompt": "XRF 하고 나서 XRD도 해야하는데 검출기 교체가 필요한가요?",
+   "description": "XRF->XRD detector swap inquiry (~30min)",
+   "passed": true
+  },
+  {
+   "id": "vexp_12",
+   "category": "experiment_planning_adv",
+   "prompt": "페로브스카이트 태양전지 시료야. 납 분포랑 결정상을 동시에 보고싶어",
+   "description": "Perovskite Pb distribution + crystal phase (needs detector swap)",
+   "passed": true
+  },
+  {
+   "id": "vexp_13",
+   "category": "experiment_planning_adv",
+   "prompt": "배터리 음극재 그래파이트 시료인데 Fe, Cu 불순물을 ppm 수준으로 찾아야해",
+   "description": "Trace Fe/Cu impurity in graphite anode",
+   "passed": true
+  },
+  {
+   "id": "vexp_14",
+   "category": "experiment_planning_adv",
+   "prompt": "Mn K XANES, Co K XANES, Ni K XANES 순서로 해줘. 에너지 차이가 2 keV 미만이니까 정렬 안해도 되지?",
+   "description": "Mn/Co/Ni XANES sequential, no alignment needed (dE<2keV)",
+   "passed": true
+  },
+  {
+   "id": "vexp_15",
+   "category": "experiment_planning_adv",
+   "prompt": "이 시료에 Cr이 있는데 3가인지 6가인지 구별해야해. 환경 시료라 농도가 낮아",
+   "description": "Cr(III) vs Cr(VI) speciation in environmental sample",
+   "passed": true
+  },
+  {
+   "id": "vexp_16",
+   "category": "experiment_planning_adv",
+   "prompt": "첫번째 시료는 XRF 맵, 두번째 시료는 XANES 해야해. 시료 교체 포함해서 총 시간이 얼마나 걸려?",
+   "description": "Total time with sample change: XRF map + XANES",
+   "passed": true
+  },
+  {
+   "id": "vexp_17",
+   "category": "experiment_planning_adv",
+   "prompt": "Au 나노입자가 TiO2 담지체 위에 있어. Au 분포 보고 Ti 산화상태도 확인하고 싶어",
+   "description": "Au/TiO2 catalyst: Au L3 OK, Ti K borderline out of range",
+   "passed": true
+  },
+  {
+   "id": "vexp_18",
+   "category": "experiment_planning_adv",
+   "prompt": "Ce L3 XANES 하고 그 다음 Fe K XANES 해줘. 에너지 바꿀 때 정렬 필요한가?",
+   "description": "Ce L3 -> Fe K XANES, no alignment (dE=1.389 keV)",
+   "passed": true
+  },
+  {
+   "id": "vexp_19",
+   "category": "ptycho_experiment",
+   "prompt": "ptychography 실험 셋업해줘",
+   "description": "Direct ptychography setup request",
+   "passed": true
+  },
+  {
+   "id": "vexp_20",
+   "category": "ptycho_experiment",
+   "prompt": "coherent imaging으로 시료 구조 보고싶어",
+   "description": "Coherent imaging = ptychography",
+   "passed": true
+  },
+  {
+   "id": "vexp_21",
+   "category": "ptycho_experiment",
+   "prompt": "위상 이미징 해줘",
+   "description": "Phase imaging = ptychography",
+   "passed": true
+  },
+  {
+   "id": "vexp_22",
+   "category": "ptycho_experiment",
+   "prompt": "결맞음 빔으로 나노구조 관찰하고 싶어. 에너지는 10 keV로",
+   "description": "Coherent beam nanostructure at 10 keV",
+   "passed": true
+  },
+  {
+   "id": "vexp_23",
+   "category": "ptycho_experiment",
+   "prompt": "반도체 시료를 비파괴로 내부 구조 보고 싶어. 50nm 분해능이 필요해",
+   "description": "Non-destructive 50nm resolution = ptychography",
+   "passed": true
+  },
+  {
+   "id": "vexp_24",
+   "category": "ptycho_experiment",
+   "prompt": "XRF 맵핑 끝나면 ptychography도 이어서 할건데, 셋업 변경 시간이 얼마나 걸려?",
+   "description": "XRF->ptycho setup change time (~45min)",
+   "passed": true
+  },
+  {
+   "id": "vexp_25",
+   "category": "technique_selection",
+   "prompt": "시료의 원소 분포를 알고싶어",
+   "description": "Element distribution = XRF mapping (may ask which element)",
+   "passed": true
+  },
+  {
+   "id": "vexp_26",
+   "category": "technique_selection",
+   "prompt": "결정 구조를 확인하고 싶어",
+   "description": "Crystal structure = XRD",
+   "passed": true
+  },
+  {
+   "id": "vexp_27",
+   "category": "technique_selection",
+   "prompt": "Fe 산화 상태가 궁금해",
+   "description": "Fe oxidation state = XANES",
+   "passed": true
+  },
+  {
+   "id": "vexp_28",
+   "category": "technique_selection",
+   "prompt": "화학 결합 상태를 알고 싶어. Cu 시료야",
+   "description": "Chemical bonding state of Cu = XAFS/XANES",
+   "passed": true
+  },
+  {
+   "id": "vexp_29",
+   "category": "technique_selection",
+   "prompt": "나노 스케일 이미지가 필요해",
+   "description": "Nano-scale image (ambiguous: ptycho or high-res XRF)",
+   "passed": true
+  },
+  {
+   "id": "vexp_30",
+   "category": "technique_selection",
+   "prompt": "미량 원소 검출이 목적이야. Cr 10ppm 수준",
+   "description": "Trace Cr 10ppm = XRF with flux priority",
+   "passed": true
+  },
+  {
+   "id": "vexp_31",
+   "category": "technique_selection",
+   "prompt": "상분율을 알고 싶어. 다상 세라믹 시료야",
+   "description": "Phase fraction of multiphase ceramic = XRD 2D map",
+   "passed": true
+  },
+  {
+   "id": "vexp_32",
+   "category": "technique_selection",
+   "prompt": "국소 영역에서 격자 상수 변화를 관찰하고 싶어",
+   "description": "Local lattice parameter variation = XRD 2D map",
+   "passed": true
+  },
+  {
+   "id": "vexp_33",
+   "category": "multi_technique_wf",
+   "prompt": "XRF로 관심 영역 찾고 거기서 XANES 해줘. Fe 시료야",
+   "description": "XRF survey -> XANES on ROI (Fe)",
+   "passed": true
+  },
+  {
+   "id": "vexp_34",
+   "category": "multi_technique_wf",
+   "prompt": "Ni XANES 하고 XRD도 연속으로 해줘",
+   "description": "Ni XANES + XRD sequential (detector swap warning)",
+   "passed": true
+  },
+  {
+   "id": "vexp_35",
+   "category": "multi_technique_wf",
+   "prompt": "Fe XAFS 3번 반복 후에 XRF 맵 찍어줘. 10x10 41포인트",
+   "description": "Fe XAFS x3 + XRF map (same SDD, no swap)",
+   "passed": true
+  },
+  {
+   "id": "vexp_36",
+   "category": "multi_technique_wf",
+   "prompt": "Mn XANES, Co XANES, Ni XANES 순차 측정 후 XRF 2D 맵핑까지 해줘",
+   "description": "Mn/Co/Ni XANES + XRF 2D map (4-step workflow)",
+   "passed": true
+  },
+  {
+   "id": "vexp_37",
+   "category": "multi_technique_wf",
+   "prompt": "먼저 XRD 패턴 한 장 찍고, 그 다음 XRF 맵핑 해줘",
+   "description": "XRD then XRF (detector swap ~30min)",
+   "passed": true
+  },
+  {
+   "id": "vexp_38",
+   "category": "multi_technique_wf",
+   "prompt": "Cu XANES 끝나면 바로 Zn XANES도 이어서 해줘",
+   "description": "Cu + Zn XANES sequential (dE=0.68 keV, no alignment)",
+   "passed": true
+  },
+  {
+   "id": "vexp_39",
+   "category": "multi_technique_wf",
+   "prompt": "Se K-edge XAFS 하고 나서 Pb L3 XANES도 해줘",
+   "description": "Se XAFS + Pb L3 XANES (dE=0.377 keV, no alignment)",
+   "passed": true
+  },
+  {
+   "id": "vexp_40",
+   "category": "multi_technique_wf",
+   "prompt": "에너지 8 keV에서 Cu 시료 XRF 맵핑하고, 에너지 올려서 20 keV에서 Mo XANES도 해줘",
+   "description": "8 keV XRF + 20 keV Mo XANES (12 keV change, alignment needed)",
+   "passed": true
+  },
+  {
+   "id": "vexp_41",
+   "category": "timing_feasibility",
+   "prompt": "ptychography 한 장 찍는데 시간이 얼마나 걸려?",
+   "description": "Ptychography single shot timing (~75s)",
+   "passed": true
+  },
+  {
+   "id": "vexp_42",
+   "category": "timing_feasibility",
+   "prompt": "XRF 맵 100x100um에 1um 스텝으로 하면 시간이 어떻게 돼?",
+   "description": "Large XRF map timing (101x101 pts)",
+   "passed": true
+  },
+  {
+   "id": "vexp_43",
+   "category": "timing_feasibility",
+   "prompt": "XAFS 5회 반복이면 빔타임 몇 시간 필요해?",
+   "description": "XAFS 5x repeat beamtime estimate (~1.25 hours)",
+   "passed": true
+  },
+  {
+   "id": "vexp_44",
+   "category": "timing_feasibility",
+   "prompt": "XRD에서 XRF로 바꾸는데 시간이 얼마나 걸려?",
+   "description": "XRD->XRF setup change time (~30min)",
+   "passed": true
+  },
+  {
+   "id": "vexp_45",
+   "category": "timing_feasibility",
+   "prompt": "XRF 맵 2장이랑 XANES 3회 하면 총 빔타임이 얼마야?",
+   "description": "Combined timing: 2x XRF map + 3x XANES",
+   "passed": true
+  },
+  {
+   "id": "vexp_46",
+   "category": "experiment_edge",
+   "prompt": "Ag K-edge XAFS 해줘",
+   "description": "Ag K-edge (25.514 keV) borderline range limit",
+   "passed": true
+  },
+  {
+   "id": "vexp_47",
+   "category": "experiment_edge",
+   "prompt": "시료 분석해줘",
+   "description": "Vague request -- should ask for details",
+   "passed": true
+  },
+  {
+   "id": "vexp_48",
+   "category": "experiment_edge",
+   "prompt": "Ba L3 XANES 하고 Ca K-edge XANES도 해줘",
+   "description": "Ba L3 (5.247 keV) OK, Ca K (4.038 keV) out of range",
+   "passed": true
+  },
+  {
+   "id": "vexp_49",
+   "category": "experiment_edge",
+   "prompt": "XRD 하려는데 에너지 5 keV면 데이터가 괜찮을까?",
+   "description": "XRD at 5 keV quality inquiry (suboptimal, advise higher)",
+   "passed": true
+  },
+  {
+   "id": "vexp_50",
+   "category": "experiment_edge",
+   "prompt": "La L3 XANES 하면서 동시에 ptychography도 할 수 있어?",
+   "description": "XANES + ptycho concurrent -- incompatible",
+   "passed": true
+  }
+ ]
+}

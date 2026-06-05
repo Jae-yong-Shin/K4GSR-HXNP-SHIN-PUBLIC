@@ -1,0 +1,10 @@
+======================================================================
+LATENCY MEASUREMENT  label=dev-to-vm1-nat  scenario=remote
+Date: 2026-05-30 09:41:02
+======================================================================
+[scan] total ms  n=53  median=-1196.72  mean=-1196.83  min=-1198.08  max=-1195.81  p10=-1197.36  p90=-1196.5
+  callback_to_send   median=0.01  mean=0.01  max=0.01
+  send_to_ws         median=1.12  mean=1.05  max=1.59
+  ws_to_client       median=-1197.81  mean=-1197.89  max=-1196.94
+[pv] send_to_recv   n=40  median=-1197.9  mean=-1197.78  max=-1193.53  p10=-1198.56  p90=-1197.69
+[pv] write_to_recv  n=40  median=89.07  mean=90.02  max=134.13  p10=82.46  p90=94.9

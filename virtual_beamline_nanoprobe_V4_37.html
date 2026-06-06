@@ -2,16 +2,16 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>Korea-4GSR ID10 NanoProbe Virtual Beamline v4.36</title>
+<title>HANBIT — K4GSR HXNP Virtual Commissioning Platform v4.37</title>
 <!-- Fonts: system fallback -->
 <!-- Chart lib: uPlot 1.6.31 (35KB) for interactive 1D charts -->
 <link rel="stylesheet" href="vendor/uplot-1.6.31.min.css">
 <style>
-:root{--bg:#f0f2f5;--s0:#ffffff;--s1:#e8ecf0;--s2:#dce0e6;--s3:#d0d5dc;--b0:rgba(0,40,80,.06);--b1:rgba(0,40,80,.14);--b2:rgba(0,40,80,.24);--ac:#0066aa;--pr:#6050b0;--pr2:rgba(96,80,176,.12);--am:#b07800;--gn:#007858;--rd:#c02818;--pk:#a03870;--t0:#1a2030;--t1:#2a3040;--t2:#506070;--t3:#5a6678;--t3-bright:#48566a;--sn:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;--mn:'IBM Plex Mono','SF Mono','Consolas',monospace;--fs-display:13px;--fs-primary:11px;--fs-secondary:9px;--fs-tertiary:8px;--ui-zoom:1.8}
+:root{--bg:#f0f2f5;--s0:#ffffff;--s1:#e8ecf0;--s2:#dce0e6;--s3:#d0d5dc;--b0:rgba(0,40,80,.06);--b1:rgba(0,40,80,.14);--b2:rgba(0,40,80,.24);--ac:#0066aa;--pr:#6050b0;--pr2:rgba(96,80,176,.12);--am:#b07800;--gn:#007858;--rd:#c02818;--pk:#a03870;--t0:#1a2030;--t1:#2a3040;--t2:#506070;--t3:#5a6678;--t3-bright:#48566a;--sn:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;--mn:'IBM Plex Mono','SF Mono','Consolas',monospace;--fs-display:13px;--fs-primary:11px;--fs-secondary:9px;--fs-tertiary:8px;--ui-zoom:1.8;--popup-font-scale:1}
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sn);background:var(--bg);color:var(--t0);overflow:hidden;height:100vh}
 .app{display:grid;grid-template-rows:auto 1fr auto auto;grid-template-columns:1fr var(--rside-w,540px);height:100vh}
 .bar{grid-column:1/-1;display:flex;align-items:center;padding:0 12px;background:var(--s0);border-bottom:1px solid var(--b1);gap:10px;zoom:var(--ui-zoom,1.8)}
-.bar-logo{font-weight:700;font-size:13px;color:var(--ac);letter-spacing:1px}.bar-sub{font-size:10px;color:var(--t2);font-family:var(--mn)}
+.bar-brand{display:flex;align-items:center;gap:8px;line-height:1}.bar-logo{font-weight:700;font-size:13px;color:var(--ac);letter-spacing:1px;line-height:1}.bar-sub{font-size:10px;color:var(--t2);font-family:var(--mn);line-height:1}
 .bar-r{margin-left:auto;display:flex;align-items:center;gap:10px}.bar-st{font-size:10px;font-family:var(--mn);display:flex;align-items:center;gap:5px}
 .led{width:6px;height:6px;border-radius:50%;background:var(--gn);box-shadow:0 0 6px var(--gn)}
 .mode-btns{display:flex;gap:2px;margin-left:10px}.mode-btn{font-size:9px;padding:3px 8px;background:var(--s2);border:1px solid var(--b1);border-radius:3px;color:var(--t2);cursor:pointer;font-family:var(--mn)}.mode-btn.active{background:var(--ac);color:#000;border-color:var(--ac)}
@@ -133,7 +133,7 @@ body.layout-compact{--rside-w:380px}
 </head>
 <body>
 <div class="app">
-<div class="bar"><div class="bar-logo">Korea-4GSR</div><div class="bar-sub">ID10 NanoProbe v4.36</div>
+<div class="bar"><div class="bar-brand"><div class="bar-logo">HANBIT</div><div class="bar-sub">Korea-4GSR ID10 HXNP</div></div>
 <div class="mode-btns"><button class="mode-btn active" onclick="setMode('virtual')">Virtual</button><button class="mode-btn" onclick="setMode('real')">Real</button><button class="mode-btn" onclick="setMode('dual')">Dual</button></div>
 <div class="bar-r"><span id="ringStatusBar" style="font-size:8px;font-family:var(--mn);display:flex;gap:4px;align-items:center"></span><span class="bar-st"><span class="led"></span><span id="modeStatus">VIRTUAL MODE</span></span><span id="epicsLiveStats" style="font-size:8px;font-family:var(--mn);color:var(--t3)"></span><button class="bar-btn" onclick="window.open('../K4GSR-TOMO/web/tomo_ui.html','_blank')" title="Open Tomography Reconstruction UI">TOMO</button><button class="bar-btn" onclick="window.open('../K4GSR-PTYCHO/web/ptycho_ui.html','_blank')" title="Open Ptychography Reconstruction UI">PTYCHO</button><button class="bar-btn" onclick="resetVisualSx()">⟲ Reset</button><div style="position:relative;display:inline-flex;align-items:center"><button class="bar-btn" onclick="toggleModeMenu()" id="modeSelectorBtn">⚙ View</button><div class="mode-menu" id="modeMenu"></div></div><div style="position:relative;display:inline-flex;align-items:center"><button class="bar-btn" onclick="toggleLangMenu()" id="langSelectorBtn" style="min-width:32px">EN</button><div class="mode-menu" id="langMenu"></div></div><span style="display:inline-flex;align-items:center;gap:3px;margin:0 4px"><button class="bar-btn" onclick="setUIZoom(-0.1)" title="Zoom Out" style="min-width:28px;padding:4px 6px">-</button><span id="uiZoomLabel" style="font-size:9px;font-family:var(--mn);color:var(--t2);min-width:36px;text-align:center">180%</span><button class="bar-btn" onclick="setUIZoom(+0.1)" title="Zoom In" style="min-width:28px;padding:4px 6px">+</button></span><button class="bar-btn estop" onclick="emergencyStop()">⚠ E-STOP</button></div></div>
 
@@ -330,6 +330,22 @@ body.layout-compact{--rside-w:380px}
 <script src="js/optics/02b_crystal_psi_tables.js"></script>
 <script src="js/optics/03_reflectivity.js"></script>
 <script src="js/optics/04_source.js"></script>
+<!-- Phase 4 (DDD): 3-layer fallback for the WB-acceptance partial-flux
+     integral feeding the harmonic panel. Order matters:
+       02_webgpu_detect.js          : probes window._GPU on page load
+       03_webgpu_flux_acceptance.js : Layer 2 (WebGPU compute kernel)
+       04_flux_acceptance_lookup.js : Layer 1 (precomputed JSON table)
+       05_flux_acceptance_worker_host.js : Layer 3 (Web Worker CPU host)
+     The Worker script itself (05_flux_acceptance_worker.js) is fetched at
+     Worker-spawn time, NOT loaded as a script tag here. findHarmonicsAsync
+     (in 01_undulator.js) routes between the three layers. -->
+<script src="js/optics/02_webgpu_detect.js"></script>
+<script src="js/optics/03_webgpu_flux_acceptance.js"></script>
+<script src="js/optics/04_flux_acceptance_lookup.js"></script>
+<script src="js/optics/divergence_lookup.js"></script>
+<script src="js/optics/divergence_gpu.js"></script>
+<script src="js/optics/06_source_optics_table.js"></script>
+<script src="js/optics/05_flux_acceptance_worker_host.js"></script>
 <!-- 3. control: motors, EPICS (depends on shared) -->
 <script src="js/control/01_motors.js"></script>
 <script src="js/control/02_epics.js"></script>
@@ -393,4 +409,49 @@ body.layout-compact{--rside-w:380px}
 <script src="js/tomo/01_tomography.js"></script>
 <!-- 15. nano scanner panel -->
 <script src="js/ui/13_scanner_panel.js"></script>
+<!-- Startup accuracy-scope notice (Reviewer R1 MAJOR: "explicitly mention the limitations ... right in the GUI") -->
+<div class="modal-overlay" id="accNoticeOverlay">
+  <div class="modal" id="accNoticeDialog" style="resize:none;zoom:.9" data-popup-fontscale="off">
+    <div class="modal-head"><h3 id="accNoticeTitle">Notice</h3><button class="modal-close" type="button" id="accNoticeClose">✕</button></div>
+    <div class="modal-body" id="accNoticeBody"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var ov=document.getElementById('accNoticeOverlay'); if(!ov) return;
+  var ko=(((navigator.language||'')+'').slice(0,2).toLowerCase()==='ko');
+  var title=document.getElementById('accNoticeTitle');
+  var body=document.getElementById('accNoticeBody');
+  var btnOk, chk, html;
+  if(ko){
+    title.textContent='시뮬레이션 정확도 안내';
+    html='<p style="margin:0 0 12px">이 플랫폼은 물리 시뮬레이션, 컨트롤 시스템, 가상 실험을 통합하고 다국어 자연어로 제어·실험할 수 있는 <b>상호작용형 커미셔닝 도구</b>로, 빔라인 컨트롤, 빔 정렬 절차 리허설, 파라미터 경향 탐색, 빔라인 유저 교육을 위한 것입니다.</p>'
+        +'<p style="margin:0 0 12px">표시되는 빔 크기와 광자 플럭스 값은 <b>근사값이며 정밀 예측이 아닙니다.</b> 집속 크기는 하이브리드 Fraunhofer/Fresnel 모델로 계산되며, 파면 전파 시뮬레이션은 포함되지 않습니다.</p>'
+        +'<p style="margin:0 0 14px">정밀한 집속 크기·플럭스 예측은 전용 코드(SRW, Shadow4, xrt)를 사용하세요.</p>';
+    btnOk='확인'; chk='오늘 하루 보지 않음';
+  } else {
+    title.textContent='Simulation Accuracy Notice';
+    html='<p style="margin:0 0 12px">This platform is an <b>interactive commissioning tool</b> that integrates physics simulation, the control system, and virtual experiments, operated through a multilingual natural-language interface, intended for beamline control, beam-alignment procedure rehearsal, parameter-trend exploration, and beamline-user training.</p>'
+        +'<p style="margin:0 0 12px">The beam-size and photon-flux values shown are <b>approximate, not metrology-grade predictions.</b> Focus size is computed with a hybrid Fraunhofer/Fresnel model, and wavefront-propagation simulation is not included.</p>'
+        +'<p style="margin:0 0 14px">For absolute focus-size or flux prediction, use dedicated codes (SRW, Shadow4, xrt).</p>';
+    btnOk='I understand'; chk='Don\'t show this again today';
+  }
+  html+='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px">'
+      +'<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);cursor:pointer"><input type="checkbox" id="accNoticeHideToday" style="cursor:pointer;width:auto">'+chk+'</label>'
+      +'<button type="button" id="accNoticeOk" style="background:var(--ac);color:#fff;border:0;border-radius:7px;padding:6px 18px;font-size:13px;font-weight:600;cursor:pointer">'+btnOk+'</button></div>';
+  body.innerHTML=html;
+  function closeNotice(){
+    try{
+      var c=document.getElementById('accNoticeHideToday');
+      if(c && c.checked){ var dd=new Date(); dd.setHours(24,0,0,0); localStorage.setItem('accNoticeHideUntil', String(dd.getTime())); }
+    }catch(e){}
+    ov.classList.remove('open');
+  }
+  var ok=document.getElementById('accNoticeOk'); if(ok) ok.onclick=closeNotice;
+  var cl=document.getElementById('accNoticeClose'); if(cl) cl.onclick=closeNotice;
+  ov.onclick=function(ev){ if(ev.target===ov) closeNotice(); };
+  try{ var until=parseInt(localStorage.getItem('accNoticeHideUntil')||'0',10); if(until && Date.now()<until){ return; } }catch(e){}
+  ov.classList.add('open');
+})();
+</script>
 </body></html>

@@ -53,7 +53,7 @@ python server/server.py                        # Standalone
 python server/server.py --ca-bridge --bluesky  # Full mode
 ```
 
-Then open `virtual_beamline_nanoprobe_V4_36_bundle.html` in your browser.
+Then open `virtual_beamline_nanoprobe_V4_37_bundle.html` in your browser.
 
 ## NLP Chat Setup
 
@@ -276,7 +276,7 @@ K4GSR-Beamline/
 - On Windows, some packages may need Visual C++ Build Tools
 
 ### Browser doesn't open automatically
-- Manually open `virtual_beamline_nanoprobe_V4_36_bundle.html` in Chrome or Edge
+- Manually open `virtual_beamline_nanoprobe_V4_37_bundle.html` in Chrome or Edge
 
 ## Roadmap
 

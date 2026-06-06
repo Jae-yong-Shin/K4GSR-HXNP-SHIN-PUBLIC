@@ -49,7 +49,7 @@ var PTYCHO_WS_PORT = 8765;
 var PTYCHO_WS_URL = 'ws://' +
   ((typeof SERVER_HOST !== 'undefined' && SERVER_HOST !== 'localhost' && SERVER_HOST !== '127.0.0.1')
     ? 'localhost' : 'localhost') + ':' + PTYCHO_WS_PORT;
-// Override via URL param: ?ptycho_host=141.223.48.182
+// Override via URL param: ?ptycho_host=192.0.2.10
 (function() {
   var _qp2 = (typeof location !== 'undefined' && location.search) ? new URLSearchParams(location.search) : null;
   if (_qp2 && _qp2.get('ptycho_host')) PTYCHO_WS_URL = 'ws://' + _qp2.get('ptycho_host') + ':' + PTYCHO_WS_PORT;

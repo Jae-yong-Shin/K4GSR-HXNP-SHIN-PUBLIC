@@ -9,7 +9,7 @@
 This repository accompanies a peer-reviewed journal submission.
 
 - **`main` is frozen at the paper-submission state** (application bundle version 4.37.33). It is kept as the reproducibility baseline for the paper: the code, validation data, and benchmark results here correspond to the numbers reported in the manuscript. Only documentation fixes (such as this README) are applied to `main`.
-- **The `beta` branch exists (this branch)** and carries post-submission progress on the future work declared in the paper, including NLP agent improvements, an ion-chamber (I0/I1) physics model, and the EPICS areaDetector integration path. **The `beta` branch is still under active development and has NOT been fully validated**: code there is functional but work-in-progress (interim benchmarks only; not yet held to the validation standard of `main`), and it may change or break without notice. The [CHANGELOG.md](CHANGELOG.md) on this branch documents what changed relative to the paper baseline.
+- **The `beta` branch exists (this branch)** and carries post-submission progress on the future work declared in the paper, including NLP agent improvements, an ion-chamber (I0/I1) physics model, WebGPU acceleration of the MC ray-tracing engine, and the EPICS areaDetector/EIGER2 data-path integration. **The `beta` branch is still under active development and has NOT been fully validated**: code there is functional but work-in-progress (interim benchmarks only; not yet held to the validation standard of `main`), and it may change or break without notice. The [CHANGELOG.md](CHANGELOG.md) on this branch documents what changed relative to the paper baseline.
 - If you want to reproduce the paper, use `main`. If you want to preview ongoing development, watch for the `beta` branch.
 
 ### What is being developed on `beta` (status: 2026-06-12)
@@ -19,21 +19,17 @@ Work on `beta` follows the future-work directions declared in the accompanying p
 **On this branch now**
 
 - Ion-chamber physics (the "established ionization-chamber response model" named as future work in the paper): the response model is ported from the xraydb XAFS-toolkit `ionchamber_fluxes` formulation (gas attenuation splits, W values, Compton electron term), cross-checked at machine precision against xraydb itself, through transmission-XAFS measurement-chain scenarios (flux -> air -> I0 -> sample -> I1), and against XAFSmass (Klementiev & Chernikov 2016), the example implementation cited in the paper — after reconciling the two programs' documented conventions (carrier counting, W values, energy-deposit term) the agreement is 0.3-0.6%. Comes with an IC1 beamline component and a live current readout in the UI. Calibration against measured ion-chamber currents still requires real hardware and remains open
-- EPICS areaDetector integration path: ADSimDetector + ophyd + Bluesky end-to-end acquisition (simulated detector), with measured file-writer throughput ceilings
-
-**In implementation on the development line (not yet on this branch; will arrive in a future `beta` sync)**
-
 - Transmission-XANES measurement simulation: the virtual XAFS experiment can produce the real observable mu = ln(I0/I1) from simulated I0/I1 chamber currents, with per-dwell Poisson noise (opt-in; the synthetic-noise default is unchanged)
-- WebGPU acceleration of the Monte Carlo ray-tracing engine (opt-in, automatic CPU fallback): the source-to-monochromator per-ray segment runs as a compute shader, validated against the CPU engine by statistical-parity gates (per-element transmission parity within 0.15% at 1e6 rays); million-ray runs complete in about half the CPU time end to end, with the GPU segment itself roughly 20x faster
-- EIGER2 data-path evaluation: a SIMPLON-style stream simulator plus single/sharded HDF5 writer benchmarks (direct chunk write), with a measured decision table for when a single compressed writer suffices versus an Odin-style sharded writer
+- WebGPU acceleration of the Monte Carlo ray-tracing engine (opt-in, automatic CPU fallback): the full source-to-sample chain runs GPU-resident as compute shaders (phase 2), validated against the CPU engine by statistical-parity gates — 125 gates, 0 FAIL, per-element transmission parity within 0.15% at 1e6 rays; million-ray runs complete in tens of ms on a discrete GPU (measured 46-63x vs CPU end to end). WebGPU requires a secure context (HTTPS or localhost) — on plain HTTP the engine falls back to CPU automatically
+- EPICS areaDetector integration path: ADSimDetector + ophyd + Bluesky end-to-end acquisition (simulated detector) with measured file-writer throughput ceilings, extended by an EIGER2 data-path evaluation — a SIMPLON-style stream simulator plus single/sharded HDF5 writer benchmarks (direct chunk write), with a measured decision table for when a single compressed writer suffices versus an Odin-style sharded writer
 - Event-driven PV streaming: the WebSocket PV broadcast moved from 10 Hz polling to event push with burst coalescing (measured remote put-to-update median 47 ms vs the 91 ms polling baseline)
-- NLP agent hardening: deterministic recovery and guard layers, operator conventions (relative-by-default motor moves, execute-first for unambiguous requests), expanded multi-language understanding, and re-validation of the benchmark failure cases cited in the paper
+- NLP agent hardening: deterministic recovery and guard layers, operator conventions (relative-by-default motor moves, execute-first for unambiguous requests), expanded multi-language understanding, and re-validation of the benchmark failure cases cited in the paper (the four paper-cited failures now pass on the re-run categories with zero regressions)
 - Beamline-layout export: one-click JSON export and an xrt script generator for independent ray-tracing cross-checks
 
 **In progress**
 
-- WebGPU phase 2: moving the remaining CPU stages (histogram/statistics, SSA and Fresnel per-ray sampling, KB conic intersection) onto the GPU so the full chain is GPU-resident, targeting larger ray counts at interactive speed
 - Validation of the items above toward the standard of `main`, and periodic syncs of the development line into this branch
+- Bluesky queue-server integration and Tiled data access (the next infrastructure step on the Phase-1 roadmap)
 
 This list reflects the current direction and may change without notice.
 

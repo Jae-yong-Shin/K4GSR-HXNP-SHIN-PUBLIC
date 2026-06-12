@@ -12,6 +12,31 @@ This repository accompanies a peer-reviewed journal submission.
 - **The `beta` branch exists (this branch)** and carries post-submission progress on the future work declared in the paper, including NLP agent improvements, an ion-chamber (I0/I1) physics model, and the EPICS areaDetector integration path. **The `beta` branch is still under active development and has NOT been fully validated**: code there is functional but work-in-progress (interim benchmarks only; not yet held to the validation standard of `main`), and it may change or break without notice. The [CHANGELOG.md](CHANGELOG.md) on this branch documents what changed relative to the paper baseline.
 - If you want to reproduce the paper, use `main`. If you want to preview ongoing development, watch for the `beta` branch.
 
+### What is being developed on `beta` (status: 2026-06-12)
+
+Work on `beta` follows the future-work directions declared in the accompanying paper. Items are functional but validated to interim standards only.
+
+**On this branch now**
+
+- Ion-chamber physics: I0/I1 chamber response model (xraydb-derived attenuation, W values, Compton term), with an IC1 beamline component and a live current readout in the UI
+- EPICS areaDetector integration path: ADSimDetector + ophyd + Bluesky end-to-end acquisition (simulated detector), with measured file-writer throughput ceilings
+
+**Completed in the development line, arriving in the next `beta` sync**
+
+- Transmission-XANES measurement simulation: the virtual XAFS experiment can produce the real observable mu = ln(I0/I1) from simulated I0/I1 chamber currents, with per-dwell Poisson noise (opt-in; the synthetic-noise default is unchanged)
+- WebGPU acceleration of the Monte Carlo ray-tracing engine (opt-in, automatic CPU fallback): the source-to-monochromator per-ray segment runs as a compute shader, validated against the CPU engine by statistical-parity gates (per-element transmission parity within 0.15% at 1e6 rays); million-ray runs complete in about half the CPU time end to end, with the GPU segment itself roughly 20x faster
+- EIGER2 data-path evaluation: a SIMPLON-style stream simulator plus single/sharded HDF5 writer benchmarks (direct chunk write), with a measured decision table for when a single compressed writer suffices versus an Odin-style sharded writer
+- Event-driven PV streaming: the WebSocket PV broadcast moved from 10 Hz polling to event push with burst coalescing (measured remote put-to-update median 47 ms vs the 91 ms polling baseline)
+- NLP agent hardening: deterministic recovery and guard layers, operator conventions (relative-by-default motor moves, execute-first for unambiguous requests), expanded multi-language understanding, and re-validation of the benchmark failure cases cited in the paper
+- Beamline-layout export: one-click JSON export and an xrt script generator for independent ray-tracing cross-checks
+
+**In progress**
+
+- WebGPU phase 2: moving the remaining CPU stages (histogram/statistics, SSA and Fresnel per-ray sampling, KB conic intersection) onto the GPU so the full chain is GPU-resident, targeting larger ray counts at interactive speed
+- Validation of the items above toward the standard of `main`, and periodic syncs of the development line into this branch
+
+This list reflects the current direction and may change without notice.
+
 ## Quick Start
 
 The physics simulation runs entirely in the browser: simply open `virtual_beamline_nanoprobe_V4_37_bundle.html` in Chrome or Edge for the standalone virtual mode (no installation required). The Python backend adds NLP chat, EPICS Soft IOC, Bluesky scans, and server-side virtual experiments.

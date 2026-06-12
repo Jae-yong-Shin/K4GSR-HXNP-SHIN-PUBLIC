@@ -7,8 +7,8 @@
 This repository accompanies a peer-reviewed journal submission.
 
 - **`main` (this branch) is frozen at the paper-submission state** (application bundle version 4.37.33). It is kept as the reproducibility baseline for the paper: the code, validation data, and benchmark results here correspond to the numbers reported in the manuscript. Only documentation fixes (such as this README) are applied to `main`.
-- **A `beta` branch will be added** to carry post-submission progress on the future work declared in the paper, including NLP agent improvements, an ion-chamber (I0/I1) physics model, and the EPICS areaDetector integration path. **The `beta` branch is still under active development and has NOT been fully validated**: code there is functional but work-in-progress (interim benchmarks only; not yet held to the validation standard of `main`), and it may change or break without notice. A CHANGELOG on the `beta` branch will document what changed relative to the paper baseline.
-- If you want to reproduce the paper, use `main`. If you want to preview ongoing development, watch for the `beta` branch.
+- **The [`beta`](../../tree/beta) branch carries post-submission progress** on the future work declared in the paper, including NLP agent improvements, an ion-chamber (I0/I1) physics model, WebGPU acceleration of the Monte Carlo engine, and the EPICS areaDetector integration path. **The `beta` branch is still under active development and has NOT been fully validated**: code there is functional but work-in-progress (interim benchmarks only; not yet held to the validation standard of `main`), and it may change or break without notice. The CHANGELOG and the work-list section in the `beta` README document what is being developed and what changed relative to the paper baseline.
+- If you want to reproduce the paper, use `main`. If you want to preview ongoing development, see the [`beta`](../../tree/beta) branch README for the current work list and progress.
 
 ## Quick Start
 

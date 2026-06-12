@@ -2,41 +2,22 @@
 
 **Korea-4GSR ID10 Hard X-ray Nanoprobe (HXNP)** virtual beamline control system with physics simulation, virtual experiments, NLP chat, and EPICS integration.
 
+## Development Status and Branches
+
+This repository accompanies a peer-reviewed journal submission (Journal of Synchrotron Radiation).
+
+- **`main` (this branch) is frozen at the paper-submission state** (application bundle version 4.37.33). It is kept as the reproducibility baseline for the paper: the code, validation data, and benchmark results here correspond to the numbers reported in the manuscript. Only documentation fixes (such as this README) are applied to `main`.
+- **A `beta` branch will be added** to carry post-submission progress on the future work declared in the paper, including NLP agent improvements, an ion-chamber (I0/I1) physics model, and the EPICS areaDetector integration path. **The `beta` branch is still under active development and has NOT been fully validated**: code there is functional but work-in-progress (interim benchmarks only; not yet held to the validation standard of `main`), and it may change or break without notice. A CHANGELOG on the `beta` branch will document what changed relative to the paper baseline.
+- If you want to reproduce the paper, use `main`. If you want to preview ongoing development, watch for the `beta` branch.
+
 ## Quick Start
 
-### One-Click Start (Windows)
+The physics simulation runs entirely in the browser: simply open `virtual_beamline_nanoprobe_V4_37_bundle.html` in Chrome or Edge for the standalone virtual mode (no installation required). The Python backend adds NLP chat, EPICS Soft IOC, Bluesky scans, and server-side virtual experiments.
 
-1. Download or clone this repository
-2. Double-click one of the start scripts:
-
-| Script | Mode | What it runs |
-|--------|------|-------------|
-| **`start_server.bat`** | Standalone | WebSocket server + NLP chat + browser |
-| **`start_server_full.bat`** | Full | Above + EPICS Soft IOC + Bluesky scans |
-
-3. On first run, the script will automatically:
-   - Find (or install) Python 3.11
-   - Create an isolated virtual environment (`.venv`)
-   - Install all dependencies
-   - Guide you through NLP chat setup (API key)
-   - Start the server and open the browser
-
-### One-Click Start (Mac/Linux)
+To run with the backend:
 
 ```bash
-chmod +x start_server.sh
-
-# Standalone mode:
-./start_server.sh
-
-# Full mode (EPICS + Bluesky):
-./start_server.sh --full
-```
-
-### Manual Start
-
-```bash
-# 1. Create virtual environment
+# 1. Create a virtual environment (Python 3.10+; 3.11 recommended)
 python -m venv .venv
 
 # 2. Activate it
@@ -50,16 +31,18 @@ pip install -r server/requirements.txt
 
 # 4. Start the server
 python server/server.py                        # Standalone
-python server/server.py --ca-bridge --bluesky  # Full mode
+python server/server.py --ca-bridge --bluesky  # Full mode (EPICS Soft IOC + Bluesky scans)
 ```
 
-Then open `virtual_beamline_nanoprobe_V4_37_bundle.html` in your browser.
+Then open `virtual_beamline_nanoprobe_V4_37_bundle.html` in your browser (Chrome or Edge recommended).
+
+To enable the NLP chat, copy `server/.env.example` to `server/.env` and set an NLP backend (see below).
 
 ## NLP Chat Setup
 
 The NLP chat feature lets you control the beamline using natural language (Korean or English).
 
-On first run, `start_server.bat` will ask you to choose an NLP backend. You can also configure it manually by editing `server/.env`:
+Configure it by copying `server/.env.example` to `server/.env` and setting one of the backends below:
 
 ### Option 1: Groq (Recommended - Free, Fast)
 
@@ -191,19 +174,29 @@ This project is part of the **K4GSR 3-project ecosystem**:
 | `/ws/scan` | Bluesky scan control |
 | `/ws/expt` | Virtual experiment control |
 
+## Reproducibility (paper validation artifacts)
+
+The validation and benchmark artifacts referenced by the accompanying paper are included in this repository:
+
+- `paper/validation/` — Shadow4 cross-validation scripts (`shadow4_bl10.py`, `run_s4_500k.py`, `generate_fig4.py`) and reference data (`data/*.json`: SHADOW4 vs MC engine beam profiles at 5/10/20 keV, SSA 10/50/200 um, reflectivity and rocking-curve references)
+- `paper/latency_results.json` and `tools/measure_latency.py` — NLP round-trip latency measurements
+- `docs/nlp_benchmark/` — NLP benchmark methodology, per-backend result JSONs, the 228-case snapshot, and expert review records
+- `tests/` — analytical, hybrid (wave-optics), and Shadow4-port test suites
+
 ## Project Structure
 
 ```
-K4GSR-Beamline/
-├── start_server.bat                  # One-click start (Windows)
-├── start_server.sh                   # One-click start (Mac/Linux)
-├── start_server_full.bat             # Full mode (EPICS + Bluesky)
-├── virtual_beamline_*_bundle.html    # Main application (open in browser)
-├── README.md                         # This file
+K4GSR-HXNP-SHIN-PUBLIC/
+├── virtual_beamline_nanoprobe_V4_37_bundle.html   # Main application (open in browser)
+├── virtual_beamline_nanoprobe_V4_37.html          # Source HTML (loads js/ modules; dev convenience)
+├── undulator_calculator_v2.html                   # Standalone undulator spectrum calculator
+├── README.md                                      # This file
+├── LICENSE                                        # Apache License 2.0
+├── package.json / eslint.config.js / pyproject.toml   # Lint and packaging configs
 |
 ├── js/                               # Source JavaScript (59 domain files)
 │   ├── shared/                       #   Shared utilities + constants
-│   ├── optics/                       #   DCM, mirror, KB optics
+│   ├── optics/                       #   Undulator, DCM, mirror, KB optics
 │   ├── control/                      #   Motor, EPICS, scan control
 │   ├── analysis/                     #   Beam profile, fitting
 │   ├── raytrace/                     #   MC ray tracing engine
@@ -213,6 +206,7 @@ K4GSR-Beamline/
 │   ├── detector/                     #   Detector simulation
 │   ├── measurement/                  #   Measurement tools
 │   ├── experiment/                   #   Virtual experiments (5 types)
+│   ├── tomo/                         #   Tomography preview
 │   ├── tutorial/                     #   Tutorial system
 │   └── nlp/                          #   NLP chat UI
 |
@@ -224,45 +218,39 @@ K4GSR-Beamline/
 │   ├── simulation_server.py          #   Simulation server (port 8002)
 │   ├── experiment_engine.py          #   Virtual experiment engine
 │   ├── science_advisor.py            #   Science advisory NLP
-│   ├── sim_engines/                  #   Experiment simulation engines
-│   │   ├── xafs_engine.py            #     XAFS simulation
-│   │   ├── xrf_engine.py             #     XRF 2D imaging
-│   │   ├── xrd_engine.py             #     Powder XRD
-│   │   └── xrdmap_engine.py          #     XRD mapping
-│   ├── epics/                        #   EPICS soft IOC
-│   │   └── soft_ioc.py               #     caproto-based IOC (83 PVs)
-│   ├── scan_engine/                  #   Bluesky scan engine
-│   │   ├── devices.py, plans.py      #     ophyd devices + scan plans
-│   │   └── runner.py                 #     Scan execution runner
-│   └── data/                         #   Data processing
-│       ├── scan_db.py                #     Scan history database
-│       └── writer.py                 #     HDF5/NeXus data writer
+│   ├── sim_engines/                  #   XAFS / XRF / XRD / XRD-map engines
+│   ├── epics/                        #   caproto Soft IOC (83 PVs)
+│   ├── scan_engine/                  #   Bluesky scan engine (devices, plans, runner)
+│   ├── scan_program/                 #   Scan program definitions
+│   ├── hardware/                     #   Hardware controller interfaces (KOHZU, SmarAct, ...)
+│   ├── config/                       #   IOC and stage configuration
+│   ├── i18n/                         #   Server-side translations
+│   └── data/                         #   Scan history DB + HDF5/NeXus writer
 |
 ├── ptycho/                           # Ptychography (mirror of K4GSR-PTYCHO)
 │   ├── engines/                      #   DM, ML, LSQML, ePIE engines
 │   ├── server/                       #   WebSocket server (port 8765)
 │   └── synth_ptycho.py               #   Synthetic data generator
 |
-├── vendor/                           # Third-party JS libraries
-│   ├── uplot-1.6.31.min.js           #   uPlot charting
-│   └── plotly-basic-2.27.0.min.js    #   Plotly.js (experiment plots)
+├── paper/                            # Paper reproducibility artifacts
+│   ├── validation/                   #   Shadow4 cross-validation scripts + reference data
+│   └── latency_results.json          #   NLP latency measurements
 |
-├── Scripts/                          # Build tools (dev only)
-│   ├── build.py                      #   Bundle builder + validator
-│   └── publish_main.bat              #   Publish master -> main
+├── tests/                            # Test suites (analytical, benchmark, diagnostics, e2e, hybrid, s4_port, js)
+├── tools/                            # Latency measurement tooling
+├── docs/
+│   └── nlp_benchmark/                # NLP benchmark methodology, results, expert reviews
 |
-└── docs/                             # Documentation (dev only)
-    ├── architecture/                 #   Project structure, agent roles
-    ├── knowledge/                    #   Physics, UI, alignment docs
-    ├── onboarding/                   #   Setup guides
-    ├── tasks/                        #   Task tracking, session logs
-    └── nlp_benchmark/                #   NLP backend benchmark results
+├── deploy/                           # Deployment scripts + config (sanitized placeholders)
+├── vendor/                           # Third-party JS (uPlot, Plotly.js)
+├── Scripts/                          # Build tools (bundle builder, doc index, codegen)
+└── .github/workflows/                # CI
 ```
 
 ## Troubleshooting
 
 ### "NLP agent not available"
-- Check that `server/.env` exists and has the correct `NLP_ENGINE` and API key
+- Copy `server/.env.example` to `server/.env` and set the correct `NLP_ENGINE` and API key
 - Run `pip install httpx python-dotenv` in the virtual environment
 - Restart the server
 

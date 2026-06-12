@@ -6,7 +6,7 @@
 
 ## Development Status and Branches
 
-This repository accompanies a peer-reviewed journal submission (Journal of Synchrotron Radiation).
+This repository accompanies a peer-reviewed journal submission.
 
 - **`main` is frozen at the paper-submission state** (application bundle version 4.37.33). It is kept as the reproducibility baseline for the paper: the code, validation data, and benchmark results here correspond to the numbers reported in the manuscript. Only documentation fixes (such as this README) are applied to `main`.
 - **The `beta` branch exists (this branch)** and carries post-submission progress on the future work declared in the paper, including NLP agent improvements, an ion-chamber (I0/I1) physics model, and the EPICS areaDetector integration path. **The `beta` branch is still under active development and has NOT been fully validated**: code there is functional but work-in-progress (interim benchmarks only; not yet held to the validation standard of `main`), and it may change or break without notice. The [CHANGELOG.md](CHANGELOG.md) on this branch documents what changed relative to the paper baseline.

@@ -1,4 +1,4 @@
-websockets>=12.0
+websockets>=15.0,<16.0  # 16.x strict handshake rejects Connection: keep-alive header (HANBIT regression 2026-06-01)
 anthropic>=0.40.0
 httpx>=0.27.0
 google-generativeai>=0.8.0

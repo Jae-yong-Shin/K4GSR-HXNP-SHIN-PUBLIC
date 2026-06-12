@@ -16,6 +16,7 @@ var VIRTUAL_STATE = {
   energy: 0
 };
 
+// Live virtual-vs-real comparison state: per-motor results, beam results, suggestions, tolerances, score, enabled flag.
 var COMPARISON = {
   enabled: false,
   results: {},     // motorId -> {virtual, real, diff, pctDiff, status, severity}
@@ -82,7 +83,7 @@ function captureVirtualState(){
   // Focal spot
   var sp = focalSpot();
   VIRTUAL_STATE.beam._spot = { h: sp.h, v: sp.v };
-  VIRTUAL_STATE.beam._flux = photonFlux(state.energy);
+  VIRTUAL_STATE.beam._flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
 
   return VIRTUAL_STATE;
 }
@@ -176,6 +177,7 @@ function severityColor(severity){
   }
 }
 
+// Map a status string (good/warning/alarm/critical/disconnected) to a short text icon (OK/!/!!/X/o).
 function severityLabel(status){
   var labels = { good:'OK', warning:'!', alarm:'!!', critical:'X', disconnected:'o' };
   return labels[status] || '?';
@@ -233,6 +235,7 @@ function updateComparisonOverlay(){
   });
 }
 
+// Remove all SVG comparison indicator dots and reset component-name fill colors, undoing the severity overlay.
 function clearComparisonOverlay(){
   document.querySelectorAll('.cmp-dot').forEach(function(d) { d.remove(); });
   document.querySelectorAll('.comp-name').forEach(function(n) { n.style.fill = ''; });
@@ -412,6 +415,7 @@ function autoCalibrateTolerance(nSamples){
  */
 var comparisonTimer = null;
 
+// Enable comparison, capture virtual state, and start a 2s timer that re-runs the diff and re-renders the panel.
 function startComparison(){
   COMPARISON.enabled = true;
   captureVirtualState();
@@ -423,6 +427,7 @@ function startComparison(){
   log('info', 'V/R comparison started (2s interval)');
 }
 
+// Disable comparison, clear the 2s interval timer, and remove the SVG severity overlay.
 function stopComparison(){
   COMPARISON.enabled = false;
   if(comparisonTimer){ clearInterval(comparisonTimer); comparisonTimer = null; }

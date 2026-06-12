@@ -231,7 +231,7 @@ function renderScan1DPopup(cv, data, tp) {
   if (!data || data.length < 2) return;
   var colors = {xanes:'#4db8ff', xrf:'#e870a0', xrf2d:'#e870a0'};
   var xlabels = {xanes:'E - E0 (eV)', xrf:'E (keV)'};
-  var ylabels = {xanes:'mu(E)', xrf:'Counts'};
+  var ylabels = {xanes:'µ(E)', xrf:'Counts'};
   // Sync canvas buffer to CSS layout size (prevents zoom double-sizing)
   var cw = cv.clientWidth || cv.width || 540;
   var ch = cv.clientHeight || cv.height || 300;
@@ -291,7 +291,7 @@ function exportHDF5() {
     // Beamline
     facility: 'Korea-4GSR',
     beamline: 'ID10 NanoProbe',
-    version: 'v4.36',
+    version: APP_VTAG,
     // Ring
     ring_energy_GeV: E_RING,
     ring_current_mA: I_RING,

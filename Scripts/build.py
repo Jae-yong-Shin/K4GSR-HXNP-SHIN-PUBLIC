@@ -223,14 +223,14 @@ def main():
 
     if is_esm:
         if not html_file:
-            html_file = 'virtual_beamline_nanoprobe_V4_36.html'
+            html_file = 'virtual_beamline_nanoprobe_V4_38.html'
         if not out_file:
             base, ext = os.path.splitext(html_file)
             out_file = base + '_bundle' + ext
         esm_bundle_mode(html_file, out_file)
     elif is_bundle:
         if not html_file:
-            html_file = 'K4GSR-Beamline/virtual_beamline_nanoprobe_V4_36.html'
+            html_file = 'K4GSR-Beamline/virtual_beamline_nanoprobe_V4_38.html'
         if not out_file:
             base, ext = os.path.splitext(html_file)
             out_file = base + '_bundle' + ext

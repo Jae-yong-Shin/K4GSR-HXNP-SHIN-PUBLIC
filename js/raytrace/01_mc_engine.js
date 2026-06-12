@@ -20,7 +20,23 @@ var _mcSampleCache = null, _mcSampleDirty = true;
 // Invalidate MC sample cache — call when physics state changes.
 // focalSpot() will re-run mcRayTrace on next call.
 // Pure UI operations (tab switch, layout) should NOT call this.
-window._invalidateMCCache = function() { _mcSampleDirty = true; };
+// A1 (GPU): also bump the physics revision counter consumed by the opt-in
+// WebGPU path (raytrace/05_mc_gpu.js) so stored GPU results are discarded
+// whenever the physics state changes.
+window._mcPhysicsRev = 0;
+window._invalidateMCCache = function() {
+  _mcSampleDirty = true;
+  window._mcPhysicsRev = (window._mcPhysicsRev | 0) + 1;
+};
+
+// A1 (GPU): install an externally produced MC result (same object shape as
+// mcRayTrace's return) as the focalSpot sample cache. Used by the opt-in
+// WebGPU path when an async GPU run for the sample plane completes.
+window._mcSetSampleCache = function(mc) {
+  if (!mc) return;
+  _mcSampleCache = mc;
+  _mcSampleDirty = false;
+};
 
 // Ray stride: [x, y, vx, vy, vz, w, E_eV, kbTag] per ray
 // E_eV: per-ray photon energy in eV (undulator bandwidth sampling)
@@ -138,6 +154,7 @@ function _undulatorEnvelope(E_ray_keV, E_res0_keV) {
   var MAT_PT = {Z:78, A:195.1, rho:21.45e6};
   var MAT_RH = {Z:45, A:102.9, rho:12.41e6};
   var MAT_SI = {Z:14, A:28.09, rho:2.33e6};
+  // Coating-stripe geometry: single Pt stripe and the M2 triple Rh/Si/Pt stripes (center mm, half-width, material) for stripe selection.
   var MIRROR_STRIPES = {
     single_pt: [ {center:0, hw:15, mat:MAT_PT, name:'Pt'} ],
     triple: [
@@ -199,7 +216,11 @@ function _undulatorEnvelope(E_ray_keV, E_res0_keV) {
   };
 
   // === Thermal slope error ===
-  var TH_K={m1:0.002e-6,m2:0.003e-6,dcm:0.0005e-6,kbv:0.0005e-6,kbh:0.0005e-6};
+  // Thermal slope error DISABLED (all coefficients 0). The interactive engine does
+  // not model mirror thermal slope errors (consistent with Manuscript Section 3,
+  // which states the engine "does not model thermal deformation, mirror slope errors").
+  // thermalSlopeError() therefore returns 0 and adds no angular blur at M1/M2/DCM/KB.
+  var TH_K={m1:0,m2:0,dcm:0,kbv:0,kbh:0};
   window.thermalSlopeError=function(devId,E){
     var k=TH_K[devId]; if(!k) return 0;
     var bf=typeof propagateBeam==='function'?propagateBeam(pos(devId)):null;
@@ -223,7 +244,7 @@ function _undulatorEnvelope(E_ray_keV, E_res0_keV) {
     var r2=mv(rotX(Math.PI/2-th),r1),d2=mv(rotX(Math.PI/2-th),d1);
     return{pos:mv(rotY(yw),r2),dir:mv(rotY(yw),d2)};
   };
-  console.log('[V4.36] Helpers + axes loaded');
+  console.log('[' + APP_VTAG + '] Helpers + axes loaded');
 })();
 
 // === Unified applyMirrorMC — Shadow4 S4SphereMirror ===
@@ -572,13 +593,42 @@ function _undulatorEnvelope(E_ray_keV, E_res0_keV) {
       rays[o] += h_nominal;
     }
   };
-  console.log('[V4.36] Sphere mirror + Guigay DCM (S4 crystalpy port) loaded');
+  console.log('[' + APP_VTAG + '] Sphere mirror + Guigay DCM (S4 crystalpy port) loaded');
 })();
 
 // === Elliptical KB Mirror MC — Shadow4 S4EllipsoidMirror ===
-// Note: thin-lens kick -y/F is accurate to <1% for KB beam sizes (~50um vs F~0.1-0.3m)
+// Exact-surface ellipsoid conic ray-trace (ccc + intersect + normal + reflect + image
+// frame), ported from Shadow4 s4_conic.py / s4_mirror.py. Replaces the thin-lens -y/F
+// kick: it traces the real ellipsoid surface, reproducing the S4EllipsoidMirror
+// geometric focus. At the matched secondary source the engine geom V is ~40 nm
+// (thin-lens gave 46.7 nm; S4 element gives 39.5 nm), validated standalone vs S4Conic.
 // 4-beam support: rays missing the mirror pass through alive (no deflection).
 // kbTag bit flag: bit0(1)=KB-V reflected, bit1(2)=KB-H reflected.
+// _kbConicAngle: 1D meridional ellipsoid reflection (cylinder is flat in the sagittal
+// axis, so V and H decouple). Returns the straightened-frame reflected angle with the
+// pole-plane position folded in, so the engine keeps its paraxial position convention.
+// Reduces to -srcPos/F in the small-footprint (thin-lens) limit.
+function _kbConicAngle(srcPos, angIn, posKb, cc1, cc2, cc4, cc8, sK, cK, pf, qf){
+  var vzc=Math.sqrt(Math.max(1-angIn*angIn,0));
+  var PY=srcPos*sK - pf*cK, PZ=srcPos*cK + pf*sK;       // rotate(graz,axisX) + translate
+  var VY=vzc*cK+angIn*sK, VZ=-vzc*sK+angIn*cK;
+  var AA=cc1*VY*VY+cc2*VZ*VZ+cc4*VY*VZ;
+  var BB=2*(cc1*PY*VY+cc2*PZ*VZ)+cc4*(PZ*VY+PY*VZ)+cc8*VZ;
+  var CC=cc1*PY*PY+cc2*PZ*PZ+cc4*PY*PZ+cc8*PZ;
+  var disc=BB*BB-4*AA*CC; if(disc<0)disc=0; var sq=Math.sqrt(disc);
+  var ta=(-BB+sq)/(2*AA), tb=(-BB-sq)/(2*AA);
+  var IYa=PY+VY*ta, IYb=PY+VY*tb;
+  var tt=(Math.abs(IYb)<Math.abs(IYa))?tb:ta;            // pole-nearest intersection
+  var IY=PY+VY*tt, IZ=PZ+VZ*tt;
+  var n1=2*cc1*IY+cc4*IZ, n2=2*cc2*IZ+cc4*IY+cc8;        // conic-gradient normal
+  var nm=Math.sqrt(n1*n1+n2*n2); n1/=nm; n2/=nm;
+  var vdn=VY*n1+VZ*n2, RY=VY-2*vdn*n1, RZ=VZ-2*vdn*n2;   // specular reflection
+  var vyi=-RY*sK+RZ*cK, vzi=RY*cK+RZ*sK;                 // image frame (VZIM=[0,-s,c])
+  var yim=-IY*sK+IZ*cK, zim=IY*cK+IZ*sK;
+  var yp=yim-vyi*zim/vzi;                                // back-propagate to pole plane
+  return vyi + (yp - posKb)/qf;
+}
+// Trace one KB mirror (kbv/kbh): exact Shadow4 ellipsoid-conic focus at 3 mrad grazing, reflectivity cull, set kbTag bit.
 window.applyKBMC = function(rays, nR, kbId, E) {
   var pitch=mVal(kbId,'pitch',3.0), roll=mVal(kbId,'roll',0)*1e-3;
   var yaw=mVal(kbId,'yaw',0)*1e-3;
@@ -593,6 +643,13 @@ window.applyKBMC = function(rays, nR, kbId, E) {
   var sinTg=Math.sin(Math.abs(tg));
   var pDist=pos(kbId)-pos('ssa'), qDist=pos('sample')-pos(kbId);
   var F=(pDist>0&&qDist>0)?pDist*qDist/(pDist+qDist):0.3;
+  // Exact ellipsoid conic coefficients (Shadow4 method=0, cylindrical/meridional) for this KB
+  var cKB=Math.cos(Math.abs(tg)), _pqK=pDist+qDist;
+  var useConic=(pDist>0&&qDist>0);
+  var cc1=sinTg*sinTg;
+  var cc2=useConic?1-Math.pow(sinTg*(pDist-qDist)/_pqK,2):1.0;
+  var cc4=useConic?-2*sinTg*cKB*(qDist-pDist)/_pqK:0.0;
+  var cc8=useConic?-4*sinTg*pDist*qDist/_pqK:0.0;
   var sMat=RH;
   if(typeof getStripeMaterial==='function'){
     var st=getStripeMaterial(kbId); if(st&&st.mat) sMat=st.mat;
@@ -641,18 +698,16 @@ window.applyKBMC = function(rays, nR, kbId, E) {
     // Ray successfully reflected by this KB mirror
     window._kbFootprintArr[kbId][i] = kbDeflPos;
     rays[o+7] = (rays[o+7] | 0) | kbBit;  // set KB tag bit
-    // Misalignment kicks + thin-lens focus (constant F)
+    // Misalignment kicks + exact ellipsoid conic focus (Shadow4 S4EllipsoidMirror)
     if(isV){
-      rays[o+3]+=2*dP;
-      rays[o+2]+=2*tg*roll;
-      rays[o+2]+=2*yaw;
-      rays[o+3]+=-rays[o+1]/F;
+      if(useConic) rays[o+3]=_kbConicAngle(rays[o+1]-rays[o+3]*pDist, rays[o+3], rays[o+1], cc1,cc2,cc4,cc8, sinTg,cKB, pDist,qDist)+2*dP;
+      else rays[o+3]+=2*dP-rays[o+1]/F;
+      rays[o+2]+=2*tg*roll+2*yaw;
       if(sig>1e-12) rays[o+3]+=gaussRand()*sig;
     }else{
-      rays[o+2]+=2*dP;
-      rays[o+3]+=2*tg*roll;
-      rays[o+3]+=2*yaw;
-      rays[o+2]+=-rays[o]/F;
+      if(useConic) rays[o+2]=_kbConicAngle(rays[o]-rays[o+2]*pDist, rays[o+2], rays[o], cc1,cc2,cc4,cc8, sinTg,cKB, pDist,qDist)+2*dP;
+      else rays[o+2]+=2*dP-rays[o]/F;
+      rays[o+3]+=2*tg*roll+2*yaw;
       if(sig>1e-12) rays[o+2]+=gaussRand()*sig;
     }
     rayUpdateVz(rays,o);
@@ -754,6 +809,25 @@ window.applyKBMC = function(rays, nR, kbId, E) {
     return { intensity: intensity, xMin: xMin, xMax: xMax, dx: dx, nPts: nPts };
   }
 
+  // --- CDF construction (Shadow4 Sampler1D exact port; A1 GPU split) ---
+  // Extracted from _inverseCdfSample as a PURE CODE MOTION so the opt-in
+  // WebGPU path (raytrace/05_mc_gpu.js) can build the very same CDF table on
+  // the host and upload it for in-shader inverse-CDF sampling.
+  // CDF: cumsum(pdf), subtract first value, normalize to [0,1].
+  // Returns {ok:false} when the CDF is degenerate (S4 falls back to uniform).
+  function _cdfBuild(pdf, n) {
+    var cdf = new Float64Array(n);
+    cdf[0] = pdf[0];
+    for (var i = 1; i < n; i++) cdf[i] = cdf[i - 1] + pdf[i];
+    var cdf0 = cdf[0];
+    for (var i = 0; i < n; i++) cdf[i] -= cdf0;
+    var cdfMax = cdf[n - 1];
+    if (cdfMax <= 0) return { ok: false, cdf: null };
+    for (var i = 0; i < n; i++) cdf[i] /= cdfMax;
+    return { ok: true, cdf: cdf };
+  }
+  window._cdfBuild = _cdfBuild;
+
   // --- Inverse CDF sampler (Shadow4 Sampler1D exact port) ---
   // Ref: srxraylib/util/inverse_method_sampler.py class Sampler1D
   // CDF: cumsum(pdf), subtract first value, normalize to [0,1]
@@ -761,18 +835,13 @@ window.applyKBMC = function(rays, nR, kbId, E) {
   function _inverseCdfSample(pdf, n, xMin, xMax, nSamples) {
     var dx = (xMax - xMin) / (n - 1);
     // Build CDF (S4: cumsum, subtract cdf[0], normalize)
-    var cdf = new Float64Array(n);
-    cdf[0] = pdf[0];
-    for (var i = 1; i < n; i++) cdf[i] = cdf[i - 1] + pdf[i];
-    var cdf0 = cdf[0];
-    for (var i = 0; i < n; i++) cdf[i] -= cdf0;
-    var cdfMax = cdf[n - 1];
-    if (cdfMax <= 0) {
+    var built = _cdfBuild(pdf, n);
+    if (!built.ok) {
       var samples = new Float64Array(nSamples);
       for (var i = 0; i < nSamples; i++) samples[i] = xMin + Math.random() * (xMax - xMin);
       return samples;
     }
-    for (var i = 0; i < n; i++) cdf[i] /= cdfMax;
+    var cdf = built.cdf;
     // Sample (S4: _get_index finds first cdf >= u, then ix-=1, linear interp)
     var samples = new Float64Array(nSamples);
     for (var s = 0; s < nSamples; s++) {
@@ -820,9 +889,17 @@ window.applyKBMC = function(rays, nR, kbId, E) {
   //   9. CDF sample -> angular kicks
   //  10. ADD kicks to geometric ray directions
 
-  // Core 1D hybrid diffraction: footprint array -> angular kick samples.
-  function _hybridFF1D(footArr, nAlive, D, lambda, nSamples, focalLen) {
-    if (D < 1e-12 || nAlive < 3) return new Float64Array(nSamples);
+  // --- Wavefront profile core (A1 GPU split: PURE CODE MOTION) ---
+  // Everything in _hybridFF1D after the footprint histogram and before the
+  // inverse-CDF sampling, extracted unchanged so the opt-in WebGPU path
+  // (raytrace/05_mc_gpu.js) can run the SAME collective wavefront physics on
+  // a GPU-built histogram (the FFT stays on the CPU; only the per-ray
+  // sampling moves into the shader). Inputs: histogram (counts), nBins,
+  // zMin/zMax (footprint range), D (footprint width), lambda [m].
+  // Returns {intensity, nPts, angMin, angMax} or null (degenerate).
+  function _hybridProfile1D(hist, nBins, zMin, zMax, D, lambda) {
+    if (D < 1e-12) return null;
+    if (zMax - zMin < 1e-15) return null;
 
     var n_peaks = 20;
     var k = 2 * Math.PI / lambda;
@@ -830,27 +907,6 @@ window.applyKBMC = function(rays, nR, kbId, E) {
     // S4: _calculate_focal_length_ff_1D (line 1352)
     // f_ff = (z_max - z_min)^2 / n_peaks / 2 / 0.88 / wavelength
     var f_ff = D * D / (n_peaks * 2 * 0.88 * lambda);
-
-    // --- Step 1: Histogram footprint (S4 convention) ---
-    // S4: n_bins_z = min(200, round(nAlive/20)), capped at >= 10
-    var nBins = Math.min(200, Math.round(nAlive / 20));
-    if (nBins < 10) nBins = 10;
-
-    var zMin = footArr[0], zMax = footArr[0];
-    for (var i = 1; i < nAlive; i++) {
-      if (footArr[i] < zMin) zMin = footArr[i];
-      if (footArr[i] > zMax) zMax = footArr[i];
-    }
-    if (zMax - zMin < 1e-15) return new Float64Array(nSamples);
-
-    // S4: numpy.histogram(zz_screen, bins=nBins) -> hist, bin_edges
-    var dz_hist = (zMax - zMin) / nBins;
-    var hist = new Float64Array(nBins);
-    for (var i = 0; i < nAlive; i++) {
-      var bin = Math.floor((footArr[i] - zMin) / dz_hist);
-      if (bin >= nBins) bin = nBins - 1;
-      if (bin >= 0) hist[bin]++;
-    }
 
     // S4: ScaledArray.initialize_from_range(histogram, bins[0], bins[-1])
     // Maps nBins values to scale from zMin to zMax
@@ -959,8 +1015,43 @@ window.applyKBMC = function(rays, nR, kbId, E) {
     var angMin = -half_pts * delta / f_ff;
     var angMax = half_pts * delta / f_ff;
 
+    return { intensity: intensity, nPts: image_n_pts, angMin: angMin, angMax: angMax };
+  }
+  window._hybridProfile1D = _hybridProfile1D;
+
+  // Core 1D hybrid diffraction: footprint array -> angular kick samples.
+  // (A1 GPU split: footprint histogram here, collective wavefront physics in
+  // _hybridProfile1D, per-ray sampling in _inverseCdfSample — behavior
+  // identical to the original single function.)
+  function _hybridFF1D(footArr, nAlive, D, lambda, nSamples, focalLen) {
+    if (D < 1e-12 || nAlive < 3) return new Float64Array(nSamples);
+
+    // --- Step 1: Histogram footprint (S4 convention) ---
+    // S4: n_bins_z = min(200, round(nAlive/20)), capped at >= 10
+    var nBins = Math.min(200, Math.round(nAlive / 20));
+    if (nBins < 10) nBins = 10;
+
+    var zMin = footArr[0], zMax = footArr[0];
+    for (var i = 1; i < nAlive; i++) {
+      if (footArr[i] < zMin) zMin = footArr[i];
+      if (footArr[i] > zMax) zMax = footArr[i];
+    }
+    if (zMax - zMin < 1e-15) return new Float64Array(nSamples);
+
+    // S4: numpy.histogram(zz_screen, bins=nBins) -> hist, bin_edges
+    var dz_hist = (zMax - zMin) / nBins;
+    var hist = new Float64Array(nBins);
+    for (var i = 0; i < nAlive; i++) {
+      var bin = Math.floor((footArr[i] - zMin) / dz_hist);
+      if (bin >= nBins) bin = nBins - 1;
+      if (bin >= 0) hist[bin]++;
+    }
+
+    var prof = _hybridProfile1D(hist, nBins, zMin, zMax, D, lambda);
+    if (!prof) return new Float64Array(nSamples);
+
     // --- Step 7: CDF sampling (S4: Sampler1D) ---
-    return _inverseCdfSample(intensity, image_n_pts, angMin, angMax, nSamples);
+    return _inverseCdfSample(prof.intensity, prof.nPts, prof.angMin, prof.angMax, nSamples);
   }
 
   // SSA Hybrid: S4-style diffraction for secondary source aperture.
@@ -1016,6 +1107,7 @@ window.applyKBMC = function(rays, nR, kbId, E) {
     }
   };
 
+  // After sample drift (td>148m), apply Shadow4-hybrid Fresnel diffraction to KB-V/KB-H reflected rays by back-propagating to mirror footprint and re-adding geometric plus diffraction angular kicks.
   window._applyHybridFresnel = function(rays, nR, E, td) {
     if (td < 148) return;
 
@@ -1145,11 +1237,22 @@ function _margFwhm(marg, G, halfFov) {
 // === MC Ray Trace — Shadow4 3D vector model ===
 var MC_NRAYS = 100000;
 
+// Run the full MC ray trace from undulator source to target distance td; returns 2D/marginal histograms, FWHM, sigma, divergence, beam counts.
 window.mcRayTrace = function(td, nR) {
   nR=nR||MC_NRAYS;
+  // === A1 WebGPU opt-in hook (default OFF; raytrace/05_mc_gpu.js) ===
+  // When state.mcGpuEnabled is true and the async GPU pipeline holds a
+  // completed result whose physics fingerprint matches the CURRENT state for
+  // this exact (td, nR), consume it here so existing sync callers benefit
+  // transparently. Otherwise the hook returns null (and may schedule a
+  // background GPU run for the sample plane) and the CPU chain below runs
+  // unchanged. GPU vs CPU agreement is statistical (independent RNG streams),
+  // validated in paper/validation/run_mc_gpu_check.py.
+  if (typeof state !== 'undefined' && state.mcGpuEnabled &&
+      typeof window._mcGpuSyncHook === 'function') {
+    try { var _g = window._mcGpuSyncHook(td, nR); if (_g) return _g; } catch (e) {}
+  }
   var E=state.energy, ps=photonSrc(E);
-  var sorted=CD.map(function(c){return{id:c.id,tp:c.tp,p:pos(c.id)};})
-    .filter(function(c){return c.p>0&&c.p<=td;}).sort(function(a,b){return a.p-b.p;});
   var sX=ps.Sx,sY=ps.Sy,sXp=ps.Sxp,sYp=ps.Syp;
   var dcmTh=(typeof MOTORS!=='undefined'&&MOTORS.dcm&&MOTORS.dcm.theta)?MOTORS.dcm.theta.value:null;
   var isWB=(typeof _forceNonWB==='undefined'||!_forceNonWB)&&(td<(pos('dcm')||32)||(dcmTh!==null&&Math.abs(dcmTh)<0.1));
@@ -1193,6 +1296,29 @@ window.mcRayTrace = function(td, nR) {
       rays[o+5] *= _undulatorEnvelope(rays[o+6] * 0.001, _und_Epeak);
     }
   }
+  return _mcTraceFromRays(rays, nR, td, null);
+};
+
+// === _mcTraceFromRays — element-chain + statistics core (A1 GPU split) ===
+// PURE CODE MOTION from mcRayTrace (2026-06-12, validated vs the frozen
+// pre-refactor CPU baseline in paper/validation/run_mc_gpu_check.py):
+// traces an EXISTING ray buffer through the optical-element chain and
+// computes the full result object. mcRayTrace generates the source rays and
+// delegates here with opts=null (identical behavior to the original
+// single-function engine). The opt-in WebGPU path (raytrace/05_mc_gpu.js)
+// runs the source->M2 per-ray segment on the GPU and delegates the
+// SSA/KB/statistics continuation here with:
+//   opts.ld0          = plane (m) the rays currently sit at — elements with
+//                       p <= ld0 are skipped (already applied upstream)
+//   opts.elementTrace = pre-seeded per-element snapshots from the GPU segment
+window._mcTraceFromRays = function(rays, nR, td, opts) {
+  opts = opts || {};
+  var ld0 = opts.ld0 || 0;
+  var E = state.energy;
+  var sorted=CD.map(function(c){return{id:c.id,tp:c.tp,name:c.name,p:pos(c.id)};})
+    .filter(function(c){return c.p>0&&c.p<=td;}).sort(function(a,b){return a.p-b.p;});
+  var dcmTh=(typeof MOTORS!=='undefined'&&MOTORS.dcm&&MOTORS.dcm.theta)?MOTORS.dcm.theta.value:null;
+  var isWB=(typeof _forceNonWB==='undefined'||!_forceNonWB)&&(td<(pos('dcm')||32)||(dcmTh!==null&&Math.abs(dcmTh)<0.1));
   var lam_m=HC/E*1e-10; // wavelength [m] for slit diffraction
 
   // === Nominal beam path: compute physical beam X at each component ===
@@ -1217,9 +1343,16 @@ window.mcRayTrace = function(td, nR) {
   }
   window._nomBeamX=_nomBeamX; // expose for applyMirrorMC/applyKBMC
 
-  var ld=0;
+  var ld=ld0;
+  // Per-element cumulative snapshots for the Propagation Log (MC-synced,
+  // 2026-06-10): after each optical element is applied, record the weighted
+  // transmission (sum w / nR) and the weighted beam RMS at that plane.
+  // One extra O(nR) pass per element — negligible vs the trace itself.
+  var elementTrace=opts.elementTrace||[];
   for(var ci=0;ci<sorted.length;ci++){
-    var c=sorted[ci],L=c.p-ld;
+    var c=sorted[ci];
+    if(c.p<=ld0)continue; // resume support: element already applied upstream (GPU segment)
+    var L=c.p-ld;
     if(L>0)for(var i=0;i<nR;i++){var o=i*RS;if(rays[o+5]<=0)continue;
       var ivz=1/rays[o+4];rays[o]+=rays[o+2]*ivz*L;rays[o+1]+=rays[o+3]*ivz*L;}
     switch(c.tp){
@@ -1251,6 +1384,17 @@ window.mcRayTrace = function(td, nR) {
     case 'kbh': applyKBMC(rays,nR,'kbh',E); break;
     }
     ld=c.p;
+    // Element-plane snapshot: cumulative weighted transmission + beam moments
+    {var _tw=0,_tmx=0,_tmy=0;
+     for(var i=0;i<nR;i++){var o=i*RS;var _w=rays[o+5];if(_w<=0)continue;
+       _tw+=_w;_tmx+=rays[o]*_w;_tmy+=rays[o+1]*_w;}
+     var _tsx=0,_tsy=0;
+     if(_tw>0){_tmx/=_tw;_tmy/=_tw;
+       for(var i=0;i<nR;i++){var o=i*RS;var _w=rays[o+5];if(_w<=0)continue;
+         var _dx=rays[o]-_tmx,_dy=rays[o+1]-_tmy;_tsx+=_dx*_dx*_w;_tsy+=_dy*_dy*_w;}
+       _tsx=Math.sqrt(_tsx/_tw);_tsy=Math.sqrt(_tsy/_tw);}
+     elementTrace.push({id:c.id,name:c.name||c.id,tp:c.tp,dist:c.p,
+       T_cum:_tw/nR,sigH:_tsx,sigV:_tsy});}
   }
   // Final free-space drift to target distance
   var fL=td-ld;
@@ -1270,7 +1414,7 @@ window.mcRayTrace = function(td, nR) {
     al.push({x:rays[o],y:rays[o+1],w:rays[o+5],tag:tag});sw+=rays[o+5];mx+=rays[o]*rays[o+5];my+=rays[o+1]*rays[o+5];}}
   if(al.length<10)return{hist2d:null,margH:null,margV:null,grid:MC_GRID,
     nSurvived:0,nTotal:nR,sigH:1e-6,sigV:1e-6,fwhmH:2.355e-6,fwhmV:2.355e-6,fovH:1e-5,fovV:1e-5,
-    nBeams:{direct:0,vOnly:0,hOnly:0,focused:0}};
+    nBeams:{direct:0,vOnly:0,hOnly:0,focused:0},elementTrace:elementTrace};
   mx/=sw;my/=sw;
   // For FWHM/sigma: use focused rays (tag=3) when KB is active
   var al_fwhm = al, mx_f = mx, my_f = my, sw_f = sw;
@@ -1375,6 +1519,7 @@ window.mcRayTrace = function(td, nR) {
     wMin:wMin,wMax:wMax,wMean:wMean,wSumFocused:wSumFocused,
     fineMargH:fmH,fineMargV:fmV,fineFovH:fFH,fineFovV:fFV,fineGrid:GF,
     nBeams:{direct:tagCounts[0],vOnly:tagCounts[1],hOnly:tagCounts[2],focused:tagCounts[3]},
+    elementTrace:elementTrace,
     _aliveRays:al};
 };
 
@@ -1393,6 +1538,7 @@ window.mirrorHalfCutSignal = function(mirrorId, motorVal, detId, motorKey) {
   return (mc.wMean||1) * mc.nSurvived / mc.nTotal * 1e12 * (0.97 + 0.06 * Math.random());
 };
 
+// Set M1/M2 pitch (mrad), trace 40k rays to a detector, return vertical centroid drift (mm) and survival flux for rotation-center scans.
 window.mirrorRockingSignal = function(mirrorId, pitch_mrad, detId) {
   var k=(mirrorId==='m1')?'m1pitch':'m2pitch', prev=state[k];
   state[k]=pitch_mrad;
@@ -1411,6 +1557,7 @@ window.dcmRockingSignal = function(dTheta2_arcsec, detId) {
   return (mc.wMean||1) * mc.nSurvived / mc.nTotal * 1e12 * (0.97 + 0.06 * Math.random());
 };
 
+// Set DCM y2 offset (mm), trace 40k rays to a detector, return weighted survival flux with small jitter for the y2 alignment scan.
 window.dcmY2Signal = function(y2_mm, detId) {
   var prev = mVal('dcm','y2',0);
   try { MOTORS.dcm.y2.value = y2_mm; } catch(e){}
@@ -1419,6 +1566,7 @@ window.dcmY2Signal = function(y2_mm, detId) {
   return (mc.wMean||1) * mc.nSurvived / mc.nTotal * 1e12 * (0.97 + 0.06 * Math.random());
 };
 
+// Set a DCM piezo motor (dTheta2/y2/roll2) to val, trace rays, and return the full MC result plus vertical center shift (mm) and flux.
 window.mcBeamWithDCM = function(motor, val, detId, nRays) {
   var key = (motor === 'dTheta2') ? 'dTheta2' : (motor === 'y2') ? 'y2' : 'roll2';
   var prev = mVal('dcm', key, 0);
@@ -1446,11 +1594,13 @@ window.mcBeamWithPitch = function(mirrorId, val, detId, nRays) {
   return mc;
 };
 
+// Ray count (40000) used for the lighter MC traces driving alignment scan signals.
 window.ALIGN_MC_RAYS = 40000;
+// Ray count (100000) used for full-resolution beam-profile MC traces.
 window.PROFILE_MC_RAYS = 100000;
 
-console.log('[V4.36] MC engine: 100k rays, true MC alignment signals');
-console.log('[V4.36] DCM MC signals + alignment ray optimization');
+console.log('[' + APP_VTAG + '] MC engine: 100k rays, true MC alignment signals');
+console.log('[' + APP_VTAG + '] DCM MC signals + alignment ray optimization');
 
 // ESM bridge: expose module-scoped vars to globalThis
 if(typeof M1_DM!=="undefined")globalThis.M1_DM=M1_DM;

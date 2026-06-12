@@ -124,6 +124,11 @@ function _runExptOnSimServer(mode) {
       ppm: _exptState.xafs.ppm,
       sampleType: _exptState.xafs.sampleType
     };
+    // IC measurement mode (opt-in): server replaces synthetic noise with the
+    // physical I0 -> sample -> I1 chamber chain (sim_engines/ic_chain.py).
+    if (_exptState.xafs.icMode) {
+      params.ic = _buildXafsICParams(_exptState.xafs.icDwell);
+    }
     if (typeof _exptServerXAFSData !== 'undefined') {
       _exptServerXAFSData.length = 0;
     }
@@ -181,6 +186,38 @@ function _runExptOnSimServer(mode) {
     return _simSendRun(mode, params);
   }
   return false;
+}
+
+// ── Assemble params.ic for the XAFS ion-chamber measurement mode ──
+// Maps the IC1 popup state (I0 chamber at 149.45 m, js/ui/05_modal.js) and
+// the detector popup ion-chamber tab (I1, behind the sample) onto the server
+// chain config (server/sim_engines/ic_chain.py, TASK_XANES_IC_SIM_STATUS.md
+// section 5). ratio_prefocus comes from the live MC chain so the I0 chamber
+// (before the KB focusing) sees the unfocused-beam flux fraction; the
+// incident flux itself is beamline.flux = sampleFlux() (SSOT), attached by
+// _buildBeamlineContext in _simSendRun.
+function _buildXafsICParams(dwellS) {
+  var ic = { enabled: true, dwell_s: (dwellS > 0 ? dwellS : 1.0) };
+  try {
+    var st = (typeof state !== 'undefined' && state) ? state : {};
+    ic.i0 = {
+      gas: st.ic1Gas || 'N2',
+      length_cm: (typeof st.ic1LenCm === 'number') ? st.ic1LenCm : 10,
+      pressure_atm: (typeof st.ic1PressAtm === 'number') ? st.ic1PressAtm : 1.0,
+      air_before_cm: (st.ic1AirBeforeCm != null) ? st.ic1AirBeforeCm : 5,
+      air_after_cm: (st.ic1AirAfterCm != null) ? st.ic1AirAfterCm : 2
+    };
+    ic.i1 = {
+      gas: st.det_icGas || 'N2',
+      length_cm: (typeof st.det_icLenCm === 'number') ? st.det_icLenCm : 10,
+      air_path_cm: 0
+    };
+    if (typeof icLiveChain === 'function') {
+      var live = icLiveChain();
+      if (live && live.ratioPreFocus > 0) ic.ratio_prefocus = live.ratioPreFocus;
+    }
+  } catch (e) { /* server-side defaults cover missing fields */ }
+  return ic;
 }
 
 // ── Stop experiment ──

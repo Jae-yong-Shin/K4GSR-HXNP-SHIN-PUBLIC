@@ -5,7 +5,7 @@
 // Extracted from 09_scan_init.js (DDD Phase)
 
 function init() {
-  log('info', 'Korea-4GSR ID10 NanoProbe v4.36');
+  log('info', 'Korea-4GSR ID10 NanoProbe ' + APP_VTAG);
   log('info', 'IVU24: \u03bb=' + LAMBDA_U + 'mm N=' + N_PERIODS + ' Halbach');
   log('info', 'Ring: ' + E_RING + 'GeV ' + I_RING + 'mA \u03b5=' + (EMIT_X * 1e12).toFixed(0) + 'pm');
   log('info', 'Motors: 8-axis sample + all optics');
@@ -50,7 +50,7 @@ function init() {
   log('info', 'Ray-tracing: Monte Carlo beam profile + coherence');
   log('info', 'Virtual Expts: Cu-XANES, XRF-map, Powder-XRD, nano-XRF');
   log('info', 'Beam profiles: Monte Carlo ray tracing at all optical components');
-  log('info', 'System ready (v4.36)');
+  log('info', 'System ready (' + APP_VTAG + ')');
 }
 
 window.addEventListener('DOMContentLoaded', init);

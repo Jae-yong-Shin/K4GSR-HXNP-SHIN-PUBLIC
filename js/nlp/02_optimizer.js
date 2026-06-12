@@ -15,6 +15,7 @@ var OPTICAL_CONSTRAINTS = {
   gapMin: 5.0
 };
 
+// Fixed grid of secondary-source-aperture sizes in micrometers (5-200) iterated over by the SSA Pareto sweep.
 var _SSA_SWEEP = [5, 10, 15, 20, 30, 40, 50, 75, 100, 150, 200];
 
 // === State save/restore ===
@@ -33,6 +34,7 @@ function _optSaveState() {
   };
 }
 
+// Write a saved snapshot back into state: energy, targetEnergy, gap, harmonic, ssaH/V, M1/M2 and KB-V/H pitches.
 function _optRestoreState(saved) {
   state.energy = saved.energy;
   state.targetEnergy = saved.targetEnergy;
@@ -333,7 +335,8 @@ window.estimateSignal = function(technique, element, ppm, flux, beamSize_nm, thi
 
   // Use current state if not provided
   if (!flux || flux <= 0) {
-    try { flux = photonFlux(state.energy); } catch(e) { flux = 1e10; }
+    flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+    if (!flux) flux = 1e10;
   }
   if (!beamSize_nm || beamSize_nm <= 0) beamSize_nm = 100;
   if (!thickness_um || thickness_um <= 0) thickness_um = 10;
@@ -697,6 +700,7 @@ function _renderOptimizationResult(result) {
   }
 }
 
+// Left-pad a value's string form with spaces to width n for fixed-column alignment in the trade-off table.
 function _pad(v, n) {
   var s = String(v);
   while (s.length < n) s = ' ' + s;
@@ -706,6 +710,7 @@ function _pad(v, n) {
 // === Apply / Cancel ===
 window._pendingOptimization = null;
 
+// Commit the pending recommendation to state and UI: set target energy, SSA H/V, sync sliders, call updateOptics.
 window.applyOptimization = function() {
   var r = window._pendingOptimization;
   if (!r || !r.recommended) {
@@ -750,6 +755,7 @@ window.applyOptimization = function() {
   }
 };
 
+// Clear the pending optimization result and post an 'Optimization cancelled' chat message.
 window.cancelOptimization = function() {
   window._pendingOptimization = null;
   if (typeof addChatMessage === 'function') {

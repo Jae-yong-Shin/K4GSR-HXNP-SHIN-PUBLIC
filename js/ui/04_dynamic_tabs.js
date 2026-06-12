@@ -157,8 +157,9 @@
       '<span class="ax-name">' + ax.name + ' <span class="ax-unit">(' + (ax.unit||'') + ')</span></span>' +
       '<span class="ctrl-val ax-pos" id="' + readbackId + '">' + val.toFixed(3) + '</span>' +
       '</div>' +
-      '<input type="range" min="' + mn + '" max="' + mx + '" step="' + st +
-      '" value="' + val + '" class="ax-slider" id="' + sliderId + '" oninput="' + oninput + '"/>' +
+      (ax.noSlider ? '' :
+       '<input type="range" min="' + mn + '" max="' + mx + '" step="' + st +
+       '" value="' + val + '" class="ax-slider" id="' + sliderId + '" oninput="' + oninput + '"/>') +
       '<div class="ax-r2">' +
       '<button class="jog-btn jog-neg" onclick="dynJog(\'' + devId + '\',\'' + axKey + '\',-10)">&#x25C4;&#x25C4;</button>' +
       '<button class="jog-btn jog-neg" onclick="dynJog(\'' + devId + '\',\'' + axKey + '\',-1)">&#x25C4;</button>' +
@@ -302,7 +303,7 @@
   } else {
     renderDynTabs();
   }
-  console.log('[V4.36] Dynamic tab renderer loaded');
+  console.log('[' + APP_VTAG + '] Dynamic tab renderer loaded');
 })();
 
 // ESM bridge: expose module-scoped vars to globalThis

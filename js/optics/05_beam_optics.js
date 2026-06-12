@@ -46,7 +46,7 @@ setTimeout(function() {
   if (typeof updateOptics === 'function') updateOptics();
 }, 500);
 
-console.log('[V4.36] updateOptics inline merged (base + status bar)');
+console.log('[' + APP_VTAG + '] updateOptics inline merged (base + status bar)');
 
 // ESM bridge: expose module-scoped vars to globalThis
 if(typeof updateOptics!=="undefined")globalThis.updateOptics=updateOptics;

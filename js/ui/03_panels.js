@@ -91,22 +91,58 @@ function setFocusMode(m) {
 }
 
 // === Harmonic Panel ===
-function updateHarmPanel() {
+// _renderHarmTable builds the panel HTML from a precomputed harmonics array.
+// Split out so the 3-layer findHarmonicsAsync can re-render in place as Layer 1
+// (lookup) -> Layer 2 (GPU) -> Layer 3 (Worker) progressively replace the
+// onAxisFlux fast-path values with the WB-acceptance partial-flux integral.
+function _renderHarmTable(hs, layerName) {
   var p = document.getElementById('harmPanel');
-  var hs = findHarmonics(state.targetEnergy);
+  if (!p) return;
   var B0 = calcB0(state.gap), K = calcK(B0), E1 = calcE1(K);
   var Ptot = calcPtotal(B0);
   var h = '<div style="margin-bottom:4px;color:var(--t2)">Target: <b style="color:var(--ac)">' +
     state.targetEnergy.toFixed(2) + 'keV</b> E1=' + E1.toFixed(2) + '</div>';
-  h += '<div style="margin-bottom:4px;font-size:8px;color:var(--t3)">Current gap: P<sub>total</sub>=<b style="color:var(--am)">' +
+  h += '<div style="margin-bottom:4px;font-size:8px;color:var(--t3)">Current gap: <b style="color:var(--ac)">' +
+    state.gap.toFixed(2) + 'mm</b> (K=' + K.toFixed(2) + '), P<sub>total</sub>=<b style="color:var(--am)">' +
     (Ptot / 1000).toFixed(2) + ' kW</b></div>';
+  var _wbH = (state.wbH || 1.2), _wbV = (state.wbV || 1.2);
+  var _hH = (_wbH * 0.5 / 27.8 * 1e3).toFixed(0);
+  var _hV = (_wbV * 0.5 / 27.8 * 1e3).toFixed(0);
+  // Tag the WB-slit line with the active fallback layer so QA / users can
+  // tell whether the numbers are the onAxisFlux fast path, a lookup hit,
+  // GPU compute, or worker-CPU compute. Layer name is omitted on initial
+  // (fast-path) renders.
+  var escapeAttr = function(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+  var _gpuReason = (window._GPU && window._GPU.error) || 'navigator.gpu not exposed (secure-context required)';
+  var _infoMsg = 'GPU not active. Showing on-axis closed-form approximation (Kim 1989). High-n harmonics may be inaccurate. Awaiting lookup/GPU/worker refinement.\nGPU reason: ' + _gpuReason;
+  // User-selectable compute mode (state.fluxTier): 'auto' (default; GPU/lookup
+  // acceptance-flux when available) or 'fast' (forced closed-form, no GPU recompute
+  // -> no UI lag). The [..] tag is a clickable toggle (toggleFluxTier()).
+  var _ft = (typeof state !== 'undefined' && state.fluxTier === 'fast') ? 'fast' : 'auto';
+  // ⓘ "GPU not active" only when auto AND no layer yet (genuine GPU-unavailable),
+  // never when the user deliberately chose fast.
+  var infoIcon = ((!layerName && _ft !== 'fast') ? ' <span class="fast-info-icon" title="' + escapeAttr(_infoMsg) + '" style="color:#4db8ff;cursor:help;font-weight:bold;font-size:12px;font-family:Arial,Helvetica,sans-serif;text-shadow:0 0 1px rgba(0,0,0,0.35);vertical-align:middle;line-height:1">ⓘ</span>' : '');
+  if (!layerName && _ft !== 'fast' && !_renderHarmTable._fastLogged) {
+    _renderHarmTable._fastLogged = true;
+    try { console.log('[harmPanel] fast-path render (no GPU). Reason:', _gpuReason); } catch (e) {}
+  }
+  var _tagLabel, _tagCol, _tagTitle;
+  if (_ft === 'fast') {
+    _tagLabel = 'fast ↺'; _tagCol = 'var(--am)';
+    _tagTitle = 'Compute mode: FAST (forced). On-axis closed-form approximation only — no GPU acceptance-flux recompute, so no UI lag. Click to return to AUTO (GPU/lookup when available).';
+  } else {
+    _tagLabel = (layerName || 'fast'); _tagCol = (layerName ? 'var(--ac)' : 'var(--t3)');
+    _tagTitle = 'Compute mode: AUTO. GPU/lookup white-beam-slit acceptance flux when available (current: ' + (layerName || 'fast') + '). Click to force FAST (closed-form only) if GPU recompute feels laggy.';
+  }
+  var layerTag = ' <span onclick="toggleFluxTier()" title="' + escapeAttr(_tagTitle) + '" style="cursor:pointer;color:#fff;background:' + _tagCol + ';border:1px solid ' + _tagCol + ';border-radius:3px;padding:0 5px;font-weight:600">[' + _tagLabel + ']</span>';
+  h += '<div style="margin-bottom:4px;font-size:8px;color:var(--t3)">WB slit: Hgap=' + _wbH.toFixed(2) + ' mm, Vgap=' + _wbV.toFixed(2) + ' mm @ 27.8 m (±' + _hH + '/±' + _hV + ' µrad)' + infoIcon + layerTag + '</div>';
   h += '<div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:6px">';
   hs.forEach(function(x) {
     h += '<span class="harm-badge ' + (x.n === state.harmonic ? 'active' : 'avail') +
       '" onclick="applyHarm(' + x.n + ',' + x.gap.toFixed(2) + ')" title="gap=' +
       x.gap.toFixed(1) + ' K=' + x.K.toFixed(2) + '">n=' + x.n + '</span>';
   });
-  h += '</div><table style="width:100%;font-size:8px"><tr style="color:var(--t3)"><td>n</td><td>Gap</td><td>K</td><td>E1</td><td>Flux</td><td>P<sub>tot</sub></td></tr>';
+  h += '</div><table style="width:100%;font-size:8px"><tr style="color:var(--t3)"><td>n</td><td>Gap</td><td>K</td><td>E1</td><td>Flux(WB)</td><td>P<sub>tot</sub></td></tr>';
   hs.forEach(function(x) {
     var s = x.n === state.harmonic ? 'color:var(--gn);font-weight:600' : '';
     var Px = (calcPtotal(x.B0) / 1000).toFixed(2);
@@ -118,6 +154,54 @@ function updateHarmPanel() {
   p.innerHTML = h;
   var harmInfo = document.getElementById('harmInfo');
   if (harmInfo) harmInfo.textContent = 'n=' + state.harmonic;
+}
+
+// Latest async-call epoch. updateHarmPanel may be called multiple times in
+// quick succession (energy slider drags, WB-slit edits); each call bumps the
+// epoch so late callbacks from a stale call no longer overwrite the panel.
+var _harmAsyncEpoch = 0;
+
+function updateHarmPanel() {
+  var p = document.getElementById('harmPanel');
+  if (!p) return;
+  var WBSLIT_DIST_M = 27.8;
+  var wbH = (typeof state !== 'undefined' && state.wbH > 0) ? state.wbH : 1.2;
+  var wbV = (typeof state !== 'undefined' && state.wbV > 0) ? state.wbV : 1.2;
+  var halfH_urad = (wbH * 0.5) / WBSLIT_DIST_M * 1e3;
+  var halfV_urad = (wbV * 0.5) / WBSLIT_DIST_M * 1e3;
+
+  var myEpoch = ++_harmAsyncEpoch;
+  // Prefer the 3-layer async path when available. The function returns the
+  // onAxisFlux fast-path harmonics synchronously so initial render is instant;
+  // subsequent callbacks deliver lookup / GPU / worker refinements which we
+  // ignore if the epoch has rolled forward.
+  // 'fast' compute mode (user toggle): skip the async GPU/lookup acceptance-flux
+  // entirely and render the synchronous closed-form fast path only — no GPU
+  // recompute, no UI lag.
+  var _forceFast = (typeof state !== 'undefined' && state.fluxTier === 'fast');
+  if (!_forceFast && typeof findHarmonicsAsync === 'function') {
+    var hs = findHarmonicsAsync(state.targetEnergy, halfH_urad, halfV_urad,
+      function (refined, layer) {
+        if (myEpoch !== _harmAsyncEpoch) return;
+        _renderHarmTable(refined, layer);
+      });
+    _renderHarmTable(hs, null);
+  } else {
+    // Forced-fast OR the async helper is not loaded (e.g. partial bundle).
+    // Identical to the v4.37.4 fast path (onAxisFlux, sub-ms, no GPU).
+    var hs2 = (typeof findHarmonics === 'function') ? findHarmonics(state.targetEnergy)
+      : findHarmonicsAsync(state.targetEnergy, halfH_urad, halfV_urad, function () {});
+    _renderHarmTable(hs2, null);
+  }
+}
+
+// Toggle the harmonic-panel compute mode between AUTO (GPU/lookup acceptance flux)
+// and FAST (closed-form only, no GPU recompute lag). Bound to the [..] tag click.
+function toggleFluxTier() {
+  if (typeof state === 'undefined') return;
+  state.fluxTier = (state.fluxTier === 'fast') ? 'auto' : 'fast';
+  try { console.log('[harmPanel] compute mode -> ' + state.fluxTier); } catch (e) {}
+  try { updateHarmPanel(); } catch (e) {}
 }
 
 function applyHarm(n, gap) {
@@ -535,6 +619,7 @@ if(typeof setTargetEnergy!=="undefined")globalThis.setTargetEnergy=setTargetEner
 if(typeof switchTab!=="undefined")globalThis.switchTab=switchTab;
 if(typeof updateCompare!=="undefined")globalThis.updateCompare=updateCompare;
 if(typeof updateHarmPanel!=="undefined")globalThis.updateHarmPanel=updateHarmPanel;
+if(typeof toggleFluxTier!=="undefined")globalThis.toggleFluxTier=toggleFluxTier;
 if(typeof updateKBH!=="undefined")globalThis.updateKBH=updateKBH;
 if(typeof updateKBV!=="undefined")globalThis.updateKBV=updateKBV;
 if(typeof updateM1!=="undefined")globalThis.updateM1=updateM1;

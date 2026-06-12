@@ -925,6 +925,7 @@ function _showAlignConfigDialog(){
     overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:9999;display:flex;align-items:center;justify-content:center';
     var box=document.createElement('div');
     box.style.cssText='background:var(--bg,#0a0f18);border:1px solid var(--gn,#40d89a);border-radius:6px;padding:0;min-width:320px;max-width:92vw;max-height:90vh;overflow:auto;color:var(--t1,#e0e0e0);font-family:monospace;zoom:var(--ui-zoom,1.8)';
+    box.setAttribute('data-popup-box','1');
 
     // Draggable title bar
     var hdr2=document.createElement('div');

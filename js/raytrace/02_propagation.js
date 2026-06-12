@@ -12,13 +12,24 @@
   SIG_EXP = Math.sqrt(EMIT_X / BETA_X);
   SIG_EY = Math.sqrt(EMIT_Y * BETA_Y);
   SIG_EYP = Math.sqrt(EMIT_Y / BETA_Y);
-  console.log('[V4.36] Beta=' + BETA_X.toFixed(3) + '/' +
+  console.log('[' + APP_VTAG + '] Beta=' + BETA_X.toFixed(3) + '/' +
     BETA_Y.toFixed(3) + ' sigX=' +
     (SIG_EX*1e6).toFixed(1) + 'um sigY=' +
     (SIG_EY*1e6).toFixed(1) + 'um');
 })();
 
 // === propagateBeam: Gaussian beam through optical elements ===
+// ROLE (updated 2026-06-10):
+//   propagateBeam() is the fast ANALYTIC per-element estimator used by the
+//   Propagation Log (element-by-element sigma/flux table). It is NOT the
+//   authoritative sample-plane flux: this chain applies mirror reflectivity
+//   only (case 'hmirror') and does not model the M1 sagittal / M2 tangential
+//   focusing onto the SSA (= secondary source at 58 m), so it over-clips at
+//   the SSA by ~300x (flux decomposition 2026-06-10). Sample-position flux
+//   for ANY display/simulation must come from the single API
+//     window.sampleFlux()   (defined below; routes to the MC chain).
+//   getElementFlux(name) remains available for upstream-element estimates
+//   (WB/M1/DCM/M2: analytic chain is reasonable there) and the log popup.
 function propagateBeam(targetDist) {
   var E = state.energy;
   var lambda_nm = 12.3984 / E * 0.1; // nm
@@ -131,8 +142,6 @@ function propagateBeam(targetDist) {
         var sinG2 = Math.sin((state.kbvpitch || 3) * 1e-3);
         beam.sigVp = 0.300 * sinG2 / (2 * kbQV2) / 2.355;
         beam.sigHp = 0.100 * sinG2 / (2 * kbQH2) / 2.355;
-        // Use MC-consistent flux when available
-        if (typeof photonFlux === 'function') beam.flux = photonFlux(E);
         var spotH2 = beam.sigH * 2.355e9, spotV2 = beam.sigV * 2.355e9;
         effect = 'KB focus ' + spotH2.toFixed(0) + 'x' + spotV2.toFixed(0) + ' nm';
         break;
@@ -184,8 +193,115 @@ function propagateBeam(targetDist) {
   }
 
   beam.dist = targetDist;
+
+  // === Flux SSOT cache (see contract comment above) ===
+  // Store the computed elements[] so UI builders can read flux by element name
+  // without recomputing. Refreshed on every propagateBeam() call.
+  try {
+    window._lastPropagationResult = {
+      elements: beam.elements.slice(),
+      E: E,
+      targetDist: targetDist,
+      ts: Date.now()
+    };
+  } catch (_e) {}
+
   return beam;
 }
 
+// === getElementFlux: SSOT read API for UI ===
+// Returns the cached post-propagation flux for the named element. Names are
+// case-insensitive and matched against the element id ('sample', 'detector'/'det',
+// 'kbh', 'kbv', 'ssa', 'dcm', 'm1', 'm2', ...). Returns null when the cache is
+// stale (i.e., propagateBeam() has not yet been called for the current physics).
+// Lazy recompute: when no cache exists, warm MC via focalSpot() and run
+// propagateBeam() to the detector plane so 'sample' and 'detector' both populate.
+window.getElementFlux = function(name) {
+  if (!name) return null;
+  var key = String(name).toLowerCase();
+  // Alias: detector popup uses 'det' as the component id.
+  if (key === 'detector') key = 'det';
+
+  function _lookup() {
+    var cache = window._lastPropagationResult;
+    if (!cache || !cache.elements) return null;
+    for (var i = 0; i < cache.elements.length; i++) {
+      var el = cache.elements[i];
+      var elKey = String(el.id || el.name || '').toLowerCase();
+      if (elKey === key) return (typeof el.flux === 'number') ? el.flux : null;
+    }
+    return null;
+  }
+
+  var hit = _lookup();
+  if (hit !== null) return hit;
+
+  // Lazy warm: ensure MC is current, then propagate to the detector plane so
+  // all downstream elements are populated.
+  try {
+    if (typeof focalSpot === 'function') focalSpot();
+    if (typeof propagateBeam === 'function') {
+      var detP = (typeof pos === 'function') ? pos('det') : null;
+      if (!detP || isNaN(detP)) detP = (typeof pos === 'function') ? pos('sample') : 150;
+      propagateBeam(detP);
+    }
+  } catch (_e) {}
+
+  return _lookup();
+};
+
+// === sampleFlux: THE single sample-plane flux API (2026-06-10) ===
+// User directive: every status window / experiment tab / simulator that needs
+// the photon flux at the SAMPLE position must call this ONE function — do not
+// scatter getElementFlux/photonFlux combinations across call sites.
+//
+// Authoritative model = MC ray-trace chain via photonFlux(state.energy)
+// (user decision 2026-06-10): the MC correctly models the M1/M2 secondary-
+// source focusing at the SSA and the small KB angular acceptance (~9%);
+// the analytic propagateBeam chain lacks mirror focusing and over-clips at
+// the SSA by ~300x, so its 'sample' element flux must NOT be used for
+// display. (propagateBeam/getElementFlux remain for the per-element
+// propagation log and upstream-element estimates.)
+//
+// Lazy warm: runs focalSpot() once when the MC cache is cold so photonFlux
+// takes the MC path instead of its coarse cold-start analytic fallback.
+// Returns ph/s (Number). Returns 0 when no engine is available (headless
+// stubs) so callers can apply their own last-resort default.
+window.sampleFlux = function() {
+  // While the SPECTRA acceptance lookup table is still fetching, return 0
+  // ('—' in displays) instead of flashing the Kim filament fallback value
+  // (~2.5x high, picks wrong harmonic) for the first few hundred ms after
+  // page load. Once the fetch resolves (loaded OR failed), values flow
+  // normally and a one-shot re-render refreshes the visible displays.
+  try {
+    if (typeof _falState !== 'undefined' && _falState &&
+        !_falState.loaded && !_falState.failed) {
+      if (typeof fluxAcceptanceLookupReady === 'function' && !window._sfReadyHooked) {
+        window._sfReadyHooked = true;
+        fluxAcceptanceLookupReady().then(function() {
+          try { if (typeof updateLiveBeamInfo === 'function') updateLiveBeamInfo(); } catch (e) {}
+          try { if (typeof _updateExptBeamlineStatus === 'function') _updateExptBeamlineStatus(); } catch (e) {}
+        });
+      }
+      return 0;
+    }
+  } catch (_e0) {}
+  try {
+    if ((typeof _mcSampleCache === 'undefined' || !_mcSampleCache) &&
+        typeof focalSpot === 'function') {
+      focalSpot();
+    }
+  } catch (_e) {}
+  try {
+    if (typeof photonFlux === 'function') {
+      var f = photonFlux(state.energy);
+      if (f !== null && f !== undefined && isFinite(f)) return f;
+    }
+  } catch (_e2) {}
+  return 0;
+};
+
 // ESM bridge: expose module-scoped vars to globalThis
 if(typeof propagateBeam!=="undefined")globalThis.propagateBeam=propagateBeam;
+if(typeof window!=="undefined"&&window.getElementFlux)globalThis.getElementFlux=window.getElementFlux;
+if(typeof window!=="undefined"&&window.sampleFlux)globalThis.sampleFlux=window.sampleFlux;

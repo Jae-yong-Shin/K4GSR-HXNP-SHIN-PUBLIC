@@ -35,6 +35,10 @@ window.motorUpdate=function(devId,axKey,val){
   if(devId==='wbslit'&&typeof slitGapCenterToBlades==='function'){
     slitGapCenterToBlades('wbslit',state.wbH,state.wbV,state.wbCX,state.wbCY);
   }
+  // WB slit aperture change feeds the harmonic-panel acceptance flux.
+  if(devId==='wbslit'&&typeof updateHarmPanel==='function'){
+    try{updateHarmPanel();}catch(e){}
+  }
   _mcSampleCache=null;
   try{if(typeof updateOptics==='function')updateOptics();}catch(e){}
   try{if(typeof renderLayout==='function')renderLayout();}catch(e){}
@@ -43,7 +47,7 @@ window.motorUpdate=function(devId,axKey,val){
 
 // NOTE: Motor controls in popup removed — motor positioning is handled by the right-side motor tab only
 
-console.log('[V4.36] Generic motor sliders ready');
+console.log('[' + APP_VTAG + '] Generic motor sliders ready');
 })();
 
 // === Motor UI overrides + Live Beam Monitor ===
@@ -52,6 +56,7 @@ console.log('[V4.36] Generic motor sliders ready');
   // --- Override showMotorGroup (08_ui_core.js) with unified jog-button UI ---
   var _origShowMotorGroup = typeof showMotorGroup === 'function' ? showMotorGroup : null;
 
+  // Render the motor-group panel: HW/SIM badge plus per-axis jog buttons (x1/x10 step), step/absolute inputs, limits, resolution.
   window.showMotorGroup = function(groupId) {
     var panel = document.getElementById('motorGroupPanel');
     if (!panel) return;
@@ -140,30 +145,50 @@ console.log('[V4.36] Generic motor sliders ready');
     var E = state.energy || 10;
     var flux = 0;
 
-    try { flux = typeof photonFlux === 'function' ? photonFlux(E) : 0; } catch(e){}
-
-    // MC-based focal spot (consistent with beam profile display)
+    // Sample-plane flux: single API (sampleFlux) shared by every display.
+    // MC-based focal spot (consistent with beam profile display) — call first
+    // so the propagation cache is warm.
     var mcSpot = null;
     try { if (typeof focalSpot === 'function') mcSpot = focalSpot(); } catch(e){}
+    flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
 
     var eEl = document.getElementById('lm_e');
     var fEl = document.getElementById('lm_flux');
-    var shEl = document.getElementById('lm_sh');
 
     if (eEl) eEl.textContent = E.toFixed(2) + ' keV';
     if (fEl) fEl.textContent = flux > 0 ? flux.toExponential(2) : '\u2014';
-    if (mcSpot && shEl) {
-      shEl.textContent = mcSpot.h.toFixed(0) + '\u00d7' + mcSpot.v.toFixed(0) + ' nm';
+
+    // IC1 live current readout (A3): injected once next to the flux value,
+    // then refreshed every cycle. Click opens the IC1 panel.
+    var icEl = document.getElementById('lm_ic1');
+    if (!icEl && fEl && fEl.parentNode) {
+      fEl.insertAdjacentHTML('afterend',
+        '<span style="color:var(--t3)">IC1:</span>' +
+        '<span class="mon-val" id="lm_ic1" style="cursor:pointer" ' +
+        'title="IC1 ion chamber current (click for panel)" ' +
+        'onclick="try{showComp(\'ic1\')}catch(e){}">\u2014</span>');
+      icEl = document.getElementById('lm_ic1');
+    }
+    if (icEl) {
+      var icc = (typeof icLiveChain === 'function') ? icLiveChain() : null;
+      if (icc && icc.current_A > 0) {
+        var uA = icc.current_A * 1e6;
+        icEl.textContent = (uA >= 100 ? uA.toFixed(0) :
+                            uA >= 1 ? uA.toFixed(2) :
+                            (uA * 1000).toFixed(1) + ' n').replace(/ n$/, '') +
+                           (uA >= 1 ? ' \u00b5A' : ' nA');
+      } else {
+        icEl.textContent = '\u2014';
+      }
     }
 
+    // Focal-spot live readout removed (per-frame MC noise flickered and did not sync
+    // with the popup measurement). focalSpot() above is still called to warm the flux
+    // cache; the spot size is shown in the beam-profile popup instead.
     var liveE = document.getElementById('liveE');
     var liveFlux = document.getElementById('liveFlux');
-    var liveSpot = document.getElementById('liveSpot');
     if (liveE) liveE.textContent = E.toFixed(2);
     if (liveFlux) liveFlux.textContent = flux > 0 ? flux.toExponential(2) : '\u2014';
-    if (mcSpot && liveSpot) {
-      liveSpot.textContent = mcSpot.h.toFixed(0) + '\u00d7' + mcSpot.v.toFixed(0) + ' nm';
-    }
 
     // FM/MM/WBS/SSA/Sample beam size readbacks removed from bottom panel
   };
@@ -339,6 +364,7 @@ console.log('[V4.36] Generic motor sliders ready');
     }
   };
 
+  // Read VELO/LLM/HLM from the details popup, validate, epicsPut them to the motor's PV, sync local limits, then close the popup.
   window._applyMotorDetails = function(pvName, motorId) {
     var veloEl = document.getElementById('mdp_velo');
     var llmEl = document.getElementById('mdp_llm');
@@ -382,7 +408,7 @@ console.log('[V4.36] Generic motor sliders ready');
     if (_mOvl) _mOvl.remove();
   };
 
-  console.log('[V4.36] Motor jog UI + Live beam monitor loaded');
+  console.log('[' + APP_VTAG + '] Motor jog UI + Live beam monitor loaded');
 })();
 
 // ESM bridge: expose module-scoped vars to globalThis

@@ -17,6 +17,7 @@ var TUTORIAL = {
   overlay: null
 };
 
+// Catalog of guided walkthrough courses ('basics', 'experiments'), each holding ordered steps with title/content, highlight selector, and action callback.
 var TUTORIAL_COURSES = {
   // --- Beginner: Basic Usage ---
   basics: {
@@ -149,7 +150,7 @@ var TUTORIAL_COURSES = {
         title: 'Run XANES Scan',
         content: '<p>Energy has been set to Cu K-edge (8.979 keV).</p>' +
           '<p style="color:var(--am)">In the BS tab, press the XANES button to start the scan.</p>' +
-          '<p>When the scan completes, the mu(E) spectrum will be displayed in the bottom panel.</p>',
+          '<p>When the scan completes, the µ(E) spectrum will be displayed in the bottom panel.</p>',
         highlight: null,
         action: function() { switchTab('bluesky'); }
       },
@@ -188,6 +189,7 @@ function startTutorial(courseId) {
   log('info', 'Tutorial started: ' + course.name);
 }
 
+// Render the overlay card for step index: run its action, draw progress bar and prev/next/done buttons, outline the highlighted element; ends when index passes the last step.
 function showTutorialStep(stepIdx) {
   if (stepIdx >= TUTORIAL.steps.length) {
     endTutorial();
@@ -254,6 +256,7 @@ function showTutorialStep(stepIdx) {
   }
 }
 
+// Close the tutorial: clear active flag, remove the overlay element, strip all element outlines, and log that it ended.
 function endTutorial() {
   TUTORIAL.active = false;
   var overlay = document.getElementById('tutorialOverlay');
@@ -291,6 +294,7 @@ function setupVirtualExperiment(expId) {
   log('info', 'Experiment ready: ' + exp.name);
 }
 
+// Suppress the queue panel, apply the named experiment's energy/plan setup, then immediately start the queue.
 function runVirtualExperiment(expId) {
   if (typeof QUEUE !== 'undefined') QUEUE._suppressPanel = true;
   setupVirtualExperiment(expId);
@@ -330,6 +334,7 @@ function renderExperimentPanel(containerId) {
   container.innerHTML = h;
 }
 
+// Open a modal listing a named experiment's numbered guide steps plus a Start button that closes the modal and runs it.
 function showExperimentGuide(expId) {
   var exp = VIRTUAL_EXPERIMENTS.find(function(e) { return e.id === expId; });
   if (!exp) return;
@@ -357,7 +362,8 @@ function showExperimentGuide(expId) {
 
 function renderEnhancedSampleModal() {
   var sp = typeof focalSpot === 'function' ? focalSpot() : {h:50,v:30,demagH:500,demagV:300};
-  var flux = typeof photonFlux === 'function' ? photonFlux(state.energy) : 1e10;
+  var flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+  if (!flux) flux = 1e10;
 
   var h = '';
 
@@ -394,6 +400,7 @@ function renderEnhancedSampleModal() {
   return h;
 }
 
+// Open an Eiger or SDD demo modal (canvas, technique buttons, or per-element toggles from XRF_LINES) and kick off the first simulation after 50ms.
 function showDetectorDemo(type) {
   var h = '';
   if (type === 'eiger') {
@@ -445,8 +452,10 @@ function showDetectorDemo(type) {
   }, 50);
 }
 
+// Mutable list of element symbols (default Fe, Cu, Zn) currently selected as the SDD demo sample composition.
 var sddSelectedElements = ['Fe', 'Cu', 'Zn'];
 
+// Add/remove an element in the SDD selection list, recolor its button accent/grey, and re-run the SDD spectrum demo.
 function toggleSddElement(el, btn) {
   var idx = sddSelectedElements.indexOf(el);
   if (idx >= 0) { sddSelectedElements.splice(idx, 1); btn.style.background = 'var(--s2)'; btn.style.color = 'var(--t2)'; }
@@ -454,12 +463,14 @@ function toggleSddElement(el, btn) {
   runSddDemo();
 }
 
+// Simulate an Eiger2X diffraction frame for the given technique using the material dropdown (dwell 1s, 200mm distance) and draw it to the demo canvas.
 function runEigerDemo(technique) {
   var mat = document.getElementById('material') ? document.getElementById('material').value : 'Cu';
   var img = simulateEiger2X(technique, { material: mat, dwell: 1.0, detector_dist: 200 });
   renderEigerImage('eigerDemoCanvas', img, EIGER2X.sensorSize[0], EIGER2X.sensorSize[1]);
 }
 
+// Simulate the SDD XRF spectrum for selected elements (30% conc, 10s dwell, current beam energy in keV), render it, and show dead-time percent.
 function runSddDemo() {
   var elements = sddSelectedElements.map(function(s) { return { symbol: s, concentration: 0.3 }; });
   var spectrum = simulateSDD(elements, 10, state.energy);
@@ -490,6 +501,7 @@ function renderTutorialLauncher() {
   '</div></div>';
 }
 
+// Open a modal listing every virtual experiment with its guide steps plus Setup and Run buttons that close the modal first.
 function showExperimentsOverview() {
   var h = '<div style="font-size:11px;margin-bottom:10px">Available virtual experiments. Click an experiment to auto-configure and run it.</div>';
   VIRTUAL_EXPERIMENTS.forEach(function(exp) {

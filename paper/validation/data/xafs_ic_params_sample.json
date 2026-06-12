@@ -1,0 +1,17 @@
+{
+ "enabled": true,
+ "dwell_s": 0.5,
+ "i0": {
+  "gas": "N2",
+  "length_cm": 10,
+  "pressure_atm": 1,
+  "air_before_cm": 5,
+  "air_after_cm": 2
+ },
+ "i1": {
+  "gas": "Ar",
+  "length_cm": 15,
+  "air_path_cm": 0
+ },
+ "ratio_prefocus": 12.34
+}

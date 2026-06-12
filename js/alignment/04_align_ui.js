@@ -649,6 +649,7 @@ window.openDeviceAlignSetup = function(key) {
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center';
   var box = document.createElement('div');
   box.style.cssText = 'background:var(--bg,#0a0f18);border:1px solid var(--bd,#2a3040);border-radius:8px;padding:0;min-width:480px;max-width:92vw;max-height:90vh;color:var(--t1,#e0e0e0);font-family:monospace;overflow:auto;zoom:var(--ui-zoom,1.8)';
+  box.setAttribute('data-popup-box','1');
   var title = isMirror ? MIRROR_ALIGN_SEQ[key].name : ALIGN_CONFIG[key].label;
   // Draggable title bar
   var hdr = document.createElement('div');

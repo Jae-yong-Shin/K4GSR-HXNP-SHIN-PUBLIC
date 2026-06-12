@@ -135,7 +135,7 @@ window.focalSpot = function() {
       log('warn', 'MC: too few surviving rays (' + (mc ? mc.nSurvived : 0) +
         '/' + (mc ? mc.nTotal : 0) + '). Increase ray count in View tab for accurate results.');
     }
-  } catch(e) { console.warn('[V4.36] focalSpot MC err:', e); }
+  } catch(e) { console.warn('[' + APP_VTAG + '] focalSpot MC err:', e); }
   // Fallback: return large spot to indicate inaccuracy
   return {
     h: 9999, v: 9999,

@@ -8,6 +8,13 @@
 // Global state for live popup
 var _bsLiveResult = null;    // last result data for save
 var _bsLiveTechType = null;  // last tech type for re-render
+// Each scan opens its OWN popup so results can be compared side by side instead
+// of the previous one being replaced. _bsLivePopupId is the id of the popup that
+// is currently receiving live updates; per-popup result data is stored on each
+// popup element (._bsResult / ._bsTechType) so resize/save use that popup's own
+// data, not the latest scan's.
+var _bsLivePopupId = null;
+var _bsPopupSeq = 0;
 
 // Unified PlanExecutor — all plan types with live popups
 (function() {
@@ -33,9 +40,9 @@ var _bsLiveTechType = null;  // last tech type for re-render
     };
     var _origProg = this.updateProgress.bind(this);
     this.updateProgress = function(pct) { _origProg(pct);
-      var pg = document.getElementById('bsLivePopup_prog');
+      var pg = document.getElementById(_bsLivePopupId + '_prog');
       if (pg) pg.style.width = pct.toFixed(0) + '%';
-      var pc = document.getElementById('bsLivePopup_pct');
+      var pc = document.getElementById(_bsLivePopupId + '_pct');
       if (pc) pc.textContent = pct.toFixed(0) + '%';
     };
 
@@ -46,7 +53,7 @@ var _bsLiveTechType = null;  // last tech type for re-render
       v420DoneLive(self.liveData, techType, result);
       return result;
     } catch (e) {
-      var info = document.getElementById('bsLivePopup_info');
+      var info = document.getElementById(_bsLivePopupId + '_info');
       if (info) { info.textContent = 'ERROR: ' + e.message; info.style.color = 'var(--rd)'; }
       return { success: false, msg: e.message };
     }
@@ -61,17 +68,22 @@ function v420OpenLive(planName, techType, title) {
   _bsLiveTechType = techType;
   _bsLiveResult = null;
 
-  var popupId = 'bsLivePopup';
-  var existing = document.getElementById(popupId);
-  if (existing) existing.remove();
+  var popupId = 'bsLivePopup_' + (++_bsPopupSeq);
+  _bsLivePopupId = popupId;
+  // Previous popups are intentionally NOT removed -- each scan gets its own
+  // window so two results can be compared side by side. Close via the X button.
 
   var is2D = (techType === 'xrd2d');
   var initW = is2D ? 520 : 580;
   var initH = is2D ? 500 : 420;
 
+  // Cascade the position so a new popup does not perfectly cover the previous.
+  var _casc = ((_bsPopupSeq - 1) % 8) * 28;
   var div = document.createElement('div');
   div.id = popupId;
-  div.style.cssText = 'position:fixed;left:100px;top:60px;width:' + initW + 'px;height:' + initH + 'px;' +
+  div._bsTechType = techType;   // per-popup data (resize/save use the popup's own)
+  div._bsResult = null;
+  div.style.cssText = 'position:fixed;left:' + (90 + _casc) + 'px;top:' + (50 + _casc) + 'px;width:' + initW + 'px;height:' + initH + 'px;' +
     'background:var(--bg);border:1px solid var(--b1,#3d5068);border-radius:4px;' +
     'box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:1000;display:flex;flex-direction:column';
 
@@ -81,13 +93,13 @@ function v420OpenLive(planName, techType, title) {
   hdr.style.cssText = 'flex:0 0 auto;background:var(--s1);padding:6px 10px;display:flex;justify-content:space-between;align-items:center;cursor:move;user-select:none;border-radius:4px 4px 0 0';
   hdr.innerHTML = '<span style="color:var(--ac);font:bold 11px var(--mn)">' + (title || 'Scan') + '</span>' +
     '<div style="display:flex;gap:4px;align-items:center">' +
-      '<select id="' + popupId + '_saveSel" onchange="v420SaveAs(this.value);this.selectedIndex=0" style="background:var(--s2);border:1px solid var(--b1);color:var(--t2);padding:2px 4px;border-radius:3px;cursor:pointer;font-size:9px;font-family:var(--mn)">' +
+      '<select id="' + popupId + '_saveSel" onchange="v420SaveAs(this.value,\'' + popupId + '\');this.selectedIndex=0" style="background:var(--s2);border:1px solid var(--b1);color:var(--t2);padding:2px 4px;border-radius:3px;cursor:pointer;font-size:9px;font-family:var(--mn)">' +
         '<option value="">Save...</option>' +
         '<option value="png">PNG Image</option>' +
         '<option value="csv">CSV Data</option>' +
         '<option value="json">JSON Data</option>' +
       '</select>' +
-      '<button onclick="document.getElementById(\'' + popupId + '\').style.display=\'none\'" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px;padding:0 4px">X</button>' +
+      '<button onclick="var _p=document.getElementById(\'' + popupId + '\');if(_p)_p.remove()" title="Close this result" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px;padding:0 4px">X</button>' +
     '</div>';
 
   // Canvas body (flex fill)
@@ -131,9 +143,9 @@ function v420OpenLive(planName, techType, title) {
         c.height = Math.round(c.clientHeight * _dpr);
         var _ctx = c.getContext('2d');
         if (_ctx) _ctx.setTransform(_dpr, 0, 0, _dpr, 0, 0);
-        // Re-render with last known data
-        if (_bsLiveResult) {
-          _v420RenderToCanvas(c, _bsLiveResult.data, _bsLiveTechType, _bsLiveResult.mapData);
+        // Re-render with THIS popup's own data (not the latest scan's).
+        if (div._bsResult) {
+          _v420RenderToCanvas(c, div._bsResult.data, div._bsTechType, div._bsResult.mapData);
         }
       }
     });
@@ -182,31 +194,37 @@ function _v420RenderToCanvas(cv, data, techType, mapData) {
 // ============================================================
 
 function v420UpdateLive(data, techType, count) {
-  var cv = document.getElementById('bsLivePopup_canvas');
+  var cv = document.getElementById(_bsLivePopupId + '_canvas');
   if (!cv || !data || data.length < 2) return;
   // For 2D maps, row-level rendering is handled in v420Xrd2dMap directly
   if (techType === 'xrd2d') return;
   _v420RenderToCanvas(cv, data, techType, null);
-  var info = document.getElementById('bsLivePopup_info');
+  var info = document.getElementById(_bsLivePopupId + '_info');
   if (info) info.textContent = 'Scanning... ' + count + ' pts';
 }
 
 function v420DoneLive(data, techType, result) {
-  // Store result for save + re-render on resize
+  // Store result for save + re-render on resize (globals kept for back-compat).
   _bsLiveResult = result || {};
   if (data) _bsLiveResult.data = data;
   _bsLiveTechType = techType;
 
-  var cv = document.getElementById('bsLivePopup_canvas');
+  var popupId = _bsLivePopupId;
+  // Freeze this scan's result ON its own popup so later resize/save use it, not
+  // the next scan's data (each popup stays an independent, comparable result).
+  var dv = document.getElementById(popupId);
+  if (dv) { dv._bsResult = _bsLiveResult; dv._bsTechType = techType; }
+
+  var cv = document.getElementById(popupId + '_canvas');
   if (cv) _v420RenderToCanvas(cv, data, techType, result ? result.mapData : null);
 
-  var info = document.getElementById('bsLivePopup_info');
+  var info = document.getElementById(popupId + '_info');
   if (info) {
     if (result && result.success) { info.textContent = 'Complete: ' + (result.msg || data.length + ' pts'); info.style.color = 'var(--gn)'; }
     else { info.textContent = 'Failed: ' + (result ? result.msg : '?'); info.style.color = 'var(--rd)'; }
   }
-  var pg = document.getElementById('bsLivePopup_prog'); if (pg) pg.style.width = '100%';
-  var pc = document.getElementById('bsLivePopup_pct'); if (pc) pc.textContent = result && result.success ? 'Done' : 'Fail';
+  var pg = document.getElementById(popupId + '_prog'); if (pg) pg.style.width = '100%';
+  var pc = document.getElementById(popupId + '_pct'); if (pc) pc.textContent = result && result.success ? 'Done' : 'Fail';
 }
 
 function v420FallbackChart(cv, data, type) {
@@ -225,29 +243,40 @@ function v420FallbackChart(cv, data, type) {
 //  SAVE — PNG + JSON download
 // ============================================================
 
-/* Save dispatcher for dropdown */
-function v420SaveAs(fmt) {
+/* Save dispatcher for dropdown (popupId identifies WHICH result window). */
+function v420SaveAs(fmt, popupId) {
   if (!fmt) return;
-  if (fmt === 'png') v420SavePNG();
-  else if (fmt === 'csv') v420SaveCSV();
-  else if (fmt === 'json') v420SaveJSON();
+  if (fmt === 'png') v420SavePNG(popupId);
+  else if (fmt === 'csv') v420SaveCSV(popupId);
+  else if (fmt === 'json') v420SaveJSON(popupId);
 }
 window.v420SaveAs = v420SaveAs;
+
+/* Resolve a popup's OWN stored result/tech; fall back to the live popup/globals. */
+function _bsResolve(popupId) {
+  var d = popupId && document.getElementById(popupId);
+  if (d && d._bsResult) return { id: popupId, result: d._bsResult, tech: d._bsTechType };
+  var lp = _bsLivePopupId && document.getElementById(_bsLivePopupId);
+  return { id: _bsLivePopupId || popupId,
+           result: (lp && lp._bsResult) || _bsLiveResult,
+           tech: (lp && lp._bsTechType) || _bsLiveTechType };
+}
 
 /* Legacy: save PNG + JSON */
 function v420SaveResult() { v420SavePNG(); v420SaveJSON(); }
 
-function _getSavePrefix() {
+function _getSavePrefix(tech) {
   var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  return 'scan_' + (_bsLiveTechType || 'result') + '_' + ts;
+  return 'scan_' + (tech || _bsLiveTechType || 'result') + '_' + ts;
 }
 
-function v420SavePNG() {
-  var cv = document.getElementById('bsLivePopup_canvas');
+function v420SavePNG(popupId) {
+  var r = _bsResolve(popupId);
+  var cv = document.getElementById(r.id + '_canvas');
   if (!cv) return;
   try {
     var link = document.createElement('a');
-    link.download = _getSavePrefix() + '.png';
+    link.download = _getSavePrefix(r.tech) + '.png';
     link.href = cv.toDataURL('image/png');
     link.click();
   } catch (e) {
@@ -255,20 +284,21 @@ function v420SavePNG() {
   }
 }
 
-function v420SaveJSON() {
-  if (!_bsLiveResult) return;
+function v420SaveJSON(popupId) {
+  var r = _bsResolve(popupId);
+  if (!r.result) return;
   try {
     var jsonData = {
-      techType: _bsLiveTechType,
-      timestamp: _getSavePrefix(),
-      msg: _bsLiveResult.msg || '',
-      data: _bsLiveResult.data || [],
-      mapData: _bsLiveResult.mapData || null
+      techType: r.tech,
+      timestamp: _getSavePrefix(r.tech),
+      msg: r.result.msg || '',
+      data: r.result.data || [],
+      mapData: r.result.mapData || null
     };
     var blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
     var url = URL.createObjectURL(blob);
     var link2 = document.createElement('a');
-    link2.download = _getSavePrefix() + '.json';
+    link2.download = _getSavePrefix(r.tech) + '.json';
     link2.href = url;
     link2.click();
     URL.revokeObjectURL(url);
@@ -277,9 +307,10 @@ function v420SaveJSON() {
   }
 }
 
-function v420SaveCSV() {
-  /* Export live scan data or LIVE_SCAN.data as CSV */
-  var data = (_bsLiveResult && _bsLiveResult.data) ? _bsLiveResult.data : null;
+function v420SaveCSV(popupId) {
+  /* Export this popup's scan data (or LIVE_SCAN.data) as CSV */
+  var _r = _bsResolve(popupId);
+  var data = (_r.result && _r.result.data) ? _r.result.data : null;
   if (!data && typeof LIVE_SCAN !== 'undefined' && LIVE_SCAN.data.length > 0) {
     data = LIVE_SCAN.data;
   }
@@ -313,7 +344,7 @@ function v420SaveCSV() {
   var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
   var url = URL.createObjectURL(blob);
   var link3 = document.createElement('a');
-  link3.download = _getSavePrefix() + '.csv';
+  link3.download = _getSavePrefix(_r.tech) + '.csv';
   link3.href = url;
   link3.click();
   URL.revokeObjectURL(url);
@@ -340,22 +371,25 @@ function v420ShowResult(item) {
   var labels = {xanes:'XANES', xrd:'XRD', xrf:'XRF', xrd2d:'2D Map'};
   v420OpenLive(item.name, techType, (labels[techType] || techType) + ' -- ' + item.name + ' (Result)');
 
-  // Store for save
+  // Store for save (globals + on the popup element for per-popup save/resize)
+  var pid = _bsLivePopupId;
   _bsLiveResult = item.result;
   _bsLiveTechType = techType;
+  var _dv = document.getElementById(pid);
+  if (_dv) { _dv._bsResult = item.result; _dv._bsTechType = techType; }
 
   // Render after layout settles
   setTimeout(function() {
-    var cv = document.getElementById('bsLivePopup_canvas');
+    var cv = document.getElementById(pid + '_canvas');
     if (!cv) return;
     _v420RenderToCanvas(cv, data, techType, item.result.mapData);
-    var info = document.getElementById('bsLivePopup_info');
+    var info = document.getElementById(pid + '_info');
     if (info) {
       info.textContent = (item.result.msg || 'Complete') + ' | ' + (item.startTime ? item.startTime.slice(11, 19) : '') + ' | ' + data.length + ' pts';
       info.style.color = 'var(--gn)';
     }
-    var pg = document.getElementById('bsLivePopup_prog'); if (pg) pg.style.width = '100%';
-    var pc = document.getElementById('bsLivePopup_pct'); if (pc) pc.textContent = 'Done';
+    var pg = document.getElementById(pid + '_prog'); if (pg) pg.style.width = '100%';
+    var pc = document.getElementById(pid + '_pct'); if (pc) pc.textContent = 'Done';
   }, 50);
 }
 

@@ -56,21 +56,54 @@ function appendBeamProfileToModal(compId, distance, containerEl) {
 }
 
 // ============================================================
-//  PROPAGATION LOG
+//  PROPAGATION LOG  (MC-synced, 2026-06-10)
 // ============================================================
+// Per-element cumulative flux/size now come from the MC ray trace
+// (mcRayTrace elementTrace snapshots) \u2014 the analytic propagateBeam chain
+// lacks M1/M2 secondary-source focusing and over-clips at the SSA by
+// ~300x, so its element fluxes must not be displayed. Element flux =
+// sourceFlux(E) x _dcmBandFix(E) x T_cum (same normalisation as
+// photonFlux/sampleFlux, so the final row matches the live header).
 function showPropagationLog(compId, distance) {
-  var mc = propagateBeam(distance);
-  var html = '<div style="max-height:200px;overflow-y:auto"><table class="cmp-table"><tr><th>Position</th><th>Name</th><th>Effect</th><th>H FWHM</th><th>V FWHM</th><th>Flux</th></tr>';
-  for (var i = 0; i < mc.elements.length; i++) {
-    var el = mc.elements[i];
+  var E = state.energy;
+  // Reuse the cached sample-plane trace when it covers the request;
+  // otherwise run a lighter fresh trace to the requested distance.
+  var mc = (typeof _mcSampleCache !== 'undefined' && _mcSampleCache &&
+            _mcSampleCache.elementTrace && _mcSampleCache.elementTrace.length &&
+            distance <= (pos('sample') + 0.01)) ? _mcSampleCache : null;
+  if (!mc) {
+    try { mc = mcRayTrace(distance, 30000); } catch (e) { mc = null; }
+  }
+  var trace = (mc && mc.elementTrace) ? mc.elementTrace : [];
+  var seed = 0;
+  try {
+    seed = sourceFlux(E) * ((typeof _dcmBandFix === 'function') ? _dcmBandFix(E) : 1);
+  } catch (e2) {}
+
+  var html = '<div style="max-height:200px;overflow-y:auto"><table class="cmp-table"><tr><th>Position</th><th>Name</th><th>T<sub>cum</sub></th><th>H FWHM</th><th>V FWHM</th><th>Flux</th></tr>';
+  for (var i = 0; i < trace.length; i++) {
+    var el = trace[i];
+    if (el.dist > distance + 1e-9) break;
     var hum = el.sigH * 2.355e6;
     var vum = el.sigV * 2.355e6;
     var hLabel = hum < 1 ? (hum * 1000).toFixed(0) + ' nm' : hum.toFixed(1) + ' \u03BCm';
     var vLabel = vum < 1 ? (vum * 1000).toFixed(0) + ' nm' : vum.toFixed(1) + ' \u03BCm';
-    html += '<tr><td>' + el.dist.toFixed(1) + 'm</td><td style="color:var(--ac)">' + el.name + '</td><td style="color:var(--t3)">' + el.effect + '</td><td>' + hLabel + '</td><td>' + vLabel + '</td><td>' + el.flux.toExponential(1) + '</td></tr>';
+    var fluxStr = (seed > 0) ? (seed * el.T_cum).toExponential(1) : '--';
+    html += '<tr><td>' + el.dist.toFixed(1) + 'm</td><td style="color:var(--ac)">' + el.name + '</td><td style="color:var(--t3)">' + el.T_cum.toExponential(2) + '</td><td>' + hLabel + '</td><td>' + vLabel + '</td><td>' + fluxStr + '</td></tr>';
+  }
+  // Final row: focused sample-plane value from the single sampleFlux() API
+  // (tag=3 focused-only weights) \u2014 matches the live "Flux:" header exactly.
+  if (distance >= (pos('sample') - 0.5) && mc && mc.fwhmH) {
+    var sFlux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+    html += '<tr style="font-weight:600"><td>' + pos('sample').toFixed(1) + 'm</td>' +
+      '<td style="color:var(--gn)">Sample (KB focus)</td><td style="color:var(--t3)">focused</td>' +
+      '<td>' + (mc.fwhmH * 1e9).toFixed(0) + ' nm</td><td>' + (mc.fwhmV * 1e9).toFixed(0) + ' nm</td>' +
+      '<td style="color:var(--gn)">' + (sFlux > 0 ? sFlux.toExponential(1) : '--') + '</td></tr>';
   }
   html += '</table></div>';
-  html += '<div style="margin-top:6px;font-size:9px;color:var(--t3)">Target: ' + distance.toFixed(2) + 'm | MC FWHM: ' + mc.fwhmH_um.toFixed(1) + ' x ' + mc.fwhmV_um.toFixed(1) + ' um</div>';
+  html += '<div style="margin-top:6px;font-size:9px;color:var(--t3)">Target: ' + distance.toFixed(2) +
+    'm | MC trace: ' + (mc ? (mc.nSurvived + '/' + mc.nTotal + ' rays alive') : 'unavailable') +
+    ' | Flux = SPECTRA seed \u00D7 band fix \u00D7 T<sub>cum</sub> (MC)</div>';
   openModal('Beam Propagation Log: ' + compId, html);
 }
 
@@ -123,8 +156,10 @@ function renderEpicsTabV2() {
 //  PV TREND POPUP
 // ============================================================
 var _trendPopupOpen = false;
+// Holds the setInterval handle for the periodic 2s trend-chart redraw; null when no timer is running.
 var _trendPopupTimer = null;
 
+// Open/close the PV trend popup: toggle open flag and class, fill PV select, draw chart, start 2s refresh timer, make resizable.
 window.toggleTrendPopup = function() {
   var el = document.getElementById('pvTrendPopup');
   if (!el) return;
@@ -159,6 +194,7 @@ window.toggleTrendPopup = function() {
   }
 };
 
+// Set the active trend PV, update the popup label (BL10: stripped), and redraw the chart.
 window.setTrendPVPopup = function(pv) {
   trendPV = pv;
   var lbl = document.getElementById('trendPopupPVLabel');
@@ -166,6 +202,7 @@ window.setTrendPVPopup = function(pv) {
   _renderTrendPopupChart();
 };
 
+// Draw the selected PV's archived trace on the popup canvas via _drawChart1D; x is seconds-since-start formatted m:ss.
 function _renderTrendPopupChart() {
   if (!_trendPopupOpen) return;
   var cv = document.getElementById('trendPopupCanvas');
@@ -236,6 +273,7 @@ var BP_SIDE_RATIO = 0.22;  // side panel = 22% of main profile size
 var BP_MIN_MAIN = 160;     // minimum main profile size
 var BP_MAX_MAIN = 500;     // maximum main profile size
 
+// Convenience wrapper: render the MC beam profile at the sample position.
 window.renderBeamProfileCanvas = function(cid) {
   renderBeamProfileAt(cid, pos('sample'));
 };
@@ -446,6 +484,7 @@ window.renderDetectorScreen = function(cid, dist) {
   }, 20);
 };
 
+// MC ray-trace at a distance and render 2D + H/V line profiles plus detail (FWHM nm/um/mm, throughput, FOV um).
 window.renderBeamProfileAt = function(cid, dist, opts) {
   opts = opts || {};
   var el = document.getElementById(cid);

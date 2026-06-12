@@ -109,6 +109,446 @@ _EDGE_DB = {
     "La": {"L3": 5.483}, "Ce": {"K": 40.443, "L3": 5.723},
 }
 
+# ══════════════════════════════════════════════════════════════════════
+# XRF sample preset resolution (quickRaster 4th arg `presetKey`)
+# ══════════════════════════════════════════════════════════════════════
+# Canonical preset keys are defined in js/experiment/01_xray_data.js
+# (var XRF_SAMPLE_PRESETS). The 4th positional arg of quickRaster selects the
+# sample; the LLM frequently omits it, so the JS falls back to its default
+# sample and silently ignores the one the user named. We resolve the user's
+# stated sample here and repair the arg deterministically (Layer 3).
+_XRF_PRESET_KEYS = (
+    "semiconductor_ic", "battery_nmc622", "geological_section",
+    "biological_cell", "catalyst_nanoparticle", "environmental_particle",
+    "siemens_star",
+)
+
+# Free-text mentions (EN/KO + common misspellings) -> canonical preset key.
+# Order matters: distinctive samples first; the broad "semiconductor" group last.
+# ASCII aliases match on word boundaries (avoids "atomic" -> "ic"); non-ASCII
+# (Korean) match as substrings, since Korean is agglutinative and word
+# boundaries would miss particle-suffixed forms ("반도체를", "양극재에서").
+_SAMPLE_ALIASES = [
+    ("siemens_star",           ["siemens star", "siemens-star", "simens star",
+                                 "simens-star", "star pattern", "resolution test",
+                                 "resolution target", "지멘스", "분해능"]),
+    ("battery_nmc622",         ["nmc622", "nmc 622", "nmc", "battery cathode",
+                                 "cathode", "battery", "양극재", "양극", "배터리",
+                                 "이차전지", "리튬전지"]),
+    ("geological_section",     ["geological", "geology", "thin section", "rock",
+                                 "mineral", "지질", "암석", "광물", "박편"]),
+    ("biological_cell",        ["biological", "bio cell", "freeze-dried",
+                                 "freeze dried", "cell", "cells", "세포", "생체",
+                                 "바이오"]),
+    ("catalyst_nanoparticle",  ["catalyst", "catalytic", "nanoparticle",
+                                 "nano-particle", "nanoparticles", "촉매", "나노입자"]),
+    ("environmental_particle", ["environmental", "fly ash", "fly-ash", "aerosol",
+                                 "particulate", "pollutant", "pollution", "환경",
+                                 "비산재", "미세먼지", "분진"]),
+    ("semiconductor_ic",       ["semiconductor", "semi-conductor",
+                                 "integrated circuit", "interconnect", "ic chip",
+                                 "반도체", "집적회로"]),
+]
+
+
+# Recommended full scan FOV (um) per preset -- single source of truth lives in
+# phantoms.py. When the user names a sample but gives no scan size, the
+# quickRaster FOV defaults to this so the fixed-physical-size phantom is framed
+# sensibly (a generic ~0.5 um guess would only show a tiny corner of, e.g., a
+# 30 um battery cathode or a 20 um cell).
+try:
+    from sim_engines.phantoms import RECOMMENDED_FOV_UM as _RECOMMENDED_FOV
+except Exception:   # pragma: no cover - phantoms is always importable server-side
+    _RECOMMENDED_FOV = {}
+
+# A scan size/FOV is "specified" only if the text carries a NUMBER tied to a
+# length unit ("30um", "500 nm") or to an explicit FOV phrase ("FOV 2um",
+# "field of view 5", "5 um fov"). The bare word "FOV" with NO number must NOT
+# count: "same FOV", "동일 FOV" are RELATIVE references (keep the previous /
+# recommended framing), not a new size. Energy ("10 keV") and point counts
+# ("21x21", "21 points") are not sizes either.
+_FOV_SIZE_RE = re.compile(
+    r'\d+(?:\.\d+)?\s*(?:nm|um|µm|μm|mm|micron|microns|마이크론|마이크로미터|나노미터)'
+    r'|(?:\bfov\b|field[\s-]*of[\s-]*view|시야)\s*[:=]?\s*\d'
+    r'|\d+(?:\.\d+)?\s*(?:\bfov\b|field[\s-]*of[\s-]*view|시야)',
+    re.IGNORECASE)
+
+
+def _user_specified_fov(text):
+    """True if the user's text explicitly states a scan size / field of view."""
+    return bool(text) and bool(_FOV_SIZE_RE.search(text))
+
+
+def _resolve_sample_preset(text):
+    """Return the canonical XRF preset key named in `text`, or None.
+
+    Deterministic resolver — the user's stated sample is authoritative and is
+    used to fill/repair the 4th `presetKey` arg of quickRaster.
+    """
+    if not text:
+        return None
+    t = text.lower()
+    # An explicit canonical key in the text wins (LLM or user wrote it verbatim).
+    for key in _XRF_PRESET_KEYS:
+        if key in t:
+            return key
+    for key, aliases in _SAMPLE_ALIASES:
+        for a in aliases:
+            if a.isascii():
+                if re.search(r'(?<![a-z0-9])' + re.escape(a) + r'(?![a-z0-9])', t):
+                    return key
+            elif a in t:
+                return key
+    return None
+
+
+def _as_num(v):
+    """Coerce an action arg to float for display; 0.0 on failure."""
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Deterministic advisory notes (D2 / S5.1 P-areas, 2026-06-11)
+# Each helper inspects the FINAL action list + the user text and returns a
+# short note string (or None). Emitted through _narrate_plan's `notes`
+# channel — after _keep_domain_commentary — so they can never be stripped.
+# Zero prompt tokens: pure post-processing.
+# ══════════════════════════════════════════════════════════════════════
+
+_NOTE_SCAN_FNS = {"quickRaster", "quickXanes", "quickXafs", "quickEnergyScan",
+                  "setupVirtualExperiment"}
+
+# ── P2 (S5, ~12 cases): re-alignment boundaries ──
+# A small energy move (dE < 1 keV) still requires re-alignment when it
+# crosses a mirror-coating absorption edge: the reflectivity profile (and
+# the optimal stripe choice) changes discontinuously there. Values are READ
+# FROM the engine (js/optics/03_reflectivity.js mu_rho breakpoints), not
+# guessed: Pt L3 = 11.56 keV (line 41), Rh K = 23.22 keV (line 36).
+_REALIGN_BOUNDARIES_KEV = (
+    (11.564, "Pt L3 coating edge"),
+    (23.220, "Rh K coating edge"),
+)
+
+
+def _needs_realign(e_from, e_to):
+    """True when an energy move requires a full re-alignment: either the
+    move is >= 1 keV, or it crosses a mirror-coating boundary (P2).
+    Returns (needed: bool, reason: str|None)."""
+    try:
+        e_from = float(e_from)
+        e_to = float(e_to)
+    except (TypeError, ValueError):
+        return (False, None)
+    if e_from <= 0 or e_to <= 0:
+        return (False, None)
+    if abs(e_to - e_from) >= 1.0:
+        return (True, "dE >= 1 keV")
+    lo, hi = min(e_from, e_to), max(e_from, e_to)
+    for bound, reason in _REALIGN_BOUNDARIES_KEV:
+        if lo < bound < hi:
+            return (True, reason)
+    return (False, None)
+
+
+def _note_exposure_time(actions, user_text, current_energy_keV, is_ko):
+    """P1 (~25 S5 cases): every scan plan states its exposure time.
+
+    If the user supplied a dwell, restate it; otherwise state the 0.1 s/pt
+    default with an inline change offer (infer-default + ask, NOT a blocking
+    clarification — benchmark scan cases expect actions to be present).
+    nano* functions are excluded (they carry an explicit dwell argument
+    handled by prompt rule 28)."""
+    import re as _re
+    fns = {a.get("fn") for a in actions}
+    if not (fns & _NOTE_SCAN_FNS):
+        return None
+    ut = user_text.lower()
+    m = None
+    if any(k in ut for k in ["노출", "dwell", "체류", "exposure", "/포인트",
+                              "per point", "per-point"]):
+        m = _re.search(r'(\d+(?:\.\d+)?)\s*(ms|msec|밀리초|초|s\b|sec)', ut)
+    if m:
+        val, unit = m.group(1), m.group(2)
+        unit_ko = "ms" if unit in ("ms", "msec", "밀리초") else "초"
+        return ((u"노출 시간: {}{}/포인트로 설정합니다." if is_ko else
+                 u"Exposure time: {} {}/point as requested.")
+                .format(val, unit_ko if is_ko else
+                        ("ms" if unit_ko == "ms" else "s")))
+    return (u"노출 시간: 0.1초/포인트 기본으로 진행합니다. 변경하시려면 말씀해 주세요."
+            if is_ko else
+            u"Exposure time: default 0.1 s/point. Tell me if you want it changed.")
+
+
+def _note_nyquist_step(actions, user_text, current_energy_keV, is_ko,
+                       beam_nm=50.0):
+    """P3 (~10 S5 cases): flag (never block) step-size vs beam-size mismatch.
+
+    quickRaster step = FOV/(npts-1). Undersampling (step > 2x beam) gets a
+    Nyquist hint; heavy oversampling (step < beam/2) gets a time note.
+    beam_nm defaults to the 50 nm KB nominal focus."""
+    for a in actions:
+        if a.get("fn") != "quickRaster":
+            continue
+        args = a.get("args") or []
+        if len(args) < 3:
+            continue
+        try:
+            fov_um = max(float(args[0]), float(args[1]))
+            npts = max(int(args[2]) - 1, 1)
+        except (TypeError, ValueError):
+            continue
+        step_nm = fov_um * 1000.0 / npts
+        if step_nm > 2.0 * beam_nm:
+            nyq = beam_nm / 2.0
+            return ((u"[참고] 스텝 {:.0f} nm는 집속 빔(~{:.0f} nm)보다 커서 "
+                     u"언더샘플링입니다. 나이퀴스트 기준 스텝은 ~{:.0f} nm입니다. "
+                     u"그대로 진행할까요?" if is_ko else
+                     u"[Note] Step {:.0f} nm exceeds the focused beam "
+                     u"(~{:.0f} nm) — undersampling. The Nyquist step is "
+                     u"~{:.0f} nm. Proceed as requested?")
+                    .format(step_nm, beam_nm, nyq))
+        if step_nm < beam_nm / 2.0:
+            return ((u"[참고] 스텝 {:.0f} nm는 빔 크기(~{:.0f} nm)보다 충분히 작아 "
+                     u"해상도는 빔 한계입니다. 포인트 수를 줄이면 측정 시간이 단축됩니다."
+                     if is_ko else
+                     u"[Note] Step {:.0f} nm is well below the beam size "
+                     u"(~{:.0f} nm); resolution is beam-limited. Fewer points "
+                     u"would shorten the scan.").format(step_nm, beam_nm))
+    return None
+
+
+def _note_pt_coating(actions, user_text, current_energy_keV, is_ko):
+    """P7 (~3 S5 cases): Pt L-edge measurements collide with the Pt mirror
+    coating — recommend the Rh stripe. Deterministic (the prompt-taught
+    sentence was being stripped by the commentary filter's '변경' marker)."""
+    ut = user_text.lower()
+    pt_scan = any(a.get("fn") in ("quickXanes", "quickXafs", "quickEnergyScan")
+                  and "Pt" in str(a.get("args")) for a in actions)
+    pt_energy = any(a.get("fn") == "setTargetEnergy" and (a.get("args") or [0])
+                    and 11.0 <= _as_num(a["args"][0]) <= 12.6 for a in actions
+                    ) and ("pt" in ut or "백금" in ut)
+    if not (pt_scan or pt_energy):
+        return None
+    return (u"[참고] Pt L3 (11.564 keV)는 미러 Pt 코팅 흡수단과 겹쳐 반사율 이상과 "
+            u"미러 유래 Pt 형광 간섭이 생길 수 있습니다. 측정 전 M2 stripe을 Rh로 "
+            u"전환하시기를 권장합니다." if is_ko else
+            u"[Note] Pt L3 (11.564 keV) overlaps the Pt mirror-coating "
+            u"absorption edge; reflectivity anomalies and mirror-derived Pt "
+            u"fluorescence can interfere. Switching the M2 stripe to Rh "
+            u"before the scan is recommended.")
+
+
+# Eiger2 detector half-width (mm) for the default sample-detector distance.
+_XRD_DET_HALF_MM = 38.6   # Eiger2 1M module half-height
+_XRD_DET_DIST_MM = 150.0  # default sample-detector distance
+
+
+def _note_xrd_qrange(actions, user_text, current_energy_keV, is_ko):
+    """P10 (~4 S5 cases): state the accessible 2-theta / q-range for XRD
+    plans (computed nowhere before). Geometry: default 150 mm detector
+    distance, Eiger2 half-width."""
+    import math as _m
+    is_xrd = any(a.get("fn") == "setupVirtualExperiment" and
+                 any(p in str(a.get("args")) for p in
+                     ("powder_xrd", "xrd_grazing", "xrd_2d_map"))
+                 for a in actions)
+    if not is_xrd:
+        return None
+    e_kev = current_energy_keV if current_energy_keV > 0 else 10.0
+    for a in actions:
+        if a.get("fn") == "setTargetEnergy" and (a.get("args") or []):
+            e_kev = _as_num(a["args"][0])
+    lam_A = 12.398 / e_kev
+    tth_max = _m.degrees(_m.atan(_XRD_DET_HALF_MM / _XRD_DET_DIST_MM))
+    q_max = 4.0 * _m.pi * _m.sin(_m.radians(tth_max / 2.0)) / lam_A
+    return ((u"[참고] 검출기 거리 {:.0f} mm 기준 2θ ≈ 0–{:.1f}°, "
+             u"q ≈ 0–{:.2f} Å⁻¹ ({:.3g} keV)." if is_ko else
+             u"[Note] At {:.0f} mm detector distance: 2-theta ≈ 0–{:.1f}°, "
+             u"q ≈ 0–{:.2f} 1/Å ({:.3g} keV).")
+            .format(_XRD_DET_DIST_MM, tth_max, q_max, e_kev))
+
+
+def _note_focus_optic(actions, user_text, current_energy_keV, is_ko):
+    """P5 (~6 S5 cases): confirm the focusing optic + target beam size for
+    sub-micron requests when the user named no optic and the plan sets none."""
+    import re as _re
+    ut = user_text.lower()
+    named_optic = any(k in ut for k in ["kb", "존플", "zone plate", "zoneplate",
+                                          "zp", "crl"])
+    sets_focus = any(a.get("fn") == "setFocusMode" for a in actions)
+    has_scan = any(a.get("fn") in _NOTE_SCAN_FNS for a in actions)
+    if named_optic or sets_focus or not has_scan:
+        return None
+    sub_micron = bool(_re.search(r'\d+(?:\.\d+)?\s*nm', ut)) and \
+        any(k in ut for k in ["빔", "beam", "분해능", "해상도", "resolution"])
+    nano_words = any(k in ut for k in ["나노빔", "nanobeam", "nano beam",
+                                        "sub-micron", "서브미크론", "고해상도"])
+    if not (sub_micron or nano_words):
+        return None
+    m = _re.search(r'(\d+(?:\.\d+)?)\s*nm', ut)
+    tgt = (u" 목표 빔 사이즈 {} nm 확인 부탁드립니다.".format(m.group(1)) if m and is_ko
+           else (u" Please confirm the {} nm target beam size.".format(m.group(1))
+                 if m else u""))
+    return ((u"[참고] KB 집속(~50 nm 빔)을 사용합니다. Zone plate/CRL 집속을 "
+             u"원하시면 말씀해 주세요." + tgt) if is_ko else
+            (u"[Note] Using KB focusing (~50 nm beam). Say the word if you "
+             u"want zone-plate/CRL focusing instead." + tgt))
+
+
+def _narrate_plan(actions, current_energy_keV, is_ko, domain_note="", notes=None):
+    """Build the human-facing explanation deterministically from the FINAL action
+    list, so the prose can never contradict the plan.
+
+    Procedural facts (energy set, alignment, scan type/params, FOV) are read
+    straight from `actions`; the alignment notice is emitted IFF the plan really
+    contains setTargetEnergy + an alignment AND the move is >= 1 keV. The optional
+    `domain_note` (non-procedural scientific commentary the LLM supplied) is
+    appended after. Because the layer that KNOWS the plan is the layer that
+    SPEAKS it, the alignment/energy/scan claims are true by construction.
+
+    `notes` (D2/S5 P-areas, 2026-06-11): deterministic advisory lines appended
+    by post-processing (exposure time, Nyquist step check, Pt-coating warning,
+    XRD q-range, focusing-optic confirmation). They are added HERE — after
+    _keep_domain_commentary has already filtered the LLM text — so the
+    commentary filter can never strip them (the P1 audit found the filter was
+    erasing the LLM's prompt-compliant exposure sentence).
+    """
+    lines = []
+    fns = [a.get("fn") for a in actions]
+    set_e = next((a for a in actions if a.get("fn") == "setTargetEnergy"), None)
+    has_align = any(f in fns for f in
+                    ("runFullAlignment", "runMirrorAlignUI", "runAlignStepUI"))
+    for a in actions:
+        fn = a.get("fn", "")
+        args = a.get("args", []) or []
+        if fn == "setTargetEnergy" and args:
+            lines.append((u"빔 에너지를 {:g} keV로 설정합니다." if is_ko
+                          else u"Set the beam energy to {:g} keV.")
+                         .format(_as_num(args[0])))
+        elif fn in ("runFullAlignment", "runMirrorAlignUI", "runAlignStepUI"):
+            lines.append(u"빔라인 정렬을 수행합니다." if is_ko
+                         else u"Run a full beamline alignment.")
+        elif fn == "quickXanes":
+            el = args[0] if args else "?"
+            edge = args[1] if len(args) > 1 else "K"
+            lines.append((u"{} {}-edge XANES 스캔(0.25 eV 분해능)을 실행합니다." if is_ko
+                          else u"Run a {} {}-edge XANES scan (0.25 eV resolution).")
+                         .format(el, edge))
+        elif fn == "quickXafs":
+            el = args[0] if args else "?"
+            edge = args[1] if len(args) > 1 else "K"
+            lines.append((u"{} {}-edge XAFS 스캔을 실행합니다." if is_ko
+                          else u"Run a {} {}-edge XAFS scan.").format(el, edge))
+        elif fn == "quickRaster" and len(args) >= 3:
+            preset = args[3] if len(args) >= 4 else None
+            base = (u"{:g} x {:g} µm 영역을 {}x{} 포인트로 XRF 래스터 스캔합니다." if is_ko
+                    else u"XRF raster scan over {:g} x {:g} µm at {}x{} points.")\
+                .format(_as_num(args[0]), _as_num(args[1]), args[2], args[2])
+            if preset:
+                base += (u" (시료: {})".format(preset) if is_ko
+                         else u" (sample: {})".format(preset))
+            lines.append(base)
+        elif fn == "quickEnergyScan":
+            lines.append(u"에너지 스캔을 실행합니다." if is_ko
+                         else u"Run an energy scan.")
+        elif fn == "setCrystal" and args:
+            lines.append((u"DCM 결정을 {}로 설정합니다." if is_ko
+                          else u"Set the DCM crystal to {}.").format(args[0]))
+        elif fn == "setFocusMode" and args:
+            lines.append((u"집속 모드를 {}로 설정합니다." if is_ko
+                          else u"Set the focus mode to {}.").format(args[0]))
+        elif fn == "optimizeBeamline":
+            lines.append(u"빔라인 최적화를 실행합니다." if is_ko
+                         else u"Optimize the beamline.")
+        elif fn in ("showBeamProfile", "showTransmission"):
+            lines.append(u"결과를 표시합니다." if is_ko else u"Show the result.")
+        elif fn == "queueStart":
+            # The scan line already conveys execution; skip so we don't claim a
+            # "start now" next to a "Proceed?" notice.
+            continue
+        else:
+            # Graceful fallback for less common functions: use the label/fn name.
+            lbl = a.get("label") or fn
+            if lbl:
+                lines.append((u"{} 실행." if is_ko else u"Run {}.").format(lbl))
+    # Energy-move + alignment notice, true only when the plan actually moves energy.
+    if set_e and has_align and current_energy_keV > 0:
+        te = _as_num((set_e.get("args") or [0])[0])
+        if abs(te - current_energy_keV) >= 1.0:
+            lines.append((u"[참고] 현재 {:.3f} keV에서 {:.3f} keV로 이동(1 keV 이상)하므로 "
+                          u"IVU gap/DCM 등 빔라인 정렬이 함께 수행됩니다. 진행하시겠습니까?"
+                          if is_ko else
+                          u"[Note] Moving from {:.3f} keV to {:.3f} keV (>= 1 keV) "
+                          u"requires a beamline alignment (IVU gap, DCM, etc.). "
+                          u"Proceed?").format(current_energy_keV, te))
+        else:
+            # P2: small move that crosses a mirror-coating boundary
+            _need_b, _why_b = _needs_realign(current_energy_keV, te)
+            if _need_b:
+                lines.append((u"[참고] {:.3f} → {:.3f} keV 이동은 1 keV 미만이지만 "
+                              u"미러 코팅 경계({})를 지나므로 빔라인 정렬이 함께 "
+                              u"수행됩니다. 진행하시겠습니까?" if is_ko else
+                              u"[Note] The {:.3f} → {:.3f} keV move is below "
+                              u"1 keV but crosses a mirror-coating boundary "
+                              u"({}), so a beamline alignment is included. "
+                              u"Proceed?").format(current_energy_keV, te, _why_b))
+    body = "\n".join(lines)
+    note = (domain_note or "").strip()
+    if note:
+        body = (body + "\n" + note) if body else note
+    for n in (notes or []):
+        n = (n or "").strip()
+        if n:
+            body = (body + "\n" + n) if body else n
+    return body
+
+
+def _keep_domain_commentary(text):
+    """Backstop: keep only NON-procedural sentences from the LLM explanation.
+
+    Procedure (energy/alignment/scan) is narrated deterministically by
+    `_narrate_plan`, so the LLM's free text is used only for scientific
+    commentary (e.g. oxidation-state contrast, mirror-coating interference).
+    This drops any sentence that asserts a procedural claim about alignment,
+    the energy move, or starting the scan immediately, so a model that ignores
+    the prompt and restates procedure cannot reintroduce a contradiction. It is
+    a safety net, not the primary mechanism: the narrator is authoritative.
+    """
+    if not text:
+        return text
+    parts = re.split(r'(?<=[.!?])\s+|\n+', text)
+    # Drop any sentence that states procedure (the narrator already states it) or
+    # asserts a contradicting claim. Markers are procedural VOCABULARY, not an
+    # open-ended list of ways to say "no" — so contradictions (which are inherently
+    # procedural) are caught while scientific commentary (oxidation state, coating
+    # interference, chemistry) survives. Over-removal is benign (less commentary,
+    # never a contradiction).
+    markers = (
+        # procedural vocabulary narrated from the action list
+        "kev", "energy", "에너지", "align", "정렬",
+        "scan", "스캔", "raster", "래스터", "mapping", "매핑",
+        "fov", "µm", "μm", "분해능", "resolution",
+        "points", "포인트", "픽셀", "pixel",
+        "set energy", "설정", "변경", "이동", "move",
+        "start", "begin", "immediately", "시작", "수행", "실행",
+        "queue", "대기열",
+    )
+    fov_fig = re.compile(r'\d+(?:\.\d+)?\s*[x×]\s*\d+(?:\.\d+)?\s*(?:um|µm|μm)')
+    kept = []
+    for p in parts:
+        pl = p.lower()
+        if any(m in pl for m in markers):
+            continue
+        if fov_fig.search(pl):
+            continue
+        if p.strip():
+            kept.append(p.strip())
+    return " ".join(kept).strip()
+
+
 # Korean element aliases
 _ELEMENT_ALIASES_KR = {
     "철": "Fe", "구리": "Cu", "아연": "Zn", "니켈": "Ni", "코발트": "Co",
@@ -184,8 +624,13 @@ _INTENT_KEYWORDS = {
     ],
     "info": [
         "뭐야", "뭐가", "알려줘", "설명", "차이가", "할 수 있", "몇",
-        "가능", "시간", "걸려", "필요",
+        "가능", "시간", "걸려", "필요", "얼마",
         "투과율", "투과", "transmission", "보여줘", "프로파일",
+    ],
+    # P1 (S5): activates the 'exposure'-tagged few-shots (previously dead —
+    # no intent ever carried this tag, so _select_few_shots never scored it)
+    "exposure": [
+        "노출", "dwell", "체류", "exposure", "초/포인트", "per point",
     ],
     "optimize": [
         "최적화", "optimize", "최적", "추천", "신호", "signal",
@@ -313,17 +758,18 @@ _FN_TO_TECHNIQUE = {
 }
 
 # Setup change costs (subset of science_advisor.SETUP_CHANGE_DB)
+# P8 (S5, ~3 cases, 2026-06-11): the ID10 endstation mounts the SDD (XRF)
+# and EIGER2 (XRD) detectors at DIFFERENT scattering angles — XRF and XRD
+# are collected simultaneously with NO detector swap. The former
+# xrf<->xrd / xanes<->xrd 1800 s entries contradicted prompt rule 21 and
+# produced a spurious "[검출기 교체 경고] ~30분" on co-mounted plans.
+# Ptychography transitions are kept: coherent-mode setup (SSA, vacuum
+# path, SDD removal) is a genuine reconfiguration.
 _SETUP_CHANGE_SEC = {
-    ("xrf", "xrd"): 1800,
-    ("xrd", "xrf"): 1800,
     ("xrf", "ptycho"): 2700,
     ("ptycho", "xrf"): 2700,
     ("xrd", "ptycho"): 1200,
     ("ptycho", "xrd"): 1200,
-    ("xanes", "xrd"): 1800,
-    ("xrd", "xanes"): 1800,
-    ("xafs", "xrd"): 1800,
-    ("xrd", "xafs"): 1800,
     ("xanes", "ptycho"): 2700,
     ("ptycho", "xanes"): 2700,
     ("xafs", "ptycho"): 2700,
@@ -479,7 +925,14 @@ _ALIGNMENT_KEYWORDS = [
     "정렬해", "빔라인 정렬", "beamline alignment", "7단계 정렬",
     "전체 빔라인 정렬",
 ]
-_ALIGNMENT_FUNCTIONS = {"runFullAlignment", "runAlignStepUI", "runMirrorAlignUI"}
+_ALIGNMENT_FUNCTIONS = {"runFullAlignment", "runAlignStepUI", "runMirrorAlignUI",
+                        # Motor-specific auto-tune scans ARE alignment plans
+                        # (align_04 regression 2026-06-12: the intent guard
+                        # force-overwrote a correct quickAutoTune("m1","pitch",
+                        # 1,4,...) with a bare runFullAlignment because these
+                        # were missing from the whitelist). JS quickAutoTune
+                        # itself routes pitch axes to runMirrorAlignUI.
+                        "quickAutoTune", "quickRelAlign"}
 
 
 def _extract_element_edge(text: str):
@@ -501,8 +954,59 @@ def _extract_element_edge(text: str):
     return (None, None)
 
 
+def _extract_elements_in_range(text: str) -> list:
+    """Extract ALL (element, edge) pairs from text whose edge energy lies
+    inside the beamline range [BEAMLINE_E_MIN, BEAMLINE_E_MAX].
+
+    Multi-element backstop for _recover_from_empty (D3, 2026-06-11): a
+    sequential request like "Ti K-edge XANES 하고 나서 Sr K-edge XANES" must
+    not collapse to an empty plan just because the FIRST element (Ti K =
+    4.966 keV) is below range — the in-range elements (Sr K = 16.105 keV)
+    should still be recovered. Returns [(elem, edge), ...] in text order;
+    out-of-range elements are silently skipped (the LLM explanation already
+    tells the user why).
+    """
+    import re as _re
+    # Normalize Korean element names to symbols first ("철 XANES" -> "Fe XANES")
+    # so the keyword backstop also fires on Korean-only requests.
+    for kr, sym in _ELEMENT_ALIASES_KR.items():
+        if kr in text:
+            text = text.replace(kr, " " + sym + " ")
+    text_u = text.upper()
+    has_l3 = ("L3" in text_u or "L-III" in text_u or "L III" in text_u)
+    found = []
+    for elem in _EDGE_DB:
+        m = _re.search(r'\b' + _re.escape(elem.upper()) + r'\b', text_u)
+        if not m:
+            continue
+        edges = _EDGE_DB[elem]
+        pick = None
+        if has_l3 and "L3" in edges and \
+                BEAMLINE_E_MIN <= edges["L3"] <= BEAMLINE_E_MAX:
+            pick = "L3"
+        elif "K" in edges and BEAMLINE_E_MIN <= edges["K"] <= BEAMLINE_E_MAX:
+            pick = "K"
+        elif "L3" in edges and \
+                BEAMLINE_E_MIN <= edges["L3"] <= BEAMLINE_E_MAX:
+            pick = "L3"
+        if pick:
+            found.append((m.start(), elem, pick))
+    found.sort()  # text order
+    return [(e, ed) for _, e, ed in found]
+
+
 def _recover_from_empty(user_text: str, current_energy_keV: float) -> list:
-    """Attempt to recover actions from an empty LLM response using keywords."""
+    """Attempt to recover actions from an empty LLM response using keywords.
+
+    D3 hardening (2026-06-11, JSR future-work item: the 4/228 benchmark
+    failures included two empty-action responses):
+    - XANES/XAFS: recovers ALL in-range elements as a sequential plan
+      (workflow_01: Ti out-of-range must not suppress the Sr scan).
+    - XRF/raster: recovers a default preset even when no element is named
+      (vexp_03: "2D XRF 맵핑 실험 셋업" -> default raster instead of nothing).
+    queueStart() injection and confirmation_required enforcement are handled
+    downstream by _postprocess_response (deterministic layers).
+    """
     ut = user_text.lower()
 
     # Alignment
@@ -510,19 +1014,111 @@ def _recover_from_empty(user_text: str, current_energy_keV: float) -> list:
         return [{"fn": "runFullAlignment", "args": [],
                  "label": "Full Alignment (recovered)"}]
 
-    # XANES / XAFS
-    if any(k in ut for k in ["xanes", "xafs", "near-edge", "near edge"]):
-        elem, edge = _extract_element_edge(user_text)
-        if elem:
-            return [{"fn": "quickXanes", "args": [elem, edge],
-                     "label": "{} {} XANES (recovered)".format(elem, edge)}]
+    # Bare relative sample move (motor_03 backstop, 2026-06-12): owner
+    # convention — unit-less "N 이동" with no absolute marker (위치로/좌표로/
+    # 까지) is a RELATIVE move. The LLM sometimes returns empty actions and
+    # asks for the unit instead; recover motorMoveRelUI with the operator
+    # default (unit-less sample moves are micrometers on a nanoprobe;
+    # sample_c* args are mm). "N(으)로" absolute forms are excluded by the
+    # trailing lookahead so they stay with the LLM/rule-25 path.
+    if any(k in ut for k in ["이동", "움직", "옮겨", "move"]) and \
+            not any(k in ut for k in ["위치로", "좌표로", "까지", "absolute"]):
+        _mv = re.search(
+            r'(?:시료|샘플|sample)\s*c?([xyz])\s*(?:축)?\s*(?:를|을)?\s*'
+            r'([+-]?\d+(?:\.\d+)?)\s*'
+            r'(mm|밀리|um|µm|μm|마이크로|micro\w*|nm|나노)?'
+            r'(?!\s*(?:으로|로))',
+            user_text, re.IGNORECASE)
+        if _mv:
+            _ax = _mv.group(1).lower()
+            _num = float(_mv.group(2))
+            _unit = (_mv.group(3) or "").lower()
+            if _unit in ("mm", "밀리"):
+                _delta_mm = _num
+            elif _unit in ("nm", "나노"):
+                _delta_mm = _num / 1e6
+            else:  # micrometer family, or unit-less (operator default: um)
+                _delta_mm = _num / 1000.0
+            return [{"fn": "motorMoveRelUI",
+                     "args": ["sample", "sample_c" + _ax, _delta_mm],
+                     "label": "Sample {} {:+g} um relative (recovered)".format(
+                         _ax.upper(), _delta_mm * 1000.0)}]
 
-    # XRF / raster
-    if any(k in ut for k in ["xrf", "형광", "매핑", "raster", "이미징"]):
-        elem, edge = _extract_element_edge(user_text)
-        if elem:
-            return [{"fn": "quickRaster", "args": [5, 5, 21],
-                     "label": "XRF map (recovered)"}]
+    # Optimization request — must NOT degrade into a blind raster
+    # (opt_01/02 regression 2026-06-11: a truncated LLM response fell into
+    # the XRF branch below and recovered quickRaster where the user asked
+    # for optimizeBeamline). Recover the optimizer when an element is known;
+    # otherwise return nothing and let the explanation ask for details.
+    if any(k in ut for k in ["최적화", "optimiz", "최적의", "가장 좋은"]):
+        pairs = _extract_elements_in_range(user_text)
+        if pairs:
+            elem, edge = pairs[0]
+            # Priority from the request wording (resolution vs flux)
+            if any(k in ut for k in ["분해능", "resolution", "해상도"]):
+                prio = "resolution"
+            elif any(k in ut for k in ["flux", "플럭스", "신호", "감도"]):
+                prio = "flux"
+            else:
+                prio = "balanced"
+            return [{"fn": "optimizeBeamline",
+                     "args": [{"technique": "xrf", "element": elem,
+                               "edge": edge, "priority": prio}],
+                     "label": "{} XRF optimize (recovered)".format(elem)}]
+        return []
+
+    # Powder XRD experiment preset (empty-response backstop)
+    if "xrd" in ut and any(k in ut for k in ["분말", "powder"]):
+        return [{"fn": "setupVirtualExperiment", "args": ["powder_xrd"],
+                 "label": "Powder XRD preset (recovered)"}]
+
+    # Adaptive energy scan (scan_06 backstop, 2026-06-12): explicit adaptive
+    # wording + a recognizable element -> quickAdaptiveScan around its edge.
+    if any(k in ut for k in ["적응형", "adaptive"]):
+        pairs = _extract_elements_in_range(user_text)
+        if pairs:
+            _ae = _EDGE_DB[pairs[0][0]][pairs[0][1]]
+            return [{"fn": "quickAdaptiveScan",
+                     "args": [round(_ae - 0.05, 3), round(_ae + 0.3, 3),
+                              0.25, 5],
+                     "label": "{} adaptive scan (recovered)".format(pairs[0][0])}]
+        return []
+
+    # Oxidation / chemical-state intent (analysis_01 backstop, 2026-06-12):
+    # "Fe 산화 상태를 확인하고 싶어요" names no technique, but the
+    # measurement is XANES by definition. Element required — no blind
+    # default scan when nothing recognizable is named.
+    if any(k in ut for k in ["산화 상태", "산화상태", "산화수",
+                              "oxidation state", "valence", "원자가",
+                              "화학 상태", "chemical state"]):
+        pairs = _extract_elements_in_range(user_text)
+        if pairs:
+            return [{"fn": "quickXanes", "args": [elem, edge],
+                     "label": "{} {} XANES (recovered)".format(elem, edge)}
+                    for elem, edge in pairs]
+        return []
+
+    # XANES / XAFS — recover every in-range element (sequential plan).
+    # qact_01 regression fix (2026-06-12): honor an explicit XAFS/EXAFS
+    # request — the branch previously hardcoded quickXanes, substituting
+    # XANES for a user who literally asked for "Fe XAFS". XANES wording
+    # wins on a mixed mention; "exafs" contains "xafs" so it also routes
+    # to quickXafs.
+    if any(k in ut for k in ["xanes", "xafs", "near-edge", "near edge"]):
+        if "xafs" in ut and "xanes" not in ut:
+            _rec_fn, _rec_nm = "quickXafs", "XAFS"
+        else:
+            _rec_fn, _rec_nm = "quickXanes", "XANES"
+        pairs = _extract_elements_in_range(user_text)
+        if pairs:
+            return [{"fn": _rec_fn, "args": [elem, edge],
+                     "label": "{} {} {} (recovered)".format(elem, edge, _rec_nm)}
+                    for elem, edge in pairs]
+
+    # XRF / raster — element optional; fall back to a default preset
+    if any(k in ut for k in ["xrf", "형광", "매핑", "맵핑", "mapping",
+                              "raster", "이미징"]):
+        return [{"fn": "quickRaster", "args": [5, 5, 21],
+                 "label": "XRF map (recovered)"}]
 
     return []
 
@@ -537,15 +1133,15 @@ def _postprocess_response(result: dict, current_energy_keV: float = 0,
     - Add missing queueStart() after scan functions
     - Generate warning messages for removed actions
     """
+    _recovered = False
     actions = result.get("actions", [])
     if not actions:
         # Attempt keyword-based recovery from empty response
         recovered = _recover_from_empty(user_text, current_energy_keV)
         if recovered:
             result["actions"] = recovered
-            existing_expl = result.get("explanation", "")
-            result["explanation"] = (existing_expl + " " if existing_expl else "") + "(recovered from empty response)"
             actions = recovered
+            _recovered = True  # surfaced as a meta-note after the plan narration
             log.warning("NLP postprocess: recovered empty response for '%s' -> %s",
                            user_text[:80], [a["fn"] for a in recovered])
         else:
@@ -554,6 +1150,8 @@ def _postprocess_response(result: dict, current_energy_keV: float = 0,
     # Guard: if user only asked to SET energy (not scan/measure),
     # replace quickXanes/quickXafs with setTargetEnergy
     _ut = user_text.lower()
+    # Korean-vs-English for any notices we add below (derive from the input text).
+    _is_ko = (_detect_language(user_text) == "ko")
     _is_energy_set = any(k in _ut for k in [
         "set energy", "energy set", "에너지 설정", "에너지를 설정",
         "에너지를 바꿔", "에너지 변경", "에너지를 변경",
@@ -584,13 +1182,22 @@ def _postprocess_response(result: dict, current_energy_keV: float = 0,
                     act["label"] = "Set Energy (corrected from {})".format(fn)
 
         # Strip to ONLY the setTargetEnergy with user's requested value
-        # (remove hallucinated extra actions like queueStart, duplicate setTargetEnergy)
+        # (remove hallucinated extra actions like queueStart, duplicate
+        # setTargetEnergy). multi_01 regression fix (2026-06-12): read-only
+        # display steps the user ALSO asked for ("...빔 프로파일 보여줘") are
+        # not hallucinations — keep them after the energy move so a multi-step
+        # command survives the rewrite. runFullAlignment is re-derived
+        # downstream by the dE/coating-boundary logic when the move needs it.
+        _KEEP_DISPLAY_FNS = ("showBeamProfile", "showTransmission", "switchTab")
+        _kept_display = [a for a in actions if a.get("fn") in _KEEP_DISPLAY_FNS]
         if _target_e is not None:
             actions = [{"fn": "setTargetEnergy", "args": [_target_e],
-                        "label": "Set Energy to {} keV".format(_target_e)}]
+                        "label": "Set Energy to {} keV".format(_target_e)}] \
+                + _kept_display
         else:
             # No explicit energy in text — keep only setTargetEnergy actions
-            actions = [a for a in actions if a.get("fn") == "setTargetEnergy"]
+            actions = [a for a in actions
+                       if a.get("fn") == "setTargetEnergy"] + _kept_display
 
     corrected = []
     removed = []
@@ -610,6 +1217,54 @@ def _postprocess_response(result: dict, current_energy_keV: float = 0,
             # Hallucinated function — remove
             removed.append(fn)
 
+    # ── P9 (S5, ~5 cases): pure-question action stripper ──
+    # Info questions that contain command nouns ("Fe XANES 하려면 몇 keV로
+    # 가야 해?") bypass the RAG router by design and previously executed an
+    # action. If the text carries an info-question marker AND no imperative
+    # marker anywhere, strip state-changing actions and keep the LLM's
+    # explanation (it contains the answer). The no-imperative condition
+    # preserves question+command mixes ("...해줘", "...맞춰") untouched.
+    _P9_QUESTION = ["얼마로 해야", "얼마야", "얼마나 걸려", "몇 kev", "몇이야",
+                    "해야 해?", "해야 하죠", "어떻게 해야", "뭐가 좋아",
+                    # vexp_11/42/50 regression fix (2026-06-12): info-question
+                    # forms the D3 recovery hardening was turning into
+                    # executable plans ("...필요한가요?" / "...시간이 어떻게
+                    # 돼?" / "...동시에 ...도 할 수 있어?"). The no-imperative
+                    # condition below still protects question+command mixes.
+                    "필요한가", "어떻게 돼", "할 수 있어",
+                    "what is", "how much", "how long", "which energy",
+                    "what energy"]
+    _P9_IMPERATIVE = ["해줘", "주세요", "맞춰", "설정해", "실행", "시작", "돌려",
+                      "측정해", "찍어", "스캔해", "열어", "보여줘", "해 줘",
+                      "바꿔", "이동", "옮겨"]
+    if corrected and any(k in _ut for k in _P9_QUESTION) and \
+            not any(k in _ut for k in _P9_IMPERATIVE):
+        _P9_INFO_FNS = {"showBeamProfile", "showTransmission", "switchTab",
+                        "estimateSignal", "queryHardwareStatus", "nanoStatus"}
+        _stripped = [a.get("fn") for a in corrected
+                     if a.get("fn") not in _P9_INFO_FNS]
+        if _stripped:
+            corrected = [a for a in corrected if a.get("fn") in _P9_INFO_FNS]
+            result["confirmation_required"] = False
+            log.info("Layer 3 (P9): info-question — stripped actions %s",
+                     _stripped)
+
+    # ── P6 (S5, ~3 cases): setup-vs-execute disambiguation flag ──
+    # "셋업해줘" contains "해줘", so setup keywords take precedence over the
+    # bare imperative suffix. Used below to suppress the queueStart
+    # auto-injector and strip LLM-emitted queueStart.
+    _P6_SETUP = ["셋업", "세팅", "세트업", "setup", "set up", "set-up",
+                 "prepare", "준비만", "준비해"]
+    _P6_EXECUTE = ["시작", "측정", "실행", "돌려", "찍어", "스타트", "start",
+                   "run ", "measure", "기본값으로", "바로"]
+    _is_setup_only = any(k in _ut for k in _P6_SETUP) and \
+        not any(k in _ut for k in _P6_EXECUTE)
+    if _is_setup_only:
+        _had_qs = any(a.get("fn") == "queueStart" for a in corrected)
+        if _had_qs:
+            corrected = [a for a in corrected if a.get("fn") != "queueStart"]
+            log.info("Layer 3 (P6): setup-only intent — queueStart suppressed")
+
     # Guard: alignment intent — if user explicitly asked for alignment
     # but LLM returned non-alignment functions, force-correct
     _is_alignment_intent = any(k in _ut for k in _ALIGNMENT_KEYWORDS)
@@ -625,20 +1280,22 @@ def _postprocess_response(result: dict, current_energy_keV: float = 0,
     # — these do NOT need queueStart (it causes duplicate execution)
     _EXPT_INTERNAL_START = {"quickRaster", "quickXanes", "quickXafs"}
 
-    # Auto-add runFullAlignment when energy change >= 1 keV
+    # Auto-add runFullAlignment when the energy move needs it: dE >= 1 keV
+    # OR (P2) the move crosses a mirror-coating boundary (_needs_realign).
     has_alignment = any(a.get("fn") == "runFullAlignment" for a in corrected)
     if not has_alignment and current_energy_keV > 0:
         # Check setTargetEnergy
         for a in corrected:
             if a.get("fn") == "setTargetEnergy":
                 target_e = a.get("args", [0])[0] if a.get("args") else 0
-                if abs(target_e - current_energy_keV) >=1.0:
+                _need, _why = _needs_realign(current_energy_keV, target_e)
+                if _need:
                     new_corrected = []
                     for a2 in corrected:
                         new_corrected.append(a2)
                         if a2.get("fn") == "setTargetEnergy":
                             new_corrected.append({"fn": "runFullAlignment", "args": [],
-                                                  "label": "Full Alignment (auto-added)"})
+                                                  "label": "Full Alignment (auto-added: {})".format(_why)})
                     corrected = new_corrected
                 elif abs(target_e - current_energy_keV) < 0.01:
                     corrected = [a2 for a2 in corrected if a2.get("fn") != "setTargetEnergy"]
@@ -651,29 +1308,168 @@ def _postprocess_response(result: dict, current_energy_keV: float = 0,
                     el = a.get("args", ["Cu"])[0] if a.get("args") else "Cu"
                     edge = a.get("args", ["Cu","K"])[1] if a.get("args") and len(a.get("args")) > 1 else "K"
                     edge_e = _EDGE_DB.get(el, {}).get(edge, 0) if el else 0
-                    if edge_e > 0 and abs(edge_e - current_energy_keV) >=1.0:
+                    _need, _why = _needs_realign(current_energy_keV, edge_e) \
+                        if edge_e > 0 else (False, None)
+                    if _need:
                         corrected.insert(corrected.index(a), {"fn": "runFullAlignment", "args": [],
-                                                              "label": "Full Alignment (auto-added)"})
+                                                              "label": "Full Alignment (auto-added: {})".format(_why)})
                     break
 
-    # Remove queueStart and setTargetEnergy if experiment function present
-    # (startExperiment handles energy internally). Keep runFullAlignment.
+    # Remove queueStart if an experiment function is present (startExperiment
+    # runs the scan itself; a separate queueStart would double-execute).
+    #
+    # IMPORTANT: quickXanes/quickXafs internally move the DCM/IVU to the element
+    # edge and run a full alignment when the energy moves >= 1 keV. That hidden
+    # energy move + alignment must be SHOWN to the user, not silently performed.
+    # So instead of stripping setTargetEnergy/runFullAlignment, we make them
+    # EXPLICIT actions in front of the experiment when an energy move is needed,
+    # and add a notice to the explanation. The experiment's internal logic then
+    # becomes a no-op (energy already at target, dE = 0) and nothing runs twice.
     has_expt_fn = any(a.get("fn") in _EXPT_INTERNAL_START for a in corrected)
     if has_expt_fn:
-        _STRIP_WITH_EXPT = {"queueStart", "setTargetEnergy"}
-        # Strip queueStart, setTargetEnergy AND runFullAlignment
-        # — startExperiment() handles energy+alignment internally
-        _STRIP_WITH_EXPT.add("runFullAlignment")
-        corrected = [a for a in corrected if a.get("fn") not in _STRIP_WITH_EXPT]
+        # Drop queueStart (experiment self-starts) and any LLM-emitted
+        # setTargetEnergy/runFullAlignment — we re-derive them deterministically.
+        corrected = [a for a in corrected
+                     if a.get("fn") not in ("queueStart", "setTargetEnergy",
+                                            "runFullAlignment")]
+
+        # Determine the experiment's target energy from its element edge, so we
+        # can decide whether an energy move + alignment is required and show it.
+        _expt_target_e = 0.0
+        for a in corrected:
+            fn = a.get("fn", "")
+            if fn in ("quickXanes", "quickXafs"):
+                args = a.get("args", [])
+                el = args[0] if args else "Cu"
+                edge = args[1] if len(args) > 1 else "K"
+                _expt_target_e = _EDGE_DB.get(el, {}).get(edge, 0) if el else 0
+                break
+            if fn == "quickRaster":
+                # XRF raster keeps the current energy unless the user set one.
+                # P4 (S5, ~8 cases): for multi-element XRF requests the
+                # excitation energy must sit ABOVE the highest requested edge
+                # (+1 keV margin), otherwise the highest-Z element's
+                # fluorescence is never excited. Deterministic floor: extract
+                # the in-range elements from the user text; if the current
+                # energy violates max(edge)+1.0, set an explicit energy move
+                # to max(edge)+1.2 (the dE/boundary logic below decides
+                # whether an alignment is also needed).
+                _expt_target_e = 0.0
+                # cmulti_01 regression fix (2026-06-12): an EXPLICIT energy in
+                # the user text ("에너지 15 keV로 바꾸고 ... XRF 맵 ...") is
+                # authoritative — the stripper above just removed the LLM's
+                # setTargetEnergy, so re-derive it from the text BEFORE the P4
+                # element-edge floor (which finds no element in such requests
+                # and previously dropped the requested move entirely).
+                _e_match_q = re.search(r'(\d+(?:\.\d+)?)\s*kev', _ut)
+                _xrf_kw = ("xrf", "형광", "매핑", "맵핑", "mapping", "raster",
+                           "래스터", "이미징", "맵")
+                if _e_match_q and BEAMLINE_E_MIN <= \
+                        float(_e_match_q.group(1)) <= BEAMLINE_E_MAX:
+                    _expt_target_e = float(_e_match_q.group(1))
+                elif any(k in _ut for k in _xrf_kw):
+                    _pairs = _extract_elements_in_range(user_text)
+                    if _pairs:
+                        _max_edge = max(_EDGE_DB[el][ed] for el, ed in _pairs)
+                        if current_energy_keV > 0 and \
+                                current_energy_keV < _max_edge + 1.0 and \
+                                _max_edge + 1.2 <= BEAMLINE_E_MAX:
+                            _expt_target_e = round(_max_edge + 1.2, 1)
+                            log.info("Layer 3 (P4): XRF excitation floor — "
+                                     "energy %.3f < max edge %.3f + 1; "
+                                     "moving to %.1f keV",
+                                     current_energy_keV, _max_edge,
+                                     _expt_target_e)
+                break
+
+        _needs_energy_move = (
+            _expt_target_e > 0 and current_energy_keV > 0
+            and abs(_expt_target_e - current_energy_keV) >= 0.01
+        )
+        if _needs_energy_move:
+            # Surface the move (and the alignment, when the move itself
+            # requires one per _needs_realign: dE >= 1 keV or a coating
+            # boundary crossing) as explicit, user-visible steps. The
+            # [참고]/[Note] notice is NOT written here: _narrate_plan derives it
+            # from the final action list, so the prose cannot contradict the plan.
+            _idx = next((i for i, a in enumerate(corrected)
+                         if a.get("fn") in _EXPT_INTERNAL_START), 0)
+            _steps = [
+                {"fn": "setTargetEnergy", "args": [round(_expt_target_e, 3)],
+                 "label": "Set Energy to {} keV".format(round(_expt_target_e, 3))},
+            ]
+            _need_al, _why_al = _needs_realign(current_energy_keV, _expt_target_e)
+            if _need_al:
+                _steps.append({"fn": "runFullAlignment", "args": [],
+                               "label": "Full Alignment (energy moved)"})
+            corrected[_idx:_idx] = _steps
+
+        # Re-append the trailing queueStart (stripped above for dedupe /
+        # position normalization). edge_03/heavyel_01 regression fix
+        # (2026-06-12): scan plans end with queueStart by contract; JS
+        # queueStart() is an explicit no-op right after a self-starting
+        # experiment (QUEUE._exptRunning guard in js/bluesky/01_queue.js:
+        # "NLP sends redundant queueStart"), so this cannot double-execute.
+        # P6: still suppressed for setup-only requests ("...셋업해줘").
+        if corrected and not _is_setup_only:
+            corrected.append({"fn": "queueStart", "args": [],
+                              "label": "Scan Start (auto-added)"})
     else:
-        # Add missing queueStart after scan functions (only if no expt function)
-        if corrected:
+        # Add missing queueStart after scan functions (only if no expt function).
+        # P6: suppressed for setup-only requests ("...셋업해줘") — the injector
+        # previously defeated prompt rule 17 by re-appending queueStart.
+        if corrected and not _is_setup_only:
             last_fn = corrected[-1].get("fn", "")
             if last_fn in _SCAN_FUNCTIONS:
                 has_queue_start = any(a.get("fn") == "queueStart" for a in corrected)
                 if not has_queue_start:
                     corrected.append({"fn": "queueStart", "args": [],
                                       "label": "Scan Start (auto-added)"})
+
+    # Repair quickRaster 4th arg (presetKey): the LLM often omits the sample the
+    # user named, which makes the JS fall back to its default sample. The user's
+    # stated sample is authoritative, so inject/override it deterministically.
+    _user_sample = _resolve_sample_preset(user_text)
+    if _user_sample:
+        for a in corrected:
+            if a.get("fn") != "quickRaster":
+                continue
+            args = a.get("args")
+            if not isinstance(args, list) or len(args) < 3:
+                continue  # malformed arity handled by Layer 6; don't guess geometry
+            if len(args) >= 4:
+                if args[3] != _user_sample:
+                    log.info("NLP postprocess: quickRaster sample %r -> %r (from user text)",
+                             args[3], _user_sample)
+                    args[3] = _user_sample
+            else:
+                args.append(_user_sample)
+                log.info("NLP postprocess: quickRaster sample preset -> %r (filled from user text)",
+                         _user_sample)
+
+    # Default the scan FOV to the sample's recommended full field of view when a
+    # sample preset is set and the user did NOT specify a scan size. The phantoms
+    # are now fixed physical sizes, so a generic LLM-guessed FOV would frame only
+    # a tiny corner; RECOMMENDED_FOV_UM frames the whole sample (or a
+    # representative sub-region for specimens larger than the nanoprobe limit).
+    if _RECOMMENDED_FOV and not _user_specified_fov(user_text):
+        for a in corrected:
+            if a.get("fn") != "quickRaster":
+                continue
+            args = a.get("args")
+            if not isinstance(args, list) or len(args) < 3:
+                continue
+            preset_key = args[3] if len(args) >= 4 else None
+            rec = _RECOMMENDED_FOV.get(preset_key)
+            if rec and (args[0] != rec or args[1] != rec):
+                log.info("NLP postprocess: quickRaster FOV %sx%s -> %g um "
+                         "(recommended for %r; no size in request)",
+                         args[0], args[1], rec, preset_key)
+                args[0] = rec
+                args[1] = rec
+                # The DISPLAYED FOV is stated by _narrate_plan straight from these
+                # args, so no prose rewrite is needed here (the old re.subn that
+                # patched the LLM's quoted guess is gone).
 
     result["actions"] = corrected
 
@@ -686,14 +1482,37 @@ def _postprocess_response(result: dict, current_energy_keV: float = 0,
         if has_state_change:
             result["confirmation_required"] = True
 
-    # Add warning about removed functions
-    if removed:
-        warning = "(" + ", ".join(removed) + " -- not valid, removed)"
-        existing_expl = result.get("explanation", "")
-        if existing_expl:
-            result["explanation"] = existing_expl + "\n" + warning
-        else:
-            result["explanation"] = warning
+    # Build the human-facing explanation from the FINAL action list (single source
+    # of truth). The LLM free text contributes only non-procedural domain
+    # commentary; procedural facts (energy/alignment/scan/FOV) and the [참고]/[Note]
+    # alignment notice are narrated from the actions, so the prose cannot
+    # contradict the plan. (When actions==[] the function already returned above.)
+    if corrected:
+        _domain = _keep_domain_commentary(result.get("explanation", ""))
+        # ── Deterministic advisory notes (D2 / S5 P-areas, 2026-06-11) ──
+        # Emitted via _narrate_plan's notes channel so the commentary filter
+        # cannot strip them. Each helper returns a string or None.
+        _notes = []
+        try:
+            for _mk in (_note_exposure_time, _note_nyquist_step,
+                        _note_pt_coating, _note_xrd_qrange,
+                        _note_focus_optic):
+                _n = _mk(corrected, user_text, current_energy_keV, _is_ko)
+                if _n:
+                    _notes.append(_n)
+        except Exception as _ne:
+            log.warning("advisory notes failed: %s", _ne)
+        _expl = _narrate_plan(corrected, current_energy_keV, _is_ko,
+                              domain_note=_domain, notes=_notes)
+        _meta = []
+        if _recovered:
+            _meta.append("(recovered from empty response)")
+        if removed:
+            _meta.append("(" + ", ".join(removed) + " -- not valid, removed)")
+        if _meta:
+            _meta_str = " ".join(_meta)
+            _expl = (_expl + "\n" + _meta_str).strip() if _expl else _meta_str
+        result["explanation"] = _expl
 
     return result
 
@@ -1412,9 +2231,14 @@ KB수직높이→kbv,kbv_y / KB수직피치→kbv,kbv_pitch / KB수평피치→k
 ## Function Selection Guide (IMPORTANT — choose correctly!)
 - quickXanes(element, edge): Use when user asks for XANES/near-edge scan. Keywords: "XANES", "니어엣지", "흡수단", "화학 상태"
 - quickXafs(element, edge): Use when user asks for XAFS/EXAFS. Keywords: "XAFS", "EXAFS", "흡수 스펙트럼"
-- quickRaster(xRange, yRange, numPts, presetKey): Use when user asks for XRF mapping, XRD mapping, 2D scan.
-  4th arg presetKey: 'semiconductor_ic'|'battery_nmc622'|'geological_section'|'biological_cell'|'catalyst_nanoparticle'|'environmental_particle'|'siemens_star'
-  Example: quickRaster(0.5, 0.5, 21, "siemens_star") — Siemens star XRF map
+- quickRaster(fovX_um, fovY_um, numPts, presetKey): Use when user asks for XRF mapping, XRD mapping, 2D scan.
+  fovX_um, fovY_um = the FULL field of view in µm (centred on the sample, NOT a
+  +/- half-width); a +/- range like "+/-500 nm" -> quickRaster(1.0, 1.0, n).
+  numPts grids the FOV. "same FOV, higher resolution" = keep fovX/fovY, increase
+  numPts only. If the user names a sample but gives no scan size, just pass the
+  preset -- the system applies that sample's recommended full FOV automatically.
+  4th arg presetKey: 'semiconductor_ic'|'battery_nmc622'|'geological_section'|'biological_cell'|'catalyst_nanoparticle'|'environmental_particle'|'siemens_star'|'calibration_grid'
+  Example: quickRaster(30, 30, 21, "siemens_star")
   Keywords: "맵핑", "이미징", "2D", "래스터"
 - optimizeBeamline(opts): Use ONLY when user explicitly asks for "최적화", "optimize", "최적 설정", "추천", "신호 최대화". NOT for direct scan requests.
 - setTargetEnergy(keV): Use for simple energy changes without scanning.
@@ -1441,6 +2265,16 @@ RULE: If user says "원소 XANES 해줘" or "원소 XRF 해줘" → use quickXan
    MULTI-ELEMENT XRF: When multiple elements are requested simultaneously (e.g., Ni+Co+Mn), set energy ABOVE the HIGHEST absorption edge + 1 keV.
    Example: NMC622 (Ni 8.333 + Co 7.709 + Mn 6.539) → energy = 8.333 + 1.2 ≈ 9.5 keV (above Ni K-edge).
    This ensures ALL target elements' fluorescence lines are excited simultaneously.
+   XRF EXCITATION PHYSICS (do NOT get this wrong): an element fluoresces ONLY when the incident
+   energy is ABOVE its absorption edge. An energy BELOW an edge canNOT excite that edge.
+   - NEVER describe an energy below an edge as "suitable for" that edge. It is the opposite.
+     WRONG: "10 keV is suitable for Au L3-edge (11.919 keV)". 10 < 11.919, so Au L3 is NOT excited.
+   - For heavy elements (Au, Pb, W, Pt) the K-edge is out of range (>25 keV); use the L3-edge.
+     Au L3 = 11.919 keV → to map Au you need E above ~11.92 keV (e.g. setTargetEnergy(12.4)).
+   - If the user gives an energy that is below the sample's main element edge, do NOT claim it works.
+     State plainly which elements that energy CAN excite, and that the main element needs a higher energy.
+   - Do NOT invent a sample fallback element in your explanation; the simulation maps whatever the
+     incident energy actually excites. Keep claims consistent with the edge-vs-energy comparison.
 5. For ambiguous requests, ask in explanation.
 6. quickXafs/quickXanes/quickRaster/quickEnergyScan/quickCount/quickAlign/quickFlyScan/quickAutoTune/quickAdaptiveScan/quickRelAlign/quickFermat/quickRelRaster → ALWAYS add queueStart() as next action!
 7. NEVER say a technique is "not supported". All listed techniques are available on this beamline.
@@ -1450,6 +2284,14 @@ RULE: If user says "원소 XANES 해줘" or "원소 XRF 해줘" → use quickXan
    - If user explicitly asks "정렬 필요한가?", always answer based on this 1 keV rule.
    - NOTE: KB mirror focal length does NOT change with energy (it is geometrically fixed). Alignment is needed for DCM/mirror reflectivity changes.
 9. SCAN PARAMETER CONFIRMATION: When user requests a scan (raster, energy scan, etc.) WITHOUT specifying parameters, set actions:[] and ASK for scan range, points, dwell time in explanation. Only execute when user provides specific values or says "기본값으로" (use defaults). XAFS is an exception — element+edge is sufficient since the scan range is standardized.
+   EXECUTE-FIRST EXCEPTION (owner convention 2026-06-12): when the ELEMENT
+   (or a clear sample context) AND the TECHNIQUE are both identifiable from
+   the request, do NOT ask — generate the actions with sensible defaults and
+   state them inline ("...기본으로 진행합니다. 변경하시려면 말씀해 주세요.").
+   Ask ONLY when the element/technique itself is ambiguous. Examples that
+   must EXECUTE, not ask: "하수 슬러지에서 아연의 화학 상태" (Zn + XANES),
+   "아연 분포 좀 봐봐. 20um 정도" (Zn + XRF map 20x20), "니켈 산화물 상 분석"
+   (XRD, powder default).
 10. NEVER EMPTY RESPONSE: You MUST always provide a non-empty "explanation" in Korean. If you cannot fulfill the request, explain WHY clearly:
    - Energy out of range: state the edge energy and beamline limits (5-25 keV)
    - Missing information: specify exactly what you need (element, scan range, technique)
@@ -1508,6 +2350,12 @@ RULE: If user says "원소 XANES 해줘" or "원소 XRF 해줘" → use quickXan
 23. CONTAMINATION CHECK: When user asks to "check contamination" or "오염 확인":
    - Prefer XRF mapping (quickRaster) over single-point XANES/XAFS
    - Reason: With a nanobeam, a single point may miss the contamination spot. Mapping provides spatial distribution.
+   - EXCEPTION (trace level): if the user states a LOW concentration (<= ~100 ppm,
+     e.g. "10ppm 수준"), run optimizeBeamline FIRST (technique:'xrf', element, ppm as
+     stated) so the expected signal level and required exposure are estimated BEFORE
+     committing to a raster scan. A 10 ppm signal may need orders of magnitude longer
+     dwell; mapping blindly wastes beamtime. The user can then approve the optimized
+     raster as a follow-up.
 24. UNIT CLARIFICATION: Motor units per axis (CRITICAL — do NOT confuse mm vs µm):
    - sample_cx, sample_cy: mm (KOHZU coarse stage, ±34 mm)
    - sample_cz: mm (KOHZU coarse stage, ±9.5 mm)
@@ -1521,6 +2369,10 @@ RULE: If user says "원소 XANES 해줘" or "원소 XRF 해줘" → use quickXan
 25. RELATIVE vs ABSOLUTE MOVEMENT:
    - If user says "+N unit" or "-N unit" (e.g., "+2 mm", "-0.5 mrad") → RELATIVE move → use motorMoveRelUI(gid, mid, delta)
    - If user says "N unit로" or "N unit에" (e.g., "5 mm로", "3 mrad에") → ABSOLUTE move → use motorSetUI(gid, mid, value)
+   - DEFAULT = RELATIVE: a bare "N 이동해/움직여" with NO absolute marker
+     (위치로/좌표로/까지) is a RELATIVE move — beamline operators almost never
+     command absolute coordinates (owner convention 2026-06-12). Direction
+     words (왼쪽/오른쪽/위/아래, left/right) set the sign of a RELATIVE move.
    - motorMoveRelUI(groupId, motorId, delta) — moves motor by delta from current position
 25. ACTION EXPLANATION: For every action, briefly explain in "explanation" what device is being changed and how:
    - Good: "DCM 모노크로메이터를 조정하여 에너지를 12 keV로 설정합니다."
@@ -1712,13 +2564,16 @@ User: "Cu XAFS 실험 셋업해줘" (setup = prepare only, do NOT start!)
 {"actions":[{"fn":"setTargetEnergy","args":[8.979]},{"fn":"runFullAlignment","args":[]}],"explanation":"Cu K-edge (8.979 keV) XAFS 실험을 준비합니다. 에너지 설정 및 빔 정렬을 수행합니다. 준비가 완료되면 '시작해줘'라고 말씀해 주세요.","confirmation_required":true}
 
 User: "Pt L3 XANES 측정해줘" (Pt needs Rh coating warning!)
-{"actions":[{"fn":"setTargetEnergy","args":[11.564]},{"fn":"quickXanes","args":["Pt","L3"]},{"fn":"queueStart","args":[]}],"explanation":"Pt L3-edge (11.564 keV) XANES를 실행합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다. 노출 시간: 기본값 적용.","confirmation_required":true}
+{"actions":[{"fn":"setTargetEnergy","args":[11.564]},{"fn":"quickXanes","args":["Pt","L3"]},{"fn":"queueStart","args":[]}],"explanation":"Pt L3-edge (11.564 keV) XANES를 실행합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh stripe 사용을 권장합니다. 노출 시간: 기본값 적용.","confirmation_required":true}
 
 User: "Ce L3 XANES 하려면 에너지를 얼마로 해야 해?" (INFO ONLY — do NOT change energy!)
 {"actions":[],"explanation":"Ce L3-edge 에너지는 5.723 keV입니다. Ce L3 XANES를 실행하시려면 '실행해줘'라고 말씀해 주세요.","confirmation_required":false}
 
 User: "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘" (contamination → XRF mapping preferred)
 {"actions":[{"fn":"setTargetEnergy","args":[10]},{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"Cu 오염 확인을 위해 XRF 매핑을 실행합니다. 나노빔(~50 nm)으로 단일 포인트만 측정하면 오염이 없는 부분을 찍을 수 있으므로, 넓은 영역을 매핑하여 분포를 확인하는 것이 적합합니다. Cu K-edge 위의 10 keV로 설정합니다. 노출 시간: 0.1초/포인트 기본.","confirmation_required":true}
+
+User: "양극재에 구리 오염이 있는지 확인해주세요. 10ppm 수준이에요." (LOW ppm stated → optimize/estimate FIRST, rule 23 exception)
+{"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xrf","element":"Cu","edge":"K","ppm":10,"sampleType":"powder","priority":"flux"}]}],"explanation":"10 ppm 수준의 미량 Cu 오염은 형광 신호가 매우 약하므로, 래스터 스캔 전에 빔라인 최적화로 예상 신호 수준과 필요 노출 시간을 먼저 계산합니다. 결과를 확인하신 후 매핑 스캔을 진행하세요.","confirmation_required":true}
 
 User: "Ni XANES 하고 XRD도 해줘" (XANES + XRD = single XRD pattern, NOT raster)
 {"actions":[{"fn":"quickXanes","args":["Ni","K"]},{"fn":"queueStart","args":[]},{"fn":"setupVirtualExperiment","args":["powder_xrd"]},{"fn":"queueStart","args":[]}],"explanation":"Ni K-edge (8.333 keV) XANES 스캔 후, 동일 위치에서 XRD 패턴을 수집합니다. XRF와 XRD 검출기는 위치가 달라 동시 장착되어 있습니다.","confirmation_required":true}
@@ -1786,7 +2641,9 @@ _EXAMPLE_GROUPS = {
         'User: "금 시료 XRF 해주세요. 5x5 41포인트." (Au: K-edge 80.7keV out of range, use L3=11.919 keV)\n'
         '{"actions":[{"fn":"setTargetEnergy","args":[13]},{"fn":"quickRaster","args":[5,5,41]},{"fn":"queueStart","args":[]}],"explanation":"Au L3-edge (11.919 keV) + 1 keV = 13 keV로 설정 후 5x5 um, 41x41 포인트 XRF 래스터 스캔을 실행합니다. Au는 K-edge가 80.7 keV로 범위 밖이므로 L3-edge를 사용합니다.","confirmation_required":true}\n\n'
         'User: "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘" (contamination → XRF mapping preferred)\n'
-        '{"actions":[{"fn":"setTargetEnergy","args":[10]},{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"Cu 오염 확인을 위해 XRF 매핑을 실행합니다. 나노빔(~50 nm)으로 단일 포인트만 측정하면 오염이 없는 부분을 찍을 수 있으므로, 넓은 영역을 매핑하여 분포를 확인하는 것이 적합합니다. Cu K-edge 위의 10 keV로 설정합니다. 노출 시간: 0.1초/포인트 기본.","confirmation_required":true}\n'
+        '{"actions":[{"fn":"setTargetEnergy","args":[10]},{"fn":"quickRaster","args":[10,10,41]},{"fn":"queueStart","args":[]}],"explanation":"Cu 오염 확인을 위해 XRF 매핑을 실행합니다. 나노빔(~50 nm)으로 단일 포인트만 측정하면 오염이 없는 부분을 찍을 수 있으므로, 넓은 영역을 매핑하여 분포를 확인하는 것이 적합합니다. Cu K-edge 위의 10 keV로 설정합니다. 노출 시간: 0.1초/포인트 기본.","confirmation_required":true}\n\n'
+        'User: "양극재에 구리 오염이 있는지 확인해주세요. 10ppm 수준이에요." (LOW ppm stated → optimize/estimate FIRST, rule 23 exception)\n'
+        '{"actions":[{"fn":"optimizeBeamline","args":[{"technique":"xrf","element":"Cu","edge":"K","ppm":10,"sampleType":"powder","priority":"flux"}]}],"explanation":"10 ppm 수준의 미량 Cu 오염은 형광 신호가 매우 약하므로, 래스터 스캔 전에 빔라인 최적화로 예상 신호 수준과 필요 노출 시간을 먼저 계산합니다. 결과를 확인하신 후 매핑 스캔을 진행하세요.","confirmation_required":true}\n'
     ),
     "scan_xanes": (
         'User: "구리 K-edge XAFS 측정해줘"\n'
@@ -1798,7 +2655,7 @@ _EXAMPLE_GROUPS = {
         'User: "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘" (sequential scan)\n'
         '{"actions":[{"fn":"quickXanes","args":["Cu","K"]},{"fn":"queueStart","args":[]},{"fn":"quickXanes","args":["Zn","K"]},{"fn":"queueStart","args":[]}],"explanation":"Cu K-edge (8.979 keV) XANES와 Zn K-edge (9.659 keV) XANES를 순차적으로 실행합니다.","confirmation_required":true}\n\n'
         'User: "Pt L3 XANES 측정해줘" (Pt needs Rh coating warning!)\n'
-        '{"actions":[{"fn":"setTargetEnergy","args":[11.564]},{"fn":"quickXanes","args":["Pt","L3"]},{"fn":"queueStart","args":[]}],"explanation":"Pt L3-edge (11.564 keV) XANES를 실행합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh 코팅 stripe으로 변경하시는 것을 권장합니다. 노출 시간: 기본값 적용.","confirmation_required":true}\n'
+        '{"actions":[{"fn":"setTargetEnergy","args":[11.564]},{"fn":"quickXanes","args":["Pt","L3"]},{"fn":"queueStart","args":[]}],"explanation":"Pt L3-edge (11.564 keV) XANES를 실행합니다. ⚠ 주의: 현재 미러 코팅이 Pt인 경우, Pt 형광선과 간섭이 발생할 수 있습니다. Rh stripe 사용을 권장합니다. 노출 시간: 기본값 적용.","confirmation_required":true}\n'
     ),
     "scan_xrd": (
         'User: "2D XRD 매핑해줘"\n'
@@ -1934,8 +2791,8 @@ _FEW_SHOT_BANK = [
             'User: "XRF 맵핑 끝나면 XRD도 해줘"\n'
             '{"actions":[{"fn":"quickRaster","args":[5,5,41]},{"fn":"queueStart","args":[]},{"fn":"setupVirtualExperiment","args":["powder_xrd"]},{"fn":"queueStart","args":[]}],'
             '"explanation":"XRF 래스터 스캔 후 XRD 패턴을 수집합니다. '
-            '⚠ XRF(SDD) → XRD(EIGER2) 검출기 교체에 약 30분이 소요됩니다. '
-            '검출기 교체는 수동 작업이므로 빔타임 계획에 포함해 주세요.",'
+            'SDD(XRF)와 EIGER2(XRD)는 서로 다른 산란각에 동시 장착되어 있어 '
+            '검출기 교체 없이 바로 이어서, 필요 시 동시에도 측정할 수 있습니다.",'
             '"confirmation_required":true}\n'
         ),
     },
@@ -1970,6 +2827,71 @@ _FEW_SHOT_BANK = [
             '"explanation":"Fe 50 ppm 수준은 나노빔 XRF로 검출 가능합니다. '
             'flux 우선 최적화로 예상 신호를 계산합니다. '
             '미량 원소이므로 노출 시간을 0.5~1초/포인트로 늘리면 신호 대 잡음비가 향상됩니다.",'
+            '"confirmation_required":true}\n'
+        ),
+    },
+    # ── Execute-first convention (owner decision 2026-06-12): element +
+    # technique identifiable -> run with defaults + inline change offer ──
+    {
+        "tags": ["scan_xanes"],
+        "text": (
+            'User: "하수 슬러지에서 아연의 화학 상태를 알고 싶어요." (element+technique clear -> EXECUTE, do not ask)\n'
+            '{"actions":[{"fn":"quickXanes","args":["Zn","K"]},{"fn":"queueStart","args":[]}],'
+            '"explanation":"Zn K-edge (9.659 keV) XANES로 화학 상태를 분석합니다. '
+            '기본 설정으로 진행합니다. 변경하시려면 말씀해 주세요.",'
+            '"confirmation_required":true}\n'
+        ),
+    },
+    {
+        "tags": ["scan_xrf"],
+        "text": (
+            'User: "아연 분포 좀 봐봐. 20um 정도." (element+technique+size clear -> EXECUTE with defaults)\n'
+            '{"actions":[{"fn":"quickRaster","args":[20,20,41]},{"fn":"queueStart","args":[]}],'
+            '"explanation":"Zn 분포를 20×20 µm, 41×41 포인트 XRF 래스터로 측정합니다. '
+            '노출 시간: 0.1초/포인트 기본. 변경하시려면 말씀해 주세요.",'
+            '"confirmation_required":true}\n'
+        ),
+    },
+    {
+        "tags": ["scan_xrd"],
+        "text": (
+            'User: "니켈 산화물 시료의 상(phase)을 분석하고 싶은데요" (phase ID = XRD, powder default -> EXECUTE)\n'
+            '{"actions":[{"fn":"setupVirtualExperiment","args":["powder_xrd"]},{"fn":"queueStart","args":[]}],'
+            '"explanation":"니켈 산화물의 결정상 분석에는 XRD가 적합합니다. 분말 XRD를 기본으로 실행합니다. '
+            '박막 시료라면 grazing incidence XRD로 변경 가능하니 말씀해 주세요.",'
+            '"confirmation_required":true}\n'
+        ),
+    },
+    # ── Motor-specific auto-tune is quickAutoTune, NOT the mirror sequence ──
+    {
+        "tags": ["alignment"],
+        "text": (
+            'User: "M1 피치 자동 정렬해줘" (motor-specific auto-tune -> quickAutoTune scan, not runMirrorAlignUI)\n'
+            '{"actions":[{"fn":"quickAutoTune","args":["m1","pitch",1.0,4.0,"ic1_current"]},{"fn":"queueStart","args":[]}],'
+            '"explanation":"M1 피치를 1~4 mrad 범위에서 IC1 신호 기준으로 자동 튜닝합니다. '
+            '스캔 후 가우시안 피팅으로 최적 피치를 찾습니다.",'
+            '"confirmation_required":true}\n'
+        ),
+    },
+    # ── Adaptive energy scan around an edge ──
+    {
+        "tags": ["scan_xanes", "motor"],
+        "text": (
+            'User: "철 K-edge 주변 적응형 에너지 스캔해줘" (adaptive scan -> quickAdaptiveScan(eStart, eStop, minStepEV, maxStepEV))\n'
+            '{"actions":[{"fn":"quickAdaptiveScan","args":[7.062,7.412,0.25,5]},{"fn":"queueStart","args":[]}],'
+            '"explanation":"Fe K-edge (7.112 keV) 주변 7.062~7.412 keV를 적응형 스텝(0.25~5 eV)으로 스캔합니다. '
+            '흡수단 근처는 조밀하게, 평탄 구간은 성기게 측정해 시간을 절약합니다.",'
+            '"confirmation_required":true}\n'
+        ),
+    },
+    # ── Line scan maps to quickRaster (quickLineScan is retired) ──
+    {
+        "tags": ["scan_xrf"],
+        "text": (
+            'User: "시료를 (0,0)에서 (10,5)까지 라인스캔해줘" (line scan -> quickRaster over the spanned FOV)\n'
+            '{"actions":[{"fn":"quickRaster","args":[10,5,41]},{"fn":"queueStart","args":[]}],'
+            '"explanation":"(0,0)→(10,5) µm 구간을 포함하는 10×5 µm 영역을 41×41 포인트 래스터로 스캔합니다. '
+            '노출 시간: 0.1초/포인트 기본.",'
             '"confirmation_required":true}\n'
         ),
     },
@@ -2197,6 +3119,138 @@ _TRANSLATED_USER_UTTERANCES = {
     },
 }
 
+# ── D1 (2026-06-12, Phase 1 roadmap): Chinese (zh) full 38-key set +
+# Arabic/Hindi/Thai completion (13 -> 38 keys each). Generated with the
+# technical-token preservation rule: element symbols, edge names, units,
+# numbers and device names (SSA/M1/XRF/XANES/...) stay untranslated.
+# Merged into _TRANSLATED_USER_UTTERANCES at import time.
+_D1_TRANSLATIONS = {
+    "zh": {
+        "에너지를 12 keV로 설정해": "把能量设置为 12 keV",
+        "M1 피치를 2.5로 이동해": "把 M1 pitch 移动到 2.5",
+        "SSA 수평걭을 30 마이크로미터로 줄여주세요": "请把 SSA 水平狭缝缩小到 30 微米",
+        "10×10 범위에 41포인트로 철 XRF 2D 맵 측정해줘": "请在 10x10 范围内用 41 个点测量 Fe 的 XRF 2D 分布图",
+        "NMC 622 배터리 시료, Ni Mn Co를 nano XRF로 분석하고 싶어": "NMC 622 电池样品，想用 nano XRF 分析 Ni Mn Co",
+        "금 시료 XRF 해주세요. 5x5 41포인트.": "请给 Au 样品做 XRF。5x5 41 个点。",
+        "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘": "请确认半导体晶圆上是否有 Cu 污染",
+        "구리 K-edge XAFS 측정해줘": "请测量 Cu K-edge XAFS 光谱",
+        "철 XANES 측정해줘": "请测量 Fe XANES 光谱",
+        "구리 산화물이 Cu2O인지 CuO인지 구분하고 싶어요": "我想区分铜氧化物是 Cu2O 还是 CuO",
+        "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘": "在当前能量下连续测量 Cu XANES 和 Zn XANES",
+        "Pt L3 XANES 측정해줘": "请测量 Pt L3 XANES",
+        "2D XRD 매핑해줘": "请做 2D XRD 面扫描",
+        "Ni XANES 하고 XRD도 해줘": "做 Ni XANES，然后也做 XRD",
+        "전체 빔 정렬 시작": "开始整体光束准直",
+        "12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘": "设置到 12 keV，准直后显示光束轮廓",
+        "Mo K-edge XAFS 측정해줘": "请测量 Mo K-edge XAFS",
+        "빔 프로파일 보여줘": "显示光束轮廓",
+        "Cu 1um 시료의 투과율 보여줘": "显示 Cu 1um 样品的透射率",
+        "산화철 50um 투과율은?": "氧化铁 50um 的透射率是多少？",
+        "XRD가 뭐야?": "XRD 是什么？",
+        "Ce L3 XANES 하려면 에너지를 얼마로 해야 해?": "做 Ce L3 XANES 需要把能量设为多少？",
+        "ptychography랑 XRF를 동시에 할 수 있어?": "ptychography 和 XRF 可以同时做吗？",
+        "Cu 분말 1000ppm XRF 최적화해줘": "请优化 Cu 粉末 1000ppm 的 XRF",
+        "ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야": "请找出 ptychography 的最佳条件。样品是 Cu 薄膜",
+        "지금 셋업에서 Cu 신호 얼마나 나와?": "当前设置下 Cu 信号有多少？",
+        "movable mask를 1mm x 1mm로 이동시켜": "把 movable mask 移动到 1mm x 1mm",
+        "어테뉴에이터에 Carbon 1mm 넣어줘": "在衰减器中放入 Carbon 1mm",
+        "어테뉴에이터 전부 빼": "移除衰减器的所有滤片",
+        "현위치에서 페르마 나선 스캔해줘": "在当前位置做费马螺旋扫描",
+        "황 K-edge XANES 해줘": "做硫的 K-edge XANES",
+        "산소 XANES 해줘": "做氧的 XANES",
+        "알루미늄 K-edge XANES 해줘": "做铝的 K-edge XANES",
+        "시료를 (0,0)에서 (10,5)까지 라인스캔해줘": "把样品从 (0,0) 到 (10,5) 做线扫描",
+        "M1 피치 자동 정렬해줘": "自动准直 M1 pitch",
+        "철 K-edge 주변 적응형 에너지 스캔해줘": "在 Fe K-edge 附近做自适应能量扫描",
+        "Cu XAFS 실험 셋업해줘": "请设置 Cu XAFS 实验",
+        "긴급 정지!": "紧急停止！",
+    },
+    "ar": {
+        "NMC 622 배터리 시료, Ni Mn Co를 nano XRF로 분석하고 싶어": "عينة بطارية NMC 622، أريد تحليل Ni Mn Co باستخدام nano XRF",
+        "금 시료 XRF 해주세요. 5x5 41포인트.": "من فضلك قم بـ XRF لعينة Au. 5x5 بـ 41 نقطة.",
+        "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘": "تحقق مما إذا كان هناك تلوث Cu على رقاقة أشباه الموصلات",
+        "구리 산화물이 Cu2O인지 CuO인지 구분하고 싶어요": "أريد التمييز ما إذا كان أكسيد النحاس Cu2O أم CuO",
+        "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘": "قس Cu XANES ثم Zn XANES بالتتابع عند الطاقة الحالية",
+        "Pt L3 XANES 측정해줘": "قس Pt L3 XANES",
+        "2D XRD 매핑해줘": "قم بعمل خريطة XRD 2D",
+        "Ni XANES 하고 XRD도 해줘": "قم بـ Ni XANES ثم قم بـ XRD أيضا",
+        "12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘": "اضبط على 12 keV ثم قم بالمحاذاة ثم أظهر ملف الشعاع",
+        "Mo K-edge XAFS 측정해줘": "قس Mo K-edge XAFS",
+        "Cu 1um 시료의 투과율 보여줘": "أظهر نفاذية عينة Cu 1um",
+        "산화철 50um 투과율은?": "ما هي نفاذية أكسيد الحديد 50um؟",
+        "Ce L3 XANES 하려면 에너지를 얼마로 해야 해?": "ما الطاقة اللازمة لـ Ce L3 XANES؟",
+        "ptychography랑 XRF를 동시에 할 수 있어?": "هل يمكن إجراء ptychography و XRF في نفس الوقت؟",
+        "Cu 분말 1000ppm XRF 최적화해줘": "قم بتحسين XRF لمسحوق Cu بتركيز 1000ppm",
+        "ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야": "ابحث عن الظروف المثلى لـ ptychography. العينة غشاء رقيق من Cu",
+        "지금 셋업에서 Cu 신호 얼마나 나와?": "ما مقدار إشارة Cu في الإعداد الحالي؟",
+        "movable mask를 1mm x 1mm로 이동시켜": "اضبط movable mask على 1mm x 1mm",
+        "어테뉴에이터에 Carbon 1mm 넣어줘": "أدخل Carbon 1mm في المخفف",
+        "어테뉴에이터 전부 빼": "أزل جميع مرشحات المخفف",
+        "현위치에서 페르마 나선 스캔해줘": "نفذ مسحا حلزونيا لفيرما عند الموضع الحالي",
+        "시료를 (0,0)에서 (10,5)까지 라인스캔해줘": "نفذ مسحا خطيا للعينة من (0,0) إلى (10,5)",
+        "M1 피치 자동 정렬해줘": "قم بمحاذاة تلقائية لـ M1 pitch",
+        "철 K-edge 주변 적응형 에너지 스캔해줘": "نفذ مسح طاقة تكيفيا حول Fe K-edge",
+        "Cu XAFS 실험 셋업해줘": "جهز تجربة Cu XAFS",
+    },
+    "hi": {
+        "NMC 622 배터리 시료, Ni Mn Co를 nano XRF로 분석하고 싶어": "NMC 622 बैटरी नमूना, Ni Mn Co का nano XRF से विश्लेषण करना चाहता हूँ",
+        "금 시료 XRF 해주세요. 5x5 41포인트.": "कृपया Au नमूने का XRF करें। 5x5 41 पॉइंट।",
+        "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘": "जाँचें कि सेमीकंडक्टर वेफर पर Cu संदूषण है या नहीं",
+        "구리 산화물이 Cu2O인지 CuO인지 구분하고 싶어요": "मैं जानना चाहता हूँ कि कॉपर ऑक्साइड Cu2O है या CuO",
+        "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘": "वर्तमान ऊर्जा पर Cu XANES और Zn XANES लगातार मापें",
+        "Pt L3 XANES 측정해줘": "Pt L3 XANES मापें",
+        "2D XRD 매핑해줘": "2D XRD मैपिंग करें",
+        "Ni XANES 하고 XRD도 해줘": "Ni XANES करें और फिर XRD भी करें",
+        "12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘": "12 keV पर सेट करें, संरेखण करें और फिर बीम प्रोफ़ाइल दिखाएं",
+        "Mo K-edge XAFS 측정해줘": "Mo K-edge XAFS मापें",
+        "Cu 1um 시료의 투과율 보여줘": "Cu 1um नमूने का ट्रांसमिशन दिखाएं",
+        "산화철 50um 투과율은?": "आयरन ऑक्साइड 50um का ट्रांसमिशन कितना है?",
+        "Ce L3 XANES 하려면 에너지를 얼마로 해야 해?": "Ce L3 XANES के लिए ऊर्जा कितनी सेट करनी होगी?",
+        "ptychography랑 XRF를 동시에 할 수 있어?": "क्या ptychography और XRF एक साथ किए जा सकते हैं?",
+        "Cu 분말 1000ppm XRF 최적화해줘": "Cu पाउडर 1000ppm के लिए XRF अनुकूलित करें",
+        "ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야": "ptychography की सर्वोत्तम स्थितियाँ खोजें। नमूना Cu की पतली फिल्म है",
+        "지금 셋업에서 Cu 신호 얼마나 나와?": "वर्तमान सेटअप में Cu सिग्नल कितना मिलता है?",
+        "movable mask를 1mm x 1mm로 이동시켜": "movable mask को 1mm x 1mm पर सेट करें",
+        "어테뉴에이터에 Carbon 1mm 넣어줘": "एटेन्युएटर में Carbon 1mm डालें",
+        "어테뉴에이터 전부 빼": "एटेन्युएटर के सभी फ़िल्टर हटा दें",
+        "현위치에서 페르마 나선 스캔해줘": "वर्तमान स्थिति पर फर्मा सर्पिल स्कैन करें",
+        "시료를 (0,0)에서 (10,5)까지 라인스캔해줘": "नमूने का (0,0) से (10,5) तक लाइन स्कैन करें",
+        "M1 피치 자동 정렬해줘": "M1 pitch का स्वचालित संरेखण करें",
+        "철 K-edge 주변 적응형 에너지 스캔해줘": "Fe K-edge के आसपास अनुकूली ऊर्जा स्कैन करें",
+        "Cu XAFS 실험 셋업해줘": "Cu XAFS प्रयोग सेटअप करें",
+    },
+    "th": {
+        "NMC 622 배터리 시료, Ni Mn Co를 nano XRF로 분석하고 싶어": "ตัวอย่างแบตเตอรี่ NMC 622 ต้องการวิเคราะห์ Ni Mn Co ด้วย nano XRF",
+        "금 시료 XRF 해주세요. 5x5 41포인트.": "กรุณาทำ XRF ตัวอย่าง Au ขนาด 5x5 จำนวน 41 จุด",
+        "반도체 웨이퍼에 Cu 오염이 있는지 확인해줘": "ตรวจสอบว่ามีการปนเปื้อน Cu บนเวเฟอร์เซมิคอนดักเตอร์หรือไม่",
+        "구리 산화물이 Cu2O인지 CuO인지 구분하고 싶어요": "อยากแยกแยะว่าออกไซด์ของทองแดงเป็น Cu2O หรือ CuO",
+        "현재 에너지에서 Cu XANES랑 Zn XANES를 연속으로 찍어줘": "วัด Cu XANES และ Zn XANES ต่อเนื่องกันที่พลังงานปัจจุบัน",
+        "Pt L3 XANES 측정해줘": "วัด Pt L3 XANES",
+        "2D XRD 매핑해줘": "ทำการแมป XRD 2D",
+        "Ni XANES 하고 XRD도 해줘": "ทำ Ni XANES แล้วทำ XRD ด้วย",
+        "12 keV로 설정하고 정렬한 다음 빔 프로파일 보여줘": "ตั้งค่าเป็น 12 keV ปรับแนวลำแสง แล้วแสดงโปรไฟล์ลำแสง",
+        "Mo K-edge XAFS 측정해줘": "วัด Mo K-edge XAFS",
+        "Cu 1um 시료의 투과율 보여줘": "แสดงค่าการส่งผ่านของตัวอย่าง Cu 1um",
+        "산화철 50um 투과율은?": "ค่าการส่งผ่านของเหล็กออกไซด์ 50um เป็นเท่าไร?",
+        "Ce L3 XANES 하려면 에너지를 얼마로 해야 해?": "ต้องตั้งพลังงานเท่าไรสำหรับ Ce L3 XANES?",
+        "ptychography랑 XRF를 동시에 할 수 있어?": "ทำ ptychography กับ XRF พร้อมกันได้ไหม?",
+        "Cu 분말 1000ppm XRF 최적화해줘": "ปรับ XRF ให้เหมาะสมสำหรับผง Cu 1000ppm",
+        "ptychography 최적 조건 찾아줘. 시료는 Cu 박막이야": "หาเงื่อนไขที่เหมาะสมที่สุดสำหรับ ptychography ตัวอย่างเป็นฟิล์มบาง Cu",
+        "지금 셋업에서 Cu 신호 얼마나 나와?": "การตั้งค่าปัจจุบันได้สัญญาณ Cu เท่าไร?",
+        "movable mask를 1mm x 1mm로 이동시켜": "ตั้ง movable mask เป็น 1mm x 1mm",
+        "어테뉴에이터에 Carbon 1mm 넣어줘": "ใส่ Carbon 1mm ในตัวลดทอน",
+        "어테뉴에이터 전부 빼": "ถอดฟิลเตอร์ของตัวลดทอนออกทั้งหมด",
+        "현위치에서 페르마 나선 스캔해줘": "ทำการสแกนเกลียวแฟร์มาที่ตำแหน่งปัจจุบัน",
+        "시료를 (0,0)에서 (10,5)까지 라인스캔해줘": "สแกนเส้นตัวอย่างจาก (0,0) ถึง (10,5)",
+        "M1 피치 자동 정렬해줘": "ปรับแนว M1 pitch อัตโนมัติ",
+        "철 K-edge 주변 적응형 에너지 스캔해줘": "ทำการสแกนพลังงานแบบปรับตัวรอบ Fe K-edge",
+        "Cu XAFS 실험 셋업해줘": "เตรียมการทดลอง Cu XAFS",
+    },
+}
+for _d1_lang, _d1_map in _D1_TRANSLATIONS.items():
+    _TRANSLATED_USER_UTTERANCES.setdefault(_d1_lang, {}).update(_d1_map)
+del _D1_TRANSLATIONS
+
 
 def _build_dynamic_prompt(intents: set, language: str = "ko",
                           mode: str = "virtual") -> str:
@@ -2277,7 +3331,49 @@ def _build_dynamic_prompt(intents: set, language: str = "ko",
     if language not in ("ko", "en", "ja"):
         translations = _TRANSLATED_USER_UTTERANCES.get(language)
 
-    # Select relevant example groups (max ~8 groups to keep prompt manageable)
+    # ── Example-group token budget (D3 hardening, 2026-06-11) ──
+    # When 3-4 intents fire together (e.g. optimize + scan_xrd + scan_xrf +
+    # rejection) the assembled prompt reached 15.4k tokens, leaving only
+    # ~800 output tokens inside the 16384 vLLM window -- responses were
+    # truncated mid-JSON, parsed as empty, and benchmark cases regressed
+    # (opt_01/02, batt_05, vexp_02 on 2026-06-11 rerun). Cap the prompt at
+    # _PROMPT_BUDGET_CHARS (conservative ~2.6 chars/token, same estimate as
+    # the chat() fallback counter): the base prompt always ships; example
+    # groups are added smallest-first so that dropping the LARGEST surplus
+    # group frees the most tokens while keeping every other intent covered.
+    # 'rejection' (safety examples) is always kept.
+    # Budget = (16384 window - 1100 output floor - 96 margin) tokens.
+    # The base prompt alone is ~13.0k tok (33.9k chars), so the original
+    # 13.8k-tok budget left only ~1.9k chars for example groups — in the
+    # non-Korean path (D1) the multilingual override grew the base enough
+    # to drop even the 'motor' group, defeating the few-shot translations.
+    # Observed truncations (2026-06-11) happened at an ~840-token output
+    # budget; real /no_think JSON responses run ~300-700 tokens, so an
+    # 1.1k floor keeps >= 260 tok above the worst observed truncation point
+    # (finish_reason=length telemetry guards regressions; chat() additionally
+    # re-caps max_tokens against the REAL tokenized prompt at request time,
+    # so this floor is a planning value, not the hard limit).
+    # Floor 1300 -> 1100 (2026-06-12 regression triage, measured): the base
+    # prompt is 33.9k chars, leaving only ~1.06k chars of group room after
+    # the rejection group — below scan_xanes (1411 chars) and scan_xrf
+    # (1945 chars) — so even SINGLE-task-intent prompts lost their relevant
+    # example group (analysis_01/held_04 lost scan_xanes; edge_03/heavyel_01/
+    # cmulti_01 lost scan_xrf) and the LLM regressed to clarifying-question /
+    # empty-action mode. +540 chars restores both groups in the measured
+    # 2-intent worst cases.
+    # chars/token ratio 2.7: measured 13.5k tok for a 37k-char assembled
+    # prompt (mixed EN rules + KO examples); 2.6 was over-conservative and
+    # starved the non-Korean (D1) path of its translated example groups.
+    _PROMPT_BUDGET_CHARS = int((16384 - 1100 - 96) * 2.7)
+    # The budget must account for everything appended AFTER the group loop:
+    # the few-shot block (computed here, appended below) and the mode /
+    # language tail blocks (~3.2k chars for VIRTUAL MODE + ~0.2k language).
+    # Without this reserve the assembled prompt exceeded the window by ~1k
+    # tokens in the worst 4-intent case (measured 43.5k chars, 2026-06-12).
+    few_shot_text = _select_few_shots(intents)
+    _TAIL_RESERVE = len(few_shot_text) + 3600
+    used = sum(len(p) for p in parts) + _TAIL_RESERVE
+    groups = []
     for group_name in sorted(intents):
         group_text = _EXAMPLE_GROUPS.get(group_name)
         if group_text:
@@ -2288,11 +3384,24 @@ def _build_dynamic_prompt(intents: set, language: str = "ko",
                         'User: "' + ko_text + '"',
                         'User: "' + translated + '"'
                     )
-            parts.append(group_text)
-            parts.append("\n")
+            groups.append((group_name, group_text))
+    # rejection first (always kept), then smallest-first
+    groups.sort(key=lambda g: (g[0] != "rejection", len(g[1])))
+    dropped = []
+    for group_name, group_text in groups:
+        if group_name != "rejection" and \
+                used + len(group_text) > _PROMPT_BUDGET_CHARS:
+            dropped.append(group_name)
+            continue
+        parts.append(group_text)
+        parts.append("\n")
+        used += len(group_text) + 1
+    if dropped:
+        log.warning("dynamic prompt: dropped example group(s) %s to fit "
+                    "the context budget (%d chars used)", dropped, used)
 
-    # Add few-shot examples targeting P2 gaps
-    few_shot_text = _select_few_shots(intents)
+    # Add few-shot examples targeting P2 gaps (computed above, inside the
+    # budget reserve)
     if few_shot_text:
         parts.append(few_shot_text)
 
@@ -2333,11 +3442,20 @@ The beamline is currently in **VIRTUAL (simulation) mode**.
 - In VIRTUAL mode, NEVER use nanoScanStep2D/nanoScanFly1D/nanoScanSpiral.
   These are REAL hardware commands. Use quickRaster/quickXanes/quickXafs instead,
   which route to the server experiment engine and show results in a popup.
-  Example: "XRF raster scan on semiconductor" → quickRaster(0.5, 0.5, 21) + queueStart()
-    (quickRaster automatically applies the matching XRF_SAMPLE_PRESETS based on _exptState)
+  Example: "XRF raster scan on semiconductor" → quickRaster(6, 6, 21, "semiconductor_ic") + queueStart()
+  Example: "Siemens star XRF map" → quickRaster(30, 30, 21, "siemens_star") + queueStart()
+    ALWAYS pass the 4th argument presetKey when the user names a sample. If you omit it,
+    the scan falls back to the default sample and ignores the one the user requested.
+    The two FOV values are full-sample sizes; if the user gives no size the system
+    substitutes the sample's recommended full FOV, so just pass the preset.
+    Valid presetKey: semiconductor_ic|battery_nmc622|geological_section|biological_cell|catalyst_nanoparticle|environmental_particle|siemens_star|calibration_grid
   Example: "Cu XANES" → quickXanes("Cu","K") + queueStart()
   DO NOT call setupVirtualExperiment — it's for tutorial only. quickRaster/quickXanes handle presets internally.
 - NEVER run quickRaster/quickXanes/quickXafs without sample information.
+  EXCEPTION (execute-first, owner convention): if the user already names the
+  ELEMENT or a recognizable sample context (e.g. "아연의 화학 상태",
+  "니켈 산화물", "양극재"), that IS sufficient sample information — proceed
+  with defaults and state them inline instead of asking.
 - If user says "XRF scan", "raster scan", "XAFS", "XRD" etc. WITHOUT specifying
   a sample type, you MUST respond with actions=[] and ask:
   "Which sample would you like to use? Available presets:
@@ -2944,7 +4062,26 @@ class VLLMBackend:
         self.url = os.environ.get("VLLM_BASE_URL", "http://localhost:8000/v1")
         self.model = os.environ.get("VLLM_MODEL", "Qwen/Qwen3-32B")
         self._client = httpx.AsyncClient(timeout=300.0)
+        self._max_len = None  # served context window (max_model_len), fetched lazily
         log.info(f"  vLLM: model={self.model}, url={self.url}")
+
+    async def _get_max_len(self) -> int:
+        """Served context window (vLLM max_model_len), cached. 16384 fallback.
+
+        vLLM may be (re)started with a smaller context than the system prompt +
+        output need; querying it lets us fit the request instead of 400-ing.
+        """
+        if self._max_len is None:
+            env = os.environ.get("VLLM_MAX_MODEL_LEN", "")
+            if env.isdigit():
+                self._max_len = int(env)
+            else:
+                try:
+                    r = await self._client.get(f"{self.url}/models", timeout=10.0)
+                    self._max_len = int(r.json()["data"][0]["max_model_len"])
+                except Exception:
+                    self._max_len = 16384
+        return self._max_len
 
     async def chat(self, system: str, messages: List[Dict],
                    max_tokens: int = 1024) -> str:
@@ -2992,27 +4129,80 @@ class VLLMBackend:
             )
             api_msgs[0]["content"] = api_msgs[0]["content"] + _gemma_suffix
 
-        headers = {
-            "Content-Type": "application/json"
-        }
+        headers = {"Content-Type": "application/json"}
 
-        resp = await self._client.post(
-            f"{self.url}/chat/completions",
-            json=body, headers=headers
-        )
+        # Fit the request inside the served context window. The base prompt is
+        # already ~14.5k tokens, so accumulated conversation history + max_tokens
+        # can overflow a small window (e.g. 16384) -> vLLM 400 "maximum context
+        # length". Use vLLM's /tokenize for the EXACT input count (char estimates
+        # mis-judge Korean-heavy prompts), drop oldest history until the output
+        # floor fits, then cap max_tokens to the remaining budget.
+        max_len = await self._get_max_len()
+        _FLOOR = 512    # keep room for a complete JSON response
+        _MARGIN = 96    # generation-prompt / grammar slack
 
-        # On 400 error, retry without json_object constraint
-        if resp.status_code == 400:
-            log.warning("vLLM 400 error -- retrying without response_format")
-            body.pop("response_format", None)
-            resp = await self._client.post(
-                f"{self.url}/chat/completions",
-                json=body, headers=headers
-            )
+        async def _count(msgs):
+            try:
+                r = await self._client.post(
+                    f"{self.url}/tokenize",
+                    json={"model": self.model, "messages": msgs}, timeout=15.0)
+                if r.status_code == 200:
+                    d = r.json()
+                    return int(d.get("count") or len(d.get("tokens") or []))
+            except Exception:
+                pass
+            # Fallback: conservative char estimate (~2.6 chars/token overcounts
+            # tokens for this mixed EN/KO prompt, so we under-fill rather than 400).
+            chars = sum(len(m.get("content") or "") for m in msgs)
+            return int(chars / 2.6) + 8 * len(msgs) + 16
+
+        inp = await _count(api_msgs)
+        while inp + _FLOOR + _MARGIN > max_len and len(api_msgs) > 2:
+            del api_msgs[1]   # drop oldest history turn (keep system + last user)
+            inp = await _count(api_msgs)
+        budget = max_len - inp - _MARGIN
+        if budget < body["max_tokens"]:
+            body["max_tokens"] = max(64, budget)
+
+        async def _post():
+            return await self._client.post(
+                f"{self.url}/chat/completions", json=body, headers=headers)
+
+        resp = await _post()
+        # Reactive safety net (in case /tokenize and the chat path differ): on a
+        # context-400, halve max_tokens, then drop oldest history, then drop the
+        # json_object constraint -- guaranteed to converge.
+        for _attempt in range(4):
+            if resp.status_code != 400:
+                break
+            if re.search(r"maximum context length", resp.text):
+                if body["max_tokens"] > 128:
+                    body["max_tokens"] //= 2
+                    log.warning("vLLM 400 (context): halve max_tokens=%d", body["max_tokens"])
+                elif len(api_msgs) > 2:
+                    del api_msgs[1]
+                    log.warning("vLLM 400 (context): dropped oldest history turn")
+                else:
+                    body.pop("response_format", None)
+            else:
+                log.warning("vLLM 400 error -- retrying without response_format")
+                body.pop("response_format", None)
+            resp = await _post()
 
         resp.raise_for_status()
         data = resp.json()
-        return data["choices"][0]["message"]["content"]
+        choice = data["choices"][0]
+        # Truncation telemetry (D3, 2026-06-11): a 'length' finish means the
+        # reply hit max_tokens (output budget exhausted by an oversized
+        # prompt) — the JSON is almost certainly incomplete and will parse
+        # as empty actions downstream. Log loudly so prompt-size regressions
+        # are visible in server.log instead of silently degrading accuracy.
+        if choice.get("finish_reason") == "length":
+            log.warning(
+                "vLLM response TRUNCATED at max_tokens=%s (prompt too large; "
+                "see dynamic-prompt budget). JSON likely incomplete.",
+                body.get("max_tokens"))
+        return choice["message"]["content"]
 
 
 # ══════════════════════════════════════════════════════════════════════

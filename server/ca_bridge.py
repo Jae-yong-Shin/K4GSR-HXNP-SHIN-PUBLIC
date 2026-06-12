@@ -93,6 +93,13 @@ class CABridge:
         self._subscriptions = []                # keep refs to prevent GC
         self._callbacks = []                    # hold callback refs (caproto uses weakref)
         self._running = True
+        # B3 (event push): optional change-notification hook.
+        # Called as on_change(pv_name, value) from caproto CALLBACK THREADS
+        # (NOT the asyncio loop) right after _changed is updated. The handler
+        # must be thread-safe -- server.py hands off to the asyncio loop via
+        # loop.call_soon_threadsafe(). Exceptions are swallowed so a broken
+        # hook can never kill the CA monitor thread.
+        self.on_change = None
 
         # Classify PVs and identify hw_pvs
         all_ca_names = []
@@ -127,13 +134,13 @@ class CABridge:
 
         # Build ADDR_LIST: HW ports first so caproto prefers real hardware.
         # Also include EPICS_IOC_ADDR_LIST from config.env if available
-        # (needed for multi-homed VM1 where IOCs bind to 192.168.101.212).
+        # (needed for a multi-homed host where IOCs bind to a non-default interface).
         hw_addrs = [f"127.0.0.1:{p}"
                     for p in sorted(set(self._hw_groups_ports.values()))]
         soft_addr = f"127.0.0.1:{soft_port}"
         base_addrs = hw_addrs + [soft_addr]
 
-        # Merge extra IOC addresses from environment (e.g. "192.168.101.212")
+        # Merge extra IOC addresses from environment (e.g. "<IOC_HOST_IP>")
         extra = os.environ.get("EPICS_IOC_ADDR_LIST", "")
         if extra:
             for addr in extra.split():
@@ -269,6 +276,7 @@ class CABridge:
                 "severity": 0,
                 "timestamp": now,
             }
+        self._notify_change(motor_name, val)
 
     def _on_status_change(self, pv_name: str, response):
         """Subscribe callback for status PVs."""
@@ -286,6 +294,21 @@ class CABridge:
                 "severity": 0,
                 "timestamp": now,
             }
+        self._notify_change(pv_name, val)
+
+    def _notify_change(self, pv_name: str, value: float):
+        """Invoke the optional on_change hook (caproto callback thread).
+
+        Called OUTSIDE self._lock so the hook can never deadlock against
+        get_changed(). Exceptions are swallowed (monitor thread must live).
+        """
+        cb = self.on_change
+        if cb is None:
+            return
+        try:
+            cb(pv_name, value)
+        except Exception:
+            pass
 
     # ------------------------------------------------------------------
     # PVStore-compatible interface

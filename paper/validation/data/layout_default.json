@@ -1,0 +1,199 @@
+{
+ "schema": "hanbit.beamline.layout",
+ "schemaVersion": 1,
+ "exportedAt": "2026-06-12T03:11:05.984Z",
+ "engineVersion": "4.37.40",
+ "beam": {
+  "energy_keV": 10,
+  "targetEnergy_keV": 10,
+  "crystal": "111",
+  "gap_mm": 9.117080341819857,
+  "harmonic": 3
+ },
+ "source": {
+  "type": "IVU24",
+  "E_GeV": 4,
+  "I_mA": 400,
+  "emitX_m_rad": 6.2e-11,
+  "emitY_m_rad": 6.2e-12,
+  "betaX_m": 6.334,
+  "betaY_m": 2.841,
+  "eSpread": 0.0012,
+  "lambdaU_mm": 24,
+  "nPeriods": 123,
+  "undLength_m": 2.952
+ },
+ "components": [
+  {
+   "id": "ivu",
+   "name": "IVU24",
+   "type": "source",
+   "position_m": 0
+  },
+  {
+   "id": "fmask",
+   "name": "FxMask",
+   "type": "mask",
+   "position_m": 17
+  },
+  {
+   "id": "mmask",
+   "name": "MvMask",
+   "type": "mask",
+   "position_m": 22
+  },
+  {
+   "id": "wbslit",
+   "name": "WBSlit",
+   "type": "slit",
+   "position_m": 27.8
+  },
+  {
+   "id": "atten",
+   "name": "Attenuator",
+   "type": "atten",
+   "position_m": 28.3
+  },
+  {
+   "id": "m1",
+   "name": "M1",
+   "type": "hmirror",
+   "position_m": 29
+  },
+  {
+   "id": "dcm",
+   "name": "DCM",
+   "type": "dcm",
+   "position_m": 30.4
+  },
+  {
+   "id": "m2",
+   "name": "M2",
+   "type": "hmirror",
+   "position_m": 32
+  },
+  {
+   "id": "xbpm1",
+   "name": "XBPM1",
+   "type": "bpm",
+   "position_m": 31.2
+  },
+  {
+   "id": "xbpm2",
+   "name": "XBPM2",
+   "type": "bpm",
+   "position_m": 57
+  },
+  {
+   "id": "ssa",
+   "name": "SSA",
+   "type": "slit",
+   "position_m": 58
+  },
+  {
+   "id": "xbpm3",
+   "name": "XBPM3",
+   "type": "bpm",
+   "position_m": 140
+  },
+  {
+   "id": "kbslit",
+   "name": "KB Slit",
+   "type": "slit",
+   "position_m": 149.19
+  },
+  {
+   "id": "kbv",
+   "name": "KB-V",
+   "type": "kbv",
+   "position_m": 149.69
+  },
+  {
+   "id": "kbh",
+   "name": "KB-H",
+   "type": "kbh",
+   "position_m": 149.9
+  },
+  {
+   "id": "ic1",
+   "name": "IC1",
+   "type": "ic",
+   "position_m": 149.45
+  },
+  {
+   "id": "sample",
+   "name": "Sample",
+   "type": "sample",
+   "position_m": 150
+  },
+  {
+   "id": "det",
+   "name": "Detector",
+   "type": "det",
+   "position_m": 154.5
+  }
+ ],
+ "slits": {
+  "wb": {
+   "hGap_mm": 1.2,
+   "vGap_mm": 1.2,
+   "hCenter_mm": 0,
+   "vCenter_mm": 0
+  },
+  "ssa": {
+   "hGap_um": 50,
+   "vGap_um": 50,
+   "hCenter_um": 0,
+   "vCenter_um": 0
+  },
+  "kbslit": {
+   "hGap_um": 5000,
+   "vGap_um": 5000,
+   "hCenter_um": 0,
+   "vCenter_um": 0
+  }
+ },
+ "mirrors": {
+  "m1": {
+   "pitch_mrad": 2.5,
+   "coating": "Pt",
+   "focusPlane": "v",
+   "p_m": 29,
+   "q_m": 29,
+   "length_m": 0.6,
+   "width_m": 0.06
+  },
+  "m2": {
+   "pitch_mrad": 2.5,
+   "coating": "Rh",
+   "focusPlane": "h",
+   "p_m": 32,
+   "q_m": 26,
+   "length_m": 0.6,
+   "width_m": 0.06
+  },
+  "kbv": {
+   "pitch_mrad": 3,
+   "coating": "Pt",
+   "focusPlane": "v",
+   "p_m": 91.69,
+   "q_m": 0.3100000000000023,
+   "length_m": 0.3,
+   "width_m": 0.03
+  },
+  "kbh": {
+   "pitch_mrad": 3,
+   "coating": "Pt",
+   "focusPlane": "h",
+   "p_m": 91.9,
+   "q_m": 0.09999999999999432,
+   "length_m": 0.1,
+   "width_m": 0.03
+  }
+ },
+ "dcm": {
+  "crystal": "111",
+  "fixedExit_mm": 12,
+  "dSpacing_A": 3.1356
+ }
+}

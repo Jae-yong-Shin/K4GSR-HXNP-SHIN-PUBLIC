@@ -513,7 +513,7 @@ function addWorkflowButton2(){
   div.innerHTML='<button class="sb go act" onclick="openExpWorkflow()" style="width:100%;padding:6px">Experiment Workflow</button>'+
     '<div style="font-size:8px;color:var(--t3);margin-top:2px;font-family:var(--mn)">Microscope \u2192 ROI \u2192 2D Scan \u2192 Sub-ROI \u2192 Measurement</div>';
   mt.insertBefore(div,mt.firstChild);
-  log('info','v4.36: Workflow with Voronoi microscopy, per-pixel XRD diffraction, time/energy/pty scans');
+  log('info', APP_VTAG + ': Workflow with Voronoi microscopy, per-pixel XRD diffraction, time/energy/pty scans');
 }
 
 // ESM bridge: expose module-scoped vars to globalThis

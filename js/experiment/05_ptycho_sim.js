@@ -25,6 +25,7 @@ var _ptychoRawData = {
 // Iteration tracking
 var _ptychoIteration = 0;
 var _ptychoTotalIterations = 0;
+// State array of per-iteration reconstruction error values, plotted log10 as the convergence curve.
 var _ptychoErrorHistory = [];
 var _ptychoCurrentJobId = null;
 
@@ -438,6 +439,7 @@ window._decodeRawComplex = function(b64) {
 // ── Colormap LUT builder (K4GSR-PTYCHO colormaps.js port) ──
 var _cmapCache = {};
 
+// Build and cache a 256x3 RGB lookup table for a named colormap (viridis, hot, hsv, gray, inferno, default gray).
 function _getCmapLUT(name) {
   if (_cmapCache[name]) return _cmapCache[name];
   var lut = new Uint8Array(256 * 3);
@@ -723,10 +725,8 @@ window.renderPtychoErrorPlot = function(canvas) {
 
 // Flux to photons conversion
 window._fluxToPhotons = function(energy_keV, dwellTime_s) {
-  var flux = 1e10; // default
-  try {
-    if (typeof photonFlux === 'function') flux = photonFlux(energy_keV);
-  } catch(e) {}
+  var flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+  if (!flux) flux = 1e10; // default
   return Math.round(flux * dwellTime_s);
 };
 
@@ -734,7 +734,7 @@ window._fluxToPhotons = function(energy_keV, dwellTime_s) {
 window._getBeamlineInfo = function(energy_keV) {
   var info = {flux: 0, spotH: 50, spotV: 50, energy: energy_keV};
   try {
-    if (typeof photonFlux === 'function') info.flux = photonFlux(energy_keV);
+    info.flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
     if (typeof focalSpot === 'function') {
       var sp = focalSpot();
       info.spotH = sp.h;
@@ -1522,6 +1522,7 @@ function _fft1d(re, im, N, inverse) {
   }
 }
 
+// In-place complex 2D FFT of an N x N array by running the radix-2 1D FFT over all rows then all columns.
 function _fft2d(re, im, N, inverse) {
   var row_re = new Float64Array(N), row_im = new Float64Array(N);
   for (var y = 0; y < N; y++) {
@@ -1538,6 +1539,7 @@ function _fft2d(re, im, N, inverse) {
   }
 }
 
+// Swap the four quadrants of an N x N array in place by shifting each index by N/2 modulo N.
 function _fftshift(arr, N) {
   var half = N >> 1;
   var tmp = new Float64Array(N * N);
@@ -1710,6 +1712,7 @@ var _REF_INDEX = {
   SiO2:{6.2:[6.723e-6,8.228e-8], 8:[4.05e-6,1.501e-7], 10:[2.592e-6,4.754e-8], 12.4:[1.684e-6,2.09e-8]}
 };
 
+// Return [delta, beta] refractive-index decrements for a material at energy (keV) via exact or log-log interpolation.
 window._getRefIndex = function(material, energy_keV) {
   var table = _REF_INDEX[material];
   if (!table) return [1e-5, 1e-6];
@@ -1733,6 +1736,7 @@ window._getRefIndex = function(material, energy_keV) {
   return [1e-5, 1e-6];
 };
 
+// Convert a thickness map to a complex transmission object: amplitude exp(-k*beta*t*h), phase -k*delta*t*h (k=2pi/lambda).
 window._createComplexObject = function(thickMap, N, energy_keV, material, objheight_m) {
   var ref = _getRefIndex(material, energy_keV);
   var delta = ref[0], beta = ref[1];
@@ -1755,6 +1759,7 @@ window._createComplexObject = function(thickMap, N, energy_keV, material, objhei
   return {re: objRe, im: objIm, amp: amp, phase: phase, size: N};
 };
 
+// Scale a diffraction pattern so its peak equals N_photons, then add Poisson shot noise (Gaussian approx when lambda>20).
 window._addPoissonNoise = function(dp, N_photons) {
   var mx = 0;
   for (var i = 0; i < dp.length; i++) { if (dp[i] > mx) mx = dp[i]; }
@@ -1795,6 +1800,7 @@ function _genSiemensStarThickness(N, nSpokes) {
   return t;
 }
 
+// Generate an N x N binary thickness map of vertical sine stripes whose frequency increases by one per horizontal eighth.
 function _genResolutionChartThickness(N) {
   var t = new Float64Array(N * N);
   for (var y = 0; y < N; y++) {
@@ -1821,6 +1827,7 @@ window._fermatSpiral = function(N, stepSize, asize) {
   return positions;
 };
 
+// Generate Nx by Ny grid scan positions with stepX/stepY spacing, optionally snake (boustrophedon) row reversal.
 window._rasterScan = function(Nx, Ny, stepX, stepY, snake) {
   var positions = [];
   for (var j = 0; j < Ny; j++) {

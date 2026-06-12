@@ -29,3 +29,11 @@ PV_PREFIX = "BL10"      # Beamline PV prefix
 
 # --- Scan ---
 DEFAULT_SCAN_RATE = 0.1  # PVStore heartbeat interval (seconds)
+
+# --- PV push (B3: event-triggered broadcast, manuscript ¶78) ---
+# Defaults only -- server.py reads the env vars at task-start time (after
+# deploy/config.env has been loaded), NOT at import time, so config.env
+# values are honored.
+PV_PUSH_MODE_DEFAULT = "event"       # "event" | "periodic" (env PV_PUSH_MODE)
+PV_PUSH_COALESCE_MS_DEFAULT = 50.0   # burst coalescing window (env PV_PUSH_COALESCE_MS)
+PV_PUSH_SNAPSHOT_S_DEFAULT = 5.0     # idle keepalive/full-snapshot period (env PV_PUSH_SNAPSHOT_S)

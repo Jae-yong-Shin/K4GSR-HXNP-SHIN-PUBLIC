@@ -34,7 +34,8 @@ from pv_store import PVStore
 from constants import (WS_PORT, SIM_PORT, PTYCHO_PORT, EPICS_CA_PORT,
                        CA_CONNECT_TIMEOUT, BLUESKY_CONNECT_TIMEOUT,
                        BLUESKY_HYBRID_TIMEOUT, PV_DISCOVERY_INTERVAL,
-                       DEFAULT_SCAN_RATE)
+                       DEFAULT_SCAN_RATE, PV_PUSH_MODE_DEFAULT,
+                       PV_PUSH_COALESCE_MS_DEFAULT, PV_PUSH_SNAPSHOT_S_DEFAULT)
 
 # Optional CA bridge (for --ca-bridge mode)
 try:
@@ -272,6 +273,13 @@ pv_clients: Dict[object, Set[str]] = {}
 chat_clients: Set[object] = set()
 scan_clients: Set[object] = set()
 expt_clients: Set[object] = set()
+
+# B3 (event push): wake-up signal for pv_event_push_loop. Set from caproto
+# callback threads via loop.call_soon_threadsafe (see main()). The dirty-SET
+# itself is CABridge._changed (a {pv: entry} map -- rapid changes to the same
+# PV overwrite each other, last value wins), drained atomically by
+# pv_store.get_changed().
+_pv_dirty = asyncio.Event()
 
 
 # ── WebSocket helpers ──
@@ -795,7 +803,7 @@ async def expt_handler(websocket):
 # HTTP Static File Server (serves HTML bundle to browsers)
 # ══════════════════════════════════════════════════════════════════════
 _PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-_BUNDLE_NAME = "virtual_beamline_nanoprobe_V4_36_bundle.html"
+_BUNDLE_NAME = "virtual_beamline_nanoprobe_V4_38_bundle.html"
 _BUNDLE_PATH = os.path.join(_PROJECT_ROOT, _BUNDLE_NAME)
 # D8: Optional WebSocket API key (empty = auth disabled for dev)
 _WS_API_KEY = os.environ.get("WS_API_KEY", "")
@@ -831,6 +839,41 @@ async def process_request(connection, request):
     # Favicon (avoid 404 noise in logs)
     if request.path == "/favicon.ico":
         return Response(204, "No Content", Headers(), b"")
+
+    # Static asset routing: vendor/ (uplot, plotly), js/ (ESM source), assets/, archive/legacy_html/
+    # Without this, browser fetches for href="vendor/uplot-1.6.31.min.css" fell through to the
+    # WebSocket upgrade path and returned HTTP 426 / InvalidUpgrade, breaking page load.
+    _STATIC_PREFIXES = ("/vendor/", "/js/", "/assets/", "/archive/")
+    _STATIC_CT = {
+        ".css": "text/css; charset=utf-8",
+        ".js":  "application/javascript; charset=utf-8",
+        ".mjs": "application/javascript; charset=utf-8",
+        ".json":"application/json; charset=utf-8",
+        ".html":"text/html; charset=utf-8",
+        ".svg": "image/svg+xml",
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg":"image/jpeg",
+        ".gif": "image/gif",
+        ".woff":"font/woff",
+        ".woff2":"font/woff2",
+        ".map": "application/json; charset=utf-8",
+    }
+    if any(request.path.startswith(p) for p in _STATIC_PREFIXES):
+        rel = request.path.lstrip("/").split("?", 1)[0]
+        fpath = os.path.normpath(os.path.join(_PROJECT_ROOT, rel))
+        if not fpath.startswith(_PROJECT_ROOT) or not os.path.isfile(fpath):
+            return Response(404, "Not Found",
+                            Headers([("Content-Type", "text/plain; charset=utf-8")]),
+                            b"static file not found")
+        ext = os.path.splitext(fpath)[1].lower()
+        ct = _STATIC_CT.get(ext, "application/octet-stream")
+        with open(fpath, "rb") as f:
+            data = f.read()
+        return Response(200, "OK", Headers([
+            ("Content-Type", ct),
+            ("Cache-Control", "public, max-age=3600"),
+        ]), data)
 
     return None  # Unknown path → WebSocket upgrade attempt
 
@@ -883,6 +926,120 @@ async def pv_broadcast_loop():
                         pv_clients.pop(ws, None)
 
         await asyncio.sleep(pv_store.scan_rate)
+
+
+# ══════════════════════════════════════════════════════════════════════
+# B3: Event-Triggered PV Push (CA-bridge modes; manuscript ¶78)
+# ══════════════════════════════════════════════════════════════════════
+async def _send_pv_batch(changed: dict) -> int:
+    """Send one batched PV message to every subscribed client.
+
+    EXACT same wire format as pv_broadcast_loop (zero-change for the
+    browser): a JSON array of {pv, value, severity, timestamp, _ts_pv_send}
+    objects, per-client filtered to its subscription set.
+    Returns the number of websocket messages sent.
+    """
+    if not changed or not pv_clients:
+        return 0
+    _ts_pv_send = time.time()
+    sent = 0
+    for ws, subs in list(pv_clients.items()):
+        msgs = []
+        for pv_name, data in changed.items():
+            if pv_name in subs:
+                data_with_ts = dict(data)
+                data_with_ts['_ts_pv_send'] = _ts_pv_send
+                msgs.append(json.dumps(data_with_ts))
+        if msgs:
+            try:
+                await ws.send("[" + ",".join(msgs) + "]")
+                sent += 1
+            except websockets.ConnectionClosed:
+                pv_clients.pop(ws, None)
+    return sent
+
+
+def _pv_snapshot() -> dict:
+    """Full PV snapshot incl. motor .RBV aliases.
+
+    get_all() only returns base names, but the browser subscribes to BOTH
+    the base PV and '<pv>.RBV' for motors (js/control/02_epics.js), so the
+    keepalive snapshot mirrors the .RBV aliasing that get_changed() does.
+    """
+    snap = pv_store.get_all()
+    motor_names = getattr(pv_store, '_motor_names', None)
+    if motor_names:
+        for name in motor_names:
+            entry = snap.get(name)
+            if entry is not None:
+                rbv = dict(entry)
+                rbv['pv'] = name + '.RBV'
+                snap[name + '.RBV'] = rbv
+    return snap
+
+
+async def pv_event_push_loop():
+    """Event-triggered PV push with burst coalescing (B3, replaces the
+    10 Hz polling loop in CA-bridge modes).
+
+    - caproto monitor callbacks (CABridge) record entries in the dirty-set
+      (_changed) and wake this task via call_soon_threadsafe(_pv_dirty.set).
+    - Leading edge: an isolated change is flushed IMMEDIATELY (no poll-tick
+      wait -- the old loop added 0..100 ms, mean ~50 ms).
+    - Burst coalescing / rate bound: after a flush, further changes are
+      accumulated and flushed as ONE batched message per coalescing window
+      (env PV_PUSH_COALESCE_MS, default 50 ms) -- at most ~20 msg/s/client
+      no matter how fast the 86 PVs storm.
+    - Idle: nothing is sent except a full-snapshot keepalive every
+      PV_PUSH_SNAPSHOT_S seconds (default 5 s) covering late-joining
+      clients and drift; it is also forced at that period under continuous
+      traffic (noise PVs never go idle in hybrid mode).
+    - Fallback: env PV_PUSH_MODE=periodic restores pv_broadcast_loop
+      (selected in main(); old code path kept intact).
+    """
+    coalesce_s = float(os.environ.get(
+        "PV_PUSH_COALESCE_MS", PV_PUSH_COALESCE_MS_DEFAULT)) / 1000.0
+    snapshot_s = float(os.environ.get(
+        "PV_PUSH_SNAPSHOT_S", PV_PUSH_SNAPSHOT_S_DEFAULT))
+    log.info(f"PV event push: coalesce={coalesce_s * 1000:.0f}ms, "
+             f"snapshot keepalive={snapshot_s:.1f}s")
+    last_flush = 0.0     # monotonic time of last change-flush
+    last_snapshot = time.monotonic()
+    while True:
+        try:
+            await asyncio.wait_for(_pv_dirty.wait(), timeout=snapshot_s)
+        except asyncio.TimeoutError:
+            # Idle for snapshot_s -> keepalive/full snapshot only
+            try:
+                await _send_pv_batch(_pv_snapshot())
+            except Exception as e:
+                log.debug(f"PV snapshot send error: {e}")
+            last_snapshot = time.monotonic()
+            continue
+
+        # Burst coalescing: enforce >= coalesce_s between change-flushes.
+        # First event after a quiet spell passes straight through
+        # (leading-edge flush); a storm accumulates in the dirty-set and is
+        # flushed as one batch when the window expires.
+        remaining = coalesce_s - (time.monotonic() - last_flush)
+        if remaining > 0:
+            await asyncio.sleep(remaining)
+        _pv_dirty.clear()
+        changed = pv_store.get_changed()
+        if changed:
+            last_flush = time.monotonic()
+            try:
+                await _send_pv_batch(changed)
+            except Exception as e:
+                log.debug(f"PV event push send error: {e}")
+        # Drift guard: under continuous traffic the idle timeout above never
+        # fires, so force the low-rate snapshot here as well.
+        if time.monotonic() - last_snapshot >= snapshot_s:
+            try:
+                await _send_pv_batch(_pv_snapshot())
+            except Exception as e:
+                log.debug(f"PV snapshot send error: {e}")
+            last_snapshot = time.monotonic()
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -1246,8 +1403,39 @@ async def main():
 
     log.info(f"PV Store: {len(pv_store.pvs)} PVs initialized")
 
-    # Start PV broadcast loop
-    broadcast_task = asyncio.create_task(pv_broadcast_loop())
+    # Start PV broadcast loop (B3: event push vs periodic 10 Hz poll)
+    # PV_PUSH_MODE=event (default): CA-bridge modes use the event-triggered
+    #   push (caproto monitor callback -> dirty-set -> coalesced batch).
+    # PV_PUSH_MODE=periodic: old 10 Hz polling loop (fallback, kept intact).
+    # Standalone PVStore ALWAYS uses the periodic loop: PVStore state only
+    #   evolves inside scan() (motor stepping + noise are generated by the
+    #   10 Hz tick itself), so the tick IS the event source -- and the noise
+    #   PVs change every tick, so event push would degenerate to the same
+    #   10 Hz with extra machinery.
+    push_mode = os.environ.get("PV_PUSH_MODE", PV_PUSH_MODE_DEFAULT).strip().lower()
+    use_event_push = (push_mode == "event" and ca_bridge_mode
+                      and hasattr(pv_store, "on_change"))
+    if use_event_push:
+        _main_loop = asyncio.get_running_loop()
+
+        def _pv_change_notify(_name, _value):
+            # Runs on caproto callback threads -- hand off to asyncio loop.
+            # (Same cross-thread pattern as BlueskyRunner ws_callback.)
+            try:
+                _main_loop.call_soon_threadsafe(_pv_dirty.set)
+            except RuntimeError:
+                pass  # event loop already closed (shutdown)
+
+        pv_store.on_change = _pv_change_notify
+        broadcast_task = asyncio.create_task(pv_event_push_loop())
+        log.info("PV push mode: event (PV_PUSH_MODE=periodic to restore 10 Hz loop)")
+    else:
+        if push_mode == "event" and not ca_bridge_mode:
+            log.info("PV push mode: periodic (standalone PVStore is tick-driven; "
+                     "event push applies to CA-bridge modes only)")
+        else:
+            log.info(f"PV push mode: periodic (PV_PUSH_MODE={push_mode})")
+        broadcast_task = asyncio.create_task(pv_broadcast_loop())
 
     # Start PV discovery loop (hybrid mode only)
     discovery_task = None

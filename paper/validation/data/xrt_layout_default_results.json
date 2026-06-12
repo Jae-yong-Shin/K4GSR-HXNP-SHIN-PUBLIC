@@ -1,0 +1,62 @@
+{
+ "layout_engineVersion": "4.37.40",
+ "energy_keV": 10,
+ "harmonic": 3,
+ "crystal": "111",
+ "K_xrt": 1.341095097394791,
+ "nrays": 500000,
+ "stages": [
+  {
+   "name": "source",
+   "goodRays": 500000
+  },
+  {
+   "name": "wbslit",
+   "goodRays": 293405
+  },
+  {
+   "name": "M1",
+   "goodRays": 293405
+  },
+  {
+   "name": "DCM",
+   "goodRays": 293405
+  },
+  {
+   "name": "M2",
+   "goodRays": 293405
+  },
+  {
+   "name": "SSA",
+   "goodRays": 221801
+  },
+  {
+   "name": "KBslit",
+   "goodRays": 221331
+  },
+  {
+   "name": "KB-V",
+   "goodRays": 53285
+  },
+  {
+   "name": "KB-H",
+   "goodRays": 3427
+  },
+  {
+   "name": "sample",
+   "goodRays": 3427
+  }
+ ],
+ "sample": {
+  "fwhmH_nm": 17.53988512047137,
+  "fwhmV_nm": 38.27491640958607,
+  "fwhmH_gauss_nm": 30.675661379819577,
+  "fwhmV_gauss_nm": 48.36913812053858,
+  "rmsH_nm": 13.025758547694087,
+  "rmsV_nm": 20.538912153094937,
+  "centroidH_mm": 3.581063882495051e-06,
+  "centroidV_mm": 7.285732689456325e-07,
+  "weightSum_au": 3.315149023946444e+25,
+  "effectiveN": 130.50273257403973
+ }
+}

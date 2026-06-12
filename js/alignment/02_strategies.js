@@ -127,7 +127,7 @@ window.ALIGN_STRATEGIES = {
   }
 };
 
-console.log('[V4.36] ALIGN_STRATEGIES loaded (MC ray-trace signal mode)');
+console.log('[' + APP_VTAG + '] ALIGN_STRATEGIES loaded (MC ray-trace signal mode)');
 
 // ESM bridge: expose module-scoped vars to globalThis
 if(typeof ALIGN_STRATEGIES!=="undefined")globalThis.ALIGN_STRATEGIES=ALIGN_STRATEGIES;

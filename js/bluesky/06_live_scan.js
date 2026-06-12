@@ -294,7 +294,7 @@ function _installLiveScanEnhancement() {
     };
   }
 
-  log('info', '[V4.36] Live scan visualization enhanced');
+  log('info', '[' + APP_VTAG + '] Live scan visualization enhanced');
 }
 
 // Auto-install
@@ -306,7 +306,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   });
 }
 
-console.log('[V4.36] Live scan module loaded');
+console.log('[' + APP_VTAG + '] Live scan module loaded');
 })();
 
 // ESM bridge: expose module-scoped vars to globalThis

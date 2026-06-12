@@ -12,7 +12,7 @@ var _exptState = {
   running: false,
   timer: null,
   progress: 0,
-  xafs: { formula: 'Cu', absorber: 'Cu', edge: 'K', eStart: -50, eEnd: 300, eStep: 0.5, ppm: 10000, sampleType: 'solid' },
+  xafs: { formula: 'Cu', absorber: 'Cu', edge: 'K', eStart: -50, eEnd: 300, eStep: 0.5, ppm: 10000, sampleType: 'solid', icMode: false, icDwell: 1.0 },
   xrd2d: { crystal: 'Cu', detDist: 0.05, detector: 'EIGER2_1M', presetKey: '' },
   xrf2d: { formula: 'Cu', ppm: 1000, scanLx: 10, scanLy: 10, step: 0.5, dwell: 0.1,
            thickness_um: 1.0, matDensity: 8.96, sampleType: 'solid', presetKey: '' },
@@ -73,15 +73,22 @@ window.renderExptTab = function() {
   h += _buildExptControls(_exptState.mode);
   h += '</div>';
 
-  // Action bar
-  h += '<div style="display:flex;gap:6px;padding:4px 8px;align-items:center;border-top:1px solid var(--s2)">';
+  // Action bar — two rows so a narrow pane never overflows horizontally:
+  // (1) result controls (Show / Save / T(E) / Compare), (2) run controls
+  // (Start / Stop / progress / %). flex:1 progress gets min-width:0 so it can
+  // shrink instead of forcing a horizontal scrollbar.
+  var _btnSec = 'background:var(--s2);color:var(--t1);border:1px solid var(--b1,#3d5068);padding:4px 8px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--mn)';
+  h += '<div style="display:flex;flex-wrap:wrap;gap:6px;padding:4px 8px;align-items:center;border-top:1px solid var(--s2)">';
+  h += '<button onclick="_reopenExptPopup()" style="' + _btnSec + '" data-i18n="expt_show">' + _t('expt_show') + '</button>';
+  h += '<button onclick="_savePtychoResult()" style="' + _btnSec + '" data-i18n="expt_save">' + _t('expt_save') + '</button>';
+  h += '<button onclick="showTransmissionPopup()" style="' + _btnSec + '" title="Sample transmission T(E) calculator">T(E)</button>';
+  h += '<button id="exptCompareBtn" onclick="window._exptCompareMode=!window._exptCompareMode;this.style.background=window._exptCompareMode?\'var(--ac)\':\'var(--s2)\';this.style.color=window._exptCompareMode?\'#000\':\'var(--t1)\';this.style.fontWeight=window._exptCompareMode?\'700\':\'400\'" style="background:' + (window._exptCompareMode ? 'var(--ac)' : 'var(--s2)') + ';color:' + (window._exptCompareMode ? '#000' : 'var(--t1)') + ';font-weight:' + (window._exptCompareMode ? '700' : '400') + ';border:1px solid var(--b1,#3d5068);padding:4px 8px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--mn)" title="Compare: ON keeps the previous result beside the new one; OFF replaces it in place">Compare</button>';
+  h += '</div>';
+  h += '<div style="display:flex;gap:6px;padding:0 8px 4px;align-items:center">';
   h += '<button id="exptStartBtn" onclick="startExperiment()" style="background:var(--gn);color:#000;border:none;padding:4px 14px;border-radius:3px;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--mn)" data-i18n="expt_start">' + _t('expt_start') + '</button>';
   h += '<button onclick="stopExperiment()" style="background:#e05050;color:#fff;border:none;padding:4px 10px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--mn)" data-i18n="expt_stop">' + _t('expt_stop') + '</button>';
-  h += '<button onclick="_reopenExptPopup()" style="background:var(--s2);color:var(--t1);border:1px solid var(--b1,#3d5068);padding:4px 10px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--mn)" data-i18n="expt_show">' + _t('expt_show') + '</button>';
-  h += '<button onclick="_savePtychoResult()" style="background:var(--s2);color:var(--t1);border:1px solid var(--b1,#3d5068);padding:4px 8px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--mn)" data-i18n="expt_save">' + _t('expt_save') + '</button>';
-  h += '<button onclick="showTransmissionPopup()" style="background:var(--s2);color:var(--t1);border:1px solid var(--b1,#3d5068);padding:4px 8px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--mn)" title="Sample transmission T(E) calculator">T(E)</button>';
-  h += '<div style="flex:1;background:var(--s2);height:18px;border-radius:5px;overflow:hidden"><div id="exptProgBar" style="width:0%;height:100%;background:var(--ac);transition:width 0.2s"></div></div>';
-  h += '<span id="exptProgText" style="color:var(--t1);font-size:12px;font-weight:bold;min-width:40px;text-align:right">0%</span>';
+  h += '<div style="flex:1;min-width:0;background:var(--s2);height:18px;border-radius:5px;overflow:hidden"><div id="exptProgBar" style="width:0%;height:100%;background:var(--ac);transition:width 0.2s"></div></div>';
+  h += '<span id="exptProgText" style="color:var(--t1);font-size:12px;font-weight:bold;min-width:36px;text-align:right;flex:0 0 auto">0%</span>';
   h += '</div>';
 
   // Info
@@ -109,9 +116,8 @@ window.renderExptTab = function() {
 // then updates DOM if the experiment panel is currently visible.
 window._updateExptBeamlineStatus = function() {
   var eKev = (typeof state !== 'undefined' && state.energy) ? state.energy : 10;
-  // Compute flux
-  var fl = 0;
-  try { if (typeof photonFlux === 'function') fl = photonFlux(eKev); } catch(e) {}
+  // Sample-plane flux: single API (sampleFlux) shared by every display.
+  var fl = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
   // Read spot from MC cache (no re-run — just read cached result)
   var spH = 50, spV = 50;
   try {
@@ -220,6 +226,15 @@ function _buildExptControls(mode) {
     h += _row(_t('expt_presets'), '<select onchange="if(this.value){document.getElementById(\'exptXafsFormula\').value=this.value;_exptXafsFormulaChanged()}" style="' + _selectSty + '"><option value="">--</option><option>Cu</option><option>Cu2O</option><option>CuO</option><option>Fe</option><option>Fe2O3</option><option>NiO</option><option>SrTiO3</option></select>');
     h += _row(_t('expt_sample'), '<select id="exptXafsSampleType" style="' + _selectSty + '"><option value="solid"' + (_exptState.xafs.sampleType === 'solid' ? ' selected' : '') + '>Solid</option><option value="powder"' + (_exptState.xafs.sampleType === 'powder' ? ' selected' : '') + '>Powder (dilute)</option></select>');
     h += _row(_t('expt_conc'), '<input id="exptXafsPPM" type="number" value="' + _exptState.xafs.ppm + '" step="100" style="' + _inputSty + 'width:70px">');
+    // IC measurement mode (opt-in): mu_obs = ln(I0/I1) through the I0/I1
+    // chamber chain (server ic_chain.py) instead of synthetic noise.
+    // I0 config = IC1 popup (SVG icon), I1 config = detector popup IC tab.
+    h += _row('IC I0/I1',
+      '<label style="font-size:10px;cursor:pointer"><input type="checkbox" id="exptXafsIC"' +
+      (_exptState.xafs.icMode ? ' checked' : '') +
+      '> ln(I0/I1)</label> &nbsp;dwell <input id="exptXafsICDwell" type="number" value="' +
+      (_exptState.xafs.icDwell || 1.0) +
+      '" min="0.01" step="0.1" style="' + _inputSty + 'width:45px"> s');
   } else if (mode === 'xrd2d') {
     // Preset selector
     var xrdPresetOpts = '<option value="">-- Custom --</option>';
@@ -654,12 +669,15 @@ window._updatePtychoScanEstimate = function() {
 // ── Styles ──
 var _inputSty = 'background:var(--s2);color:var(--t1);border:1px solid var(--s2);padding:2px 4px;border-radius:2px;font-size:10px;font-family:var(--mn);';
 var _selectSty = 'background:var(--s2);color:var(--t1);border:1px solid var(--s2);padding:2px 4px;border-radius:2px;font-size:10px;font-family:var(--mn);';
+// Inline CSS string for small secondary buttons (s2 background, 2x8px padding, 9px monospace, pointer cursor).
 var _btnSmallSty = 'background:var(--s2);color:var(--t2);border:1px solid var(--s2);padding:2px 8px;border-radius:2px;font-size:9px;font-family:var(--mn);cursor:pointer;';
 
+// Builds one flex form-row HTML: a label span (min-width 65px) plus the supplied control markup, used across all mode panels.
 function _row(label, ctrl) {
   return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="color:var(--t3);min-width:65px;font-size:9px">' + label + ':</span><span style="font-size:10px">' + ctrl + '</span></div>';
 }
 
+// Returns <option> HTML for every key in the CRYSTALS table, marking the passed value selected; falls back to a single Cu option.
 function _crystalOptions(selected) {
   if (typeof CRYSTALS === 'undefined') return '<option>Cu</option>';
   var h = '', keys = Object.keys(CRYSTALS);
@@ -669,6 +687,7 @@ function _crystalOptions(selected) {
   return h;
 }
 
+// Returns <option> HTML of the element symbols from parseFormula(formula), marking the given absorber selected for the XAFS edge picker.
 function _absorberOptions(formula, selected) {
   var h = '';
   if (typeof parseFormula === 'function') {
@@ -683,6 +702,7 @@ function _absorberOptions(formula, selected) {
   return h;
 }
 
+// On XAFS formula input change, stores it in state, rebuilds the absorber dropdown from its parsed elements, and refreshes edge info.
 window._exptXafsFormulaChanged = function() {
   var el = document.getElementById('exptXafsFormula');
   if (!el) return;
@@ -699,43 +719,16 @@ window._exptXafsFormulaChanged = function() {
 };
 
 // ── XAFS Edge Energy Info + Beamline Range Warning ──
+// Stubbed 2026-06-10: per user request, the edge/flux/range banner is no longer
+// surfaced in the XAFS panel. Function kept as a no-op clear so existing inline
+// onchange handlers (#exptXafsAbsorber, #exptXafsEdge), the tail call from
+// _exptXafsFormulaChanged, the mode-refresh helper, and the globalThis export
+// shim all continue to resolve without ReferenceError. The #xafsEdgeInfo div is
+// retained but will simply be cleared on every call.
 window._updateXafsEdgeInfo = function() {
   var infoEl = document.getElementById('xafsEdgeInfo');
   if (!infoEl) return;
-  var absSel = document.getElementById('exptXafsAbsorber');
-  var edgeSel = document.getElementById('exptXafsEdge');
-  if (!absSel || !edgeSel) return;
-  var absorber = absSel.value;
-  var edge = edgeSel.value;
-  if (!absorber || typeof XRAY_ELEMENTS === 'undefined') { infoEl.innerHTML = ''; return; }
-  var elData = XRAY_ELEMENTS[absorber];
-  if (!elData) { infoEl.innerHTML = ''; return; }
-  var E0 = elData[edge];
-  if (!E0) {
-    infoEl.innerHTML = '<span style="color:var(--am)">' + absorber + ' has no ' + edge + '-edge data</span>';
-    return;
-  }
-  var E0_keV = E0 / 1000;
-  // Estimate flux at edge energy (photonFlux accepts keV)
-  var _fluxAtE0 = 0;
-  try { if (typeof photonFlux === 'function') _fluxAtE0 = photonFlux(E0_keV); } catch(e) {}
-  var _fluxStr = (_fluxAtE0 > 0) ? _fluxAtE0.toExponential(1) : '0';
-  // K4GSR ID10: 5-30 keV
-  if (E0_keV < 5.0) {
-    infoEl.innerHTML = '<span style="color:#e05050;font-weight:700">' +
-      absorber + ' ' + edge + '-edge = ' + E0 + ' eV (' + E0_keV.toFixed(3) + ' keV) ' +
-      '-- OUTSIDE beamline range (5-30 keV). ' +
-      'Flux=' + _fluxStr + ' ph/s</span>';
-  } else if (E0_keV > 30.0) {
-    infoEl.innerHTML = '<span style="color:#e05050;font-weight:700">' +
-      absorber + ' ' + edge + '-edge = ' + E0 + ' eV (' + E0_keV.toFixed(1) + ' keV) ' +
-      '-- ABOVE beamline maximum (30 keV). ' +
-      'Flux=' + _fluxStr + ' ph/s</span>';
-  } else {
-    infoEl.innerHTML = '<span style="color:var(--gn)">' +
-      absorber + ' ' + edge + '-edge = ' + E0 + ' eV (' + E0_keV.toFixed(3) + ' keV) ' +
-      '-- within beamline range, Flux ~' + _fluxStr + ' ph/s</span>';
-  }
+  infoEl.innerHTML = '';
 };
 
 // ── XRF 2D Preset Change Handler ──
@@ -769,6 +762,7 @@ window._xrd2dPresetChanged = function() {
   renderExptTab();
 };
 
+// Sets the active experiment mode (xafs/xrd2d/xrf2d/xrdmap/ptycho), re-renders the tab, and auto-connects the ptycho server when entered.
 window.switchExptMode = function(mode) {
   _exptState.mode = mode;
   renderExptTab();
@@ -781,6 +775,11 @@ window.switchExptMode = function(mode) {
 // ── Read params from UI ──
 function _readExptParams() {
   var mode = _exptState.mode;
+  // Programmatic callers (NLP/quick* set _exptState directly) must NOT have their
+  // values overwritten by stale Expt-tab DOM inputs. Honor _skipDomRead for ALL
+  // modes (previously only xafs did, so quickRaster's xrf2d geometry was clobbered
+  // by the tab's default 10x10/0.5 inputs), then consume the flag.
+  if (_exptState._skipDomRead) { _exptState._skipDomRead = false; return; }
   if (mode === 'xafs') {
     // Skip DOM read if _exptState was set programmatically (NLP/quickXanes)
     // — DOM may contain stale values from previous Expt tab interaction
@@ -801,6 +800,10 @@ function _readExptParams() {
       var stEl = document.getElementById('exptXafsSampleType');
       if (ppmEl) _exptState.xafs.ppm = parseFloat(ppmEl.value) || _exptState.xafs.ppm || 10000;
       if (stEl && stEl.value) _exptState.xafs.sampleType = stEl.value;
+      var icEl = document.getElementById('exptXafsIC');
+      var icDwEl = document.getElementById('exptXafsICDwell');
+      if (icEl) _exptState.xafs.icMode = !!icEl.checked;
+      if (icDwEl) _exptState.xafs.icDwell = parseFloat(icDwEl.value) || _exptState.xafs.icDwell || 1.0;
     }
     _exptState._skipDomRead = false; // reset after use
   } else if (mode === 'xrd2d') {
@@ -839,6 +842,7 @@ function _readExptParams() {
   }
 }
 
+// Reads ptycho UI inputs (dataset, material, thickness um, step/scan um, z m, dwell s, N_photons, asize, engine, iters) into state.
 function _readPtychoParams() {
   var pp = _exptState.ptycho;
   var el;
@@ -892,6 +896,7 @@ window._updateExptProgress = function(frac, msg) {
 // When popup is resized, onResize calls this to redraw the canvas.
 var _exptPopupRenderers = {};  // {mode: function(canvas){...}}
 
+// Stores a per-mode canvas redraw function in _exptPopupRenderers so popup resize/reopen can re-render that mode's result.
 window._registerExptRenderer = function(mode, fn) {
   _exptPopupRenderers[mode] = fn;
 };
@@ -922,6 +927,22 @@ window._reopenExptPopup = function() {
 window._openExptPopup = function(mode, title, width, height) {
   var popupId = 'exptPopup_' + mode;
   var existing = document.getElementById(popupId);
+  if (existing) {
+    // If this popup already shows a COMPLETED result, freeze it into a static
+    // side-by-side snapshot first so the NEW run's result can be compared
+    // instead of replacing it (user request). _freezeExptResultPopup snapshots
+    // the rendered canvas, builds a standalone snapshot window, removes this
+    // live popup, and returns true -> fall through to create a fresh popup.
+    // If there is no rendered result yet (still computing/blank) it returns
+    // false and we reuse the popup as before.
+    // Opt-in: only freeze the previous result into a side-by-side snapshot when
+    // the user enabled Compare mode. Default (off) reuses the popup in place, so
+    // re-running a scan replaces the previous result instead of stacking windows.
+    if (window._exptCompareMode &&
+        typeof _freezeExptResultPopup === 'function' && _freezeExptResultPopup(mode)) {
+      existing = null;   // froze + removed -> create a fresh popup below
+    }
+  }
   if (existing) {
     existing.style.display = 'flex';
     // Dynamically update popup title (fixes stale title on parameter change)
@@ -1060,6 +1081,95 @@ window._openExptPopup = function(mode, title, width, height) {
   return div;
 };
 
+// Freeze the CURRENT result popup for a mode into its OWN standalone window so
+// the NEXT scan's result can be shown alongside it for comparison (instead of
+// replacing it). Captures this result's RENDERER closure (which closes over the
+// result data) so the frozen window is a real, re-renderable figure -- it
+// redraws crisply at any size on resize, not a stretched bitmap. Returns true
+// if a window was created (then the caller creates a fresh popup for the new
+// result). Renderer closures are per-mode in _exptPopupRenderers; capture it
+// here BEFORE the new scan overwrites it.
+window._freezeExptResultPopup = function(mode) {
+  var id = 'exptPopup_' + mode;
+  var prev = document.getElementById(id);
+  if (!prev) return false;
+  var cvs = document.getElementById(id + '_canvas');
+  if (!cvs || !(cvs.width > 1)) return false;   // nothing rendered yet -> reuse
+  // This result's renderer (closes over its own maps/data); kept so the frozen
+  // window can redraw itself independently of later scans.
+  var renderer = (typeof _exptPopupRenderers !== 'undefined') ? _exptPopupRenderers[mode] : null;
+  var snapUrl = null;
+  if (!renderer) { try { snapUrl = cvs.toDataURL('image/png'); } catch (e) { return false; } }
+
+  var info = document.getElementById(id + '_info');
+  var hdrSpan = prev.querySelector('span');
+  var titleTxt = hdrSpan ? hdrSpan.textContent : mode;
+  var infoTxt = info ? info.textContent : '';
+  var r = prev.getBoundingClientRect();
+  var seq = (window._exptFrozenSeq = (window._exptFrozenSeq || 0) + 1);
+  var fid = id + '_frozen' + seq;
+
+  // Place beside the spot where the NEW result popup will spawn (left:80) so the
+  // two results sit side by side for comparison, not stacked.
+  var vw = window.innerWidth || 1400;
+  var fw = Math.round(r.width) || 700, fh = Math.round(r.height) || 500;
+  var fx = Math.min(96 + fw + (seq - 1) * 30, Math.max(120, vw - fw - 20));
+  var fy = 50 + (seq - 1) * 30;
+  var sd = document.createElement('div');
+  sd.id = fid;
+  sd.style.cssText = 'position:fixed;left:' + fx + 'px;top:' + fy + 'px;width:' + fw +
+    'px;height:' + fh + 'px;background:var(--bg);border:1px solid var(--b1,#3d5068);' +
+    'border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:999;display:flex;flex-direction:column';
+
+  var sh = document.createElement('div');
+  sh.id = fid + '_hdr';
+  sh.style.cssText = 'flex:0 0 auto;background:var(--s1);padding:6px 10px;display:flex;justify-content:space-between;align-items:center;cursor:move;user-select:none;border-radius:4px 4px 0 0';
+  sh.innerHTML = '<span style="color:var(--am);font:bold 11px var(--mn)">&#10063; ' +
+    titleTxt + '</span><button title="Close this snapshot" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px;padding:0 4px">X</button>';
+
+  var sb = document.createElement('div');
+  sb.style.cssText = 'flex:1;position:relative;overflow:hidden;min-height:0';
+  var fcanvas = null;
+  if (renderer) {
+    fcanvas = document.createElement('canvas');
+    fcanvas.id = fid + '_canvas';
+    fcanvas.style.cssText = 'width:100%;height:100%;display:block';
+    sb.appendChild(fcanvas);
+  } else {
+    var img = document.createElement('img');
+    img.src = snapUrl;
+    img.style.cssText = 'width:100%;height:100%;display:block;object-fit:contain;background:var(--bg)';
+    sb.appendChild(img);
+  }
+
+  var si = document.createElement('div');
+  si.style.cssText = 'flex:0 0 auto;padding:5px 10px;font:12px var(--mn);color:var(--t2);border-top:1px solid var(--s2);background:var(--s1);border-radius:0 0 4px 4px';
+  si.textContent = infoTxt;
+
+  sd.appendChild(sh); sd.appendChild(sb); sd.appendChild(si);
+  document.body.appendChild(sd);
+  sh.querySelector('button').onclick = function() { sd.remove(); };
+
+  // Re-render THIS result's figure at the canvas's current size (crisp, not a
+  // stretched image), using the captured renderer. The experiment popups size
+  // the canvas buffer to clientWidth/Height (no devicePixelRatio), so match that.
+  function _renderFrozen() {
+    if (!renderer || !fcanvas || fcanvas.clientWidth < 2) return;
+    fcanvas.width = fcanvas.clientWidth;
+    fcanvas.height = fcanvas.clientHeight;
+    try { renderer(fcanvas); } catch (e) { console.warn('[Expt] frozen re-render error:', e); }
+  }
+  if (typeof _makePopupResizable === 'function') {
+    _makePopupResizable(sd, {
+      dragEl: sh, minWidth: 320, minHeight: 260,
+      onResize: function() { if (arguments.length > 0) return; _renderFrozen(); }
+    });
+  }
+  if (renderer) setTimeout(_renderFrozen, 30);   // initial draw after layout settles
+  prev.remove();   // remove the old live popup; a fresh one is created next
+  return true;
+};
+
 
 // ======================================================================
 //  Simulation Server WebSocket Client (port 8002, high-fidelity)
@@ -1070,6 +1180,7 @@ var _simWsConnected = false;
 var _simWsReconnectTimer = null;
 // Auto-detect: main port + 1 (e.g., 8081 → 8082, 8001 → 8002)
 var _simAutoPort = (typeof location !== 'undefined' && location.port) ? (parseInt(location.port) + 1) : 8002;
+// Port for the simulation server WebSocket, defaulting to main port+1 (e.g. 8001->8002), overridable via the ?simport= URL param.
 var SIM_WS_PORT = _simAutoPort || 8002;
 
 // Parse ?simport= URL parameter (override)
@@ -1082,6 +1193,7 @@ try {
 // -- Connect to simulation server --
 // Tries SERVER_HOST first, then falls back to localhost if connection fails.
 var _simFallbackToLocal = false;
+// Opens the WebSocket to the high-fidelity sim server (/ws/sim on SIM_WS_PORT), with SERVER_HOST-to-localhost fallback and 5s reconnect.
 window.simServerConnect = function(url) {
   if (!url) {
     var _simHost = 'localhost';
@@ -1204,20 +1316,19 @@ var _exptWsReconnectTimer = null;
 
 // ── Build beamline context from current MC state ──
 // Called at experiment start to package beamline parameters for the server.
-// Order matters: focalSpot() FIRST to populate MC cache, THEN photonFlux()
-// uses the fresh MC survival ratio for accurate optical-loss flux.
+// Order matters: focalSpot() FIRST so the MC cache is fresh, THEN read the
+// sample-plane flux via sampleFlux() — the single API used by every
+// sample-flux display (modal, motor jog, Expt beamline bar, attenuator,
+// detector simulators, IC1 sim). Do not inline a different flux calculator
+// here; one API keeps every surfaced number identical.
 function _buildBeamlineContext() {
   var eKev = (typeof state !== 'undefined' && state.energy) ? state.energy : 10;
   // 1) focalSpot triggers MC re-run if cache is dirty (slit/optics changed)
   var sp = {h: 50, v: 50};
   try { if (typeof focalSpot === 'function') sp = focalSpot(); } catch(e) {}
-  // 2) photonFlux now uses fresh MC cache for accurate slit/mirror losses
-  var fl = 1e10;
-  try {
-    if (typeof photonFlux === 'function') fl = photonFlux(eKev);
-  } catch(e) {
-    console.warn('[Beamline] photonFlux error:', e);
-  }
+  // 2) Sample-plane flux: single API (sampleFlux) shared by every display.
+  var fl = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+  if (!fl) fl = 1e10;
   var ssaH = (typeof state !== 'undefined' && state.ssaH) ? state.ssaH : 50;
   var ssaV = (typeof state !== 'undefined' && state.ssaV) ? state.ssaV : 50;
   console.log('[Beamline] context: E=' + eKev.toFixed(3) + 'keV, flux=' +
@@ -1352,12 +1463,31 @@ function _handleExptServerMessage(msg) {
       _handleExptXAFSBatch(msg);
     }
   } else if (type === 'expt_result') {
+    // IC measurement mode: keep the chamber-current summary for the
+    // completion line (expt_done arrives right after and owns the text).
+    _exptState._lastIC = (msg.ic && msg.ic.i0_A_range) ? msg.ic : null;
+    if (_exptState._lastIC) {
+      try {
+        console.log('[Expt] IC chain: I0=' + msg.ic.i0_A_range[1].toExponential(2) +
+          ' A, I1=' + msg.ic.i1_A_range[1].toExponential(2) +
+          ' A, dwell=' + msg.ic.dwell_s + ' s, ratio_prefocus=' +
+          msg.ic.ratio_prefocus);
+      } catch (e) {}
+    }
     _handleExptResult(msg);
   } else if (type === 'expt_done') {
     _exptState.running = false;
     var elapsed = msg.elapsed_sec || 0;
     if (elapsed > 0) {
-      _updateExptProgress(1, 'Complete (' + elapsed.toFixed(2) + 's, server)');
+      var _icNote = '';
+      if (_exptState._lastIC) {
+        try {
+          _icNote = ' | IC I0 ' + (_exptState._lastIC.i0_A_range[1] * 1e6).toFixed(2) +
+            ' uA / I1 ' + (_exptState._lastIC.i1_A_range[1] * 1e6).toFixed(2) + ' uA';
+        } catch (e) { _icNote = ''; }
+        _exptState._lastIC = null;
+      }
+      _updateExptProgress(1, 'Complete (' + elapsed.toFixed(2) + 's, server)' + _icNote);
     }
     // Notify waiters immediately (no polling needed)
     if (typeof _exptState._onDone === 'function') {
@@ -1385,6 +1515,7 @@ function _handleExptServerMessage(msg) {
 
 // ── XAFS streaming batch handler ──
 var _exptServerXAFSData = [];
+// Appends a streamed batch of XAFS points to _exptServerXAFSData, updates progress, and live-redraws the mu(E) vs E-E0 chart.
 function _handleExptXAFSBatch(msg) {
   var batch = msg.batch;
   for (var i = 0; i < batch.length; i++) {
@@ -1403,7 +1534,7 @@ function _handleExptXAFSBatch(msg) {
     var p = _exptState.xafs;
     _drawChart1D(cvs, _exptServerXAFSData, {
       title: p.absorber + ' ' + p.edge + '-edge (' + p.formula + ') [server]',
-      xlabel: 'E - E0 (eV)', ylabel: 'mu(E)', color: '#4db8ff',
+      xlabel: 'E - E0 (eV)', ylabel: 'µ(E)', color: '#4db8ff',
       width: pw, height: ph, useCanvas: true
     });
   }
@@ -1451,6 +1582,142 @@ function _ensureCanvasAndRender(canvasId, mode, renderFn, maxRetries) {
   }
 }
 
+// ── XRF result advisory (deterministic; posts to NLP chat) ──
+// Reports the actual measured (excited) elements vs. those that could NOT be
+// excited at the current incident energy, the experiment conditions, and a
+// text suggestion to raise the energy. Physics, not LLM: an element fluoresces
+// only when E_incident exceeds its absorption edge.
+function _xrfBuildAdvisory(msg) {
+  if (typeof XRAY_ELEMENTS === 'undefined') return '';
+  var info = msg.info || {};
+  var measured = msg.elements || [];
+  var energy_keV = info.energy_keV ||
+    ((typeof state !== 'undefined' && state.energy) ? state.energy : 0) || 0;
+  if (energy_keV <= 0) return '';
+  var energy_eV = energy_keV * 1000;
+  var E_MAX_keV = 25.0;  // beamline max (matches server BEAMLINE_E_MAX)
+
+  // Sample name + full candidate element list (preset preferred, else formula)
+  var xf = (typeof _exptState !== 'undefined' && _exptState.xrf2d) ? _exptState.xrf2d : {};
+  var presetKey = xf.presetKey || '';
+  var sampleName = presetKey;
+  var candidates = [];
+  if (presetKey && typeof XRF_SAMPLE_PRESETS !== 'undefined' && XRF_SAMPLE_PRESETS[presetKey]) {
+    var preset = XRF_SAMPLE_PRESETS[presetKey];
+    sampleName = preset.name || presetKey;
+    if (preset.elements) candidates = Object.keys(preset.elements);
+  }
+  if (!candidates.length && info.formula && typeof parseFormula === 'function') {
+    try { candidates = Object.keys(parseFormula(info.formula)); } catch (e) {}
+  }
+  if (!candidates.length) candidates = measured.slice();
+
+  // Lowest absorption edge within beamline range for an element (eV), or null
+  function _lowestReachableEdge(sym) {
+    var el = XRAY_ELEMENTS[sym];
+    if (!el) return null;
+    var best = null;
+    var edges = [['K', el.K], ['L3', el.L3]];
+    for (var i = 0; i < edges.length; i++) {
+      var name = edges[i][0], e = edges[i][1];
+      if (e && e <= E_MAX_keV * 1000) {
+        if (best === null || e < best.e) best = { edge: name, e: e };
+      }
+    }
+    return best;
+  }
+
+  // Edge actually excited at this energy (for the "measured" list labels)
+  function _excitedEdgeLabel(sym) {
+    var el = XRAY_ELEMENTS[sym];
+    if (!el) return '';
+    if (el.K && energy_eV > el.K) return 'K ' + (el.K / 1000).toFixed(2) + ' keV';
+    if (el.L3 && energy_eV > el.L3) return 'L3 ' + (el.L3 / 1000).toFixed(2) + ' keV';
+    return '';
+  }
+
+  // Partition: missing = in sample, not in measured, and its lowest reachable
+  // edge is above the current energy (i.e. could be captured by raising E).
+  var measuredSet = {};
+  for (var m = 0; m < measured.length; m++) measuredSet[measured[m]] = true;
+  var missing = [];     // {sym, edge, e_keV}
+  var unreachable = []; // sym (no edge within beamline range at all)
+  for (var c = 0; c < candidates.length; c++) {
+    var sym = candidates[c];
+    if (measuredSet[sym]) continue;
+    var le = _lowestReachableEdge(sym);
+    if (le === null) { unreachable.push(sym); continue; }
+    if (le.e > energy_eV) missing.push({ sym: sym, edge: le.edge, e_keV: le.e / 1000 });
+  }
+
+  var isKo = (typeof UI_LANG !== 'undefined' && UI_LANG === 'ko');
+
+  // Conditions line
+  var Lx = (xf.scanLx != null) ? xf.scanLx : 0;
+  var Ly = (xf.scanLy != null) ? xf.scanLy : Lx;
+  var nx = info.nx || 0, ny = info.ny || 0;
+  var step = info.step_um || 0;
+
+  var measLabels = [];
+  for (var k = 0; k < measured.length; k++) {
+    var lab = _excitedEdgeLabel(measured[k]);
+    measLabels.push(measured[k] + (lab ? ' (' + lab + ')' : ''));
+  }
+
+  // Recommended energy: cover the highest-edge missing element (+0.5 keV margin)
+  var recE = 0, recSym = '';
+  for (var g = 0; g < missing.length; g++) {
+    if (missing[g].e_keV > recE) { recE = missing[g].e_keV; recSym = missing[g].sym; }
+  }
+  var recTarget = recE > 0 ? Math.min(E_MAX_keV, recE + 0.5) : 0;
+
+  var lines = [];
+  if (isKo) {
+    lines.push('XRF 2D 매핑 완료 — ' + sampleName);
+    lines.push('조건: FOV ' + Lx + '×' + Ly + ' µm, ' + nx + '×' + ny + ' pts, step ' +
+               step + ' µm, E=' + energy_keV.toFixed(2) + ' keV, KB 나노빔(~50 nm)');
+    lines.push('측정된 원소(여기됨): ' + (measLabels.length ? measLabels.join(', ') : '없음'));
+    if (missing.length) {
+      var mtxt = [];
+      for (var i2 = 0; i2 < missing.length; i2++) {
+        mtxt.push(missing[i2].sym + ' (' + missing[i2].edge + ' ' +
+                  missing[i2].e_keV.toFixed(2) + ' keV)');
+      }
+      lines.push('현재 에너지(' + energy_keV.toFixed(2) +
+                 ' keV)에서 여기되지 않은 원소: ' + mtxt.join(', '));
+      lines.push('이 시료의 주성분 ' + recSym + '를 매핑하려면 입사 에너지를 ' +
+                 recE.toFixed(2) + ' keV 위로 올려야 합니다.');
+      lines.push('원하시면 "' + recTarget.toFixed(1) +
+                 ' keV로 재스캔"이라고 말씀해 주세요. 에너지를 변경하고 정렬 후 다시 측정하겠습니다.');
+    }
+    if (unreachable.length) {
+      lines.push('빔라인 범위(5–25 keV) 내 흡수단이 없어 측정 불가: ' + unreachable.join(', '));
+    }
+  } else {
+    lines.push('XRF 2D map complete — ' + sampleName);
+    lines.push('Conditions: FOV ' + Lx + '×' + Ly + ' µm, ' + nx + '×' + ny + ' pts, step ' +
+               step + ' µm, E=' + energy_keV.toFixed(2) + ' keV, KB nanobeam (~50 nm)');
+    lines.push('Measured (excited): ' + (measLabels.length ? measLabels.join(', ') : 'none'));
+    if (missing.length) {
+      var mtxt2 = [];
+      for (var i3 = 0; i3 < missing.length; i3++) {
+        mtxt2.push(missing[i3].sym + ' (' + missing[i3].edge + ' ' +
+                   missing[i3].e_keV.toFixed(2) + ' keV)');
+      }
+      lines.push('Not excited at ' + energy_keV.toFixed(2) + ' keV: ' + mtxt2.join(', '));
+      lines.push('To map this sample’s main element ' + recSym +
+                 ', the incident energy must exceed ' + recE.toFixed(2) + ' keV.');
+      lines.push('If you’d like, say "rescan at ' + recTarget.toFixed(1) +
+                 ' keV" and I’ll change the energy, re-align, and measure again.');
+    }
+    if (unreachable.length) {
+      lines.push('No absorption edge within the beamline range (5–25 keV), cannot measure: ' +
+                 unreachable.join(', '));
+    }
+  }
+  return lines.join('\n');
+}
+
 // ── Result handler ──
 function _handleExptResult(msg) {
   var mode = msg.mode;
@@ -1464,7 +1731,7 @@ function _handleExptResult(msg) {
     var _xafsRenderFn = function(c) {
       _drawChart1D(c, data, {
         title: p.absorber + ' ' + p.edge + '-edge (' + p.formula + ') [' + (info.engine || 'server') + ']',
-        xlabel: 'E - E0 (eV)', ylabel: 'mu(E)', color: '#4db8ff',
+        xlabel: 'E - E0 (eV)', ylabel: 'µ(E)', color: '#4db8ff',
         useCanvas: true
       });
     };
@@ -1475,7 +1742,7 @@ function _handleExptResult(msg) {
     _registerExptRenderer('xafs', _xafsRenderFn);
     // Tooltip
     if (typeof _attachChartTooltip === 'function') {
-      _attachChartTooltip('exptPopup_xafs_canvas', data, 'E - E0 (eV)', 'mu(E)', info.E0_eV || 0);
+      _attachChartTooltip('exptPopup_xafs_canvas', data, 'E - E0 (eV)', 'µ(E)', info.E0_eV || 0);
     }
     // Info line
     var infoEl = document.getElementById('exptPopup_xafs_info');
@@ -1607,6 +1874,15 @@ function _handleExptResult(msg) {
         (info4.formula || '') + ' | ' + elements.join(', ') +
         ' | ' + (info4.nx || 0) + 'x' + (info4.ny || 0) + ' pts' +
         ' | step=' + (info4.step_um || 0) + '\u03bcm | E=' + (info4.energy_keV || 0).toFixed(1) + 'keV';
+    }
+    // Post deterministic advisory to NLP chat (one-shot; set by quickRaster).
+    if (typeof _exptState !== 'undefined' && _exptState._chatAdvisory &&
+        typeof addChatMessage === 'function') {
+      _exptState._chatAdvisory = false;
+      try {
+        var _adv = _xrfBuildAdvisory(msg);
+        if (_adv) addChatMessage('assistant', _adv);
+      } catch (e) { console.warn('[XRF advisory]', e); }
     }
   }
   else if (mode === 'xrdmap') {

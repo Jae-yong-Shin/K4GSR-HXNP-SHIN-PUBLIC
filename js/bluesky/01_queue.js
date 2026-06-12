@@ -16,6 +16,7 @@ var QS_CONFIG = {
   simMode: true                    // true = browser-simulated QS
 };
 
+// Bluesky plan-queue state: items, running plan, history, status and autostart flags.
 var QUEUE = {
   items: [],          // queued plans
   running: null,      // currently executing plan
@@ -50,6 +51,7 @@ function queuePlan(planName, params, meta) {
   return item;
 }
 
+// Remove a queued plan by item_uid; re-renders the Bluesky tab.
 function queueRemove(uid) {
   var idx = -1;
   for (var i = 0; i < QUEUE.items.length; i++) { if (QUEUE.items[i].item_uid === uid) { idx = i; break; } }
@@ -62,6 +64,7 @@ function queueRemove(uid) {
   return false;
 }
 
+// Move a queued plan one slot earlier in the queue.
 function queueMoveUp(uid) {
   var idx = -1;
   for (var i = 0; i < QUEUE.items.length; i++) { if (QUEUE.items[i].item_uid === uid) { idx = i; break; } }
@@ -69,6 +72,7 @@ function queueMoveUp(uid) {
   if (typeof renderBlueskyTab === 'function') renderBlueskyTab();
 }
 
+// Move a queued plan one slot later in the queue.
 function queueMoveDown(uid) {
   var idx = -1;
   for (var i = 0; i < QUEUE.items.length; i++) { if (QUEUE.items[i].item_uid === uid) { idx = i; break; } }
@@ -76,6 +80,7 @@ function queueMoveDown(uid) {
   if (typeof renderBlueskyTab === 'function') renderBlueskyTab();
 }
 
+// Empty the plan queue.
 function queueClear() {
   QUEUE.items = [];
   log('info', 'Queue cleared');
@@ -100,6 +105,7 @@ function queueStart() {
   }
 }
 
+// Turn off queue autostart; the running plan finishes but no new plans start.
 function queueStop() {
   QUEUE.autostart = false;
   if (QUEUE.status === 'running' && !QUEUE.running) QUEUE.status = 'idle';
@@ -107,6 +113,7 @@ function queueStop() {
   if (typeof renderBlueskyTab === 'function') renderBlueskyTab();
 }
 
+// Pause the currently running plan via its executor.
 function queuePause() {
   if (QUEUE.running && QUEUE.running._executor) {
     QUEUE.status = 'paused';
@@ -116,6 +123,7 @@ function queuePause() {
   }
 }
 
+// Resume a paused plan.
 function queueResume() {
   if (QUEUE.status === 'paused') {
     QUEUE.status = 'running';
@@ -126,6 +134,7 @@ function queueResume() {
   }
 }
 
+// Abort the running plan, record it in history, and continue the queue if autostart is on.
 function queueAbort() {
   if (QUEUE.running && QUEUE.running._executor) {
     QUEUE.running._executor.abort();
@@ -711,6 +720,7 @@ var _SIM_PLAN_MAP = {
   'count': '_count'
 };
 
+// Route a plan by name to the local executor, the simulation engine (8002), or the server.
 function executePlan(item) {
   // 1. Alignment/utility plans → Bluesky server or local
   if (_LOCAL_ONLY_PLANS[item.name]) {
@@ -737,10 +747,13 @@ function executePlan(item) {
 // ============================================================
 var _queueSimActive = false;
 var _queueSimResolve = null;
+// Buffer of live data points streamed from the simulation engine during a scan.
 var _queueSimLiveData = [];
+// Accumulated 2D map data from the simulation engine for the current scan.
 var _queueSimMapData = null;
 var _queueSimPlanName = '';
 
+// Run a measurement plan against the simulation server (port 8002).
 function executeSimPlan(item) {
   return new Promise(function(resolve) {
     // Check simulation server connection
@@ -756,7 +769,8 @@ function executeSimPlan(item) {
 
     // Special case: count (no server needed)
     if (simMode === '_count') {
-      var flux = typeof photonFlux === 'function' ? photonFlux(state.energy) : 1e10;
+      var flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+      if (!flux) flux = 1e10;
       var ct = flux * (p.dwell || 1) * (0.98 + Math.random() * 0.04);
       resolve({ success: true, msg: 'Count: ' + ct.toExponential(2) + ' photons', data: [{ x: 1, y: ct }] });
       return;
@@ -901,14 +915,16 @@ function _handleQueueSimResponse(msg) {
     if (msg.mode === 'xafs' && msg.batch) {
       for (var i = 0; i < msg.batch.length; i++) {
         var pt = msg.batch[i];
-        _queueSimLiveData.push({ x: pt.x, y: pt.y, xlabel: 'E - E0 (eV)', ylabel: 'mu(E)' });
+        _queueSimLiveData.push({ x: pt.x, y: pt.y, xlabel: 'E - E0 (eV)', ylabel: 'µ(E)' });
       }
       if (typeof updateBsLiveChart === 'function') {
         updateBsLiveChart(_queueSimLiveData, _queueSimPlanName);
       }
     }
   } else if (type === 'expt_result') {
-    // Open Expt popup FIRST (creates canvas), then render results
+    // Open Expt popup FIRST (creates canvas), then render results.
+    // (_openExptPopup itself freezes any prior COMPLETED result into a
+    // side-by-side snapshot so two results can be compared.)
     if (typeof _openExptPopup === 'function' && msg.mode) {
       var _modeLabel = {xafs:'XAFS',xrf2d:'XRF 2D Map',xrd2d:'2D XRD',xrdmap:'XRD Map'};
       try { _openExptPopup(msg.mode, _modeLabel[msg.mode] || msg.mode, 700, 500); } catch(e) {}
@@ -954,7 +970,7 @@ function _handleQueueSimResult(msg) {
     var data = msg.data || [];
     if (data.length > 0 && _queueSimLiveData.length === 0) {
       for (var i = 0; i < data.length; i++) {
-        _queueSimLiveData.push({ x: data[i].x, y: data[i].y, xlabel: 'E - E0 (eV)', ylabel: 'mu(E)' });
+        _queueSimLiveData.push({ x: data[i].x, y: data[i].y, xlabel: 'E - E0 (eV)', ylabel: 'µ(E)' });
       }
     }
   } else if (mode === 'xrf2d') {
@@ -1266,6 +1282,7 @@ function qsApiCall(endpoint, method, body) {
   });
 }
 
+// Connect to a real Bluesky Queue Server at the given URL; falls back to sim mode on failure.
 function connectRealQS(url) {
   QS_CONFIG.url = url || QS_CONFIG.url;
   QS_CONFIG.simMode = false;
@@ -1339,22 +1356,30 @@ async function quickXafs(element, edge) {
   return queuePlan('xanes_scan', { element: element, edge: edge || 'K' });
 }
 
+// Convenience API: queue an align_motor plan for the given motor.
 function quickAlign(motor) {
   return queuePlan('align_motor', { motor: motor });
 }
 
 // @mode virtual: routes to simulation server (port 8002) via startExperiment()
 // @mode real: will route to Bluesky RunEngine + real nano-scanner + real XRF detector
-async function quickRaster(xRange, yRange, numPts, presetKey) {
-  var r = xRange || 5, n = numPts || 21;
+async function quickRaster(xFovUm, yFovUm, numPts, presetKey) {
+  // First two args are the FULL field of view in µm (NOT a +/- half-width).
+  // This matches every other layer: the NLP few-shot ("quickRaster(5,5,21)=5x5
+  // µm"), the LLM's own wording ("0.5x0.5 µm area"), the UI "Scan area" input,
+  // and the sim engine (which centres the grid as -FOV/2 .. +FOV/2). A previous
+  // version doubled these (scanLx = r*2), so "0.5" scanned 1x1 µm and the step
+  // was 2x too coarse -- the bug the user observed.
+  var fovX = xFovUm || 5, fovY = (yFovUm || xFovUm || 5), n = numPts || 21;
   if (typeof _exptState !== 'undefined' && typeof startExperiment === 'function') {
     _exptState.mode = 'xrf2d';
     if (!_exptState.xrf2d) _exptState.xrf2d = {};
-    _exptState.xrf2d.scanLx = r * 2;
-    _exptState.xrf2d.scanLy = (yRange || r) * 2;
-    _exptState.xrf2d.step = (r * 2) / Math.max(1, n - 1);
-    // Apply preset: use provided key, or default to semiconductor_ic
-    var defKey = presetKey || 'semiconductor_ic';
+    _exptState.xrf2d.scanLx = fovX;
+    _exptState.xrf2d.scanLy = fovY;
+    _exptState.xrf2d.step = fovX / Math.max(1, n - 1);
+    // Apply preset: explicit arg wins; else keep the currently-selected sample
+    // (set via the UI or a prior call); only then fall back to the default.
+    var defKey = presetKey || _exptState.xrf2d.presetKey || 'semiconductor_ic';
     if (typeof XRF_SAMPLE_PRESETS !== 'undefined') {
       var preset = XRF_SAMPLE_PRESETS[defKey];
       if (preset) {
@@ -1367,18 +1392,22 @@ async function quickRaster(xRange, yRange, numPts, presetKey) {
       }
     }
     _exptState._skipDomRead = true;
+    _exptState._chatAdvisory = true;  // post deterministic result advisory to chat
     await startExperiment();
     QUEUE._exptRunning = true;
     await _waitExptDone();
     return { success: true };
   }
-  // Fallback: queue
+  // Fallback: queue. FOV is centred on the current position, so the motor
+  // limits are +/- FOV/2 (full FOV in, half-width out).
+  var hx = fovX / 2, hy = fovY / 2;
   return queuePlan('raster_scan', {
-    x_start: -r, x_stop: r, x_num: n,
-    y_start: -(yRange || r), y_stop: (yRange || r), y_num: n
+    x_start: -hx, x_stop: hx, x_num: n,
+    y_start: -hy, y_stop: hy, y_num: n
   });
 }
 
+// Convenience API: queue a count plan (num exposures, dwell seconds).
 function quickCount(num, dwell) {
   return queuePlan('count', { num: num || 1, dwell: dwell || 1 });
 }
@@ -1410,6 +1439,7 @@ async function quickXanes(element, edge) {
   return queuePlan('xanes_scan', { element: element, edge: edge || 'K' });
 }
 
+// Convenience API: queue a fly_scan plan over a motor axis.
 function quickFlyScan(motorName, axisName, start, stop, nPoints) {
   return queuePlan('fly_scan', {
     motor_name: motorName, axis_name: axisName,
@@ -1440,6 +1470,7 @@ function quickAutoTune(deviceName, axisName, start, stop, targetField) {
   });
 }
 
+// Convenience API: queue an adaptive energy scan (variable step size).
 function quickAdaptiveScan(eStart, eStop, minStepEV, maxStepEV) {
   return queuePlan('adaptive_energy_scan', {
     e_start: eStart, e_stop: eStop,
@@ -1447,6 +1478,7 @@ function quickAdaptiveScan(eStart, eStop, minStepEV, maxStepEV) {
   });
 }
 
+// Convenience API: queue a relative alignment scan around the current position.
 function quickRelAlign(deviceName, axisName, width, nPoints) {
   return queuePlan('rel_alignment_scan', {
     device_name: deviceName, axis_name: axisName,
@@ -1454,12 +1486,14 @@ function quickRelAlign(deviceName, axisName, width, nPoints) {
   });
 }
 
+// Convenience API: queue a Fermat-spiral scan.
 function quickFermat(xRange, yRange, dr) {
   return queuePlan('fermat_scan', {
     x_range: xRange || 10, y_range: yRange || 10, dr: dr || 0.5
   });
 }
 
+// Convenience API: queue a relative raster scan.
 function quickRelRaster(dx, dy, nx, ny) {
   return queuePlan('rel_raster_scan', {
     dx: dx || 10, dy: dy || 10, nx: nx || 21, ny: ny || 21

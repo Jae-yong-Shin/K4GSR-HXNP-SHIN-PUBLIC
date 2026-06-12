@@ -7,6 +7,7 @@
 
 // --- Module-level state ---
 var curModal = null;
+// Module-level counter, reset to 0 per showComp() call, incremented by mcSlider to mint unique 'mc<n>' DOM element IDs.
 var _mcId = 0;
 
 // ===================================================================
@@ -236,6 +237,46 @@ window.showComp = function(id) {
       '<div class="info-item"><div class="lbl">Ext. Depth</div><div class="val">' + extDepth(state.energy).toFixed(2) + ' \u03BCm</div></div>' +
       '<div class="info-item"><div class="lbl">Selects</div><div class="val">n=' + state.harmonic + ' @' + state.energy.toFixed(2) + ' keV</div></div>' +
       '<div class="info-item"><div class="lbl">Fixed Exit</div><div class="val">' + FIXED_EXIT + ' mm</div></div>';
+  } else if (id === 'ic1') {
+    // ── IC1 ion chamber panel (A3) ──
+    // The chain narrates the user's key physics point: the current is made
+    // from the flux that REACHES the chamber, i.e. after the upstream air.
+    var icc = (typeof icLiveChain === 'function') ? icLiveChain() : null;
+    var gasSel = '';
+    ['N2', 'He', 'Ar', 'air'].forEach(function(g) {
+      gasSel += '<option value="' + g + '"' +
+        ((state.ic1Gas || 'N2') === g ? ' selected' : '') + '>' + g + '</option>';
+    });
+    ctrl += '<div class="mc"><h4>Chamber Config</h4><div class="info-grid">' +
+      '<div class="info-item"><div class="lbl">Gas</div><div class="val">' +
+      '<select onchange="state.ic1Gas=this.value;showComp(\'ic1\')" style="font-size:10px">' + gasSel + '</select></div></div>' +
+      '<div class="info-item"><div class="lbl">Length (cm)</div><div class="val">' +
+      '<input type="number" value="' + (state.ic1LenCm || 10) + '" min="1" max="50" step="1" style="width:60px;font-size:10px" ' +
+      'onchange="state.ic1LenCm=parseFloat(this.value)||10;showComp(\'ic1\')"/></div></div>' +
+      '<div class="info-item"><div class="lbl">Pressure (atm)</div><div class="val">' +
+      '<input type="number" value="' + (state.ic1PressAtm || 1.0) + '" min="0.01" max="2" step="0.05" style="width:60px;font-size:10px" ' +
+      'onchange="state.ic1PressAtm=parseFloat(this.value)||1;showComp(\'ic1\')"/></div></div>' +
+      '<div class="info-item"><div class="lbl">Air before (cm)</div><div class="val">' +
+      '<input type="number" value="' + (state.ic1AirBeforeCm != null ? state.ic1AirBeforeCm : 5) + '" min="0" max="500" step="1" style="width:60px;font-size:10px" ' +
+      'onchange="state.ic1AirBeforeCm=parseFloat(this.value)||0;showComp(\'ic1\')"/></div></div>' +
+      '<div class="info-item"><div class="lbl">Air after (cm)</div><div class="val">' +
+      '<input type="number" value="' + (state.ic1AirAfterCm != null ? state.ic1AirAfterCm : 2) + '" min="0" max="500" step="1" style="width:60px;font-size:10px" ' +
+      'onchange="state.ic1AirAfterCm=parseFloat(this.value)||0;showComp(\'ic1\')"/></div></div>' +
+      '</div></div>';
+    if (icc) {
+      var uA1 = icc.current_A * 1e6;
+      info = '<div class="info-item"><div class="lbl">Pre-KB beam' + (icc.ratioExact ? '' : ' (approx)') + '</div><div class="val">' + icc.fluxICRegion.toExponential(2) + ' ph/s</div></div>' +
+        '<div class="info-item"><div class="lbl">T air (before)</div><div class="val">' + (icc.T_airBefore * 100).toFixed(2) + ' %</div></div>' +
+        '<div class="info-item"><div class="lbl">Flux at IC1</div><div class="val" style="color:var(--ac)">' + icc.fluxAtIC.toExponential(2) + ' ph/s</div></div>' +
+        '<div class="info-item"><div class="lbl">IC current</div><div class="val" style="color:var(--gn);font-weight:700">' +
+        (uA1 >= 1 ? uA1.toFixed(2) + ' µA' : (uA1 * 1000).toFixed(1) + ' nA') + '</div></div>' +
+        '<div class="info-item"><div class="lbl">T chamber</div><div class="val">' + (icc.T_ic * 100).toFixed(2) + ' %</div></div>' +
+        '<div class="info-item"><div class="lbl">T air (after)</div><div class="val">' + (icc.T_airAfter * 100).toFixed(2) + ' %</div></div>' +
+        '<div class="info-item"><div class="lbl">Flux at sample</div><div class="val" style="color:var(--am)">' + icc.fluxAtSample.toExponential(2) + ' ph/s</div></div>' +
+        '<div class="info-item"><div class="lbl">Chain</div><div class="val" style="font-size:8px">KBslit→air→IC1→air→KB→sample (pre-focus x' + icc.ratioPreFocus.toFixed(1) + ')</div></div>';
+    } else {
+      info = '<div class="info-item"><div class="lbl">Status</div><div class="val">flux unavailable (engine warming)</div></div>';
+    }
   } else if (id === 'ssa') {
     ctrl += mcSlider('H Gap (um)', 5, 200, 1, state.ssaH, 'function(v){ssaSliderUpdate(\'h\',v)}');
     ctrl += mcSlider('V Gap (um)', 5, 200, 1, state.ssaV, 'function(v){ssaSliderUpdate(\'v\',v)}');
@@ -288,7 +329,8 @@ window.showComp = function(id) {
     }
   } else if (id === 'sample') {
     var sp2 = focalSpot();
-    var _flux = photonFlux(state.energy);
+    // Sample-plane flux: single API (sampleFlux) shared by every display.
+    var _flux = (typeof sampleFlux === 'function') ? sampleFlux() : photonFlux(state.energy);
     ctrl += '</div>';
     var bodyHtml = '<div class="mc"><h4>Beam Profile (Monte Carlo Ray-Tracing)</h4><div id="beamProfileContainer"></div></div>';
     bodyHtml += '<div class="mc"><h4>Detector Configuration</h4><div class="info-grid">';
@@ -368,13 +410,48 @@ window.showComp = function(id) {
   } else if (id === 'det') {
     var detDist = p - (pos('sample') || 150);
     var _spDet = focalSpot();
-    var _flDet = photonFlux(state.energy);
+    // Detector-plane flux ~ sample-plane flux (no absorber modeled between):
+    // use the single sampleFlux() API so Sample/Detector popups agree.
+    var _flDet = (typeof sampleFlux === 'function') ? sampleFlux() : photonFlux(state.energy);
     info = '<div class="info-item"><div class="lbl">Type</div><div class="val">Detector Screen</div></div>' +
       '<div class="info-item"><div class="lbl">Distance</div><div class="val">' + detDist.toFixed(1) + ' m from sample</div></div>' +
       '<div class="info-item"><div class="lbl">Pixel</div><div class="val">6.5 \u03bcm (CCD)</div></div>' +
       '<div class="info-item"><div class="lbl">Energy</div><div class="val">' + state.energy.toFixed(2) + ' keV</div></div>' +
       '<div class="info-item"><div class="lbl">Flux</div><div class="val">' + _flDet.toExponential(2) + ' ph/s</div></div>' +
       '<div class="info-item"><div class="lbl">Focal Size</div><div class="val" style="color:var(--gn)">' + _spDet.h.toFixed(0) + 'x' + _spDet.v.toFixed(0) + ' nm</div></div>';
+    // \u2500\u2500 Ion Chamber mode (A3): use the detector position as an I1 chamber \u2500\u2500
+    // Incident flux = sample-plane flux x sample transmission x air path
+    // (sample -> det, from the live positions). Gas/length/transmission are
+    // user-adjustable; the air attenuation over the multi-meter path is the
+    // dominant term at low energies.
+    if (typeof icCurrent === 'function') {
+      var _i1Gas = state.det_icGas || 'N2';
+      var _i1Len = state.det_icLenCm || 10;
+      var _i1Ts = (typeof state.det_icSampleT === 'number') ? state.det_icSampleT : 1.0;
+      var _i1AirCm = Math.max(0, (p - (pos('sample') || 150)) * 100 - _i1Len);
+      var _i1TAir = (typeof icTransmittedFraction === 'function')
+        ? icTransmittedFraction('air', _i1AirCm, state.energy) : 1;
+      if (isNaN(_i1TAir)) _i1TAir = 1;
+      var _i1In = _flDet * _i1Ts * _i1TAir;
+      var _i1A = icCurrent(_i1In, _i1Gas, _i1Len, state.energy);
+      var _i1uA = _i1A * 1e6;
+      var _i1Sel = '';
+      ['N2', 'He', 'Ar', 'air'].forEach(function(g) {
+        _i1Sel += '<option value="' + g + '"' + (_i1Gas === g ? ' selected' : '') + '>' + g + '</option>';
+      });
+      info += '<div class="info-item" style="grid-column:1/-1;border-top:1px solid var(--b1);margin-top:4px;padding-top:4px"><div class="lbl">ION CHAMBER (I1) MODE</div><div class="val" style="font-size:8px;color:var(--t3)">det position as transmission chamber; air path sample\u2192det = ' + _i1AirCm.toFixed(0) + ' cm</div></div>' +
+        '<div class="info-item"><div class="lbl">Gas / Length</div><div class="val">' +
+        '<select onchange="state.det_icGas=this.value;showComp(\'det\')" style="font-size:10px">' + _i1Sel + '</select> ' +
+        '<input type="number" value="' + _i1Len + '" min="1" max="50" step="1" style="width:48px;font-size:10px" ' +
+        'onchange="state.det_icLenCm=parseFloat(this.value)||10;showComp(\'det\')"/> cm</div></div>' +
+        '<div class="info-item"><div class="lbl">Sample T</div><div class="val">' +
+        '<input type="number" value="' + _i1Ts + '" min="0" max="1" step="0.05" style="width:55px;font-size:10px" ' +
+        'onchange="state.det_icSampleT=parseFloat(this.value);showComp(\'det\')"/></div></div>' +
+        '<div class="info-item"><div class="lbl">T air (path)</div><div class="val">' + (_i1TAir * 100).toFixed(2) + ' %</div></div>' +
+        '<div class="info-item"><div class="lbl">Flux at I1</div><div class="val" style="color:var(--ac)">' + _i1In.toExponential(2) + ' ph/s</div></div>' +
+        '<div class="info-item"><div class="lbl">I1 current</div><div class="val" style="color:var(--gn);font-weight:700">' +
+        (_i1uA >= 1 ? _i1uA.toFixed(2) + ' \u00b5A' : (_i1uA * 1000).toFixed(2) + ' nA') + '</div></div>';
+    }
   } else {
     info = '<div class="info-item"><div class="lbl">Type</div><div class="val">' + c.tp + '</div></div>';
   }

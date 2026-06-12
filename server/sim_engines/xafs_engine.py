@@ -24,6 +24,13 @@ import numpy as np
 
 from sim_engines.base import SimEngine
 
+try:
+    from sim_engines.ic_chain import run_ic_chain as _run_ic_chain
+    _IC_CHAIN_OK = True
+except Exception:  # pragma: no cover - xraydb missing
+    _run_ic_chain = None
+    _IC_CHAIN_OK = False
+
 log = logging.getLogger("xafs-engine")
 
 # ---------------------------------------------------------------------------
@@ -341,9 +348,100 @@ def _calc_exafs_chi(k_arr, paths):
 # ---------------------------------------------------------------------------
 # Core XAFS computation (runs in executor)
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Normalization (shared by the synthetic path and the ion-chamber path)
+# ---------------------------------------------------------------------------
+def _normalize_mu(energies, mu_raw, e_start):
+    """Pre-edge subtraction + edge-step normalization.
+
+    Extracted verbatim from the original _compute_xafs normalization block so
+    the default path stays byte-identical; the ion-chamber measurement path
+    reuses the exact same logic on mu_obs = ln(I0/I1).
+    """
+    # Pre-edge: average below -30 eV
+    pre_mask = energies < (e_start + 20.0)
+    if pre_mask.sum() < 3:
+        pre_mask = energies < 0
+    pre_val = mu_raw[pre_mask].mean() if pre_mask.any() else mu_raw[0]
+
+    # Post-edge: average from +50 to +150 eV (the post-edge plateau)
+    post_mask = (energies > 50.0) & (energies < 150.0)
+    if post_mask.sum() < 3:
+        post_mask = energies > 50.0
+    post_val = mu_raw[post_mask].mean() if post_mask.any() else mu_raw[-1]
+
+    edge_step = post_val - pre_val
+    if abs(edge_step) < 1e-15:
+        edge_step = 1.0  # prevent division by zero
+
+    return (mu_raw - pre_val) / edge_step
+
+
+# ---------------------------------------------------------------------------
+# Ion-chamber measurement path (opt-in via params.ic;
+# design doc docs/tasks/TASK_XANES_IC_SIM.md section 3a)
+# ---------------------------------------------------------------------------
+def _apply_ic_measurement(energies, E_abs, mu_norm, ic_cfg, flux_in, e_start):
+    """Pass the noiseless spectrum through the I0/sample/I1 chamber chain.
+
+    Maps mu_norm -> sample optical thickness mu_t(E) = mut_pre +
+    delta_mut*mu_norm, runs ic_chain.run_ic_chain on the absolute energy
+    grid, and re-normalizes the observable mu_obs = ln((I0-dark)/(I1-dark))
+    with the engine's standard normalization path.
+
+    Returns:
+        (mu_obs_norm, ic_summary dict for the expt_result message)
+    """
+    if not _IC_CHAIN_OK:
+        raise RuntimeError("ic_chain unavailable (xraydb missing)")
+
+    sample = ic_cfg.get("sample") or {}
+    delta_mut = float(sample.get("delta_mut", 1.0))
+    mut_pre = float(sample.get("mut_pre", 0.8))
+    mu_t = mut_pre + delta_mut * mu_norm
+
+    dwell = ic_cfg.get("dwell_s", 1.0)
+    dwell = None if dwell is None else float(dwell)
+    dark = float(ic_cfg.get("dark_A", 1.0e-12))
+    seed = ic_cfg.get("seed", 42)
+
+    res = _run_ic_chain(
+        E_abs, mu_t, flux_in, dwell_s=dwell,
+        i0=ic_cfg.get("i0"), i1=ic_cfg.get("i1"),
+        dark0_A=dark, dark1_A=dark,
+        ratio_prefocus=float(ic_cfg.get("ratio_prefocus", 1.0)),
+        seed=seed)
+
+    mu_obs_norm = _normalize_mu(energies, res["mu_obs"], e_start)
+
+    meta = res["meta"]
+    ic_summary = {
+        "enabled": True,
+        "i0_A_range": [float(res["I0_A"].min()), float(res["I0_A"].max())],
+        "i1_A_range": [float(res["I1_A"].min()), float(res["I1_A"].max())],
+        "flux_at_sample_range": [float(res["flux_at_sample"].min()),
+                                 float(res["flux_at_sample"].max())],
+        "i0": meta["i0"],
+        "i1": meta["i1"],
+        "dwell_s": meta["dwell_s"],
+        "dark_A": dark,
+        "flux_in": float(np.max(flux_in)),
+        "ratio_prefocus": meta["ratio_prefocus"],
+        "seed": meta["seed"],
+        "delta_mut": delta_mut,
+        "mut_pre": mut_pre,
+        "mu_t_range": [float(mu_t.min()), float(mu_t.max())],
+        "chain_note": ("flux->air->I0(xraydb chain)->air->sample->air->I1; "
+                       "y = normalized mu_obs = ln((I0-dark)/(I1-dark)); "
+                       "Poisson noise on absorbed photons per dwell"),
+    }
+    return mu_obs_norm, ic_summary
+
+
 def _compute_xafs(formula, absorber, edge_type, e_start, e_end, e_step,
                   ppm, flux, sample_type,
-                  spot_h_nm=50.0, spot_v_nm=50.0, dcm_type="Si(111)"):
+                  spot_h_nm=50.0, spot_v_nm=50.0, dcm_type="Si(111)",
+                  ic_cfg=None, ic_flux=None):
     """Compute XAFS mu(E) spectrum with beamline-aware physics.
 
     Includes:
@@ -357,7 +455,8 @@ def _compute_xafs(formula, absorber, edge_type, e_start, e_end, e_step,
         mu_norm: numpy array of normalized mu(E)
         E0: edge energy in eV
         N: number of energy points
-        extra: dict with diagnostic info (dcm_fwhm_eV, sa_factor, noise_sigma)
+        extra: dict with diagnostic info (dcm_fwhm_eV, sa_factor, noise_sigma,
+            and 'ic' = ion-chamber summary dict when ic_cfg is given else None)
     """
     # --- Get edge energy from xraydb ---
     edge_info = _xraydb.xray_edge(absorber, edge_type)
@@ -415,23 +514,7 @@ def _compute_xafs(formula, absorber, edge_type, e_start, e_end, e_step,
     mu_raw = mu_bg + mu_signal
 
     # --- Normalize ---
-    # Pre-edge: average below -30 eV
-    pre_mask = energies < (e_start + 20.0)
-    if pre_mask.sum() < 3:
-        pre_mask = energies < 0
-    pre_val = mu_raw[pre_mask].mean() if pre_mask.any() else mu_raw[0]
-
-    # Post-edge: average from +50 to +150 eV (the post-edge plateau)
-    post_mask = (energies > 50.0) & (energies < 150.0)
-    if post_mask.sum() < 3:
-        post_mask = energies > 50.0
-    post_val = mu_raw[post_mask].mean() if post_mask.any() else mu_raw[-1]
-
-    edge_step = post_val - pre_val
-    if abs(edge_step) < 1e-15:
-        edge_step = 1.0  # prevent division by zero
-
-    mu_norm = (mu_raw - pre_val) / edge_step
+    mu_norm = _normalize_mu(energies, mu_raw, e_start)
 
     # --- Add EXAFS oscillations ---
     paths = _EXAFS_PATHS.get(absorber, [])
@@ -478,11 +561,25 @@ def _compute_xafs(formula, absorber, edge_type, e_start, e_end, e_step,
     # Scale relative to reference beam
     area_factor = max(beam_area_um2 / 0.0025, 0.01)
 
-    noise_sigma = 1.0 / math.sqrt(max(flux * ppm_scale * 1e-4 * area_factor, 1.0))
-    noise_sigma = min(noise_sigma, 0.02)  # cap noise level
-    rng = np.random.RandomState(42)
-    noise = rng.normal(0, noise_sigma, N) * 0.5
-    mu_norm += noise
+    ic_summary = None
+    if ic_cfg:
+        # --- Ion-chamber measurement chain (opt-in via params.ic) ---
+        # Replaces the synthetic noise: the observable becomes the
+        # normalized mu_obs = ln((I0-dark)/(I1-dark)) of the I0/I1 chain,
+        # applied after self-absorption + DCM broadening so the chambers
+        # measure the beamline-resolved spectrum. Poisson shot noise per
+        # dwell lives inside the chain (ic_chain.run_ic_chain).
+        mu_norm, ic_summary = _apply_ic_measurement(
+            energies, E_abs, mu_norm, ic_cfg,
+            ic_flux if ic_flux is not None else 1.0e11, e_start)
+        noise_sigma = 0.0  # synthetic noise not applied on this path
+    else:
+        # (default path -- UNCHANGED, byte-identical regression-checked)
+        noise_sigma = 1.0 / math.sqrt(max(flux * ppm_scale * 1e-4 * area_factor, 1.0))
+        noise_sigma = min(noise_sigma, 0.02)  # cap noise level
+        rng = np.random.RandomState(42)
+        noise = rng.normal(0, noise_sigma, N) * 0.5
+        mu_norm += noise
 
     extra = {
         "dcm_type": dcm_type,
@@ -490,6 +587,7 @@ def _compute_xafs(formula, absorber, edge_type, e_start, e_end, e_step,
         "sa_factor": sa_factor,
         "noise_sigma": noise_sigma,
         "beam_area_um2": beam_area_um2,
+        "ic": ic_summary,
     }
     return energies, mu_norm, float(E0), N, extra
 
@@ -535,6 +633,23 @@ class XAFSEngine(SimEngine):
         spot_v_nm = float(beamline.get("spot_v_nm", 50.0))
         # DCM type: default Si(111), could be extended to Si(311)
         dcm_type = params.get("dcm_type", "Si(111)")
+
+        # ── Ion-chamber measurement chain (opt-in, default off) ──
+        # params.ic: truthy dict enables the I0/I1 chain; ic.enabled=False
+        # (or ic absent) keeps the existing synthetic-noise behavior.
+        ic_cfg = params.get("ic") or None
+        if ic_cfg is True:
+            ic_cfg = {}
+        if isinstance(ic_cfg, dict) and not ic_cfg.get("enabled", True):
+            ic_cfg = None
+        if ic_cfg is not None and not _IC_CHAIN_OK:
+            log.warning("params.ic requested but ic_chain unavailable -- "
+                        "falling back to synthetic noise")
+            ic_cfg = None
+        ic_flux = None
+        if ic_cfg is not None:
+            # flux for the chain: ic override > beamline SSOT > 1e11 fallback
+            ic_flux = float(ic_cfg.get("flux", beamline.get("flux", 1e11)))
 
         # ── Validate absorber edge ──
         try:
@@ -592,6 +707,7 @@ class XAFSEngine(SimEngine):
                 spot_h_nm=spot_h_nm,
                 spot_v_nm=spot_v_nm,
                 dcm_type=dcm_type,
+                ic_cfg=ic_cfg, ic_flux=ic_flux,
             )
 
         try:
@@ -644,10 +760,15 @@ class XAFSEngine(SimEngine):
         if beamline_warning:
             info["beamline_warning"] = beamline_warning
             info["beamline_range_keV"] = [BL_E_MIN_EV / 1000, BL_E_MAX_EV / 1000]
-        await self.send_result(ws, "xafs",
-            data=data_all,
-            info=info,
-        )
+        # Ion-chamber summary: extra top-level 'ic' block + info.ic_enabled
+        # ONLY when the chain ran (legacy clients see an unchanged message
+        # when ic is off; {x,y} batch points are identical either way).
+        result_kwargs = {"data": data_all, "info": info}
+        ic_summary = extra.get("ic")
+        if ic_summary:
+            info["ic_enabled"] = True
+            result_kwargs["ic"] = ic_summary
+        await self.send_result(ws, "xafs", **result_kwargs)
 
         elapsed = time.time() - t0
         await self.send_done(ws, elapsed)

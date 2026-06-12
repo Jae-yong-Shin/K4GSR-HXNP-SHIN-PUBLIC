@@ -211,8 +211,85 @@ function icFluxFromCurrent(current_A, gas, length_cm, E_keV, opts) {
   };
 }
 
+/**
+ * Live IC1 chain at the beamline (uses state.* config + sampleFlux SSOT).
+ *
+ * Physics chain (the user's point: the current is generated from the flux
+ * that REACHES the chamber, i.e. AFTER the upstream air path):
+ *   flux_kbExit --air(before)--> [IC1: gas, length, pressure] --air(after)--> sample
+ *
+ * The engine's sampleFlux() models the vacuum/ideal delivery to the sample
+ * plane, so it is taken as the KB-exit flux and the air/IC losses are
+ * applied on top here (approximation documented; the IC/air segments are
+ * not yet part of the MC trace).
+ *
+ * @returns {Object|null} {fluxKbExit, fluxAtIC, current_A, T_airBefore,
+ *   T_ic, T_airAfter, fluxAfterIC, fluxAtSample, gas, lenCm, pressAtm,
+ *   airBeforeCm, airAfterCm, E_keV} or null when flux/energy unavailable.
+ */
+function icLiveChain() {
+  if (typeof state === 'undefined' || !state) return null;
+  var E = state.energy;
+  var fl = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+  if (!E || !fl) return null;
+  var gas = state.ic1Gas || 'N2';
+  var lenCm = (typeof state.ic1LenCm === 'number') ? state.ic1LenCm : 10;
+  var pAtm = (typeof state.ic1PressAtm === 'number') ? state.ic1PressAtm : 1.0;
+  var airB = (typeof state.ic1AirBeforeCm === 'number') ? state.ic1AirBeforeCm : 5;
+  var airA = (typeof state.ic1AirAfterCm === 'number') ? state.ic1AirAfterCm : 2;
+  // IC1 sits BETWEEN the KB slit (149.19 m) and KB-V (149.69 m), i.e.
+  // UPSTREAM of the KB focusing pair. The chamber therefore sees the
+  // pre-focus beam, which carries MORE flux than the focused sample spot
+  // (the KB pair only accepts ~9% and reflects with R^2). Scale the
+  // sample-plane SSOT back to the IC region using the MC element trace:
+  //   flux_IC_region = sampleFlux * T_cum(kbslit) / T_focused(sample).
+  // Falls back to ratio 1 (flagged approximate) before the first MC run.
+  var ratio = 1, ratioExact = false;
+  try {
+    if (typeof _mcSampleCache !== 'undefined' && _mcSampleCache &&
+        _mcSampleCache.elementTrace && _mcSampleCache.nTotal > 0 &&
+        _mcSampleCache.wSumFocused > 0) {
+      var tFoc = _mcSampleCache.wSumFocused / _mcSampleCache.nTotal;
+      for (var i = 0; i < _mcSampleCache.elementTrace.length; i++) {
+        var el = _mcSampleCache.elementTrace[i];
+        if (el.id === 'kbslit') {
+          if (el.T_cum > 0 && tFoc > 0) {
+            ratio = el.T_cum / tFoc;
+            ratioExact = true;
+          }
+          break;
+        }
+      }
+    }
+  } catch (_e) {}
+  var fluxICRegion = fl * ratio;
+  var tAirB = airB > 0 ? icTransmittedFraction('air', airB, E) : 1;
+  var tAirA = airA > 0 ? icTransmittedFraction('air', airA, E) : 1;
+  if (isNaN(tAirB)) tAirB = 1;
+  if (isNaN(tAirA)) tAirA = 1;
+  var fluxAtIC = fluxICRegion * tAirB;
+  var opts = { pressure_atm: pAtm };
+  var cur = icCurrent(fluxAtIC, gas, lenCm, E, opts);
+  var tIC = icTransmittedFraction(gas, lenCm, E, opts);
+  if (isNaN(tIC)) tIC = 1;
+  // The air/chamber losses upstream of the KB propagate to the sample:
+  // every photon lost before the KB is lost from the focused spot too.
+  var chainT = tAirB * tIC * tAirA;
+  return {
+    fluxICRegion: fluxICRegion, ratioPreFocus: ratio, ratioExact: ratioExact,
+    fluxAtIC: fluxAtIC, current_A: cur,
+    T_airBefore: tAirB, T_ic: tIC, T_airAfter: tAirA,
+    fluxAfterIC: fluxAtIC * tIC,
+    fluxAtSample: fl * chainT,
+    sampleFluxIdeal: fl,
+    gas: gas, lenCm: lenCm, pressAtm: pAtm,
+    airBeforeCm: airB, airAfterCm: airA, E_keV: E
+  };
+}
+
 // ESM bridge: expose module-scoped vars to globalThis
 if(typeof IC_W_VALUES!=="undefined")globalThis.IC_W_VALUES=IC_W_VALUES;
 if(typeof icCurrent!=="undefined")globalThis.icCurrent=icCurrent;
 if(typeof icFluxFromCurrent!=="undefined")globalThis.icFluxFromCurrent=icFluxFromCurrent;
 if(typeof icTransmittedFraction!=="undefined")globalThis.icTransmittedFraction=icTransmittedFraction;
+if(typeof icLiveChain!=="undefined")globalThis.icLiveChain=icLiveChain;

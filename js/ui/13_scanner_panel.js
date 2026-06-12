@@ -1376,7 +1376,7 @@ _nanoUpdateScanUI = function() {
   }
 };
 
-console.log('[V4.36] Nano scanner panel ready (with scan heatmap + mock mode)');
+console.log('[' + APP_VTAG + '] Nano scanner panel ready (with scan heatmap + mock mode)');
 
 // ESM bridge: expose module-scoped vars to globalThis
 if(typeof NANO_SCANNER!=="undefined")globalThis.NANO_SCANNER=NANO_SCANNER;

@@ -394,8 +394,15 @@ class MCS2Bridge:
             return {"ok": False, "error": f"unknown property: {property_name}",
                     "ch": ch}
 
+        # Try i64 first for properties that are typically i64 (velocity, accel, position)
+        i64_props = {"MOVE_VELOCITY", "MOVE_ACCELERATION", "POSITION",
+                     "RANGE_LIMIT_MIN", "RANGE_LIMIT_MAX",
+                     "LOGICAL_SCALE_OFFSET", "POSITION_OFFSET"}
         try:
-            ctl.SetProperty_i32(self.handle, ch, prop_attr, int(value))
+            if property_name in i64_props:
+                ctl.SetProperty_i64(self.handle, ch, prop_attr, int(value))
+            else:
+                ctl.SetProperty_i32(self.handle, ch, prop_attr, int(value))
             log.info("MCS2 ch%d set %s = %d", ch, property_name, value)
             return {"ok": True, "ch": ch,
                     "property": property_name, "value": value}
@@ -403,6 +410,112 @@ class MCS2Bridge:
             log.error("MCS2 ch%d set %s failed: %s", ch, property_name, e)
             return {"ok": False, "error": str(e),
                     "ch": ch, "property": property_name}
+
+    def move_raw(self, ch: int, value: int, secondary: int = 0) -> dict:
+        """Call ctl.Move(value, secondary) with the CURRENT MOVE_MODE.
+
+        Use case: open-loop scan/step. Set MOVE_MODE first via set_property,
+        then call this to move WITHOUT the implicit CL_ABSOLUTE override
+        that move_to() applies.
+
+        Args:
+            ch: Channel index
+            value: Move parameter (interpretation depends on MOVE_MODE).
+                   For SCAN_ABSOLUTE: 0-65535 DAC code mapping to piezo voltage.
+                   For STEP: signed step count.
+            secondary: 4th arg of ctl.Move:
+                   For CL_ABSOLUTE/RELATIVE: hold_time_ms (override)
+                   For SCAN_ABSOLUTE/RELATIVE: scan velocity in 65535/s units
+                       (0 = MAX velocity / instant ramp; e.g. 65535 = 1 full
+                       deflection per second; 6553 = ~10s ramp)
+                   For STEP: typically 0
+        """
+        if not self._connected:
+            return {"ok": False, "error": "not connected"}
+        try:
+            ctl.Move(self.handle, ch, int(value), int(secondary))
+            return {"ok": True, "ch": ch, "value": int(value),
+                    "secondary": int(secondary)}
+        except Exception as e:
+            return {"ok": False, "error": str(e), "ch": ch, "value": int(value)}
+
+    def get_property(self, ch: int, property_name: str) -> dict:
+        """Read an integer property from a channel.
+
+        Auto-tries i64 then i32 then string. Reports value + dtype.
+
+        Args:
+            ch: Channel index
+            property_name: Property name (e.g. "POSITIONER_TYPE",
+                           "RANGE_LIMIT_MIN", "MAX_CL_FREQUENCY")
+        """
+        if not self._connected:
+            return {"ok": False, "error": "not connected"}
+
+        prop_attr = getattr(ctl.Property, property_name, None)
+        if prop_attr is None:
+            return {"ok": False, "error": f"unknown property: {property_name}",
+                    "ch": ch}
+
+        last_err = None
+        # Try in order: i64, i32, str
+        for getter_name in ("GetProperty_i64", "GetProperty_i32",
+                            "GetProperty_s"):
+            getter = getattr(ctl, getter_name, None)
+            if getter is None:
+                continue
+            try:
+                val = getter(self.handle, ch, prop_attr)
+                return {"ok": True, "ch": ch, "property": property_name,
+                        "value": val, "dtype": getter_name.split("_")[-1]}
+            except Exception as e:
+                last_err = str(e)
+                continue
+        return {"ok": False, "ch": ch, "property": property_name,
+                "error": last_err or "no getter succeeded"}
+
+    def diagnostic(self, ch: int) -> dict:
+        """Read a comprehensive set of diagnostic properties for a channel.
+
+        Useful for comparing ch0 (working) vs ch1 (failing) configurations.
+        """
+        if not self._connected:
+            return {"ok": False, "error": "not connected"}
+
+        # Properties commonly relevant to closed-loop / range / sensor diagnostics.
+        # Each entry: (property_name, expected_dtype) where dtype is "i64", "i32" or "any"
+        props = [
+            "POSITIONER_TYPE",
+            "POSITION",
+            "RANGE_LIMIT_MIN",
+            "RANGE_LIMIT_MAX",
+            "POSITION_OFFSET",
+            "LOGICAL_SCALE_OFFSET",
+            "LOGICAL_SCALE_INVERSION",
+            "SAFE_DIRECTION",
+            "MOVE_VELOCITY",
+            "MOVE_ACCELERATION",
+            "HOLD_TIME",
+            "MAX_CL_FREQUENCY",
+            "SENSOR_POWER_MODE",
+            "POSITIONER_FAULT_REASON",
+            "AMPLIFIER_ENABLED",
+            "AMPLIFIER_MODE",
+            "MOVE_MODE",
+            "CHANNEL_STATE",
+            "CHANNEL_TYPE",
+            "POSITIONER_LOAD",
+            "POSITIONER_TYPE_NAME",
+            "REFERENCING_OPTIONS",
+        ]
+        out = {}
+        for p in props:
+            r = self.get_property(ch, p)
+            if r.get("ok"):
+                out[p] = r["value"]
+            else:
+                out[p] = f"ERR: {r.get('error', 'unknown')[:80]}"
+        return {"ok": True, "ch": ch, "diagnostic": out}
 
 
 # ── TCP Server ─────────────────────────────────────────────────
@@ -515,6 +628,21 @@ class BridgeServer:
             property_name = request.get("property", "")
             value = request.get("value", 0)
             return self.mcs2.set_property(ch, property_name, int(value))
+
+        elif cmd == "get_property":
+            ch = request.get("ch", 0)
+            property_name = request.get("property", "")
+            return self.mcs2.get_property(ch, property_name)
+
+        elif cmd == "diagnostic":
+            ch = request.get("ch", 0)
+            return self.mcs2.diagnostic(ch)
+
+        elif cmd == "move_raw":
+            ch = request.get("ch", 0)
+            value = request.get("value", 0)
+            secondary = request.get("secondary", 0)
+            return self.mcs2.move_raw(ch, int(value), int(secondary))
 
         else:
             return {"ok": False, "error": f"unknown command: {cmd}"}

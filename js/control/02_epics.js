@@ -8,6 +8,7 @@
 // ===== PV Registry -- maps every motor to an EPICS PV name =====
 var PV_REGISTRY = {};  // Built dynamically from MOTORS
 
+// Populate PV_REGISTRY from MOTORS (per-motor PV entry) plus a fixed set of ring/XBPM/IC status PVs.
 function buildPVRegistry() {
   if (typeof MOTORS === 'undefined') return;
   Object.keys(MOTORS).forEach(function(grp) {
@@ -56,6 +57,7 @@ function buildPVRegistry() {
 // ===== EPICS Connection State =====
 var _svHost = (typeof SERVER_HOST !== 'undefined') ? SERVER_HOST : 'localhost';
 var _svPort = (typeof SERVER_WS_PORT !== 'undefined') ? SERVER_WS_PORT : 8001;
+// Connection state: mode (disconnected/sim/real), PV+scan WebSocket URLs/sockets, SimIOC ref, reconnect, stats.
 var EPICS_STATE = {
   mode: 'disconnected',   // disconnected | sim | real
   wsUrl: 'ws://' + _svHost + ':' + _svPort + '/ws/pv',
@@ -219,8 +221,20 @@ SimIOC.prototype.scan = function() {
     self.pvs['BL10:XBPM2:SumAll:MeanValue_RBV'].value = cSum;
     self.pvs['BL10:XBPM2:PosX:MeanValue_RBV'].value = cSum > 0 ? ((cA+cD)-(cB+cC))/cSum : 0;
     self.pvs['BL10:XBPM2:PosY:MeanValue_RBV'].value = cSum > 0 ? ((cA+cB)-(cC+cD))/cSum : 0;
-    // Ion chamber current proportional to flux
-    self.pvs['BL10:IC1:Current'].value = photonFlux(state.energy) * 1.6e-19 * (1 + (Math.random() - 0.5) * 0.02);
+    // Ion chamber current via the A3 physics chain (js/optics/07_ion_chamber.js
+    // icLiveChain): upstream air attenuation -> gas/length/pressure from
+    // state.ic1* -> current. The current is generated from the flux that
+    // REACHES the chamber, not the raw sample-plane value.
+    var _ic1A = 0;
+    if (typeof icLiveChain === 'function') {
+      var _icc = icLiveChain();
+      if (_icc) _ic1A = _icc.current_A;
+    }
+    if (!_ic1A) {
+      var _ic1Flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+      _ic1A = _ic1Flux * 1.6e-19; // legacy placeholder fallback
+    }
+    self.pvs['BL10:IC1:Current'].value = _ic1A * (1 + (Math.random() - 0.5) * 0.02);
   }
 };
 
@@ -482,6 +496,7 @@ function connectEPICS(url) {
   }
 }
 
+// Reconnect the PV WebSocket with exponential backoff (1s*2^n capped 30s), up to maxReconnect attempts.
 function scheduleReconnect() {
   if (EPICS_STATE.reconnectAttempts >= EPICS_STATE.maxReconnect) {
     log('err', 'Max reconnect attempts reached');
@@ -493,6 +508,7 @@ function scheduleReconnect() {
   EPICS_STATE.reconnectTimer = setTimeout(function() { connectEPICS(); }, delay);
 }
 
+// Close PV WebSocket, cancel reconnect timer, reset connected/attempts, and tear down the scan connection.
 function disconnectEPICS() {
   if (EPICS_STATE.ws) { EPICS_STATE.ws.close(); EPICS_STATE.ws = null; }
   if (EPICS_STATE.reconnectTimer) { clearTimeout(EPICS_STATE.reconnectTimer); }
@@ -589,11 +605,13 @@ function connectScan(url) {
   }
 }
 
+// Close the Bluesky scan WebSocket and mark scanConnected false.
 function disconnectScan() {
   if (EPICS_STATE.scanWs) { EPICS_STATE.scanWs.close(); EPICS_STATE.scanWs = null; }
   EPICS_STATE.scanConnected = false;
 }
 
+// Apply an incoming PV value: resolve .RBV/limit-field suffixes, run initial-value guard, sync motor+UI, notify callbacks.
 function handlePVUpdate(pvName, value, severity, timestamp) {
   var reg = PV_REGISTRY[pvName];
   var basePV = pvName;
@@ -695,6 +713,7 @@ function epicsPut(pvName, value, opts) {
   return false;
 }
 
+// Read a PV value/severity/timestamp: via SimIOC.caget in sim mode, otherwise from the cached registry entry.
 function epicsGet(pvName) {
   if (EPICS_STATE.mode === 'sim' && EPICS_STATE.simIOC) {
     return EPICS_STATE.simIOC.caget(pvName);
@@ -710,6 +729,7 @@ function pvSubscribe(pvName, callback) {
   return false;
 }
 
+// Remove a callback from a registry entry's callbacks list for the named PV.
 function pvUnsubscribe(pvName, callback) {
   var reg = PV_REGISTRY[pvName];
   if (reg) { reg.callbacks = reg.callbacks.filter(function(cb) { return cb !== callback; }); }
@@ -808,6 +828,7 @@ function _pvLimitStatus(pvName) {
   return 'ok';
 }
 
+// Rebuild the PV monitor panel HTML: grouped rows with value, severity color, connect dot, HW/SIM and limit badges.
 function renderPVMonitor() {
   var el = document.getElementById('pvMonitorBody');
   if (!el) return;
@@ -987,6 +1008,7 @@ window._showPVDetailPopup = function(pvName) {
   }, 1000);
 };
 
+// In-place update one monitor row's value text and severity color without re-rendering the whole panel.
 function updatePVMonitorRow(pvName, value, severity) {
   var rowId = 'pvr_' + pvName.replace(/[:.]/g, '_');
   var row = document.getElementById(rowId);
@@ -1100,6 +1122,7 @@ var PV_ARCHIVE = {
   watching: []         // PVs currently being archived
 };
 
+// Begin 1Hz in-memory time-series sampling of a default watch list of operational PVs into PV_ARCHIVE.traces.
 function pvArchiveStart() {
   // Default watch list: key operational PVs
   PV_ARCHIVE.watching = [
@@ -1127,10 +1150,12 @@ function pvArchiveStart() {
   log('info', 'PV Archiver: tracking ' + PV_ARCHIVE.watching.length + ' PVs @ 1Hz');
 }
 
+// Stop the archiver sampling interval timer.
 function pvArchiveStop() {
   if (PV_ARCHIVE.timer) { clearInterval(PV_ARCHIVE.timer); PV_ARCHIVE.timer = null; }
 }
 
+// Export one PV's archived trace as a downloadable CSV of ISO timestamp and value rows.
 function pvArchiveExport(pvName) {
   var trace = PV_ARCHIVE.traces[pvName];
   if (!trace || !trace.length) { log('warn', 'No archive data for ' + pvName); return; }
@@ -1181,9 +1206,11 @@ setInterval(function() {
 //   stopPVLatencyLog()    -- stop and print summary
 //   window._pvLatencyLog  -- raw data array
 window.startPVLatencyLog = function() {
+  // Array of per-PV-update latency records (send/recv timestamps, send-to-recv ms) collected when logging is active.
   window._pvLatencyLog = [];
   console.log('[PV Latency] Logging started. Move some motors, then call stopPVLatencyLog()');
 };
+// Stop PV-update latency logging and print median/mean/min/max/P10/P90 of send-to-recv times to console.
 window.stopPVLatencyLog = function() {
   if (!window._pvLatencyLog || window._pvLatencyLog.length === 0) {
     console.log('[PV Latency] No data collected.');
@@ -1257,6 +1284,7 @@ function _handlePVDiscovered(pvs) {
   window._discoveredPVs = pvs;
 }
 
+// Assign a discovered hardware PV as a new motor axis on a chosen device, subscribe to it, close dialog when all done.
 function _pvDiscoverPlace(pvIdx, deviceId) {
   var pvs = window._discoveredPVs;
   if (!pvs || !pvs[pvIdx]) return;
@@ -1301,6 +1329,7 @@ function _pvDiscoverPlace(pvIdx, deviceId) {
   }
 }
 
+// Mark a discovered PV as ignored and close the discovery dialog once all PVs are placed or ignored.
 function _pvDiscoverIgnore(pvIdx) {
   var pvs = window._discoveredPVs;
   if (!pvs || !pvs[pvIdx]) return;
@@ -1310,6 +1339,7 @@ function _pvDiscoverIgnore(pvIdx) {
   if (allDone) _pvDiscoverClose();
 }
 
+// Remove the PV auto-discovery overlay dialog and clear the stored discovered-PV list.
 function _pvDiscoverClose() {
   var el = document.getElementById('pvDiscoverOverlay');
   if (el) el.remove();

@@ -288,10 +288,21 @@ class NanoScannerService:
                 None, self.picoscale.get_all_positions)
             mcs2_pos = await loop.run_in_executor(
                 None, self.mcs2.get_all_positions)
+            sensor_present = None
+            if self.picoscale and not getattr(
+                    self.picoscale, "mock_mode", False):
+                try:
+                    sensor_present = {
+                        str(k): v for k, v
+                        in self.picoscale.sensor_present_map().items()
+                    }
+                except Exception:
+                    sensor_present = None
             return {
                 "type": "nano_positions", "ok": True,
                 "picoscale_nm": {str(k): v for k, v in ps_pos.items()},
                 "mcs2_nm": {str(k): v for k, v in mcs2_pos.items()},
+                "sensor_present": sensor_present,
             }
         except Exception as e:
             return {"type": "nano_positions", "ok": False, "error": str(e)}

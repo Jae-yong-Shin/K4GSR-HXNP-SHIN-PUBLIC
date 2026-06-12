@@ -51,6 +51,7 @@ function drawSingleProfile(ctx, prof, x, y, w, h, color, label, fovNm) {
   ctx.fillText(label, x + 4, y + 10);
 }
 
+// Pick a round scale-bar length (1..5000 nm) nearest 0.3*FOV; return value plus label in nm or um.
 function niceScaleNm(fovNm) {
   var targets = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
   var ideal = fovNm * 0.3;
@@ -80,13 +81,15 @@ var EIGER2X = {
   roiData: null
 };
 
+// Generate a 512x512 Float64 frame for powder/single XRD or SAXS using lambda=12.3984/E and Poisson noise.
 function simulateEiger2X(technique, params) {
   var nx = EIGER2X.sensorSize[0], ny = EIGER2X.sensorSize[1];
   var img = new Float64Array(nx * ny);
   var E = state.energy;
   var lambda = 12.3984 / E;  // Angstrom
   var dwell = params.dwell || 1.0;  // seconds
-  var flux = typeof photonFlux === 'function' ? photonFlux(E) : 1e10;
+  var flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+  if (!flux) flux = 1e10;
 
   if (technique === 'xrd' || technique === 'powder_xrd') {
     // Powder XRD rings (Debye-Scherrer)
@@ -172,6 +175,7 @@ function simulateEiger2X(technique, params) {
   return img;
 }
 
+// Draw the detector frame as a log10(counts+1) viridis heatmap via _drawHeatmap2D, titling with max counts.
 function renderEigerImage(canvasId, img, nx, ny) {
   var cv = document.getElementById(canvasId);
   if (!cv) return;
@@ -202,6 +206,7 @@ function renderEigerImage(canvasId, img, nx, ny) {
   }
 }
 
+// Draw a Poisson random count for mean lambda; Gaussian approximation when lambda>100, else Knuth product method.
 function poissonSample(lambda) {
   if (lambda <= 0) return 0;
   if (lambda > 100) return Math.round(lambda + Math.sqrt(lambda) * gaussRand());
@@ -244,13 +249,22 @@ var XRF_LINES = {
   Pb: { Z: 82, La: 10.551, Lb: 12.614, yield: 0.950 }
 };
 
+// Build a 2048-channel XRF spectrum: Brems/Compton/elastic background plus Ka/Kb/La/Lb Gaussian lines, sqrt(E) resolution.
 function simulateSDD(sampleElements, dwell, excitationE) {
   var nCh = SDD_DETECTOR.channels;
   var eRange = SDD_DETECTOR.energyRange;
   var chWidth = eRange / nCh;  // keV per channel
   var spectrum = new Float64Array(nCh);
-  var flux = typeof photonFlux === 'function' ? photonFlux(excitationE || state.energy) : 1e10;
-  var E0 = excitationE || state.energy;
+  var _useE = excitationE || state.energy;
+  var flux = 0;
+  // sampleFlux() is keyed to state.energy; for off-state excitation energies
+  // (energy sweeps) fall through to photonFlux(_useE).
+  if ((!excitationE || excitationE === state.energy) && typeof sampleFlux === 'function') {
+    flux = sampleFlux();
+  }
+  if (!flux) { try { flux = photonFlux(_useE); } catch(e) { flux = 0; } }
+  if (!flux) flux = 1e10;
+  var E0 = _useE;
 
   // Background: Compton scatter + Bremsstrahlung
   for (var ch = 0; ch < nCh; ch++) {
@@ -299,6 +313,7 @@ function simulateSDD(sampleElements, dwell, excitationE) {
   return spectrum;
 }
 
+// Plot the SDD spectrum as log10 counts vs energy (keV) over its channel width via _drawChart1D.
 function renderSDDSpectrum(canvasId, spectrum, elements) {
   var cv = document.getElementById(canvasId);
   if (!cv) return;
@@ -387,7 +402,8 @@ function simulateXRFMap(params) {
         }
 
         // Simulate fluorescence counts
-        var flux = typeof photonFlux === 'function' ? photonFlux(state.energy) : 1e10;
+        var flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
+        if (!flux) flux = 1e10;
         var lines = XRF_LINES[el.symbol];
         var counts = flux * dwell * conc * (lines ? lines.yield : 0.3) * SDD_DETECTOR.solidAngle * 1e-6;
         var measured = poissonSample(Math.max(0, counts));
@@ -401,6 +417,7 @@ function simulateXRFMap(params) {
   return { maps: maps, totalMap: totalMap, nx: nx, ny: ny, xStart: xStart, xStop: xStop, yStart: yStart, yStop: yStop, elements: elements };
 }
 
+// Build canvases for the total and per-element maps then draw each as a colored heatmap after a 20ms timeout.
 function renderXRFMaps(containerId, result) {
   var container = document.getElementById(containerId);
   if (!container) return;
@@ -433,6 +450,7 @@ function renderXRFMaps(containerId, result) {
   }, 20);
 }
 
+// Reshape a flat nx*ny array to 2D and render via _drawHeatmap2D using a named colormap (red/green/blue/gold/viridis).
 function drawHeatmap(canvasId, data, nx, ny, colorScheme) {
   var cv = document.getElementById(canvasId);
   if (!cv) return;
@@ -485,7 +503,7 @@ var VIRTUAL_EXPERIMENTS = [
       '1. Set energy to Cu K-edge (8.979 keV)',
       '2. DCM automatically calculates Bragg angle',
       '3. IVU gap adjusts to optimal harmonic',
-      '4. Start XANES scan to collect mu(E) spectrum',
+      '4. Start XANES scan to collect µ(E) spectrum',
       '5. Sequentially measure Pre-edge -> Edge -> EXANES regions'
     ]
   },

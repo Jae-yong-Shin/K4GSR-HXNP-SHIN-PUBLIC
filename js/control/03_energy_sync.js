@@ -22,6 +22,7 @@
     else if(compId==='wbslit'){
       if(param==='h'){state.wbH=val;var e=document.getElementById('wbH');if(e)e.value=val;if(MOTORS.wbslit&&MOTORS.wbslit.hgap){MOTORS.wbslit.hgap.value=val;MOTORS.wbslit.hgap.target=val;}}
       else{state.wbV=val;var e2=document.getElementById('wbV');if(e2)e2.value=val;if(MOTORS.wbslit&&MOTORS.wbslit.vgap){MOTORS.wbslit.vgap.value=val;MOTORS.wbslit.vgap.target=val;}}
+      if(typeof updateHarmPanel==='function')updateHarmPanel();
     }
     else if(compId==='m1'){var s=document.getElementById('m1Slider');if(s)s.value=val;try{updateM1(val);}catch(e){}}
     else if(compId==='m2'){var s2=document.getElementById('m2Slider');if(s2)s2.value=val;try{updateM2(val);}catch(e){}}
@@ -158,7 +159,7 @@
   if (document.readyState === 'complete') setTimeout(_syncDCMToEnergy, 200);
   else window.addEventListener('load', function() { setTimeout(_syncDCMToEnergy, 500); });
 
-  console.log('[V4.36] Slider RT refresh + DCM energy sync ready');
+  console.log('[' + APP_VTAG + '] Slider RT refresh + DCM energy sync ready');
 })();
 
 // === WBSlit center offset + slit blade pseudo-motors ===
@@ -193,7 +194,7 @@
     if(m.inboard)m.inboard.value=hcen-hgap/2;
   };
 
-  console.log('[V4.36] WBSlit center + blade pseudo-motors ready');
+  console.log('[' + APP_VTAG + '] WBSlit center + blade pseudo-motors ready');
 })();
 
 // ESM bridge: expose module-scoped vars to globalThis

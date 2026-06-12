@@ -1,7 +1,7 @@
 'use strict';
 // ===== ui/08_theme_layout.js — Theme, Layout & MC Rays Settings =====
 // @module ui/08_theme_layout
-// @exports setMCGrid, setMCRays, setUILayout, setUITheme, toggleModeMenu
+// @exports setMCGrid, setMCRays, setPopupFontScale, setUILayout, setUITheme, toggleModeMenu
 // Extracted from 14_v435_final.js (DDD Phase 5b)
 // Provides: setUITheme, setUILayout, setMCRays, toggleModeMenu
 
@@ -24,6 +24,7 @@
 
   var curTheme = 'light';
   var curLayout = 'standard';
+  var curPopupFontScale = 1.0;
 
   function applyTheme(id) {
     THEMES.forEach(function(t) { document.body.classList.remove('theme-' + t.id); });
@@ -77,6 +78,38 @@
         '<div style="font-size:8px;color:var(--t3)">' + _t(r.descKey) + '</div></div></div>';
     });
 
+    // --- MC Compute Engine (A1: opt-in WebGPU, default CPU) ---
+    h += '<h5>MC Engine</h5>';
+    var _gpuOk = (typeof navigator !== 'undefined' && navigator.gpu);
+    var ENGINE_OPTS = [
+      {v:0, label:'CPU', desc:'reference engine (default)'},
+      {v:1, label:'GPU (beta)', desc:_gpuOk ? 'WebGPU source-to-M2 segment + CPU SSA/KB' : 'WebGPU not available in this browser'}
+    ];
+    ENGINE_OPTS.forEach(function(o) {
+      var cur = (typeof state !== 'undefined' && state.mcGpuEnabled) ? 1 : 0;
+      var act = (cur === o.v) ? ' active' : '';
+      h += '<div class="mode-opt' + act + '" onclick="setMCEngine(' + o.v + ')">' +
+        '<span class="dot"></span>' +
+        '<div><div style="font-weight:500">' + o.label + '</div>' +
+        '<div style="font-size:8px;color:var(--t3)">' + o.desc + '</div></div></div>';
+    });
+
+    // --- Popup Font Size ---
+    h += '<h5>' + _t('hdr_popupfont') + '</h5>';
+    var POPUP_FONT_OPTS = [
+      {v:1.0, label:'1x',   descKey:'popupfont_default'},
+      {v:1.5, label:'1.5x', descKey:'popupfont_large'},
+      {v:2.0, label:'2x',   descKey:'popupfont_xlarge'},
+      {v:3.0, label:'3x',   descKey:'popupfont_max'}
+    ];
+    POPUP_FONT_OPTS.forEach(function(p) {
+      var act = (Math.abs(curPopupFontScale - p.v) < 0.01) ? ' active' : '';
+      h += '<div class="mode-opt' + act + '" onclick="setPopupFontScale(' + p.v + ')">' +
+        '<span class="dot"></span>' +
+        '<div><div style="font-weight:500">' + p.label + '</div>' +
+        '<div style="font-size:8px;color:var(--t3)">' + _t(p.descKey) + '</div></div></div>';
+    });
+
     // --- Grid Resolution ---
     h += '<h5>' + _t('hdr_grid') + '</h5>';
     var GRID_OPTS = [
@@ -101,6 +134,22 @@
     log('info', 'MC rays \u2192 ' + n.toLocaleString());
     // Re-run simulation to reflect new ray count
     if (typeof updateOptics === 'function') updateOptics();
+  };
+
+  function applyPopupFontScale(v) {
+    curPopupFontScale = v;
+    try { document.documentElement.style.setProperty('--popup-font-scale', String(v)); } catch(e){}
+    try { localStorage.setItem('bl10_popupfont', String(v)); } catch(e){}
+    // Walk all open popup containers: data-popup-box + static .modal/.trend/.xbpm.
+    // walker forces inline font-size=(base*v)px on every descendant, beating
+    // existing inline px font-size at equal specificity.
+    try { if (typeof window._popupFontApplyAll === 'function') window._popupFontApplyAll(v); } catch(e){}
+    renderModeMenu();
+  }
+
+  window.setPopupFontScale = function(v) {
+    applyPopupFontScale(v);
+    if (typeof log === 'function') log('info', 'Popup font → ' + v + 'x');
   };
 
   window.setMCGrid = function(g) {
@@ -157,10 +206,25 @@
     if (savedR) { var nr = parseInt(savedR, 10); if (nr > 0) MC_NRAYS = nr; }
     var savedG = localStorage.getItem('bl10_mcgrid');
     if (savedG) { var ng = parseInt(savedG, 10); if (ng > 10) MC_GRID = ng; }
+    var savedPF = localStorage.getItem('bl10_popupfont');
+    if (savedPF) { var npf = parseFloat(savedPF); if (npf >= 0.5 && npf <= 5.0) applyPopupFontScale(npf); }
+    // Clean up legacy v4.37.9 key (popup-wide zoom was reverted)
+    try { localStorage.removeItem('bl10_popupzoom'); } catch(e){}
   } catch(e){}
 
+  // After DOM is ready, re-run walker so static popups (.trend-popup / .xbpm-popup /
+  // any .modal already in the document) pick up the restored scale even if the
+  // first call above ran before they existed in the tree.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      try { if (typeof window._popupFontApplyAll === 'function') window._popupFontApplyAll(curPopupFontScale); } catch(e){}
+    });
+  } else {
+    try { if (typeof window._popupFontApplyAll === 'function') window._popupFontApplyAll(curPopupFontScale); } catch(e){}
+  }
+
   renderModeMenu();
-  console.log('[V4.36] Theme & layout mode system loaded');
+  console.log('[' + APP_VTAG + '] Theme & layout mode system loaded');
 })();
 
 // ESM bridge: expose module-scoped vars to globalThis
@@ -169,3 +233,4 @@ if(typeof setMCRays!=="undefined")globalThis.setMCRays=setMCRays;
 if(typeof setUILayout!=="undefined")globalThis.setUILayout=setUILayout;
 if(typeof setUITheme!=="undefined")globalThis.setUITheme=setUITheme;
 if(typeof toggleModeMenu!=="undefined")globalThis.toggleModeMenu=toggleModeMenu;
+if(typeof setPopupFontScale!=="undefined")globalThis.setPopupFontScale=setPopupFontScale;

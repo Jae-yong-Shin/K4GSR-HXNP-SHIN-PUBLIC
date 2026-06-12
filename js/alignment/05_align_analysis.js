@@ -93,6 +93,7 @@ function _aatBuild(){
   h+='<details style="margin-top:8px">'
     +'<summary style="font-size:9px;color:var(--t3);cursor:pointer;user-select:none">Data Table</summary>'
     +'<div id="aatTable" style="max-height:200px;overflow-y:auto;margin-top:4px"></div></details>';
+  pop.setAttribute('data-popup-box','1');
   pop.innerHTML=h;ov.appendChild(pop);document.body.appendChild(ov);
   // Style title bar for drag-to-move
   var aatHdr=pop.firstElementChild;

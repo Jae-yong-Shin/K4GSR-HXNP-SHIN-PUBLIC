@@ -33,6 +33,7 @@
     }
   };
 
+  // Toggle the XBPM monitor popup open/closed: render cards, start/stop the periodic update timer, wire resize on first open.
   window.toggleXbpmPopup = function() {
     var el = document.getElementById('xbpmPopup');
     if (!el) return;
@@ -475,6 +476,7 @@
     _updateAttenDisplay();
   };
 
+  // Set one attenuator slot's material or thickness in state, refresh transmission/flux display, and rerun optics+layout.
   window.setAttenFilter = function(idx, key, val) {
     if (!state.attenFilters || !state.attenFilters[idx]) return;
     state.attenFilters[idx][key] = val;
@@ -493,8 +495,7 @@
     }
     var fluxEl = document.getElementById('attenFluxVal');
     if (fluxEl) {
-      var flux = 0;
-      try { flux = typeof photonFlux === 'function' ? photonFlux(E) : 0; } catch(e){}
+      var flux = (typeof sampleFlux === 'function') ? sampleFlux() : 0;
       var attFlux = flux * T;
       fluxEl.textContent = attFlux > 0 ? attFlux.toExponential(2) + ' ph/s' : '\u2014';
     }
@@ -543,7 +544,7 @@
     }, 600);
   });
 
-  console.log('[V4.36] XBPM popup + Attenuator system loaded');
+  console.log('[' + APP_VTAG + '] XBPM popup + Attenuator system loaded');
 })();
 
 // ESM bridge: expose module-scoped vars to globalThis

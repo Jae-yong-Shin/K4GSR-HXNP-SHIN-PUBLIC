@@ -47,6 +47,7 @@ class PSChannelInfo:
     index: int
     num_data_sources: int = 0
     data_source_names: List[str] = field(default_factory=list)
+    sensor_present: bool = True
 
 
 @dataclass
@@ -186,6 +187,30 @@ class PicoScaleController:
             self._channels.append(PSChannelInfo(ch, n_ds, names))
         log.info("PicoScale has %d channels", len(self._channels))
 
+        # Probe each channel for sensor presence.
+        # A channel with no laser head returns a constant cached value
+        # (e.g. 0.0 or a stale frozen number). 8 samples over ~0.24s:
+        # unique<=1 -> no sensor; unique>1 -> active interferometer signal.
+        import time as _time
+        for ch_info in self._channels:
+            samples = set()
+            for _ in range(8):
+                try:
+                    samples.add(si.GetValue_f64(
+                        self.handle, ch_info.index, 0))
+                except Exception:
+                    samples.add(None)
+                _time.sleep(0.03)
+            if len(samples) <= 1:
+                ch_info.sensor_present = False
+                log.warning(
+                    "PicoScale ch%d: NO sensor detected "
+                    "(constant readback)", ch_info.index)
+            else:
+                log.info(
+                    "PicoScale ch%d: sensor present (unique=%d/8)",
+                    ch_info.index, len(samples))
+
     def close(self):
         """Disconnect from PicoScale."""
         if self._streaming:
@@ -206,30 +231,47 @@ class PicoScaleController:
         """Get number of available channels."""
         return len(self._channels)
 
-    def get_position(self, channel: int) -> float:
+    def get_position(self, channel: int):
         """Get current position of a channel in nanometers.
 
         PicoScale natively measures in picometers. This method converts to nm.
+
+        Returns None if the channel has no sensor (laser head not attached).
 
         Args:
             channel: Channel index (0=X, 1=Y, 2=Z)
 
         Returns:
-            Position in nanometers (float)
+            Position in nanometers (float), or None if no sensor.
         """
         self._check_connected()
 
         if self._mock:
             return self._mock_positions.get(channel, 0.0)
 
+        if 0 <= channel < len(self._channels):
+            if not self._channels[channel].sensor_present:
+                return None
+
         # GetValue_f64(handle, channel, data_source) — returns meters (verified)
         value_m = si.GetValue_f64(self.handle, channel, 0)
         return value_m * 1e9  # m -> nm
 
     def get_all_positions(self) -> Dict[int, float]:
-        """Get positions of all channels in nanometers."""
-        return {ch.index: self.get_position(ch.index)
-                for ch in self._channels}
+        """Get positions of all channels in nanometers.
+
+        Channels with no sensor (sensor_present=False) are omitted.
+        """
+        out = {}
+        for ch in self._channels:
+            pos = self.get_position(ch.index)
+            if pos is not None:
+                out[ch.index] = pos
+        return out
+
+    def sensor_present_map(self) -> Dict[int, bool]:
+        """Map of channel index -> bool indicating sensor presence."""
+        return {ch.index: ch.sensor_present for ch in self._channels}
 
     # ── Streaming ────────────────────────────────────────────────
 

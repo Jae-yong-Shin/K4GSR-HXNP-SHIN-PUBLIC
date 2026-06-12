@@ -63,8 +63,8 @@ class PVStore:
         self._add_motor("BL10:WBS:Bot", -0.5, -25, 25, 1, "mm")
         self._add_motor("BL10:WBS:Inb", -1, -25, 25, 1, "mm")
         self._add_motor("BL10:WBS:Outb", 1, -25, 25, 1, "mm")
-        self._add_motor("BL10:WBS:Hgap", 2.0, 0.01, 48, 1, "mm")
-        self._add_motor("BL10:WBS:Vgap", 1.0, 0.01, 48, 1, "mm")
+        self._add_motor("BL10:WBS:Hgap", 1.2, 0.01, 48, 1, "mm")
+        self._add_motor("BL10:WBS:Vgap", 1.2, 0.01, 48, 1, "mm")
 
         # ── Attenuator (between WB Slit 27.8m and XBPM-WB 28.5m) ──
         self._add_motor("BL10:ATT:X", 0, -25, 25, 0.01, "mm")

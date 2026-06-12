@@ -38,6 +38,56 @@ window.setUIZoom = function(delta) {
   document.documentElement.style.setProperty('--rside-w', Math.round(baseW * nv) + 'px');
 };
 
+// ===== Popup Font Size Walker (v4.37.11) =====
+// Walks a popup root + all descendants. On first visit per element, the
+// computed font-size in px is captured into data-bfs (base font size). On
+// every call, inline font-size is set to (base * --popup-font-scale)px. This
+// works even when descendants have inline px font-size (we set inline too,
+// so specificity matches). Calling with scale=1 restores the original px.
+// Skipped tags: canvas/img/video/iframe/svg (text rendering does not apply).
+function _popupFontWalk(root, scale) {
+  if (!root || !root.querySelectorAll) return;
+  // Opt-out: popup author can set data-popup-fontscale="off" on the root to
+  // freeze font sizes. Used for fixed-size startup notices etc. whose box is
+  // sized for a specific amount of text and would overflow if fonts grew.
+  if (root.getAttribute && root.getAttribute('data-popup-fontscale') === 'off') return;
+  var elements = [root];
+  var children = root.querySelectorAll('*');
+  for (var i = 0; i < children.length; i++) elements.push(children[i]);
+  for (var j = 0; j < elements.length; j++) {
+    var el = elements[j];
+    if (!el || !el.style) continue;
+    var tag = (el.tagName || '').toLowerCase();
+    if (tag === 'canvas' || tag === 'img' || tag === 'video' || tag === 'iframe' || tag === 'svg') continue;
+    var base = el.getAttribute('data-bfs');
+    if (base === null || base === '') {
+      var cs = '';
+      try { cs = window.getComputedStyle(el).fontSize; } catch(e){}
+      var px = parseFloat(cs);
+      if (!isFinite(px) || px <= 0) continue;
+      base = String(px);
+      el.setAttribute('data-bfs', base);
+    }
+    var bp = parseFloat(base);
+    if (!isFinite(bp)) continue;
+    el.style.fontSize = (bp * scale).toFixed(3) + 'px';
+  }
+}
+
+window._popupFontApply = function(root) {
+  var scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--popup-font-scale')) || 1;
+  _popupFontWalk(root, scale);
+};
+
+window._popupFontApplyAll = function(scale) {
+  if (typeof scale !== 'number') {
+    scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--popup-font-scale')) || 1;
+  }
+  var sels = ['.modal', '.trend-popup', '.xbpm-popup', '[data-popup-box]'];
+  var found = document.querySelectorAll(sels.join(','));
+  for (var i = 0; i < found.length; i++) _popupFontWalk(found[i], scale);
+};
+
 // ===== Unified Popup Utility: Drag-to-Move + Edge Resize =====
 // Principle: All popups/UIs support (1) title bar drag-to-move (2) all-edge drag-to-resize
 // opts.dragEl — title bar element for drag-to-move (omit to disable move, resize only)
@@ -56,6 +106,10 @@ window._makePopupResizable = function(boxEl, opts) {
   if (!boxEl.style.position || boxEl.style.position === 'static') {
     boxEl.style.position = 'relative';
   }
+
+  // Tag as popup box so _popupFontApplyAll() picks it up; apply current scale.
+  boxEl.setAttribute('data-popup-box', '1');
+  try { window._popupFontApply && window._popupFontApply(boxEl); } catch(e){}
 
   // --- Helper: get CSS zoom factor (for coordinate correction) ---
   function getZoom() {

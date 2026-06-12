@@ -1,0 +1,62 @@
+{
+ "date": "2026-06-12",
+ "length_cm": 10.0,
+ "pressure_torr": 760.0,
+ "tolerance_reconciled": 0.02,
+ "conventions": {
+  "xafsmass": "single carrier, total-absorption energy deposit, Chantler tables, pairEnergy W",
+  "xraydb_ported": "both carriers, E*att_photo + Ec*att_incoh, Elam tables, ionization_potential W"
+ },
+ "rows": [
+  {
+   "gas": "N2",
+   "energy_eV": 7112.0,
+   "flux_per_uA_xafsmass": 383877947168.0528,
+   "flux_per_uA_xraydb": 125991199267.38571,
+   "raw_ratio": 3.0468631888594464,
+   "reconciled_ratio": 0.9970224955074746,
+   "W_xafsmass": 36,
+   "W_xraydb": 34.8
+  },
+  {
+   "gas": "N2",
+   "energy_eV": 8979.0,
+   "flux_per_uA_xafsmass": 617127732341.0948,
+   "flux_per_uA_xraydb": 200673365390.32297,
+   "raw_ratio": 3.075284710259085,
+   "reconciled_ratio": 0.9970334627619063,
+   "W_xafsmass": 36,
+   "W_xraydb": 34.8
+  },
+  {
+   "gas": "N2",
+   "energy_eV": 12000.0,
+   "flux_per_uA_xafsmass": 1156621848723.6294,
+   "flux_per_uA_xraydb": 370008845464.9368,
+   "raw_ratio": 3.125930265992072,
+   "reconciled_ratio": 0.9963865668613208,
+   "W_xafsmass": 36,
+   "W_xraydb": 34.8
+  },
+  {
+   "gas": "Ar",
+   "energy_eV": 8979.0,
+   "flux_per_uA_xafsmass": 27996992939.159237,
+   "flux_per_uA_xraydb": 11853302423.170681,
+   "raw_ratio": 2.361957194682815,
+   "reconciled_ratio": 0.993785315927036,
+   "W_xafsmass": 26,
+   "W_xraydb": 26.4
+  },
+  {
+   "gas": "Ar",
+   "energy_eV": 15000.0,
+   "flux_per_uA_xafsmass": 51741619413.29827,
+   "flux_per_uA_xraydb": 18970663471.936565,
+   "raw_ratio": 2.727454392401194,
+   "reconciled_ratio": 0.9947483310526362,
+   "W_xafsmass": 26,
+   "W_xraydb": 26.4
+  }
+ ]
+}

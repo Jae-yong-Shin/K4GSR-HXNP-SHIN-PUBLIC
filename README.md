@@ -39,7 +39,7 @@ This list reflects the current direction and may change without notice.
 
 ## Quick Start
 
-The physics simulation runs entirely in the browser: simply open `virtual_beamline_nanoprobe_V4_37_bundle.html` in Chrome or Edge for the standalone virtual mode (no installation required). The Python backend adds NLP chat, EPICS Soft IOC, Bluesky scans, and server-side virtual experiments.
+The physics simulation runs entirely in the browser: simply open `virtual_beamline_nanoprobe_V4_38_bundle.html` in Chrome or Edge for the standalone virtual mode (no installation required). The Python backend adds NLP chat, EPICS Soft IOC, Bluesky scans, and server-side virtual experiments.
 
 To run with the backend:
 
@@ -61,7 +61,7 @@ python server/server.py                        # Standalone
 python server/server.py --ca-bridge --bluesky  # Full mode (EPICS Soft IOC + Bluesky scans)
 ```
 
-Then open `virtual_beamline_nanoprobe_V4_37_bundle.html` in your browser (Chrome or Edge recommended).
+Then open `virtual_beamline_nanoprobe_V4_38_bundle.html` in your browser (Chrome or Edge recommended).
 
 To enable the NLP chat, copy `server/.env.example` to `server/.env` and set an NLP backend (see below).
 
@@ -214,8 +214,8 @@ The validation and benchmark artifacts referenced by the accompanying paper are 
 
 ```
 K4GSR-HXNP-SHIN-PUBLIC/
-├── virtual_beamline_nanoprobe_V4_37_bundle.html   # Main application (open in browser)
-├── virtual_beamline_nanoprobe_V4_37.html          # Source HTML (loads js/ modules; dev convenience)
+├── virtual_beamline_nanoprobe_V4_38_bundle.html   # Main application (open in browser)
+├── virtual_beamline_nanoprobe_V4_38.html          # Source HTML (loads js/ modules; dev convenience)
 ├── undulator_calculator_v2.html                   # Standalone undulator spectrum calculator
 ├── README.md                                      # This file
 ├── LICENSE                                        # Apache License 2.0
@@ -291,7 +291,7 @@ K4GSR-HXNP-SHIN-PUBLIC/
 - On Windows, some packages may need Visual C++ Build Tools
 
 ### Browser doesn't open automatically
-- Manually open `virtual_beamline_nanoprobe_V4_37_bundle.html` in Chrome or Edge
+- Manually open `virtual_beamline_nanoprobe_V4_38_bundle.html` in Chrome or Edge
 
 ## Roadmap
 

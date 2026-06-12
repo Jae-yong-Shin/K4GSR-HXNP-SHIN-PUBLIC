@@ -21,6 +21,15 @@ import time
 
 import numpy as np
 
+# scipy for beam-PSF Gaussian smoothing (spatial resolution = beam size)
+_SCIPY_OK = False
+try:
+    from scipy.ndimage import gaussian_filter
+    _SCIPY_OK = True
+except ImportError:
+    log_psf = logging.getLogger("xrf-engine")
+    log_psf.debug("scipy not available -- XRF maps will not be beam-blurred")
+
 from sim_engines.base import SimEngine
 from sim_engines.detectors import (
     SDD_SPEC, sdd_fwhm, sdd_efficiency, sdd_solid_angle,
@@ -28,6 +37,48 @@ from sim_engines.detectors import (
 )
 
 log = logging.getLogger("xrf-engine")
+
+
+def _block_average_to_grid(fine, xf, yf, x_pts, y_pts, step_um):
+    """Area-average a fine-grid field down to the scan-step grid.
+
+    Each output pixel (xi, yj) is the MEAN of all fine cells whose centres fall
+    in the step footprint [x-step/2, x+step/2) x [y-step/2, y+step/2). This is
+    the detector integrating fluorescence over the dwell footprint (block-mean),
+    not a point sample -- point-sampling a pre-blurred array would re-introduce
+    aliasing (a delta detector). Returns a (ny, nx) array.
+
+    The fine grid is uniform, so the per-axis bin index for each fine coordinate
+    is computed once and the 2D mean is done with two matrix multiplies against
+    sparse 0/1 averaging operators (fast: one pass per axis, no Python pixel
+    loop).
+    """
+    nx = len(x_pts)
+    ny = len(y_pts)
+    half = step_um / 2.0
+
+    def _avg_operator(coords_fine, centers):
+        # Build an (n_centers x n_fine) row-normalized 0/1 membership matrix:
+        # row j has 1/k for the k fine cells inside center j's footprint.
+        nfine = len(coords_fine)
+        ncen = len(centers)
+        op = np.zeros((ncen, nfine), dtype=np.float64)
+        for j in range(ncen):
+            lo = centers[j] - half
+            hi = centers[j] + half
+            idx = np.where((coords_fine >= lo) & (coords_fine < hi))[0]
+            if idx.size == 0:
+                idx = [int(np.argmin(np.abs(coords_fine - centers[j])))]
+                op[j, idx[0]] = 1.0
+            else:
+                op[j, idx] = 1.0 / idx.size
+        return op
+
+    ax = _avg_operator(xf, x_pts)   # (nx x nxf)
+    ay = _avg_operator(yf, y_pts)   # (ny x nyf)
+    # out[yj, xi] = sum_b sum_a ay[yj,b] * fine[b,a] * ax[xi,a]
+    return ay @ fine @ ax.T
+
 
 # ---------------------------------------------------------------------------
 # Optional library imports
@@ -338,6 +389,24 @@ class XRFEngine(SimEngine):
                 wt_frac = count * _atomic_mass(Z) / max(total_mass, 1.0)
                 el_ppm[el] = wt_frac * ppm
 
+        # Clamp the scan FOV to the practical nanoprobe limit. A ~50 nm beam can
+        # only usefully image tens of um; a full 300 um raster would be millions
+        # of points / hours. Larger requests are clamped and flagged.
+        _fov_clamp_note = ""
+        try:
+            from sim_engines.phantoms import MAX_FOV_UM as _MAX_FOV
+        except ImportError:
+            _MAX_FOV = 60.0
+        if scan_lx > _MAX_FOV or scan_ly > _MAX_FOV:
+            _orig = (scan_lx, scan_ly)
+            scan_lx = min(scan_lx, _MAX_FOV)
+            scan_ly = min(scan_ly, _MAX_FOV)
+            _fov_clamp_note = (
+                "FOV clamped from %.0fx%.0f to %.0fx%.0f um "
+                "(nanoprobe practical limit %.0f um)"
+                % (_orig[0], _orig[1], scan_lx, scan_ly, _MAX_FOV))
+            log.warning("2D-XRF: %s", _fov_clamp_note)
+
         # Build scan grid
         half_lx = scan_lx / 2.0
         half_ly = scan_ly / 2.0
@@ -389,15 +458,121 @@ class XRFEngine(SimEngine):
                 f"No excitable elements in '{formula}' at {energy_keV} keV")
             return
 
-        # ── Load phantom spatial maps (if preset) ──
+        # ── Form the measured map: (true sample * beam PSF) sampled at step ──
+        # A scanning-XRF image is NOT just a blurred copy of the sample. It is
+        # the true element distribution S convolved with the focused-beam
+        # intensity profile P (the PSF), then SAMPLED on the discrete scan-step
+        # grid:  I(xi,yj) = (S * P)(xi,yj)   [Dao et al., J. Anal. At. Spectrom.
+        # 2022, DOI 10.1039/D1JA00425E; Metallomics review PMC9226457].
+        # Blur (beam width, a convolution) and pixelation (scan step, a
+        # sampling) are INDEPENDENT operations. To reproduce both we:
+        #   (A) generate the phantom on a FINE grid (sub-beam, sub-step) so real
+        #       sub-step structure (44 nm IC lines, 25 nm Siemens spokes) exists;
+        #   (B) convolve that fine field with the beam Gaussian (FWHM = spot);
+        #   (C) area-average (block-mean = detector integration over the dwell
+        #       footprint) down to the nx x ny scan-step grid.
+        # Coarse step -> blocky/aliased pixels; step ~ beam -> pixelated + soft;
+        # fine step -> smooth blur disk ~ beam size. One pipeline, no per-regime
+        # fudge. The reported image stays nx x ny (the step grid).
+        beam_sigma_h = beam_sigma_v = 0.0
+        psf_applied = False   # did we actually convolve the beam PSF anywhere?
         phantom_maps = None
-        try:
-            from sim_engines.phantoms import phantom_spatial_maps
-            if preset_key:
-                phantom_maps = phantom_spatial_maps(
-                    preset_key, nx, ny, x_pts, y_pts, seed=42)
-        except ImportError:
-            log.debug("phantoms module not available, using simple spatial patterns")
+        if preset_key:
+            try:
+                from sim_engines.phantoms import phantom_spatial_maps
+            except ImportError:
+                phantom_spatial_maps = None
+                log.debug("phantoms module not available, using simple patterns")
+
+            if phantom_spatial_maps is not None:
+                spot_min_um = min(spot_h, spot_v) / 1000.0  # nm -> um
+                # Fine pitch: >= K samples across the smaller of step/beam
+                # (literature uses step < 1/4 spot, Dao 2022). Floor at 1 nm.
+                _K = 4
+                step_fine = max(min(step_um, spot_min_um) / _K, 1e-3)
+                # Performance cap: the phantom generators are O(N^2) Python
+                # loops, so bound the fine grid per axis. MAX_FINE = 1000 keeps
+                # generation ~1-3 s; the resulting oversampling (fine vs step)
+                # still resolves the beam well enough to show the
+                # pixelation<->blur transition. Larger fine grids only sharpen
+                # already-correct behaviour at a steep time cost.
+                MAX_FINE = 1000
+                # The fine grid must COVER every step footprint [c-step/2,
+                # c+step/2], not just [-half,+half]; otherwise the boundary row/
+                # column block-averages over fewer fine cells than the interior
+                # (an edge artifact). Anchor the fine span on the actual step-grid
+                # extent and pad half a step on each side so all footprints are
+                # fully tiled and every output pixel averages a uniform count.
+                half_step = step_um / 2.0
+                lo_x = float(x_pts[0]) - half_step
+                lo_y = float(y_pts[0]) - half_step
+                span_x = (float(x_pts[-1]) + half_step) - lo_x
+                span_y = (float(y_pts[-1]) + half_step) - lo_y
+                nxf = int(round(span_x / step_fine)) + 1
+                nyf = int(round(span_y / step_fine)) + 1
+                if max(nxf, nyf) > MAX_FINE:
+                    step_fine = max(span_x, span_y) / (MAX_FINE - 1)
+                    nxf = int(round(span_x / step_fine)) + 1
+                    nyf = int(round(span_y / step_fine)) + 1
+
+                # Beam sigma in STEP-grid pixels (used for the info dict and the
+                # step-grid blur safety net below).
+                beam_sigma_h = (spot_h / 1000.0 / step_um) / 2.355
+                beam_sigma_v = (spot_v / 1000.0 / step_um) / 2.355
+
+                if _SCIPY_OK and step_fine < step_um * 0.9:
+                    await self.send_progress(ws, 0.08,
+                        f"2D-XRF: rendering sample at {nxf}x{nyf} sub-beam grid "
+                        f"({step_fine*1000:.0f} nm) for {spot_h:.0f} nm beam...")
+                    # (A) fine-grid true sample, covering the full step footprint
+                    xf = lo_x + np.arange(nxf) * step_fine
+                    yf = lo_y + np.arange(nyf) * step_fine
+                    fine = phantom_spatial_maps(
+                        preset_key, nxf, nyf, xf, yf, seed=42)
+                    if fine:
+                        # (B) beam-PSF convolution on the FINE grid
+                        sig_h_f = (spot_h / 1000.0 / step_fine) / 2.355
+                        sig_v_f = (spot_v / 1000.0 / step_fine) / 2.355
+                        do_fine_blur = sig_h_f > 0.3 or sig_v_f > 0.3
+                        log.info("2D-XRF: fine grid %dx%d @ %.4f um, beam sigma "
+                                 "(%.1f,%.1f) fine-px; downsample -> %dx%d step",
+                                 nxf, nyf, step_fine, sig_h_f, sig_v_f, nx, ny)
+                        phantom_maps = {}
+                        for _sym, _m in fine.items():
+                            if do_fine_blur:
+                                _m = gaussian_filter(
+                                    _m, sigma=(sig_v_f, sig_h_f), mode="nearest")
+                            # (C) block-mean down to the step grid (detector
+                            # integrates fluorescence over each step footprint).
+                            phantom_maps[_sym] = _block_average_to_grid(
+                                _m, xf, yf, x_pts, y_pts, step_um)
+                        psf_applied = do_fine_blur
+
+                if phantom_maps is None:
+                    # Fallback (no scipy, or the MAX_FINE cap made the fine pitch
+                    # >= the step so there is nothing to oversample): generate
+                    # directly at the step grid. The beam PSF is then applied by
+                    # the safety net below.
+                    phantom_maps = phantom_spatial_maps(
+                        preset_key, nx, ny, x_pts, y_pts, seed=42)
+
+                # Beam-PSF safety net: NEVER silently drop the beam blur. If the
+                # fine-grid convolution was not applied -- the fallback path, or
+                # the MAX_FINE cap (large FOV) left the fine pitch coarser than
+                # the beam so sig_fine < 0.3 -- but the beam is still resolvable
+                # on the step grid, convolve the step-grid maps with the beam
+                # Gaussian (sigma in step pixels). This is the matched-/large-FOV
+                # regime the work order's blur fix targets.
+                if (_SCIPY_OK and phantom_maps is not None and not psf_applied
+                        and (beam_sigma_h > 0.3 or beam_sigma_v > 0.3)):
+                    log.info("2D-XRF: step-grid beam blur (sigma %.2f,%.2f step-px) "
+                             "-- fine-grid path skipped/capped",
+                             beam_sigma_h, beam_sigma_v)
+                    for _sym in list(phantom_maps.keys()):
+                        phantom_maps[_sym] = gaussian_filter(
+                            phantom_maps[_sym],
+                            sigma=(beam_sigma_v, beam_sigma_h), mode="nearest")
+                    psf_applied = True
 
         # ── Compute XRF signal per pixel ──
         all_maps = {info["sym"]: np.zeros((ny, nx)) for info in el_info}
@@ -539,9 +714,17 @@ class XRFEngine(SimEngine):
                 "ppm": ppm,
                 "nx": nx, "ny": ny,
                 "step_um": step_um,
+                "fov_um": [round(scan_lx, 4), round(scan_ly, 4)],
+                "fov_clamped": _fov_clamp_note or None,
                 "energy_keV": energy_keV,
                 "flux": flux,
                 "beam_nm": f"{spot_h:.0f}x{spot_v:.0f}",
+                "beam_blurred": bool(psf_applied),
+                "beam_sigma_px": [round(beam_sigma_h, 3), round(beam_sigma_v, 3)],
+                # Effective spatial resolution is limited by whichever is larger:
+                # the focused beam size or the scan step (Nyquist).
+                "effective_resolution_nm": round(
+                    max(spot_h, spot_v, step_um * 1000.0), 1),
                 "dwell_s": dwell,
                 "thickness_um": thickness_um,
                 "density": mat_density,

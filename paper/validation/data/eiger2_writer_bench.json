@@ -1,0 +1,1606 @@
+{
+ "title": "EIGER2 stream-writer benchmark (Phase-1 C2)",
+ "machine": {
+  "tag": "operations VM (testbed)",
+  "hostname": "ubuntu-base",
+  "kernel": "6.8.0-124-generic",
+  "cpus": 8,
+  "mem_MB": 15966,
+  "storage": {
+   "disk": "VM virtual disk /dev/xvda2 (ext4, ~/eiger2_eval)",
+   "tmpfs": "/dev/shm"
+  }
+ },
+ "date": "2026-06-12 15:57:07",
+ "python": "3.11.15",
+ "packages": {
+  "numpy": "2.4.6",
+  "h5py": "3.16.0",
+  "hdf5plugin": "6.0.0",
+  "pyzmq": "27.1.0"
+ },
+ "conventions": {
+  "GB": "1e9 bytes",
+  "raw_GBps": "uncompressed detector-data rate (spec-comparable)",
+  "comp_GBps": "actual bytes-to-storage rate",
+  "writer_window": "first frame recv -> file closed + fsync",
+  "aggregate_window": "max(t_end) - min(t_first) across writers"
+ },
+ "df_before": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/xvda2       98G   42G   52G  45% /\ntmpfs           7.8G     0  7.8G   0% /dev/shm",
+ "df_after": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/xvda2       98G   42G   52G  45% /\ntmpfs           7.8G     0  7.8G   0% /dev/shm",
+ "runs": [
+  {
+   "label": "null_bslz4",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 3000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "bslz4",
+    "encoding": "bs16-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 4.705,
+    "fps_limit": 0.0,
+    "send_window_s": 0.5549,
+    "send_fps": 5406.2,
+    "send_raw_GBps": 11.8043,
+    "send_comp_GBps": 2.5087,
+    "raw_bytes": 6550416000,
+    "comp_bytes": 1392129375,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "null",
+    "writers": 1,
+    "outdir": null,
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 0.57,
+     "frames": 3000,
+     "fps": 5263.3,
+     "raw_GBps": 11.4922,
+     "comp_GBps": 2.4424,
+     "raw_bytes": 6550416000,
+     "comp_bytes": 1392129375,
+     "frames_per_writer": [
+      3000
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 1
+      },
+      "file": null,
+      "file_bytes": 0,
+      "frames": 3000,
+      "raw_bytes": 6550416000,
+      "comp_bytes": 1392129375,
+      "t_first": 599784.575468964,
+      "t_end_eff": 599785.145455412,
+      "close_s": 0.0,
+      "window_s": 0.57,
+      "raw_GBps": 11.4922,
+      "comp_GBps": 2.4424,
+      "fps": 5263.3,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 0,
+       "ok": true
+      }
+     }
+    ],
+    "vds": null,
+    "errors": []
+   },
+   "du_bytes_before_delete": 4096
+  },
+  {
+   "label": "rate500_disk_bslz4",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 2500,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "bslz4",
+    "encoding": "bs16-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 4.705,
+    "fps_limit": 500.0,
+    "send_window_s": 4.9981,
+    "send_fps": 500.2,
+    "send_raw_GBps": 1.0921,
+    "send_comp_GBps": 0.2321,
+    "raw_bytes": 5458680000,
+    "comp_bytes": 1160107599,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "single",
+    "writers": 1,
+    "outdir": "/home/beamline/eiger2_eval/data",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 6.3119,
+     "frames": 2500,
+     "fps": 396.1,
+     "raw_GBps": 0.8648,
+     "comp_GBps": 0.1838,
+     "raw_bytes": 5458680000,
+     "comp_bytes": 1160107599,
+     "frames_per_writer": [
+      2500
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 2500,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 1
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_00.h5",
+      "file_bytes": 1160185251,
+      "frames": 2500,
+      "raw_bytes": 5458680000,
+      "comp_bytes": 1160107599,
+      "t_first": 599854.660694101,
+      "t_end_eff": 599860.9726390281,
+      "close_s": 1.318,
+      "window_s": 6.3119,
+      "raw_GBps": 0.8648,
+      "comp_GBps": 0.1838,
+      "fps": 396.1,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": null,
+    "errors": []
+   },
+   "du_bytes_before_delete": 1160189347
+  },
+  {
+   "label": "shard2_disk_bslz4",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 3000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "bslz4",
+    "encoding": "bs16-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 4.705,
+    "fps_limit": 0.0,
+    "send_window_s": 0.4569,
+    "send_fps": 6566.2,
+    "send_raw_GBps": 14.337,
+    "send_comp_GBps": 3.047,
+    "raw_bytes": 6550416000,
+    "comp_bytes": 1392129375,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "shard",
+    "writers": 2,
+    "outdir": "/home/beamline/eiger2_eval/data",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 1.1064,
+     "frames": 3000,
+     "fps": 2711.4,
+     "raw_GBps": 5.9203,
+     "comp_GBps": 1.2582,
+     "raw_bytes": 6550416000,
+     "comp_bytes": 1392129375,
+     "frames_per_writer": [
+      1450,
+      1550
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 2
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_00.h5",
+      "file_bytes": 672877034,
+      "frames": 1450,
+      "raw_bytes": 3166034400,
+      "comp_bytes": 672828394,
+      "t_first": 599799.303740931,
+      "t_end_eff": 599800.4098357171,
+      "close_s": 0.602,
+      "window_s": 1.1061,
+      "raw_GBps": 2.8624,
+      "comp_GBps": 0.6083,
+      "fps": 1310.9,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 1,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 2
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_01.h5",
+      "file_bytes": 719353003,
+      "frames": 1550,
+      "raw_bytes": 3384381600,
+      "comp_bytes": 719300981,
+      "t_first": 599799.303405005,
+      "t_end_eff": 599800.336983336,
+      "close_s": 0.5222,
+      "window_s": 1.0336,
+      "raw_GBps": 3.2744,
+      "comp_GBps": 0.6959,
+      "fps": 1499.6,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": {
+     "file": "/home/beamline/eiger2_eval/data/master_vds.h5",
+     "frames": 3000,
+     "build_s": 0.0545,
+     "verify": {
+      "checked": 4,
+      "ok": true
+     }
+    },
+    "errors": []
+   },
+   "du_bytes_before_delete": 1392515245
+  },
+  {
+   "label": "shard2_disk_none",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 1000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "none",
+    "encoding": "raw<",
+    "pool_frames": 8,
+    "compression_ratio": 1.0,
+    "fps_limit": 0.0,
+    "send_window_s": 0.7168,
+    "send_fps": 1395.0,
+    "send_raw_GBps": 3.046,
+    "send_comp_GBps": 3.046,
+    "raw_bytes": 2183472000,
+    "comp_bytes": 2183472000,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "shard",
+    "writers": 2,
+    "outdir": "/home/beamline/eiger2_eval/data",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 2.9533,
+     "frames": 1000,
+     "fps": 338.6,
+     "raw_GBps": 0.7393,
+     "comp_GBps": 0.7393,
+     "raw_bytes": 2183472000,
+     "comp_bytes": 2183472000,
+     "frames_per_writer": [
+      500,
+      500
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "raw<",
+       "compression": "none",
+       "est_comp_bytes": 2183472,
+       "nwriters": 2
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_00.h5",
+      "file_bytes": 1091746144,
+      "frames": 500,
+      "raw_bytes": 1091736000,
+      "comp_bytes": 1091736000,
+      "t_first": 599833.937169494,
+      "t_end_eff": 599836.19706267,
+      "close_s": 1.3676,
+      "window_s": 2.2599,
+      "raw_GBps": 0.4831,
+      "comp_GBps": 0.4831,
+      "fps": 221.2,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 1,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "raw<",
+       "compression": "none",
+       "est_comp_bytes": 2183472,
+       "nwriters": 2
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_01.h5",
+      "file_bytes": 1091746144,
+      "frames": 500,
+      "raw_bytes": 1091736000,
+      "comp_bytes": 1091736000,
+      "t_first": 599833.937784276,
+      "t_end_eff": 599836.8904753231,
+      "close_s": 2.0653,
+      "window_s": 2.9527,
+      "raw_GBps": 0.3697,
+      "comp_GBps": 0.3697,
+      "fps": 169.3,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": {
+     "file": "/home/beamline/eiger2_eval/data/master_vds.h5",
+     "frames": 1000,
+     "build_s": 0.0179,
+     "verify": {
+      "checked": 4,
+      "ok": true
+     }
+    },
+    "errors": []
+   },
+   "du_bytes_before_delete": 2183591496
+  },
+  {
+   "label": "shard2_shm_bslz4",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 3000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "bslz4",
+    "encoding": "bs16-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 4.705,
+    "fps_limit": 0.0,
+    "send_window_s": 0.4402,
+    "send_fps": 6814.6,
+    "send_raw_GBps": 14.8795,
+    "send_comp_GBps": 3.1623,
+    "raw_bytes": 6550416000,
+    "comp_bytes": 1392129375,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "shard",
+    "writers": 2,
+    "outdir": "/dev/shm/eiger2_eval",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 0.4633,
+     "frames": 3000,
+     "fps": 6475.8,
+     "raw_GBps": 14.1397,
+     "comp_GBps": 3.005,
+     "raw_bytes": 6550416000,
+     "comp_bytes": 1392129375,
+     "frames_per_writer": [
+      1500,
+      1500
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 2
+      },
+      "file": "/dev/shm/eiger2_eval/shard_00.h5",
+      "file_bytes": 695724665,
+      "frames": 1500,
+      "raw_bytes": 3275208000,
+      "comp_bytes": 695675625,
+      "t_first": 599805.544345178,
+      "t_end_eff": 599806.005212664,
+      "close_s": 0.0017,
+      "window_s": 0.4609,
+      "raw_GBps": 7.1066,
+      "comp_GBps": 1.5095,
+      "fps": 3254.7,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 1,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 2
+      },
+      "file": "/dev/shm/eiger2_eval/shard_01.h5",
+      "file_bytes": 696502790,
+      "frames": 1500,
+      "raw_bytes": 3275208000,
+      "comp_bytes": 696453750,
+      "t_first": 599805.541947054,
+      "t_end_eff": 599806.004979605,
+      "close_s": 0.0018,
+      "window_s": 0.463,
+      "raw_GBps": 7.0734,
+      "comp_GBps": 1.5041,
+      "fps": 3239.5,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": {
+     "file": "/dev/shm/eiger2_eval/master_vds.h5",
+     "frames": 3000,
+     "build_s": 0.0519,
+     "verify": {
+      "checked": 4,
+      "ok": true
+     }
+    },
+    "errors": []
+   },
+   "du_bytes_before_delete": 1392508667
+  },
+  {
+   "label": "shard4_disk_bslz4",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 3000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "bslz4",
+    "encoding": "bs16-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 4.705,
+    "fps_limit": 0.0,
+    "send_window_s": 0.3836,
+    "send_fps": 7820.1,
+    "send_raw_GBps": 17.075,
+    "send_comp_GBps": 3.6289,
+    "raw_bytes": 6550416000,
+    "comp_bytes": 1392129375,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "shard",
+    "writers": 4,
+    "outdir": "/home/beamline/eiger2_eval/data",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 1.122,
+     "frames": 3000,
+     "fps": 2673.7,
+     "raw_GBps": 5.838,
+     "comp_GBps": 1.2407,
+     "raw_bytes": 6550416000,
+     "comp_bytes": 1392129375,
+     "frames_per_writer": [
+      750,
+      750,
+      750,
+      750
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 4
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_00.h5",
+      "file_bytes": 348054542,
+      "frames": 750,
+      "raw_bytes": 1637604000,
+      "comp_bytes": 348026994,
+      "t_first": 599810.113832864,
+      "t_end_eff": 599811.230191332,
+      "close_s": 0.6902,
+      "window_s": 1.1164,
+      "raw_GBps": 1.4669,
+      "comp_GBps": 0.3118,
+      "fps": 671.8,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 1,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 4
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_01.h5",
+      "file_bytes": 348082075,
+      "frames": 750,
+      "raw_bytes": 1637604000,
+      "comp_bytes": 348054527,
+      "t_first": 599810.110955057,
+      "t_end_eff": 599811.232979144,
+      "close_s": 0.6951,
+      "window_s": 1.122,
+      "raw_GBps": 1.4595,
+      "comp_GBps": 0.3102,
+      "fps": 668.4,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 2,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 4
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_02.h5",
+      "file_bytes": 348014006,
+      "frames": 750,
+      "raw_bytes": 1637604000,
+      "comp_bytes": 347986458,
+      "t_first": 599810.11592596,
+      "t_end_eff": 599810.9702286749,
+      "close_s": 0.4339,
+      "window_s": 0.8543,
+      "raw_GBps": 1.9169,
+      "comp_GBps": 0.4073,
+      "fps": 877.9,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 3,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 4
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_03.h5",
+      "file_bytes": 348088944,
+      "frames": 750,
+      "raw_bytes": 1637604000,
+      "comp_bytes": 348061396,
+      "t_first": 599810.111357366,
+      "t_end_eff": 599811.1359674721,
+      "close_s": 0.5971,
+      "window_s": 1.0246,
+      "raw_GBps": 1.5983,
+      "comp_GBps": 0.3397,
+      "fps": 732.0,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": {
+     "file": "/home/beamline/eiger2_eval/data/master_vds.h5",
+     "frames": 3000,
+     "build_s": 0.0537,
+     "verify": {
+      "checked": 4,
+      "ok": true
+     }
+    },
+    "errors": []
+   },
+   "du_bytes_before_delete": 1392524783
+  },
+  {
+   "label": "shard4_disk_none",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 1000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "none",
+    "encoding": "raw<",
+    "pool_frames": 8,
+    "compression_ratio": 1.0,
+    "fps_limit": 0.0,
+    "send_window_s": 0.3115,
+    "send_fps": 3210.0,
+    "send_raw_GBps": 7.0089,
+    "send_comp_GBps": 7.0089,
+    "raw_bytes": 2183472000,
+    "comp_bytes": 2183472000,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "shard",
+    "writers": 4,
+    "outdir": "/home/beamline/eiger2_eval/data",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 3.2673,
+     "frames": 1000,
+     "fps": 306.1,
+     "raw_GBps": 0.6683,
+     "comp_GBps": 0.6683,
+     "raw_bytes": 2183472000,
+     "comp_bytes": 2183472000,
+     "frames_per_writer": [
+      250,
+      250,
+      250,
+      250
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "raw<",
+       "compression": "none",
+       "est_comp_bytes": 2183472,
+       "nwriters": 4
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_00.h5",
+      "file_bytes": 545876144,
+      "frames": 250,
+      "raw_bytes": 545868000,
+      "comp_bytes": 545868000,
+      "t_first": 599841.280444604,
+      "t_end_eff": 599842.5016603359,
+      "close_s": 0.7418,
+      "window_s": 1.2212,
+      "raw_GBps": 0.447,
+      "comp_GBps": 0.447,
+      "fps": 204.7,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 1,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "raw<",
+       "compression": "none",
+       "est_comp_bytes": 2183472,
+       "nwriters": 4
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_01.h5",
+      "file_bytes": 545876144,
+      "frames": 250,
+      "raw_bytes": 545868000,
+      "comp_bytes": 545868000,
+      "t_first": 599841.275602249,
+      "t_end_eff": 599843.996886646,
+      "close_s": 2.2207,
+      "window_s": 2.7213,
+      "raw_GBps": 0.2006,
+      "comp_GBps": 0.2006,
+      "fps": 91.9,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 2,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "raw<",
+       "compression": "none",
+       "est_comp_bytes": 2183472,
+       "nwriters": 4
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_02.h5",
+      "file_bytes": 545876144,
+      "frames": 250,
+      "raw_bytes": 545868000,
+      "comp_bytes": 545868000,
+      "t_first": 599841.27598957,
+      "t_end_eff": 599844.4557939239,
+      "close_s": 2.7,
+      "window_s": 3.1798,
+      "raw_GBps": 0.1717,
+      "comp_GBps": 0.1717,
+      "fps": 78.6,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 3,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "raw<",
+       "compression": "none",
+       "est_comp_bytes": 2183472,
+       "nwriters": 4
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_03.h5",
+      "file_bytes": 545876144,
+      "frames": 250,
+      "raw_bytes": 545868000,
+      "comp_bytes": 545868000,
+      "t_first": 599841.275573846,
+      "t_end_eff": 599844.542827058,
+      "close_s": 2.7856,
+      "window_s": 3.2673,
+      "raw_GBps": 0.1671,
+      "comp_GBps": 0.1671,
+      "fps": 76.5,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": {
+     "file": "/home/beamline/eiger2_eval/data/master_vds.h5",
+     "frames": 1000,
+     "build_s": 0.0178,
+     "verify": {
+      "checked": 4,
+      "ok": true
+     }
+    },
+    "errors": []
+   },
+   "du_bytes_before_delete": 2183603792
+  },
+  {
+   "label": "shard4_shm_bslz4",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 3000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "bslz4",
+    "encoding": "bs16-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 4.705,
+    "fps_limit": 0.0,
+    "send_window_s": 0.4738,
+    "send_fps": 6331.6,
+    "send_raw_GBps": 13.8249,
+    "send_comp_GBps": 2.9381,
+    "raw_bytes": 6550416000,
+    "comp_bytes": 1392129375,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "shard",
+    "writers": 4,
+    "outdir": "/dev/shm/eiger2_eval",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 0.5229,
+     "frames": 3000,
+     "fps": 5736.8,
+     "raw_GBps": 12.5261,
+     "comp_GBps": 2.6621,
+     "raw_bytes": 6550416000,
+     "comp_bytes": 1392129375,
+     "frames_per_writer": [
+      750,
+      750,
+      750,
+      750
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 4
+      },
+      "file": "/dev/shm/eiger2_eval/shard_00.h5",
+      "file_bytes": 348004705,
+      "frames": 750,
+      "raw_bytes": 1637604000,
+      "comp_bytes": 347977157,
+      "t_first": 599816.453491251,
+      "t_end_eff": 599816.9737315321,
+      "close_s": 0.0017,
+      "window_s": 0.5202,
+      "raw_GBps": 3.1478,
+      "comp_GBps": 0.6689,
+      "fps": 1441.6,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 1,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 4
+      },
+      "file": "/dev/shm/eiger2_eval/shard_01.h5",
+      "file_bytes": 348137359,
+      "frames": 750,
+      "raw_bytes": 1637604000,
+      "comp_bytes": 348109811,
+      "t_first": 599816.451505302,
+      "t_end_eff": 599816.973733969,
+      "close_s": 0.0018,
+      "window_s": 0.5222,
+      "raw_GBps": 3.1358,
+      "comp_GBps": 0.6666,
+      "fps": 1436.2,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 2,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 4
+      },
+      "file": "/dev/shm/eiger2_eval/shard_02.h5",
+      "file_bytes": 347971478,
+      "frames": 750,
+      "raw_bytes": 1637604000,
+      "comp_bytes": 347943930,
+      "t_first": 599816.454725573,
+      "t_end_eff": 599816.974111975,
+      "close_s": 0.0016,
+      "window_s": 0.5194,
+      "raw_GBps": 3.153,
+      "comp_GBps": 0.6699,
+      "fps": 1444.0,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     },
+     {
+      "writer": 3,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 4
+      },
+      "file": "/dev/shm/eiger2_eval/shard_03.h5",
+      "file_bytes": 348126025,
+      "frames": 750,
+      "raw_bytes": 1637604000,
+      "comp_bytes": 348098477,
+      "t_first": 599816.451171761,
+      "t_end_eff": 599816.973602395,
+      "close_s": 0.0016,
+      "window_s": 0.5224,
+      "raw_GBps": 3.1346,
+      "comp_GBps": 0.6663,
+      "fps": 1435.6,
+      "ended_via": "drain-idle",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": {
+     "file": "/dev/shm/eiger2_eval/master_vds.h5",
+     "frames": 3000,
+     "build_s": 0.0525,
+     "verify": {
+      "checked": 4,
+      "ok": true
+     }
+    },
+    "errors": []
+   },
+   "du_bytes_before_delete": 1392520827
+  },
+  {
+   "label": "single_disk_bslz4",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 3000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "bslz4",
+    "encoding": "bs16-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 4.705,
+    "fps_limit": 0.0,
+    "send_window_s": 0.9236,
+    "send_fps": 3248.3,
+    "send_raw_GBps": 7.0926,
+    "send_comp_GBps": 1.5074,
+    "raw_bytes": 6550416000,
+    "comp_bytes": 1392129375,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "single",
+    "writers": 1,
+    "outdir": "/home/beamline/eiger2_eval/data",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 2.2201,
+     "frames": 3000,
+     "fps": 1351.3,
+     "raw_GBps": 2.9505,
+     "comp_GBps": 0.6271,
+     "raw_bytes": 6550416000,
+     "comp_bytes": 1392129375,
+     "frames_per_writer": [
+      3000
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 1
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_00.h5",
+      "file_bytes": 1392221311,
+      "frames": 3000,
+      "raw_bytes": 6550416000,
+      "comp_bytes": 1392129375,
+      "t_first": 599788.725625018,
+      "t_end_eff": 599790.945709056,
+      "close_s": 1.2499,
+      "window_s": 2.2201,
+      "raw_GBps": 2.9505,
+      "comp_GBps": 0.6271,
+      "fps": 1351.3,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": null,
+    "errors": []
+   },
+   "du_bytes_before_delete": 1392225407
+  },
+  {
+   "label": "single_disk_bslz4_u32",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 1500,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint32",
+    "compression": "bslz4",
+    "encoding": "bs32-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 9.106,
+    "fps_limit": 0.0,
+    "send_window_s": 0.504,
+    "send_fps": 2976.3,
+    "send_raw_GBps": 12.9974,
+    "send_comp_GBps": 1.4273,
+    "raw_bytes": 6550416000,
+    "comp_bytes": 719335695,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "single",
+    "writers": 1,
+    "outdir": "/home/beamline/eiger2_eval/data",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 1.3168,
+     "frames": 1500,
+     "fps": 1139.2,
+     "raw_GBps": 4.9746,
+     "comp_GBps": 0.5463,
+     "raw_bytes": 6550416000,
+     "comp_bytes": 719335695,
+     "frames_per_writer": [
+      1500
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1500,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint32",
+       "encoding": "bs32-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 479557,
+       "nwriters": 1
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_00.h5",
+      "file_bytes": 719384735,
+      "frames": 1500,
+      "raw_bytes": 6550416000,
+      "comp_bytes": 719335695,
+      "t_first": 599849.622969875,
+      "t_end_eff": 599850.939729064,
+      "close_s": 0.7572,
+      "window_s": 1.3168,
+      "raw_GBps": 4.9746,
+      "comp_GBps": 0.5463,
+      "fps": 1139.2,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": null,
+    "errors": []
+   },
+   "du_bytes_before_delete": 719388831
+  },
+  {
+   "label": "single_disk_none",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 1000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "none",
+    "encoding": "raw<",
+    "pool_frames": 8,
+    "compression_ratio": 1.0,
+    "fps_limit": 0.0,
+    "send_window_s": 1.3253,
+    "send_fps": 754.5,
+    "send_raw_GBps": 1.6475,
+    "send_comp_GBps": 1.6475,
+    "raw_bytes": 2183472000,
+    "comp_bytes": 2183472000,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "single",
+    "writers": 1,
+    "outdir": "/home/beamline/eiger2_eval/data",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 2.9172,
+     "frames": 1000,
+     "fps": 342.8,
+     "raw_GBps": 0.7485,
+     "comp_GBps": 0.7485,
+     "raw_bytes": 2183472000,
+     "comp_bytes": 2183472000,
+     "frames_per_writer": [
+      1000
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "raw<",
+       "compression": "none",
+       "est_comp_bytes": 2183472,
+       "nwriters": 1
+      },
+      "file": "/home/beamline/eiger2_eval/data/shard_00.h5",
+      "file_bytes": 2183494336,
+      "frames": 1000,
+      "raw_bytes": 2183472000,
+      "comp_bytes": 2183472000,
+      "t_first": 599822.082132304,
+      "t_end_eff": 599824.999370736,
+      "close_s": 1.3388,
+      "window_s": 2.9172,
+      "raw_GBps": 0.7485,
+      "comp_GBps": 0.7485,
+      "fps": 342.8,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": null,
+    "errors": []
+   },
+   "du_bytes_before_delete": 2183498432
+  },
+  {
+   "label": "single_shm_bslz4",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 3000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "bslz4",
+    "encoding": "bs16-lz4<",
+    "pool_frames": 8,
+    "compression_ratio": 4.705,
+    "fps_limit": 0.0,
+    "send_window_s": 0.8025,
+    "send_fps": 3738.5,
+    "send_raw_GBps": 8.1629,
+    "send_comp_GBps": 1.7348,
+    "raw_bytes": 6550416000,
+    "comp_bytes": 1392129375,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "single",
+    "writers": 1,
+    "outdir": "/dev/shm/eiger2_eval",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 0.8474,
+     "frames": 3000,
+     "fps": 3540.0,
+     "raw_GBps": 7.7296,
+     "comp_GBps": 1.6427,
+     "raw_bytes": 6550416000,
+     "comp_bytes": 1392129375,
+     "frames_per_writer": [
+      3000
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 3000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "bs16-lz4<",
+       "compression": "bslz4",
+       "est_comp_bytes": 464043,
+       "nwriters": 1
+      },
+      "file": "/dev/shm/eiger2_eval/shard_00.h5",
+      "file_bytes": 1392221311,
+      "frames": 3000,
+      "raw_bytes": 6550416000,
+      "comp_bytes": 1392129375,
+      "t_first": 599794.748113299,
+      "t_end_eff": 599795.595562234,
+      "close_s": 0.002,
+      "window_s": 0.8474,
+      "raw_GBps": 7.7296,
+      "comp_GBps": 1.6427,
+      "fps": 3540.0,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": null,
+    "errors": []
+   },
+   "du_bytes_before_delete": 1392221371
+  },
+  {
+   "label": "single_shm_none",
+   "producer": {
+    "role": "producer",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "control_endpoint": "tcp://127.0.0.1:17712",
+    "frames": 1000,
+    "shape": [
+     1062,
+     1028
+    ],
+    "dtype": "uint16",
+    "compression": "none",
+    "encoding": "raw<",
+    "pool_frames": 8,
+    "compression_ratio": 1.0,
+    "fps_limit": 0.0,
+    "send_window_s": 1.0613,
+    "send_fps": 942.3,
+    "send_raw_GBps": 2.0574,
+    "send_comp_GBps": 2.0574,
+    "raw_bytes": 2183472000,
+    "comp_bytes": 2183472000,
+    "note": "send window = enqueue time on the PUSH socket; consumer-side write window is the authoritative throughput measure"
+   },
+   "writer": {
+    "role": "writer-bench",
+    "mode": "single",
+    "writers": 1,
+    "outdir": "/dev/shm/eiger2_eval",
+    "endpoint": "tcp://127.0.0.1:17711",
+    "fsync": true,
+    "aggregate": {
+     "window_s": 1.2669,
+     "frames": 1000,
+     "fps": 789.3,
+     "raw_GBps": 1.7234,
+     "comp_GBps": 1.7234,
+     "raw_bytes": 2183472000,
+     "comp_bytes": 2183472000,
+     "frames_per_writer": [
+      1000
+     ]
+    },
+    "per_writer": [
+     {
+      "writer": 0,
+      "ok": true,
+      "error": null,
+      "config": {
+       "nimages": 1000,
+       "shape": [
+        1062,
+        1028
+       ],
+       "dtype": "uint16",
+       "encoding": "raw<",
+       "compression": "none",
+       "est_comp_bytes": 2183472,
+       "nwriters": 1
+      },
+      "file": "/dev/shm/eiger2_eval/shard_00.h5",
+      "file_bytes": 2183494336,
+      "frames": 1000,
+      "raw_bytes": 2183472000,
+      "comp_bytes": 2183472000,
+      "t_first": 599828.904978773,
+      "t_end_eff": 599830.171920003,
+      "close_s": 0.0017,
+      "window_s": 1.2669,
+      "raw_GBps": 1.7234,
+      "comp_GBps": 1.7234,
+      "fps": 789.3,
+      "ended_via": "push-end",
+      "verify": {
+       "checked": 2,
+       "ok": true
+      }
+     }
+    ],
+    "vds": null,
+    "errors": []
+   },
+   "du_bytes_before_delete": 2183494396
+  }
+ ]
+}

@@ -218,7 +218,7 @@ function _installHistorySection() {
   window._handleHistoryResponse = _handleHistoryResponse;
   window._handleScanDataResponse = _handleScanDataResponse;
   window._handleH5Download = _handleH5Download;
-  log('info', '[V4.36] Server scan history integration installed');
+  log('info', '[' + APP_VTAG + '] Server scan history integration installed');
 }
 
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
@@ -229,7 +229,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   });
 }
 
-console.log('[V4.36] Server history module loaded');
+console.log('[' + APP_VTAG + '] Server history module loaded');
 })();
 
 // ESM bridge: expose module-scoped vars to globalThis

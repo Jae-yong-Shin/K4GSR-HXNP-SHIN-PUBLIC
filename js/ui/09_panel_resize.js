@@ -75,7 +75,7 @@
     });
   }
 
-  console.log('[V4.36] Panel resize handlers initialized (with proportional zoom)');
+  console.log('[' + APP_VTAG + '] Panel resize handlers initialized (with proportional zoom)');
 })();
 
 // === SVG Pan (click-drag + horizontal scrollbar) ===
@@ -188,5 +188,5 @@
     applyPan();
   }, 200);
 
-  console.log('[V4.36] SVG pan (drag + scrollbar + wheel) initialized');
+  console.log('[' + APP_VTAG + '] SVG pan (drag + scrollbar + wheel) initialized');
 })();

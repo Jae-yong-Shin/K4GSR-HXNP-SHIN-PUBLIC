@@ -11,13 +11,20 @@
 //   Focused beam:     #80f0c0 (mint)
 
 var D2R=Math.PI/180, R2D=180/Math.PI;
+// DCM crystal vertical offset in pixels (8); also drives the c1->c2 gap L = H_DCM_PX/sin(2*thetaB).
 var H_DCM_PX = 8;
 
+// Sky-blue hex '#60a0e0' used as the default stroke color for M1/M2 mirror glyphs.
 var COL_MIRROR='#60a0e0', COL_MIRROR_HL='#a0e0ff';
+// Purple hex '#b878e0' for DCM crystal glyphs and the dcm_between beam segment color.
 var COL_DCM='#b878e0', COL_DCM_FILL='#2a1840';
+// Amber hex '#ffa040' for the white (pre-mono) beam state and source line color.
 var COL_WB='#ffa040';
+// Emerald hex '#00d890' for the monochromatic (post-DCM) beam state segment color.
 var COL_MONO='#00d890', COL_MONO_DIM='rgba(0,216,144,.5)';
+// Warm-gold hex '#e0a050' for focus optics (KB/ZP/CRL) glyphs and the focus convergence dot.
 var COL_FOCUS='#e0a050', COL_FOCUS_FILL='#2a2010';
+// Mint hex '#80f0c0' for the focused-beam state (post focus optic) lines, glow, and highlight stroke.
 var COL_FOCUSED='#80f0c0';
 
 // ========== Visual position overrides ==========
@@ -27,6 +34,7 @@ var COL_FOCUSED='#80f0c0';
 // Default visual positions (user-tuned pixel layout for front-end optics)
 var DEFAULT_VISUAL_SX={wbslit:230,atten:286,xbpm_wb:363,m1:383,xbpm_m1:426,dcm:462,xbpm1:500,m2:536};
 
+// Seed state.visualSx from defaults, then overlay any user overrides parsed from localStorage 'bl_visualSx'.
 function loadVisualSx(){
   // Start from defaults, then overlay any user-saved overrides
   state.visualSx=Object.assign({},DEFAULT_VISUAL_SX);
@@ -37,9 +45,11 @@ function loadVisualSx(){
 }
 // Auto-load on script parse (before first renderLayout call)
 loadVisualSx();
+// Persist state.visualSx as JSON into localStorage key 'bl_visualSx', ignoring storage errors.
 function saveVisualSx(){
   try{localStorage.setItem('bl_visualSx',JSON.stringify(state.visualSx));}catch(e){}
 }
+// Restore state.visualSx to defaults, delete the localStorage override, re-render the layout, and log it.
 function resetVisualSx(){
   state.visualSx=Object.assign({},DEFAULT_VISUAL_SX);
   try{localStorage.removeItem('bl_visualSx');}catch(e){}
@@ -50,6 +60,7 @@ function resetVisualSx(){
 // ========== Drag system ==========
 var _drag=null; // {id, startMouseX, startSx, moved}
 
+// Convert a mouse event's client coords into SVG user coords via the #blSvg screen CTM (inverse e/a, f/d).
 function svgPt(evt){
   var svg=document.getElementById('blSvg');
   var ctm=svg.getScreenCTM();
@@ -122,6 +133,7 @@ var ICON_DRAG_LOCKED = false;
   else _attachCtx();
 })();
 
+// On mousedown: if locked open the component modal, else record drag start (id, mouse x, current sx) and bind move/up.
 function dragStart(evt,id){
   evt.preventDefault();
   evt.stopPropagation();
@@ -140,6 +152,7 @@ function dragStart(evt,id){
   document.addEventListener('mouseup',dragEnd);
 }
 
+// During drag: set moved once |dx|>2px, then write clamped pixel x (20..1160) to state.visualSx and re-render.
 function dragMove(evt){
   if(!_drag)return;
   evt.preventDefault();
@@ -152,6 +165,7 @@ function dragMove(evt){
   renderLayout();
 }
 
+// On mouseup: unbind handlers; if not moved open modal, else save positions, log, and console-dump DEFAULT_VISUAL_SX.
 function dragEnd(evt){
   if(!_drag)return;
   document.removeEventListener('mousemove',dragMove);
@@ -330,6 +344,7 @@ function _svgSource(x,yT,yS){
          '<line x1="'+x+'" y1="'+(yS-8)+'" x2="'+x+'" y2="'+(yS+8)+'" stroke="'+COL_WB+'" stroke-width="2" opacity=".6"/>'
   };
 }
+// Return top/side SVG for a mask/shutter as a 6x20px slab, gray for 'mask' else tan, centered on the beam y.
 function _svgMask(x,tyC,syC,tp){
   var mc=tp==='mask'?'#808080':'#a08060';
   return {
@@ -337,6 +352,7 @@ function _svgMask(x,tyC,syC,tp){
     side:'<rect x="'+(x-3)+'" y="'+(syC-10)+'" width="6" height="20" rx="1" fill="var(--s3)" stroke="'+mc+'" stroke-width=".7"/>'
   };
 }
+// Return top/side SVG for a slit as two 6x7px jaws above/below the beam y, stroke color overridable (default amber).
 function _svgSlit(x,tyC,syC,color){
   var sc=color||'var(--am)';
   return {
@@ -345,6 +361,33 @@ function _svgSlit(x,tyC,syC,color){
     side:'<rect x="'+(x-3)+'" y="'+(syC-11)+'" width="6" height="7" rx="1" fill="var(--s3)" stroke="'+sc+'" stroke-width=".8"/>'+
          '<rect x="'+(x-3)+'" y="'+(syC+4)+'" width="6" height="7" rx="1" fill="var(--s3)" stroke="'+sc+'" stroke-width=".8"/>'
   };
+}
+// Ion-chamber SVG: gas-filled chamber box with two parallel HV collection
+// plates above/below the beam, an HV lead on top, and the beam passing
+// through (transmissive device). Width 18px, centered on the beam y.
+function _svgIC(x,tyC,syC){
+  function one(yC){
+    return '' +
+      // chamber body (gas volume, slightly translucent green fill)
+      '<rect x="'+(x-9)+'" y="'+(yC-12)+'" width="18" height="24" rx="2" ' +
+        'fill="rgba(64,216,154,0.10)" stroke="var(--gn)" stroke-width="1"/>' +
+      // HV collection plates (top anode / bottom cathode)
+      '<rect x="'+(x-7)+'" y="'+(yC-9)+'" width="14" height="2.5" rx="0.5" ' +
+        'fill="var(--am)" opacity="0.9"/>' +
+      '<rect x="'+(x-7)+'" y="'+(yC+6.5)+'" width="14" height="2.5" rx="0.5" ' +
+        'fill="var(--am)" opacity="0.9"/>' +
+      // HV lead wire + terminal dot on top
+      '<line x1="'+x+'" y1="'+(yC-12)+'" x2="'+x+'" y2="'+(yC-17)+'" ' +
+        'stroke="var(--am)" stroke-width="1"/>' +
+      '<circle cx="'+x+'" cy="'+(yC-18)+'" r="1.6" fill="var(--am)"/>' +
+      // beam passes through (transmissive): dashed beam segment inside
+      '<line x1="'+(x-9)+'" y1="'+yC+'" x2="'+(x+9)+'" y2="'+yC+'" ' +
+        'stroke="var(--ac)" stroke-width="1.2" stroke-dasharray="2,1.5" opacity="0.85"/>' +
+      // ionization hint: two tiny +/- marks between the plates
+      '<text x="'+(x-5)+'" y="'+(yC-2.5)+'" font-size="5" fill="var(--am)" opacity="0.8">+</text>' +
+      '<text x="'+(x+2)+'" y="'+(yC+5.5)+'" font-size="5" fill="var(--am)" opacity="0.8">-</text>';
+  }
+  return { top: one(tyC), side: one(syC) };
 }
 // Generic mirror SVG. deflView='top'(default) or 'side' controls which view shows pitch tilt.
 function _svgMirror(x,tyC,syC,rot,col,colHL,colFill,deflView){
@@ -361,6 +404,7 @@ function _svgMirror(x,tyC,syC,rot,col,colHL,colFill,deflView){
   }
   return {top:tiltLine, side:flatS};
 }
+// Return DCM SVG: top draws two tilted purple crystal lines from dcm_c1/c2 nodes; side draws a labeled Si box.
 function _svgDcm(x,syC,nodes){
   // Find DCM crystal nodes for top view
   var c1n=null,c2n=null;
@@ -379,6 +423,7 @@ function _svgDcm(x,syC,nodes){
          '<text x="'+x+'" y="'+(syC+4)+'" text-anchor="middle" fill="'+COL_DCM+'" font-size="8" font-family="var(--mn)">Si</text>'
   };
 }
+// Return top/side SVG for a beam position monitor: a green ring with horizontal/vertical crosshair lines.
 function _svgBpm(x,tyC,syC){
   return {
     top:'<circle cx="'+x+'" cy="'+tyC+'" r="4.5" fill="none" stroke="var(--gn)" stroke-width=".8"/>'+
@@ -389,6 +434,7 @@ function _svgBpm(x,tyC,syC){
          '<line x1="'+x+'" y1="'+(syC-3)+'" x2="'+x+'" y2="'+(syC+3)+'" stroke="var(--gn)" stroke-width=".5"/>'
   };
 }
+// Return top/side SVG for an attenuator drawn as a steel disc with absorber spokes and a small central aperture.
 function _svgAtten(x,tyC,syC){
   var ac='#6890b0';
   var body='<circle cx="'+x+'" cy="__Y__" r="8" fill="#1a2030" stroke="'+ac+'" stroke-width="1"/>'+
@@ -415,6 +461,7 @@ function _svgAtten(x,tyC,syC){
          '<circle cx="'+x+'" cy="'+syC+'" r="2.5" fill="#0c111a" stroke="'+ac+'" stroke-width=".5"/>'
   };
 }
+// Return KB-V optic SVG: if KB, a focus-colored side-deflecting mirror at rot=-90+pitch; else ZP rings or CRL lens stack.
 function _svgKbv(x,tyC,syC,isKB,fm,pitch){
   pitch=pitch||0;
   if(isKB){
@@ -445,12 +492,14 @@ function _svgKbv(x,tyC,syC,isKB,fm,pitch){
   }
   return {top:ti,side:si};
 }
+// Return KB-H optic SVG as a focus-colored top-view-deflecting mirror tilted to rot=-90+pitch (degrees).
 function _svgKbh(x,tyC,syC,pitch){
   pitch=pitch||0;
   // KB-H: same mirror shape as M1/M2, focus color, deflects in top view
   var rot=-90+pitch;
   return _svgMirror(x,tyC,syC,rot,COL_FOCUS,COL_FOCUSED,'#1a2a20','top');
 }
+// Return top/side SVG for the sample as a 12x12px pink-stroked square with a faint center dot at the beam y.
 function _svgSample(x,tyC,syC){
   return {
     top:'<rect x="'+(x-6)+'" y="'+(tyC-6)+'" width="12" height="12" rx="2" fill="#2a2020" stroke="var(--pk)"/>'+
@@ -459,6 +508,7 @@ function _svgSample(x,tyC,syC){
          '<circle cx="'+x+'" cy="'+syC+'" r="2.5" fill="var(--pk)" opacity=".5"/>'
   };
 }
+// Return top/side SVG for the detector as a 16x28px purple-stroked panel centered on the beam y.
 function _svgDet(x,tyC,syC){
   return {
     top:'<rect x="'+(x-8)+'" y="'+(tyC-14)+'" width="16" height="28" rx="2" fill="#1a1a30" stroke="var(--pr)"/>',
@@ -472,6 +522,7 @@ function renderDeviceSVG(c,x,tyC,syC,yT,nodes,isKB,fm){
   switch(c.tp){
     case 'source': return _svgSource(x,yT,syC);
     case 'mask': case 'shutter': return _svgMask(x,tyC,syC,c.tp);
+    case 'ic': return _svgIC(x,tyC,syC);
     case 'slit': return _svgSlit(x,tyC,syC,svgOpt.colorOverride);
     case 'hmirror':{
       var pitch=0; var opt=c.optics||{};

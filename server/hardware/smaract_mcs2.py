@@ -140,6 +140,44 @@ class MCS2Controller:
 
             self._connected = True
 
+            # --- Auto-enable amplifier on calibrated channels with sensor ---
+            # SmarAct MCS2 boots with AMPLIFIER_ENABLED=False. Without this
+            # step, every move command "succeeds" at the SDK level but the
+            # piezo never receives drive voltage → no motion. This was a
+            # recurring "motor control not working" issue (2026-05-21).
+            # Skip channels without sensor (e.g. ch2) — amp enable on those
+            # is unnecessary and can leave them in an odd state.
+            for ch_info in self._channels:
+                if not ch_info.sensor_present:
+                    continue
+                try:
+                    resp = self._send_cmd({
+                        "cmd": "set_property",
+                        "ch": ch_info.index,
+                        "property": "AMPLIFIER_ENABLED",
+                        "value": 1,
+                    })
+                    if resp.get("ok"):
+                        log.info("MCS2 ch%d AMPLIFIER_ENABLED=1 (auto)",
+                                 ch_info.index)
+                    else:
+                        log.warning(
+                            "MCS2 ch%d amp enable failed: %s",
+                            ch_info.index, resp.get("error"))
+                except Exception as ee:
+                    log.warning(
+                        "MCS2 ch%d amp enable exception: %s",
+                        ch_info.index, ee)
+
+            # Clear any movement_failed flag carried over from prior session
+            for ch_info in self._channels:
+                if not ch_info.sensor_present:
+                    continue
+                try:
+                    self._send_cmd({"cmd": "stop", "ch": ch_info.index})
+                except Exception:
+                    pass
+
         except Exception as e:
             log.error("MCS2 bridge connection failed: %s", e)
             self._cleanup_socket()

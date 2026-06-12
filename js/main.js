@@ -22,6 +22,9 @@ import './optics/02_crystal.js';
 import './optics/02b_crystal_psi_tables.js';
 import './optics/03_reflectivity.js';
 import './optics/04_source.js';
+import './optics/divergence_lookup.js';
+import './optics/divergence_gpu.js';
+import './optics/06_source_optics_table.js';
 
 // Tier 1B: Control (depends on shared)
 import './control/01_motors.js';

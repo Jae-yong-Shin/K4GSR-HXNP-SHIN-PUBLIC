@@ -1,11 +1,21 @@
 'use strict';
 // ===== shared/01_constants.js — Ring, IVU, Crystal, Material Constants + State =====
 // @module shared/01_constants
+// @exports APP_VERSION, APP_VTAG
 // @exports E_RING, I_RING, EMIT_X, EMIT_Y, BETA_X, BETA_Y, E_SPREAD, GAMMA_E
 // @exports SIG_EX, SIG_EXP, SIG_EY, SIG_EYP, N_PERIODS, LAMBDA_U, LAMBDA_U_M, L_UND
 // @exports HC, FIXED_EXIT, D_SI, R_E_A, NA, V_SI, RH, PT
 // @exports state, CD, pos, gaussRand, xbpmZone, recalcElectronBeam, log
 // Extracted from 02_physics.js (DDD Phase 2)
+
+// ===== Application version (single source of truth) =====
+// Bump per CHANGELOG.md / Versioning Policy. ALL log/console output that needs to
+// mention the app version must reference APP_VERSION / APP_VTAG here, never a
+// hard-coded literal. preflight_deploy.py enforces this (no "v4.NN"/"V4.NN" literals
+// allowed under js/ outside this file). MINOR+ bump procedure (CLAUDE.md "버전 관리"):
+// change this line, rename bundle pair, run preflight, commit, deploy.
+var APP_VERSION = '4.38.5';
+var APP_VTAG = 'v' + APP_VERSION;  // for log prefixes like '[v4.37.4]'
 
 // ===== Server Connection Config =====
 // Auto-detect: when loaded from server, use same host. Override with ?server=xxx.
@@ -21,11 +31,13 @@ var E_RING=4.0, I_RING=400, I_RING_A=0.4, GAMMA_E=E_RING*1e3/0.511;
 var EMIT_X=62e-12, EMIT_Y=6.2e-12, BETA_X=6.334, BETA_Y=2.841, E_SPREAD=1.20e-3;
 var SIG_EX=Math.sqrt(EMIT_X*BETA_X), SIG_EXP=Math.sqrt(EMIT_X/BETA_X);
 var SIG_EY=Math.sqrt(EMIT_Y*BETA_Y), SIG_EYP=Math.sqrt(EMIT_Y/BETA_Y);
+// Recompute derived e-beam values from current ring params: I_RING_A=I_RING/1000, GAMMA_E, and beam sigmas sqrt(EMIT*BETA) / sqrt(EMIT/BETA).
 function recalcElectronBeam(){
   I_RING_A=I_RING/1000; GAMMA_E=E_RING*1e3/0.511;
   SIG_EX=Math.sqrt(EMIT_X*BETA_X); SIG_EXP=Math.sqrt(EMIT_X/BETA_X);
   SIG_EY=Math.sqrt(EMIT_Y*BETA_Y); SIG_EYP=Math.sqrt(EMIT_Y/BETA_Y);
 }
+// Parse a value, assign it to one ring param (EMIT in pm, E_SPREAD in 1e-4), recalc, refresh the sigma/gamma readout, then re-run undulator/energy/optics.
 function updateEbeamParam(param,val){
   val=parseFloat(val);if(isNaN(val))return;
   if(param==='E_RING'){E_RING=val;}
@@ -44,10 +56,13 @@ function updateEbeamParam(param,val){
 var LAMBDA_U=24, LAMBDA_U_M=0.024, N_PERIODS=123, L_UND=N_PERIODS*LAMBDA_U_M;
 var HC=12.3984;
 var FIXED_EXIT=12.0; // mm, XDS Oxford HDCM-HCCM horizontal fixed-exit offset
+// Si crystal d-spacings in Angstrom by Miller index for DCM Bragg: '111'=3.13560, '311'=1.63751.
 var D_SI={'111':3.13560,'311':1.63751};
 var HALB_A=3.3, HALB_B=-5.08, HALB_C=1.54;
 var R_E_A=2.8179e-5, NA=6.022e23, V_SI=160.18;
+// Rhodium mirror-coating constants {Z:45, A:102.9, rho:12.41e6} fed to mirrorR() for M1/M2 reflectivity vs energy and pitch.
 var RH={Z:45,A:102.9,rho:12.41e6};
+// Platinum mirror-coating constants {Z:78, A:195.08, rho:21.45e6} fed to mirrorR() for KB-V/KB-H reflectivity vs energy and pitch.
 var PT={Z:78,A:195.08,rho:21.45e6};
 
 // Component definitions: 16 elements
@@ -87,6 +102,8 @@ var CD=[
     optics:{focus:true,focusPlane:'v',deflView:'side',pitchKey:'kbvpitch',deflFactor:2}, svg:{showDist:true}},
   {id:'kbh',   name:'KB-H',       tp:'kbh',     dp:149.9,
     optics:{focus:true,focusPlane:'h',deflView:'top',pitchKey:'kbhpitch',deflFactor:2}, svg:{showDist:true}},
+  {id:'ic1',   name:'IC1',        tp:'ic',      dp:149.45,
+    svg:{}},
   {id:'sample',name:'Sample',     tp:'sample',  dp:150,
     svg:{showDist:true}},
   {id:'det',   name:'Detector',   tp:'det',     dp:154.5,
@@ -95,11 +112,17 @@ var CD=[
 
 // State
 var state={mode:'virtual',gap:7.0,energy:10.0,targetEnergy:10.0,crystal:'111',
-  wbH:2.0,wbV:1.0,m1pitch:2.5,m2pitch:2.5,kbvpitch:3.0,kbhpitch:3.0,ssaH:50,ssaV:50,kbslitH:5000,kbslitV:5000,
+  wbH:1.2,wbV:1.2,m1pitch:2.5,m2pitch:2.5,kbvpitch:3.0,kbhpitch:3.0,ssaH:50,ssaV:50,kbslitH:5000,kbslitV:5000,
   focusMode:'kb',visualSx:{},
+  // IC1 ion chamber (A3): gas fill, active length, pressure, and the air
+  // path the beam crosses BEFORE the chamber entrance (KB exit window ->
+  // IC1) and AFTER it (IC1 -> sample). Air attenuation matters: the
+  // current is generated from the flux that REACHES the chamber.
+  ic1Gas:'N2',ic1LenCm:10,ic1PressAtm:1.0,ic1AirBeforeCm:5,ic1AirAfterCm:2,
   scanning:false,scanData:[],map2D:null,harmonic:1,positions:{},epicsConnected:false,
   attenFilters:[{material:'None',thickness:0},{material:'None',thickness:0},{material:'None',thickness:0},{material:'None',thickness:0}]};
 CD.forEach(function(c){state.positions[c.id]=c.dp;});
+// Return the longitudinal position (m) of a device id from state.positions, the user-editable distance map seeded from CD.
 function pos(id){return state.positions[id];}
 
 // Box-Muller Gaussian random number generator (shared utility)
@@ -160,6 +183,7 @@ function log(lv, msg) {
   while (b.children.length > 80) b.removeChild(b.lastChild);
 }
 
+// Empty the on-screen log panel by clearing the #logBox element's innerHTML; wired to the LOG panel Clr button.
 function clearLog() {
   var el = document.getElementById('logBox');
   if (el) el.innerHTML = '';

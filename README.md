@@ -14,14 +14,14 @@ This repository accompanies a peer-reviewed journal submission.
 
 ### What is being developed on `beta` (status: 2026-06-12)
 
-Work on `beta` follows the future-work directions declared in the accompanying paper. Items are functional but validated to interim standards only.
+Work on `beta` follows the future-work directions declared in the accompanying paper. Everything listed here is work in progress: automated interim checks only, not yet through the project's full validation or hands-on operator verification, and subject to change.
 
 **On this branch now**
 
-- Ion-chamber physics: I0/I1 chamber response model (xraydb-derived attenuation, W values, Compton term), with an IC1 beamline component and a live current readout in the UI
+- Ion-chamber physics: I0/I1 chamber response model ported from the xraydb XAFS-toolkit formulas (gas attenuation splits, W values, Compton electron term), cross-checked against xraydb directly and through transmission-XAFS measurement-chain scenarios (flux -> air -> I0 -> sample -> I1), with an IC1 beamline component and a live current readout in the UI
 - EPICS areaDetector integration path: ADSimDetector + ophyd + Bluesky end-to-end acquisition (simulated detector), with measured file-writer throughput ceilings
 
-**Completed in the development line, arriving in the next `beta` sync**
+**In implementation on the development line (not yet on this branch; will arrive in a future `beta` sync)**
 
 - Transmission-XANES measurement simulation: the virtual XAFS experiment can produce the real observable mu = ln(I0/I1) from simulated I0/I1 chamber currents, with per-dwell Poisson noise (opt-in; the synthetic-noise default is unchanged)
 - WebGPU acceleration of the Monte Carlo ray-tracing engine (opt-in, automatic CPU fallback): the source-to-monochromator per-ray segment runs as a compute shader, validated against the CPU engine by statistical-parity gates (per-element transmission parity within 0.15% at 1e6 rays); million-ray runs complete in about half the CPU time end to end, with the GPU segment itself roughly 20x faster

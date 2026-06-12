@@ -23,7 +23,7 @@ import statistics
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-BUNDLE = Path(r"C:\Projects\K4GSR-Beamline\virtual_beamline_nanoprobe_V4_36_bundle.html")
+BUNDLE = Path(__file__).resolve().parents[2] / "virtual_beamline_nanoprobe_V4_36_bundle.html"
 NRAYS = 200000
 N_REPEATS = 3
 ENERGY_KEV = 10.0

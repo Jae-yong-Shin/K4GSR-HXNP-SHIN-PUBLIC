@@ -35,7 +35,7 @@ SDK:
 Usage (on notebook):
     python mcs2_bridge_server.py                    # default: 0.0.0.0:5555
     python mcs2_bridge_server.py --port 5555
-    python mcs2_bridge_server.py --host 10.1.101.54 --port 5555
+    python mcs2_bridge_server.py --host <YOUR_DEVICE_IP> --port 5555
 
 Author: K4GSR BL10 NanoProbe
 """

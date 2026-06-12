@@ -8,8 +8,8 @@ epicsEnvSet("EPICS_CAS_SERVER_PORT", "5070")
 
 dbLoadTemplate("motor.substitutions")
 
-## KOHZU ARIES at 10.1.101.51:12321 (SW4 Device network)
-drvAsynIPPortConfigure("L0", "10.1.101.51:12321", 0, 0, 0)
+## KOHZU ARIES at <YOUR_DEVICE_IP>:12321 (SW4 Device network)
+drvAsynIPPortConfigure("L0", "<YOUR_DEVICE_IP>:12321", 0, 0, 0)
 
 ## CRLF line termination (required by KOHZU ARIES protocol)
 asynOctetSetInputEos("L0", 0, "\r\n")

@@ -4,6 +4,7 @@ Loads the virtual beamline in headless Chromium, calls photonSrc(E) for each ene
 and computes geometric + diffraction-limited beam sizes at sample.
 """
 import sys
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 ENERGIES = [5, 7, 10, 12, 15, 18, 20, 25, 30]
@@ -90,7 +91,7 @@ JS_WAIT = 'typeof photonSrc === "function" && typeof pos === "function" && typeo
 
 
 def main():
-    bundle_path = "file:///C:/Projects/K4GSR-Beamline/virtual_beamline_nanoprobe_V4_36_bundle.html"
+    bundle_path = (Path(__file__).resolve().parents[2] / "virtual_beamline_nanoprobe_V4_36_bundle.html").as_uri()
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)

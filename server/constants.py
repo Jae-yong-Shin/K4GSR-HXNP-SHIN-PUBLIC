@@ -14,8 +14,8 @@ KOHZU_CA_PORT = 5070    # KOHZU ARIES hardware IOC
 XBPM2_CA_PORT = 5072    # Sydor T4U quadEM IOC
 
 # --- Hardware IPs (SW4 Device Network) ---
-KOHZU_IP = os.environ.get("KOHZU_IP", "10.1.101.51")  # Override via environment
-XBPM2_IP = os.environ.get("XBPM2_IP", "10.1.101.52")  # Override via environment
+KOHZU_IP = os.environ.get("KOHZU_IP", "<YOUR_DEVICE_IP>")  # Override via environment
+XBPM2_IP = os.environ.get("XBPM2_IP", "<YOUR_DEVICE_IP>")  # Override via environment
 
 # --- Timeouts (seconds) ---
 CA_CONNECT_TIMEOUT = 3.0        # caproto Context.get_pvs() timeout

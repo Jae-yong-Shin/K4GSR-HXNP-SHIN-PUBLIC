@@ -5,7 +5,7 @@
 
   "controller": {
     "model": "ARIES Model 3 / LYNX",
-    "ip": "10.1.101.51",
+    "ip": "<YOUR_DEVICE_IP>",
     "port": 12321,
     "protocol": "TCP/IP ASCII, CRLF terminated",
     "driver": "TITAN-A II (5-phase stepper)",

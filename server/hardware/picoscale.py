@@ -12,14 +12,14 @@ Hardware:
     - DDI interface provides real-time feedback to MCS2 (not through this code)
 
 Connection:
-    - Ethernet: "network:sn:PSC-00000689" (verified on VM1)
+    - Ethernet: "network:sn:<YOUR_PICOSCALE_SN>" (verified on VM1)
     - USB: "usb:ix:0"
 
 SDK packages required:
     pip install smaract.si-2.2.0.zip
 
 Usage:
-    ps = PicoScaleController("network:sn:PSC-00000689")
+    ps = PicoScaleController("network:sn:<YOUR_PICOSCALE_SN>")
     ps.connect()
     pos = ps.get_position(0)   # channel 0 position in nm
     ps.close()
@@ -86,13 +86,13 @@ class PicoScaleController:
         Both are valid. Position readback uses GetValue_f64 (verified).
     """
 
-    def __init__(self, locator: str = "network:sn:PSC-00000689",
+    def __init__(self, locator: str = "network:sn:<YOUR_PICOSCALE_SN>",
                  mock: bool = False):
         """Initialize PicoScale controller.
 
         Args:
             locator: Device locator string.
-                - "network:sn:PSC-00000689" -- Ethernet (verified on VM1)
+                - "network:sn:<YOUR_PICOSCALE_SN>" -- Ethernet (verified on VM1)
                 - "usb:ix:0" -- first USB device
             mock: Force mock mode even if SDK is available.
         """

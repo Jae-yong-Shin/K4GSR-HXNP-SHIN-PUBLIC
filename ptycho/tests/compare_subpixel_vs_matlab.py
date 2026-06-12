@@ -10,7 +10,7 @@ Strategy:
   5. Generate visualisation: results/subpixel_comparison_vs_matlab.png
 
 Usage:
-    cd C:/Projects/K4GSR-TOMOGRAPHY/python_port
+    cd <PROJECTS_DIR>/K4GSR-TOMOGRAPHY/python_port
     python compare_subpixel_vs_matlab.py
 """
 

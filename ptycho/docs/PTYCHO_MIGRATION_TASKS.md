@@ -15,10 +15,10 @@ Source code reference: `K4GSR-Beamline/ptycho/` (simulation codebase)
 
 ## Prerequisites
 
-- K4GSR-PTYCHO location: `C:\Projects\K4GSR-PTYCHO\`
+- K4GSR-PTYCHO location: `<PROJECTS_DIR>\K4GSR-PTYCHO\`
 - Python environment: `ptycho_env` (conda), Python 3.11
 - GPU: NVIDIA RTX 3060 Ti, CuPy 14.0.0
-- K4GSR-Beamline reference: `C:\Projects\K4GSR-Beamline\ptycho\`
+- K4GSR-Beamline reference: `<PROJECTS_DIR>\K4GSR-Beamline\ptycho\`
 - MATLAB reference data: `K4GSR-PTYCHO/matlab_ref/`
 
 **CRITICAL**: Do NOT modify K4GSR-Beamline files. Only read them as reference.
@@ -342,7 +342,7 @@ After syncing engine files (Task 1), verify that existing single-mode
 reconstruction still matches MATLAB reference:
 
 ```bash
-cd C:\Projects\K4GSR-PTYCHO
+cd <PROJECTS_DIR>\K4GSR-PTYCHO
 conda activate ptycho_env
 python tests/compare_matlab_dm.py
 python tests/compare_matlab_lsqml.py
@@ -357,7 +357,7 @@ Use K4GSR-Beamline's synthetic data generator to create test data:
 ```python
 # In K4GSR-PTYCHO test script:
 import sys
-sys.path.insert(0, r'C:\Projects\K4GSR-Beamline\ptycho')
+sys.path.insert(0, r'<PROJECTS_DIR>\K4GSR-Beamline\ptycho')
 from synth_ptycho import SyntheticPtycho
 
 gen = SyntheticPtycho.from_dataset(

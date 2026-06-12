@@ -17,7 +17,7 @@ Hardware:
     - Positioner type: CUSTOM0 (250), 30um range, closed-loop
 
 Usage:
-    ctrl = MCS2Controller(bridge_host="10.1.101.54", bridge_port=5555)
+    ctrl = MCS2Controller(bridge_host="<YOUR_DEVICE_IP>", bridge_port=5555)
     ctrl.connect()
     print(ctrl.get_position(0))     # channel 0 position in nm
     ctrl.move_to(0, 1000.0)         # move ch0 to 1000 nm

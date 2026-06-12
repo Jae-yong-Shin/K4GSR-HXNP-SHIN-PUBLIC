@@ -18,7 +18,7 @@ Work on `beta` follows the future-work directions declared in the accompanying p
 
 **On this branch now**
 
-- Ion-chamber physics: I0/I1 chamber response model ported from the xraydb XAFS-toolkit formulas (gas attenuation splits, W values, Compton electron term), cross-checked against xraydb directly and through transmission-XAFS measurement-chain scenarios (flux -> air -> I0 -> sample -> I1), with an IC1 beamline component and a live current readout in the UI
+- Ion-chamber physics (the "established ionization-chamber response model" named as future work in the paper): the response model is ported from the xraydb XAFS-toolkit `ionchamber_fluxes` formulation (gas attenuation splits, W values, Compton electron term), cross-checked at machine precision against xraydb itself, through transmission-XAFS measurement-chain scenarios (flux -> air -> I0 -> sample -> I1), and against XAFSmass (Klementiev & Chernikov 2016), the example implementation cited in the paper — after reconciling the two programs' documented conventions (carrier counting, W values, energy-deposit term) the agreement is 0.3-0.6%. Comes with an IC1 beamline component and a live current readout in the UI. Calibration against measured ion-chamber currents still requires real hardware and remains open
 - EPICS areaDetector integration path: ADSimDetector + ophyd + Bluesky end-to-end acquisition (simulated detector), with measured file-writer throughput ceilings
 
 **In implementation on the development line (not yet on this branch; will arrive in a future `beta` sync)**

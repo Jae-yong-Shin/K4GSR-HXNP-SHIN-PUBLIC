@@ -52,6 +52,16 @@ paper/old/
 # Scan data (generated at runtime)
 server/data/scans/
 
+# qserver RE Manager existing-plans-devices list (regenerated at every startup)
+server/data/qserver_existing_plans_and_devices.yaml
+
+# Tiled B2 PoC: materialized local config + catalog/cache/temp (generated at runtime)
+server/data_access/tiled_config.local.yml
+server/data_access/*.db
+tiled_b2_*/
+.tiled/
+tiled_cache/
+
 # RAG vector database (generated at runtime)
 server/chroma_db/
 

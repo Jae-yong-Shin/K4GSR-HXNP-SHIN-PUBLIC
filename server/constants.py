@@ -37,3 +37,24 @@ DEFAULT_SCAN_RATE = 0.1  # PVStore heartbeat interval (seconds)
 PV_PUSH_MODE_DEFAULT = "event"       # "event" | "periodic" (env PV_PUSH_MODE)
 PV_PUSH_COALESCE_MS_DEFAULT = 50.0   # burst coalescing window (env PV_PUSH_COALESCE_MS)
 PV_PUSH_SNAPSHOT_S_DEFAULT = 5.0     # idle keepalive/full-snapshot period (env PV_PUSH_SNAPSHOT_S)
+
+# --- Scan backend (B1: bluesky-queueserver, manuscript para 31) ---
+# server.py reads SCAN_BACKEND at task-start time (after config.env load), NOT
+# at import time, so config.env is honored. "inprocess" is the regression-
+# critical default; "qserver" builds QueueServerRunner instead.
+SCAN_BACKEND_DEFAULT = "inprocess"   # "inprocess" | "qserver" (env SCAN_BACKEND)
+QSERVER_ZMQ_PORT = 60615             # RE Manager 0MQ control port (zmq REQ/REP)
+QSERVER_ZMQ_INFO_PORT = 60625        # RE Manager 0MQ console/status publish port
+QSERVER_REDIS_PORT = 60617           # Redis (or fakeredis) port used by RE Manager
+QSERVER_POLL_INTERVAL = 0.5          # status poll interval (seconds)
+QSERVER_STARTUP_TIMEOUT = 60.0       # max wait for RE Manager to answer status
+
+# --- Tiled data-access PoC (B2, manuscript para 39) ---
+# LOCAL PoC ONLY, opt-in, default-OFF. Operational deployment + facility auth
+# are deferred to B4 (see docs/tasks/TASK_B2_TILED.md). The production server.py
+# does NOT start this; tiled_serve.py is a standalone launcher.
+TILED_ENABLED_DEFAULT = False        # env TILED_ENABLED ("1"/"true" enables)
+TILED_PORT = 8010                    # local Tiled HTTP port (loopback only)
+TILED_HOST = "127.0.0.1"             # bind loopback only (no facility exposure)
+TILED_STARTUP_TIMEOUT = 60.0         # max wait for Tiled /healthz to answer
+TILED_POLL_INTERVAL = 0.25           # readiness poll interval (seconds)

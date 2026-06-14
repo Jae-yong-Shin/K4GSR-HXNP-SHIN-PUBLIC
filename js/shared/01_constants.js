@@ -14,7 +14,7 @@
 // hard-coded literal. preflight_deploy.py enforces this (no "v4.NN"/"V4.NN" literals
 // allowed under js/ outside this file). MINOR+ bump procedure (CLAUDE.md "버전 관리"):
 // change this line, rename bundle pair, run preflight, commit, deploy.
-var APP_VERSION = '4.38.5';
+var APP_VERSION = '4.38.10';
 var APP_VTAG = 'v' + APP_VERSION;  // for log prefixes like '[v4.37.4]'
 
 // ===== Server Connection Config =====

@@ -35,7 +35,8 @@ from constants import (WS_PORT, SIM_PORT, PTYCHO_PORT, EPICS_CA_PORT,
                        CA_CONNECT_TIMEOUT, BLUESKY_CONNECT_TIMEOUT,
                        BLUESKY_HYBRID_TIMEOUT, PV_DISCOVERY_INTERVAL,
                        DEFAULT_SCAN_RATE, PV_PUSH_MODE_DEFAULT,
-                       PV_PUSH_COALESCE_MS_DEFAULT, PV_PUSH_SNAPSHOT_S_DEFAULT)
+                       PV_PUSH_COALESCE_MS_DEFAULT, PV_PUSH_SNAPSHOT_S_DEFAULT,
+                       SCAN_BACKEND_DEFAULT)
 
 # Optional CA bridge (for --ca-bridge mode)
 try:
@@ -74,6 +75,14 @@ try:
     _BLUESKY_AVAILABLE = True
 except ImportError:
     _BLUESKY_AVAILABLE = False
+
+# Optional bluesky-queueserver backend (B1; opt-in via SCAN_BACKEND=qserver).
+# Importing this must NOT affect the in-process default path in any way.
+try:
+    from scan_engine.qserver_runner import QueueServerRunner
+    _QSERVER_AVAILABLE = True
+except ImportError:
+    _QSERVER_AVAILABLE = False
 
 # Optional experiment engine (for /ws/expt)
 try:
@@ -728,6 +737,81 @@ async def scan_handler(websocket):
                 h5_resp = _encode_h5_for_download(uid, filename, bluesky_runner)
                 await websocket.send(json.dumps(h5_resp))
 
+            # ── B1: queue-native actions (require SCAN_BACKEND=qserver) ──
+            # Routed to the runner only if it implements the queue method. The
+            # in-process BlueskyRunner has no queue, so we return a clear,
+            # informative message instead of faking one.
+            elif action in ("queue_add", "queue_start", "queue_stop",
+                            "queue_clear", "queue_status", "queue_get",
+                            "history"):
+                # queue_status maps to runner.status(); the rest map 1:1 to a
+                # runner method of the same name (history -> history_get).
+                method_name = {"queue_status": "status",
+                               "history": "history_get"}.get(action, action)
+                if not hasattr(bluesky_runner, method_name) or \
+                        getattr(bluesky_runner, "state", None) is None or \
+                        bluesky_runner.status().get("backend") != "qserver":
+                    await websocket.send(json.dumps({
+                        "type": "scan_error",
+                        "message": "queue actions require SCAN_BACKEND=qserver "
+                                   "(active backend has no queue)",
+                        "action": action,
+                    }))
+                    continue
+                try:
+                    if action == "queue_add":
+                        plan_name = msg.get("plan_name")
+                        if not plan_name:
+                            await websocket.send(_ws_error("Missing plan_name"))
+                            continue
+                        params = msg.get("params", {})
+                        item_uid = bluesky_runner.queue_add(plan_name, **params)
+                        await websocket.send(json.dumps({
+                            "type": "queue_item_added",
+                            "plan_name": plan_name,
+                            "item_uid": item_uid,
+                            "status": bluesky_runner.status(),
+                        }))
+                    elif action == "queue_start":
+                        loop = asyncio.get_running_loop()
+                        bluesky_runner._loop = loop
+                        bluesky_runner.queue_start()
+                        await websocket.send(json.dumps({
+                            "type": "queue_started",
+                            "status": bluesky_runner.status(),
+                        }))
+                    elif action == "queue_stop":
+                        bluesky_runner.queue_stop()
+                        await websocket.send(json.dumps({
+                            "type": "queue_stopped",
+                            "status": bluesky_runner.status(),
+                        }))
+                    elif action == "queue_clear":
+                        bluesky_runner.queue_clear()
+                        await websocket.send(json.dumps({
+                            "type": "queue_cleared",
+                            "status": bluesky_runner.status(),
+                        }))
+                    elif action == "queue_status":
+                        await websocket.send(json.dumps({
+                            "type": "queue_status",
+                            "status": bluesky_runner.status(),
+                        }))
+                    elif action == "queue_get":
+                        await websocket.send(json.dumps({
+                            "type": "queue_contents",
+                            "queue": bluesky_runner.queue_get(),
+                        }, default=str))
+                    elif action == "history":
+                        await websocket.send(json.dumps({
+                            "type": "queue_history",
+                            "history": bluesky_runner.history_get(),
+                        }, default=str))
+                except Exception as e:
+                    log.exception("Queue action error")
+                    await websocket.send(_ws_error(str(e)))
+                    continue
+
             else:
                 await websocket.send(_ws_error(f"Unknown action: {action}"))
 
@@ -1334,24 +1418,52 @@ async def main():
         log.warning(f"NLP agent module not loaded: {_NLP_IMPORT_ERROR}")
         log.warning("Try: pip install httpx python-dotenv")
 
-    # Initialize Bluesky runner if requested
+    # Initialize Bluesky runner if requested.
+    #
+    # B1 mode switch: SCAN_BACKEND selects which runner is built behind the
+    # backend-agnostic `bluesky_runner` variable. "inprocess" (default/unset) is
+    # the regression-critical path and is constructed EXACTLY as before. Only
+    # "qserver" builds the separate-process QueueServerRunner instead.
     if bluesky_mode:
-        if not _BLUESKY_AVAILABLE:
-            log.error("--bluesky requires bluesky+ophyd. Install: pip install bluesky ophyd")
-            sys.exit(1)
-        log.info("Initializing Bluesky scan engine...")
-        try:
-            # In hybrid mode, some PVs (e.g. SAM sub-motors) are not yet
-            # served by any IOC → use short connect timeout to avoid delay.
-            _bs_timeout = BLUESKY_HYBRID_TIMEOUT if hw_groups else BLUESKY_CONNECT_TIMEOUT
-            bluesky_runner = BlueskyRunner(ws_callback=broadcast_scan_event,
-                                           connect_timeout=_bs_timeout)
-            bluesky_runner.start()
-            log.info("Bluesky RunEngine ready")
-        except Exception as e:
-            log.warning(f"Bluesky initialization failed: {e}")
-            log.warning("Scan engine will not be available. Is soft_ioc.py running?")
-            bluesky_runner = None
+        scan_backend = os.environ.get(
+            "SCAN_BACKEND", SCAN_BACKEND_DEFAULT).strip().lower()
+        if scan_backend == "qserver":
+            if not _QSERVER_AVAILABLE:
+                log.error("SCAN_BACKEND=qserver requires bluesky-queueserver. "
+                          "Install: pip install bluesky-queueserver "
+                          "bluesky-queueserver-api")
+                sys.exit(1)
+            log.info("Initializing scan engine (backend=qserver, RE Manager)...")
+            try:
+                _bs_timeout = (BLUESKY_HYBRID_TIMEOUT if hw_groups
+                               else BLUESKY_CONNECT_TIMEOUT)
+                bluesky_runner = QueueServerRunner(
+                    ws_callback=broadcast_scan_event,
+                    connect_timeout=_bs_timeout)
+                bluesky_runner.start()
+                log.info("bluesky-queueserver RE Manager ready")
+            except Exception as e:
+                log.warning(f"queueserver initialization failed: {e}")
+                log.warning("Scan engine will not be available "
+                            "(check redis / RE Manager subprocess).")
+                bluesky_runner = None
+        else:
+            if not _BLUESKY_AVAILABLE:
+                log.error("--bluesky requires bluesky+ophyd. Install: pip install bluesky ophyd")
+                sys.exit(1)
+            log.info("Initializing Bluesky scan engine (backend=inprocess)...")
+            try:
+                # In hybrid mode, some PVs (e.g. SAM sub-motors) are not yet
+                # served by any IOC → use short connect timeout to avoid delay.
+                _bs_timeout = BLUESKY_HYBRID_TIMEOUT if hw_groups else BLUESKY_CONNECT_TIMEOUT
+                bluesky_runner = BlueskyRunner(ws_callback=broadcast_scan_event,
+                                               connect_timeout=_bs_timeout)
+                bluesky_runner.start()
+                log.info("Bluesky RunEngine ready")
+            except Exception as e:
+                log.warning(f"Bluesky initialization failed: {e}")
+                log.warning("Scan engine will not be available. Is soft_ioc.py running?")
+                bluesky_runner = None
 
     # Initialize nano scanner service (MCS2 bridge + PicoScale)
     if _NANO_AVAILABLE:

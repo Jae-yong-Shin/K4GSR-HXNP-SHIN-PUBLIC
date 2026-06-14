@@ -226,13 +226,16 @@ function _buildExptControls(mode) {
     h += _row(_t('expt_presets'), '<select onchange="if(this.value){document.getElementById(\'exptXafsFormula\').value=this.value;_exptXafsFormulaChanged()}" style="' + _selectSty + '"><option value="">--</option><option>Cu</option><option>Cu2O</option><option>CuO</option><option>Fe</option><option>Fe2O3</option><option>NiO</option><option>SrTiO3</option></select>');
     h += _row(_t('expt_sample'), '<select id="exptXafsSampleType" style="' + _selectSty + '"><option value="solid"' + (_exptState.xafs.sampleType === 'solid' ? ' selected' : '') + '>Solid</option><option value="powder"' + (_exptState.xafs.sampleType === 'powder' ? ' selected' : '') + '>Powder (dilute)</option></select>');
     h += _row(_t('expt_conc'), '<input id="exptXafsPPM" type="number" value="' + _exptState.xafs.ppm + '" step="100" style="' + _inputSty + 'width:70px">');
-    // IC measurement mode (opt-in): mu_obs = ln(I0/I1) through the I0/I1
-    // chamber chain (server ic_chain.py) instead of synthetic noise.
-    // I0 config = IC1 popup (SVG icon), I1 config = detector popup IC tab.
-    h += _row('IC I0/I1',
+    // IC measurement mode (opt-in): mu_obs = ln(IC1/IC2) through the chamber
+    // chain (server ic_chain.py) instead of synthetic noise. Beam-direction
+    // numbering (user convention 2026-06-12): IC1 = upstream chamber at
+    // 149.45 m (XAFS role I0, popup via SVG icon), IC2 = detector-position
+    // chamber (XAFS role I1, detector popup IC section). Server API keys
+    // stay i0/i1 (role names).
+    h += _row('IC1/IC2',
       '<label style="font-size:10px;cursor:pointer"><input type="checkbox" id="exptXafsIC"' +
       (_exptState.xafs.icMode ? ' checked' : '') +
-      '> ln(I0/I1)</label> &nbsp;dwell <input id="exptXafsICDwell" type="number" value="' +
+      '> ln(IC1/IC2)</label> &nbsp;dwell <input id="exptXafsICDwell" type="number" value="' +
       (_exptState.xafs.icDwell || 1.0) +
       '" min="0.01" step="0.1" style="' + _inputSty + 'width:45px"> s');
   } else if (mode === 'xrd2d') {
@@ -1468,8 +1471,8 @@ function _handleExptServerMessage(msg) {
     _exptState._lastIC = (msg.ic && msg.ic.i0_A_range) ? msg.ic : null;
     if (_exptState._lastIC) {
       try {
-        console.log('[Expt] IC chain: I0=' + msg.ic.i0_A_range[1].toExponential(2) +
-          ' A, I1=' + msg.ic.i1_A_range[1].toExponential(2) +
+        console.log('[Expt] IC chain: IC1=' + msg.ic.i0_A_range[1].toExponential(2) +
+          ' A, IC2=' + msg.ic.i1_A_range[1].toExponential(2) +
           ' A, dwell=' + msg.ic.dwell_s + ' s, ratio_prefocus=' +
           msg.ic.ratio_prefocus);
       } catch (e) {}
@@ -1482,8 +1485,8 @@ function _handleExptServerMessage(msg) {
       var _icNote = '';
       if (_exptState._lastIC) {
         try {
-          _icNote = ' | IC I0 ' + (_exptState._lastIC.i0_A_range[1] * 1e6).toFixed(2) +
-            ' uA / I1 ' + (_exptState._lastIC.i1_A_range[1] * 1e6).toFixed(2) + ' uA';
+          _icNote = ' | IC1 ' + (_exptState._lastIC.i0_A_range[1] * 1e6).toFixed(2) +
+            ' uA / IC2 ' + (_exptState._lastIC.i1_A_range[1] * 1e6).toFixed(2) + ' uA';
         } catch (e) { _icNote = ''; }
         _exptState._lastIC = null;
       }

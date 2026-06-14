@@ -419,7 +419,10 @@ window.showComp = function(id) {
       '<div class="info-item"><div class="lbl">Energy</div><div class="val">' + state.energy.toFixed(2) + ' keV</div></div>' +
       '<div class="info-item"><div class="lbl">Flux</div><div class="val">' + _flDet.toExponential(2) + ' ph/s</div></div>' +
       '<div class="info-item"><div class="lbl">Focal Size</div><div class="val" style="color:var(--gn)">' + _spDet.h.toFixed(0) + 'x' + _spDet.v.toFixed(0) + ' nm</div></div>';
-    // \u2500\u2500 Ion Chamber mode (A3): use the detector position as an I1 chamber \u2500\u2500
+    // \u2500\u2500 Ion Chamber mode (A3): detector position as the IC2 chamber \u2500\u2500
+    // Numbering follows the beam direction (user convention 2026-06-12):
+    // IC1 = 149.45 m (before the sample, XAFS role I0), IC2 = detector
+    // position (after the sample, XAFS role I1).
     // Incident flux = sample-plane flux x sample transmission x air path
     // (sample -> det, from the live positions). Gas/length/transmission are
     // user-adjustable; the air attenuation over the multi-meter path is the
@@ -439,7 +442,7 @@ window.showComp = function(id) {
       ['N2', 'He', 'Ar', 'air'].forEach(function(g) {
         _i1Sel += '<option value="' + g + '"' + (_i1Gas === g ? ' selected' : '') + '>' + g + '</option>';
       });
-      info += '<div class="info-item" style="grid-column:1/-1;border-top:1px solid var(--b1);margin-top:4px;padding-top:4px"><div class="lbl">ION CHAMBER (I1) MODE</div><div class="val" style="font-size:8px;color:var(--t3)">det position as transmission chamber; air path sample\u2192det = ' + _i1AirCm.toFixed(0) + ' cm</div></div>' +
+      info += '<div class="info-item" style="grid-column:1/-1;border-top:1px solid var(--b1);margin-top:4px;padding-top:4px"><div class="lbl">ION CHAMBER IC2 (transmission)</div><div class="val" style="font-size:8px;color:var(--t3)">det position, downstream of sample; air path sample\u2192det = ' + _i1AirCm.toFixed(0) + ' cm</div></div>' +
         '<div class="info-item"><div class="lbl">Gas / Length</div><div class="val">' +
         '<select onchange="state.det_icGas=this.value;showComp(\'det\')" style="font-size:10px">' + _i1Sel + '</select> ' +
         '<input type="number" value="' + _i1Len + '" min="1" max="50" step="1" style="width:48px;font-size:10px" ' +
@@ -448,8 +451,8 @@ window.showComp = function(id) {
         '<input type="number" value="' + _i1Ts + '" min="0" max="1" step="0.05" style="width:55px;font-size:10px" ' +
         'onchange="state.det_icSampleT=parseFloat(this.value);showComp(\'det\')"/></div></div>' +
         '<div class="info-item"><div class="lbl">T air (path)</div><div class="val">' + (_i1TAir * 100).toFixed(2) + ' %</div></div>' +
-        '<div class="info-item"><div class="lbl">Flux at I1</div><div class="val" style="color:var(--ac)">' + _i1In.toExponential(2) + ' ph/s</div></div>' +
-        '<div class="info-item"><div class="lbl">I1 current</div><div class="val" style="color:var(--gn);font-weight:700">' +
+        '<div class="info-item"><div class="lbl">Flux at IC2</div><div class="val" style="color:var(--ac)">' + _i1In.toExponential(2) + ' ph/s</div></div>' +
+        '<div class="info-item"><div class="lbl">IC2 current</div><div class="val" style="color:var(--gn);font-weight:700">' +
         (_i1uA >= 1 ? _i1uA.toFixed(2) + ' \u00b5A' : (_i1uA * 1000).toFixed(2) + ' nA') + '</div></div>';
     }
   } else {

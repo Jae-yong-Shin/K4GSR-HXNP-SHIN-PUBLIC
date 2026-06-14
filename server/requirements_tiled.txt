@@ -1,0 +1,33 @@
+# Optional dependencies for the B2 Tiled data-access PoC (manuscript para 39).
+#
+# ISOLATED from the production server/requirements.txt on purpose. Tiled and its
+# server stack are NOT needed by the production beamline server; they are only
+# used by the standalone B2 PoC (server/data_access/*, server/test_tiled_e2e.py).
+# Install separately, opt-in:
+#
+#     pip install -r server/requirements_tiled.txt
+#
+# LOCAL PoC ONLY. Operational deployment + facility auth are deferred to B4
+# (see docs/tasks/TASK_B2_TILED.md). Do NOT add these to the VM1 production env
+# as part of this tranche.
+#
+# Validated locally on Python 3.11.4, Windows, with the EXACT versions below
+# (recorded from the working PoC environment, 2026-06-14):
+#     tiled 0.2.3, dask 2026.6.0, h5py 3.15.1, numpy 2.4.2
+#
+# Install command used (records which extras): the [server,client] extras pull
+# the server stack (uvicorn/fastapi/zarr/...) + the numpy client; `dask` is
+# required by tiled's HDF5 adapter (tiled.adapters.hdf5 imports dask.array).
+#     pip install "tiled[server,client]" dask
+
+tiled[server,client]>=0.2.3,<0.3
+dask>=2024.1        # required by tiled.adapters.hdf5 (HDF5Adapter)
+
+# h5py + numpy are already pinned in the production requirements.txt; the HDF5
+# adapter + the E2E h5py cross-check use them. Listed here for a standalone
+# (production-free) install of just the PoC.
+h5py>=3.8.0
+numpy>=1.24.0
+
+# Orphan-process assertion in the E2E test.
+psutil>=5.9

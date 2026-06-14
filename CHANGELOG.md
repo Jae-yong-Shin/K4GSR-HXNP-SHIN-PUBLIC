@@ -13,6 +13,83 @@ validation standard of `main`. The paper-reproducibility baseline remains `main`
 > IOC setup needed to reproduce them. The A3 JavaScript model itself is standalone
 > (browser/node, no dependencies).
 
+## Development-line sync — 2026-06-14 (versions 4.38.6 → 4.38.10)
+
+This tranche lands the post-2026-06-12 development: the ion-chamber beam-direction
+numbering, the beamline-layout SVG icon redesign, and two opt-in infrastructure
+proofs-of-concept declared as future work in the manuscript — the
+bluesky-queueserver scan backend (B1, ¶31) and the Tiled data-access PoC (B2, ¶39).
+The two backend PoCs are merged DORMANT: both default OFF, neither is started by the
+production server, and the optional dependencies are not installed in production, so
+the pulled code changes no runtime behavior until explicitly activated. Adapted from
+the development line's per-version changelog; references to internal infrastructure
+(hosts, addresses, deferred-rollout shell commands) are omitted or generalized.
+
+### [4.38.10] — 2026-06-14
+
+#### Fixed (B1 qserver — EPICS device-path hardening, found in non-disruptive validation on the operations VM)
+- `server/scan_engine/qserver_startup.py`: resolve the queueserver console scripts (`start-re-manager`, `qserver-list-plans-devices`) relative to `sys.executable` (`_console_script`), so the backend launches when started via a bare `venv/bin/python` invocation (e.g. the deployment controller) where the venv bin dir is NOT on PATH. Falls back to PATH then the bare name.
+- `server/scan_engine/qserver_profile/__init__.py`: `QSERVER_EXCLUDE_DEVICES` (space/comma list of device keys to skip) lets the RE Manager environment come up promptly on a partially-served IOC instead of stalling on unserved PVs; per-device connect timeout default lowered 10.0 -> 2.0 s (fast-fail unserved, mirrors the in-process hybrid timeout). `deploy/config.env` documents the validated activation knobs.
+- Still opt-in/default-OFF (SCAN_BACKEND=inprocess); dormant on the operations VM.
+
+#### Validated (non-disruptive on the operations VM — isolated eval venv, production scan server untouched)
+- Isolated eval venv (qserver 0.0.24, tiled 0.2.11, bluesky 1.15.1). qserver queue mechanics E2E (sim, fakeredis, Linux killpg teardown): ALL PASS 13.5 s, orphan 0. qserver EPICS real-device E2E (real soft IOC): beam_check ran through the queue, exit_status=completed (1.2 s) after the device-exclusion + console-script hardening. Tiled E2E on the operations VM (tiled 0.2.11): read-back vs h5py 0.000e+00, orphan 0. Production scan server process unchanged throughout.
+
+### [4.38.9] — 2026-06-14
+
+> LOCAL PoC, opt-in, default-OFF; production server.py untouched; operational deployment deferred (facility auth = B4). Independent E2E re-run by the integrating session: PASS (float diff 0.000e+00, int exact, orphan 0, 4.1 s).
+
+#### Added (B2 — Tiled data-access PoC, manuscript ¶39; LOCAL serve + client read-back + E2E)
+- `server/data_access/tiled_tree.py`: `scans_tree(directory)` builds a Tiled `MapAdapter` mapping each scan file (`*.h5`/`*.hdf5`/`*.nxs`) to Tiled's native `HDF5Adapter`. Serves the project's EXISTING NeXus/HDF5 scan output (written by `server/data/writer.py:NexusWriter`) UNMODIFIED — the full `/entry/data/<column>` tree + `/entry/data/xrf_spectra` + NeXus `/entry` metadata are exposed natively. (Pyobject tree chosen over the SQL `catalog`+`tiled register` flow because `register` rejects nested-HDF5 *container* data-sources with HTTP 422 in the validated Tiled 0.2.3 — documented gap.)
+- `server/data_access/tiled_config.yml`: `tiled serve config` template (one root tree → `data_access.tiled_tree:scans_tree`). Anonymous READ-ONLY, loopback bind. `${...}` tokens (scans dir, host/port, per-launch API key) materialized by the launcher so no secret is committed. Clearly documents LOCAL-only scope + B4 auth deferral.
+- `server/data_access/tiled_serve.py`: `TiledServer` launcher — spawns `tiled serve config` as a subprocess, polls `/healthz` for readiness (not a fixed sleep), and mirrors the qserver launcher style with a `_kill_process_tree` reaper (Windows `taskkill /F /T`, POSIX `killpg`) so no orphan uvicorn workers survive teardown. Opt-in/default-OFF (`constants.TILED_ENABLED_DEFAULT=False`); never auto-started by production `server.py`.
+- `server/data_access/tiled_demo.py`: the "programmatic read-back" deliverable — `from_uri` connect → list catalog runs → open one run → read `/entry/data` detector/motor arrays into numpy → print a structured summary. Self-hosts a server or connects to `--url`.
+- `server/data_access/make_sample_scan.py`: generates a REAL scan file via the project's `NexusWriter` along the EXACT live-scan write path (`create_extensible_1d` + `append_value` per event + 2-D `xrf_spectra` rows + `finalize`), so the served file is byte-structurally identical to runner auto-saves.
+- `server/test_tiled_e2e.py`: runnable blocking-assert E2E (also a pytest test). Generates a real scan file → spawns `tiled serve config` → client lists ≥1 run → reads known datasets → ASSERTS Tiled-served arrays equal the SOURCE file read with h5py (float `< 1e-9`, int exact, same shape+dtype) → asserts NeXus metadata preserved → teardown with 0-orphan assertion → cleans the generated file → prints timings.
+- `server/requirements_tiled.txt`: isolated optional deps (production `requirements.txt` pin set UNTOUCHED) — `tiled[server,client]>=0.2.3,<0.3`, `dask` (required by `tiled.adapters.hdf5`), h5py/numpy/psutil. Records the exact validated versions (tiled 0.2.3, dask 2026.6.0).
+- `docs/tasks/TASK_B2_TILED.md`: design, format served, adapter/tree config, client read-back result, E2E result + timings, limitations (auth deferred to B4, local-only, catalog-register HDF5 gap).
+
+#### Changed
+- `server/constants.py`: added `TILED_ENABLED_DEFAULT` (False), `TILED_PORT` (8010), `TILED_HOST` (127.0.0.1), `TILED_STARTUP_TIMEOUT`, `TILED_POLL_INTERVAL`.
+- `.gitignore`: ignore the materialized local config, catalog/cache DBs, and `tiled_b2_*/` temp dirs.
+
+#### Validated
+- Read-back faithfulness (local, Windows, Python 3.11.4, tiled 0.2.3): Tiled-over-HTTP vs h5py-direct — float columns (sample_x/sample_y/I0/It/Fe_Ka) **max abs diff 0.000e+00** (tol 1e-9), `xrf_spectra` int32 **exact match**, same shape+dtype; NeXus `/entry` metadata (`scan_type`, `uid`, `num_points`) preserved. E2E PASS, **0 orphan processes**, generated file cleaned. Timings: total ~4.1 s (server start ~2.8 s, client read+assert ~1.1 s). pytest + standalone runner both PASS.
+- pyflakes/py_compile clean on all new py files.
+- NOTE: operational deployment + facility auth/sandbox are DEFERRED to B4. This tranche is PoC + client demo + E2E only; nothing is installed in production.
+
+### [4.38.8] — 2026-06-14
+
+#### Added (B1 — bluesky-queueserver opt-in scan backend, manuscript ¶31; LOCAL impl + E2E, dormant on merge)
+- `server/scan_engine/qserver_runner.py`: `QueueServerRunner` mirrors the FULL public interface of `BlueskyRunner` (start/status/state/submit/submit_async/abort/pause/resume/list_plans/shutdown — verified 0 missing) so `server.py` holds either behind the single backend-agnostic `bluesky_runner` variable. Drives a SEPARATE-PROCESS RE Manager over 0MQ via `bluesky_queueserver_api.zmq.REManagerAPI`. submit single-plan parity = environment_open(if needed) → item_add → queue_start; abort = queue_stop → (RE running) re_pause → wait → re_abort (re_halt fallback) [re_abort requires a PAUSED RunEngine]; pause/resume = re_pause/re_resume. Queue-native extras: env_open/env_close, queue_add/queue_start/queue_stop/queue_clear/queue_get, history_get. status() returns the SAME dict shape as BlueskyRunner + `'backend':'qserver'` + a `'queue'` block. A 0.5 s status-diff poller forwards start/stop/status transitions to the existing ws_callback in the SAME `{'type':'scan_event',...}` envelope (per-event document streaming deferred — documented). `_kill_process_tree` (Windows `taskkill /F /T`, POSIX `killpg`) reaps the RE Worker multiprocessing child so no orphans survive shutdown.
+- `server/scan_engine/qserver_startup.py`: RE Manager startup helpers — (re)generate `existing_plans_and_devices.yaml` from the live profile via `qserver-list-plans-devices --startup-module`, build the `start-re-manager` argv, spawn an in-process `fakeredis.TcpFakeServer` when no real Redis is reachable (local PoC fallback), real-Redis reachability probe. Uses `--startup-module` (not `--startup-dir`) to dodge the Windows `__file__`-patch unicodeescape bug on `C:\Users` paths.
+- `server/scan_engine/qserver_profile/` (startup profile): `__init__.py` defines `RE` + the SAME devices (reuses `scan_engine.devices.create_devices`/`connect_devices`) and registers the SAME plans (`scan_engine.plans` thin wrappers, names 1:1 with project plans) so allowed-plans/devices match the in-process engine. `QSERVER_DEVICE_PATH` toggle: `epics` (default, production) | `sim` (ophyd.sim det/motor, EPICS-free, proves queue mechanics). `user_group_permissions.yaml` = permissive primary group for the local PoC (hardening = B4).
+- `server/test_qserver_e2e.py`: runnable blocking-assert E2E. Device path = ophyd.sim (EPICS-free) + Redis = fakeredis TCP (separate-process-capable). Asserted steps: start → env_open → queue_add(count) → queue_start → poll to completion (history 1× exit_status=completed) → abort path (long count → start → abort → idle in 2.0 s, run recorded aborted/failed) → env_close → shutdown (no orphans). PLUS a zero-regression unit asserting SCAN_BACKEND-unset → BlueskyRunner with the original status() shape (no `backend` key). ALL PASS (~18.6 s).
+- `server/requirements_qserver.txt`: isolated optional deps (production `requirements.txt` pin set untouched) — bluesky-queueserver==0.0.24, bluesky-queueserver-api==0.0.13, redis>=5.0, fakeredis>=2.21.
+- `docs/tasks/TASK_B1_QUEUESERVER.md`: design, mode switch, /ws/scan action table, startup profile, E2E results (device path stated), limitations.
+
+#### Changed
+- `server/server.py`: B1 mode switch in the runner-construction branch. `SCAN_BACKEND` env (default `inprocess`, `constants.SCAN_BACKEND_DEFAULT`, read at task-start). `inprocess`/unset builds `BlueskyRunner` EXACTLY as before (regression-critical path, ZERO behavioral change); `qserver` builds `QueueServerRunner`. Variable name `bluesky_runner` kept so `scan_handler` is backend-agnostic. Added 7 /ws/scan queue actions (queue_add/queue_start/queue_stop/queue_clear/queue_status/queue_get/history) routed to the runner only when it implements the queue method and `status()['backend']=='qserver'`; otherwise returns `{type:'scan_error', message:'queue actions require SCAN_BACKEND=qserver ...'}` (does NOT fake a queue). Existing submit/abort/pause/resume/status routing unchanged.
+- `server/constants.py`: `SCAN_BACKEND_DEFAULT='inprocess'`, `QSERVER_ZMQ_PORT/QSERVER_ZMQ_INFO_PORT/QSERVER_REDIS_PORT`, `QSERVER_POLL_INTERVAL`, `QSERVER_STARTUP_TIMEOUT`.
+- `deploy/config.env`: documented, defaulted-OFF `SCAN_BACKEND="inprocess"` option block (+ commented `QSERVER_DEVICE_PATH`/`QSERVER_USE_FAKEREDIS`).
+
+#### Validated
+- Interface parity: `QueueServerRunner` implements all `BlueskyRunner` public methods (0 missing) + queue-native extras (import-level check).
+- E2E (local, Windows, Python 3.11.4): queue submit/abort/status/history E2E PASS via the REAL `QueueServerRunner` + REAL separate-process RE Manager; orphan count 0 after teardown.
+- Zero-regression: SCAN_BACKEND-unset construction branch yields `BlueskyRunner` with the original status() key set (no `backend`/`queue` keys). PASS.
+- NOTE: full real-device E2E (epics path + caproto soft IOC) and production install are DEFERRED. Merged DORMANT: SCAN_BACKEND defaults to inprocess and qserver deps are not installed in production, so the pulled code changes no runtime behavior until explicitly activated. Independent E2E re-run by the integrating session: ALL PASS (18.8 s).
+
+### [4.38.7] — 2026-06-14
+
+#### Changed (beamline layout SVG icons — equipment-like redesign)
+- `js/ui/02_layout_svg.js`: every component icon redrawn in the IC1 visual language (semi-transparent housing + key functional internals + through-beam path). User-approved set: variant C (minimal, 1-2 internals, tuned for the small layout scale) for ALL components, EXCEPT the detector which uses variant B (richer: pixel sensor face + flange body + cooling fins + mount post + cable). IC1 (`_svgIC`) is the anchor and is unchanged. IVU24 = magnet girder, slits = 2-jaw blocks, mirrors = tank + tilted substrate + footprint dot, DCM = vessel + two crystals (top) / Si box (side), XBPM = ring + 4 pickup blades, attenuator = housing + pivot paddle, KB = curved elliptical substrate, sample = goniometer pin. Signatures/dispatch/x-positions/footprint unchanged; `_svgSlit`/`_svgMirror` gained optional trailing args (default = prior behavior). CSS variables only (rgba alphas as in _svgIC), ES5, node --check PASS.
+- Verified by rendering the real layout strip before/after via Playwright (124 -> 176 icon elements, zero page errors, legible at on-screen scale; detector visibly distinct, IC1 unchanged).
+
+### [4.38.6] — 2026-06-12
+
+#### Changed (ion-chamber numbering follows the beam direction — user convention)
+- Device numbering: IC1 = upstream chamber at 149.45 m (XAFS role I0), **IC2 = detector-position chamber** (XAFS role I1; previously labeled "I1" in the UI). Relabeled: detector popup section "ION CHAMBER (I1) MODE" -> "ION CHAMBER IC2 (transmission)" + Flux/current labels (js/ui/05_modal.js); XAFS Expt row "IC I0/I1 ln(I0/I1)" -> "IC1/IC2 ln(IC1/IC2)"; completion line and console line now print IC1/IC2 (js/experiment/06_experiment_ui.js). Server message keys stay i0/i1 (XAFS role names, API unchanged — contract checks unaffected).
+
 ## Development-line sync — 2026-06-12 (versions 4.37.45 → 4.38.5)
 
 This tranche lands the items previously listed in the README as "in implementation

@@ -1,0 +1,38 @@
+# Permissive user-group permissions for the local B1 queueserver PoC.
+#
+# This grants the default 'primary' group access to ALL plans/devices/functions
+# exposed by the startup profile (scan_engine.qserver_profile). It is intended
+# for the local proof-of-concept and VM1 internal commissioning ONLY.
+#
+# Hardening (allow-listing specific plans/devices/users, sandboxing, auth) is
+# deferred to B4 (facility security policy) -- see TASK_PHASE1_ROADMAP.md s5.
+#
+# Format reference: bluesky_queueserver/profile_collection_sim/
+#                   user_group_permissions.yaml
+user_groups:
+  root:  # preliminary filter applied to every group
+    allowed_plans:
+      - null            # allow all
+    forbidden_plans:
+      - ":^_"           # hide names starting with '_'
+    allowed_devices:
+      - null
+    forbidden_devices:
+      - ":^_:?.*"
+    allowed_functions:
+      - null
+    forbidden_functions:
+      - ":^_"
+  primary:  # default group used by REManagerAPI
+    allowed_plans:
+      - ":.*"           # allow all plans
+    forbidden_plans:
+      - null
+    allowed_devices:
+      - ":?.*:depth=5"  # allow all devices + subdevices (max depth 5)
+    forbidden_devices:
+      - null
+    allowed_functions:
+      - ":.*"
+    forbidden_functions:
+      - ":^_"

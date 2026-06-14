@@ -1,0 +1,66 @@
+# Tiled server configuration -- B2 data-access PoC (manuscript para 39).
+#
+# PURPOSE
+#   Serve the EXISTING beamline scan output (NeXus/HDF5 files written by
+#   server/data/writer.py:NexusWriter, auto-saved by the Bluesky RunEngine into
+#   server/data/scans/) through a Tiled server so the data can be read back
+#   PROGRAMMATICALLY over HTTP (numpy/xarray client), without bespoke parsing.
+#
+# SCOPE (READ THIS)
+#   * LOCAL PoC ONLY. Bind is loopback (127.0.0.1) -- not exposed to any network.
+#   * Anonymous, READ-ONLY access (allow_anonymous_access: true). There is NO
+#     facility authentication here. Per the Phase-1 roadmap, operational
+#     deployment + facility auth/sandbox are DEFERRED to B4. Do NOT deploy this
+#     config to VM1 / any shared host as-is.
+#   * Opt-in / default-OFF: nothing starts this automatically. It is launched
+#     only by server/data_access/tiled_serve.py (or `tiled serve config <file>`).
+#
+# FORMAT SERVED
+#   The project's scan files are HDF5 with a NeXus tree:
+#       /entry (NXentry)
+#         /entry/data/<column>        1-D arrays (sample_x, I0, It, Fe_Ka, ...)
+#         /entry/data/xrf_spectra     2-D int32 (n_events, n_channels)
+#         /entry/instrument/...       beamline metadata
+#   Tiled's built-in HDF5 adapter (application/x-hdf5, the default mimetype for
+#   .h5/.hdf5/.nxs) ingests this tree NATIVELY -- no restructuring required.
+#   Verified read-back is bit-exact vs h5py (see TASK_B2_TILED.md).
+#
+# TREE CHOICE (catalog vs pyobject)
+#   This config uses a pyobject tree (data_access.tiled_tree:scans_tree) that
+#   maps each scan file -> HDF5Adapter directly. The alternative SQL `catalog` +
+#   `tiled register` flow rejects nested-HDF5 *container* data-sources in the
+#   validated Tiled 0.2.3 (register POST returns HTTP 422), so the pyobject path
+#   is used. It still serves the NATIVE files unmodified. The catalog gap and
+#   the native-catalog config it would need are documented in TASK_B2_TILED.md.
+#
+# PLACEHOLDERS
+#   The ${...} tokens below are substituted by tiled_serve.py at launch with
+#   absolute local paths + a freshly generated single-user API key. The file is
+#   kept as a template so it stays host-portable and carries no secret in git.
+#   To run this config by hand, replace the tokens with concrete local values.
+#
+# Tiled version validated against: 0.2.3 (extras: tiled[server,client] + dask).
+
+trees:
+  # One tree mounted at the root: a MapAdapter of {scan_name: HDF5Adapter}
+  # built by data_access.tiled_tree:scans_tree over the scan-output directory.
+  - path: "/"
+    tree: data_access.tiled_tree:scans_tree
+    args:
+      # Directory of NeXus/HDF5 scan files to serve (the runner's output dir).
+      directory: "${SCANS_DIR}"
+
+authentication:
+  # Anonymous read access for the LOCAL PoC. No identity providers are
+  # configured -> no facility login. (B4 will add an authenticator here.)
+  allow_anonymous_access: true
+  # Single-user API key (write-side / admin). Generated per-launch by
+  # tiled_serve.py; reads do not need it because anonymous access is on.
+  single_user_api_key: "${API_KEY}"
+
+uvicorn:
+  host: "${HOST}"
+  port: ${PORT}
+
+# Keep the whole response budget modest; PoC files are small.
+response_bytesize_limit: 314572800   # 300 MB (Tiled default; explicit here)

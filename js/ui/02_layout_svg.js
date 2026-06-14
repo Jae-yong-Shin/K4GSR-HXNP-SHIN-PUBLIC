@@ -336,13 +336,25 @@ function makeBeamYFn(nodes,yBaseline){
 
 // ========== Type-based device SVG renderers ==========
 
+// Source/undulator SVG (variant C): translucent amber housing + a compact
+// magnet girder (3 alternating N/S pole pairs, --ac/--rd) with the white beam
+// passing through the magnet gap. Same signature/footprint as before.
 function _svgSource(x,yT,yS){
-  return {
-    top:'<rect x="'+(x-10)+'" y="'+(yT-14)+'" width="20" height="28" rx="3" fill="#2a1800" stroke="#c08020"/>'+
-        '<line x1="'+x+'" y1="'+(yT-8)+'" x2="'+x+'" y2="'+(yT+8)+'" stroke="'+COL_WB+'" stroke-width="2" opacity=".6"/>',
-    side:'<rect x="'+(x-10)+'" y="'+(yS-14)+'" width="20" height="28" rx="3" fill="#2a1800" stroke="#c08020"/>'+
-         '<line x1="'+x+'" y1="'+(yS-8)+'" x2="'+x+'" y2="'+(yS+8)+'" stroke="'+COL_WB+'" stroke-width="2" opacity=".6"/>'
-  };
+  function one(yC){
+    var s='';
+    s+='<rect x="'+(x-11)+'" y="'+(yC-14)+'" width="22" height="28" rx="2" fill="rgba(255,179,64,0.10)" stroke="var(--am)" stroke-width="1"/>';
+    var i,px,cT,cB;
+    for(i=0;i<3;i++){
+      px=x-8+i*5.7;
+      cT=(i%2===0)?'var(--ac)':'var(--rd)';
+      cB=(i%2===0)?'var(--rd)':'var(--ac)';
+      s+='<rect x="'+px+'" y="'+(yC-11)+'" width="4.5" height="6.5" fill="'+cT+'" opacity="0.85"/>';
+      s+='<rect x="'+px+'" y="'+(yC+4.5)+'" width="4.5" height="6.5" fill="'+cB+'" opacity="0.85"/>';
+    }
+    s+='<line x1="'+(x-11)+'" y1="'+yC+'" x2="'+(x+11)+'" y2="'+yC+'" stroke="var(--ac)" stroke-width="1.2" stroke-dasharray="2,1.5" opacity="0.85"/>';
+    return s;
+  }
+  return {top:one(yT), side:one(yS)};
 }
 // Return top/side SVG for a mask/shutter as a 6x20px slab, gray for 'mask' else tan, centered on the beam y.
 function _svgMask(x,tyC,syC,tp){
@@ -352,15 +364,23 @@ function _svgMask(x,tyC,syC,tp){
     side:'<rect x="'+(x-3)+'" y="'+(syC-10)+'" width="6" height="20" rx="1" fill="var(--s3)" stroke="'+mc+'" stroke-width=".7"/>'
   };
 }
-// Return top/side SVG for a slit as two 6x7px jaws above/below the beam y, stroke color overridable (default amber).
-function _svgSlit(x,tyC,syC,color){
+// Slit SVG (variant C): translucent housing + two 4-jaw blocks above/below the
+// beam, with the beam passing through the central gap. stroke color overridable
+// (default amber); optional fillR overrides the housing fill (used by SSA with a
+// --pr override). When fillR is absent the default amber-tinted fill is used, so
+// existing call sites that pass only `color` keep their previous behavior.
+function _svgSlit(x,tyC,syC,color,fillR){
   var sc=color||'var(--am)';
-  return {
-    top:'<rect x="'+(x-3)+'" y="'+(tyC-11)+'" width="6" height="7" rx="1" fill="var(--s3)" stroke="'+sc+'" stroke-width=".8"/>'+
-        '<rect x="'+(x-3)+'" y="'+(tyC+4)+'" width="6" height="7" rx="1" fill="var(--s3)" stroke="'+sc+'" stroke-width=".8"/>',
-    side:'<rect x="'+(x-3)+'" y="'+(syC-11)+'" width="6" height="7" rx="1" fill="var(--s3)" stroke="'+sc+'" stroke-width=".8"/>'+
-         '<rect x="'+(x-3)+'" y="'+(syC+4)+'" width="6" height="7" rx="1" fill="var(--s3)" stroke="'+sc+'" stroke-width=".8"/>'
-  };
+  var fl=fillR||'rgba(255,179,64,0.08)';
+  function one(yC){
+    var s='';
+    s+='<rect x="'+(x-8)+'" y="'+(yC-13)+'" width="16" height="26" rx="2" fill="'+fl+'" stroke="'+sc+'" stroke-width="0.9"/>';
+    s+='<rect x="'+(x-6)+'" y="'+(yC-9)+'" width="12" height="6" rx="1" fill="var(--s3)" stroke="'+sc+'" stroke-width="0.8"/>';
+    s+='<rect x="'+(x-6)+'" y="'+(yC+3)+'" width="12" height="6" rx="1" fill="var(--s3)" stroke="'+sc+'" stroke-width="0.8"/>';
+    s+='<line x1="'+(x-8)+'" y1="'+yC+'" x2="'+(x+8)+'" y2="'+yC+'" stroke="var(--ac)" stroke-width="1.2" stroke-dasharray="2,1.5" opacity="0.85"/>';
+    return s;
+  }
+  return {top:one(tyC), side:one(syC)};
 }
 // Ion-chamber SVG: gas-filled chamber box with two parallel HV collection
 // plates above/below the beam, an HV lead on top, and the beam passing
@@ -389,22 +409,40 @@ function _svgIC(x,tyC,syC){
   }
   return { top: one(tyC), side: one(syC) };
 }
-// Generic mirror SVG. deflView='top'(default) or 'side' controls which view shows pitch tilt.
-function _svgMirror(x,tyC,syC,rot,col,colHL,colFill,deflView){
+// Generic mirror SVG (variant C). deflView='top'(default) or 'side' controls
+// which view shows the pitch tilt. The deflecting view draws a translucent
+// mirror tank + tilted substrate (curved=elliptical KB hint) + footprint dot;
+// the non-deflecting view draws the tank seen edge-on as a flat optical bar.
+// Optional fillR overrides the tank fill; curved=true draws an elliptical
+// substrate (KB). Extra trailing args default so existing M1/M2 call sites
+// (_svgMirror(x,tyC,syC,rot)) keep working unchanged.
+function _svgMirror(x,tyC,syC,rot,col,colHL,colFill,deflView,fillR,curved){
   col=col||COL_MIRROR; colHL=colHL||COL_MIRROR_HL; colFill=colFill||'#1a2a40';
+  fillR=fillR||'rgba(96,160,224,0.07)';
   var dv=deflView||'top';
-  var tiltLine='<line x1="'+x+'" y1="'+(tyC-16)+'" x2="'+x+'" y2="'+(tyC+16)+'" stroke="'+col+'" stroke-width="3.5" stroke-linecap="round" transform="rotate('+rot+','+x+','+tyC+')"/>'+
-      '<line x1="'+(x+1)+'" y1="'+(tyC-15)+'" x2="'+(x+1)+'" y2="'+(tyC+15)+'" stroke="'+colHL+'" stroke-width="1" opacity=".4" transform="rotate('+rot+','+x+','+tyC+')"/>';
-  var tiltLineS='<line x1="'+x+'" y1="'+(syC-16)+'" x2="'+x+'" y2="'+(syC+16)+'" stroke="'+col+'" stroke-width="3.5" stroke-linecap="round" transform="rotate('+rot+','+x+','+syC+')"/>'+
-      '<line x1="'+(x+1)+'" y1="'+(syC-15)+'" x2="'+(x+1)+'" y2="'+(syC+15)+'" stroke="'+colHL+'" stroke-width="1" opacity=".4" transform="rotate('+rot+','+x+','+syC+')"/>';
-  var flatT='<rect x="'+(x-14)+'" y="'+(tyC-2)+'" width="28" height="4" rx="1" fill="'+colFill+'" stroke="'+col+'" stroke-width=".8"/>';
-  var flatS='<rect x="'+(x-14)+'" y="'+(syC-2)+'" width="28" height="4" rx="1" fill="'+colFill+'" stroke="'+col+'" stroke-width=".8"/>';
-  if(dv==='side'){
-    return {top:flatT, side:tiltLineS};
+  function tilt(yC){
+    var s='';
+    s+='<rect x="'+(x-14)+'" y="'+(yC-14)+'" width="28" height="28" rx="3" fill="'+fillR+'" stroke="'+col+'" stroke-width="0.7"/>';
+    if(curved){
+      s+='<path d="M '+x+' '+(yC-12)+' Q '+(x+3)+' '+yC+' '+x+' '+(yC+12)+'" fill="none" stroke="'+col+'" stroke-width="3.5" stroke-linecap="round" transform="rotate('+rot+','+x+','+yC+')"/>';
+    } else {
+      s+='<line x1="'+x+'" y1="'+(yC-12)+'" x2="'+x+'" y2="'+(yC+12)+'" stroke="'+col+'" stroke-width="3.5" stroke-linecap="round" transform="rotate('+rot+','+x+','+yC+')"/>';
+    }
+    s+='<circle cx="'+x+'" cy="'+yC+'" r="1.8" fill="var(--t1)" opacity="0.85"/>';
+    return s;
   }
-  return {top:tiltLine, side:flatS};
+  function flat(yC){
+    var s='';
+    s+='<rect x="'+(x-14)+'" y="'+(yC-8)+'" width="28" height="16" rx="2" fill="'+fillR+'" stroke="'+col+'" stroke-width="0.7"/>';
+    s+='<rect x="'+(x-11)+'" y="'+(yC-1.8)+'" width="22" height="3.6" rx="1" fill="var(--s3)" stroke="'+col+'" stroke-width="0.8"/>';
+    return s;
+  }
+  if(dv==='side') return {top:flat(tyC), side:tilt(syC)};
+  return {top:tilt(tyC), side:flat(syC)};
 }
-// Return DCM SVG: top draws two tilted purple crystal lines from dcm_c1/c2 nodes; side draws a labeled Si box.
+// DCM SVG (variant C): top view draws a translucent vacuum vessel enclosing the
+// two tilted purple crystals (from dcm_c1/c2 nodes); side view draws a
+// translucent purple Si vessel with through-beam stubs entering/exiting.
 function _svgDcm(x,syC,nodes){
   // Find DCM crystal nodes for top view
   var c1n=null,c2n=null;
@@ -414,60 +452,56 @@ function _svgDcm(x,syC,nodes){
   }
   var ti='';
   if(c1n&&c2n){
-    ti='<line x1="'+c1n.x+'" y1="'+(c1n.y-10)+'" x2="'+c1n.x+'" y2="'+(c1n.y+10)+'" stroke="'+COL_DCM+'" stroke-width="3.5" stroke-linecap="round" transform="rotate('+c1n.rotC1+','+c1n.x+','+c1n.y+')"/>'+
-       '<line x1="'+c2n.x+'" y1="'+(c2n.y-10)+'" x2="'+c2n.x+'" y2="'+(c2n.y+10)+'" stroke="'+COL_DCM+'" stroke-width="3.5" stroke-linecap="round" transform="rotate('+c2n.rotC2+','+c2n.x+','+c2n.y+')"/>';
+    ti+='<rect x="'+(c1n.x-10)+'" y="'+(c1n.y-13)+'" width="'+(c2n.x-c1n.x+20)+'" height="'+(c2n.y-c1n.y+26)+'" rx="3" fill="rgba(160,140,255,0.05)" stroke="var(--pr)" stroke-width="0.7"/>';
+    ti+='<line x1="'+c1n.x+'" y1="'+(c1n.y-10)+'" x2="'+c1n.x+'" y2="'+(c1n.y+10)+'" stroke="'+COL_DCM+'" stroke-width="3.5" stroke-linecap="round" transform="rotate('+c1n.rotC1+','+c1n.x+','+c1n.y+')"/>';
+    ti+='<line x1="'+c2n.x+'" y1="'+(c2n.y-10)+'" x2="'+c2n.x+'" y2="'+(c2n.y+10)+'" stroke="'+COL_DCM+'" stroke-width="3.5" stroke-linecap="round" transform="rotate('+c2n.rotC2+','+c2n.x+','+c2n.y+')"/>';
   }
-  return {
-    top:ti,
-    side:'<rect x="'+(x-12)+'" y="'+(syC-7)+'" width="24" height="14" rx="2" fill="'+COL_DCM_FILL+'" stroke="'+COL_DCM+'" stroke-width=".8"/>'+
-         '<text x="'+x+'" y="'+(syC+4)+'" text-anchor="middle" fill="'+COL_DCM+'" font-size="8" font-family="var(--mn)">Si</text>'
-  };
+  var si='';
+  si+='<rect x="'+(x-13)+'" y="'+(syC-9)+'" width="26" height="18" rx="2" fill="rgba(160,140,255,0.08)" stroke="'+COL_DCM+'" stroke-width="0.8"/>';
+  si+='<text x="'+x+'" y="'+(syC+3)+'" text-anchor="middle" fill="'+COL_DCM+'" font-size="7" font-family="var(--mn)">Si</text>';
+  si+='<line x1="'+(x-13)+'" y1="'+syC+'" x2="'+(x-7)+'" y2="'+syC+'" stroke="var(--ac)" stroke-width="1" stroke-dasharray="2,1.5" opacity="0.6"/>';
+  si+='<line x1="'+(x+7)+'" y1="'+syC+'" x2="'+(x+13)+'" y2="'+syC+'" stroke="var(--ac)" stroke-width="1" stroke-dasharray="2,1.5" opacity="0.6"/>';
+  return {top:ti, side:si};
 }
-// Return top/side SVG for a beam position monitor: a green ring with horizontal/vertical crosshair lines.
+// XBPM SVG (variant C): translucent green ring with four diagonal pickup blades
+// pointing toward the center, plus a beam dot where the beam passes through.
 function _svgBpm(x,tyC,syC){
-  return {
-    top:'<circle cx="'+x+'" cy="'+tyC+'" r="4.5" fill="none" stroke="var(--gn)" stroke-width=".8"/>'+
-        '<line x1="'+(x-3)+'" y1="'+tyC+'" x2="'+(x+3)+'" y2="'+tyC+'" stroke="var(--gn)" stroke-width=".5"/>'+
-        '<line x1="'+x+'" y1="'+(tyC-3)+'" x2="'+x+'" y2="'+(tyC+3)+'" stroke="var(--gn)" stroke-width=".5"/>',
-    side:'<circle cx="'+x+'" cy="'+syC+'" r="4.5" fill="none" stroke="var(--gn)" stroke-width=".8"/>'+
-         '<line x1="'+(x-3)+'" y1="'+syC+'" x2="'+(x+3)+'" y2="'+syC+'" stroke="var(--gn)" stroke-width=".5"/>'+
-         '<line x1="'+x+'" y1="'+(syC-3)+'" x2="'+x+'" y2="'+(syC+3)+'" stroke="var(--gn)" stroke-width=".5"/>'
-  };
+  function one(yC){
+    var s='';
+    s+='<circle cx="'+x+'" cy="'+yC+'" r="7.5" fill="rgba(64,216,154,0.08)" stroke="var(--gn)" stroke-width="1"/>';
+    s+='<line x1="'+(x+3.9)+'" y1="'+(yC-3.9)+'" x2="'+(x+1.4)+'" y2="'+(yC-1.4)+'" stroke="var(--gn)" stroke-width="1.8" stroke-linecap="round"/>';
+    s+='<line x1="'+(x-3.9)+'" y1="'+(yC-3.9)+'" x2="'+(x-1.4)+'" y2="'+(yC-1.4)+'" stroke="var(--gn)" stroke-width="1.8" stroke-linecap="round"/>';
+    s+='<line x1="'+(x+3.9)+'" y1="'+(yC+3.9)+'" x2="'+(x+1.4)+'" y2="'+(yC+1.4)+'" stroke="var(--gn)" stroke-width="1.8" stroke-linecap="round"/>';
+    s+='<line x1="'+(x-3.9)+'" y1="'+(yC+3.9)+'" x2="'+(x-1.4)+'" y2="'+(yC+1.4)+'" stroke="var(--gn)" stroke-width="1.8" stroke-linecap="round"/>';
+    s+='<circle cx="'+x+'" cy="'+yC+'" r="1.2" fill="var(--ac)" opacity="0.9"/>';
+    return s;
+  }
+  return {top:one(tyC), side:one(syC)};
 }
-// Return top/side SVG for an attenuator drawn as a steel disc with absorber spokes and a small central aperture.
+// Attenuator SVG (variant C): translucent housing + a pivot at top with one
+// absorber paddle inserted into the beam; the beam is drawn full before the
+// paddle and dimmed (attenuated) after it.
 function _svgAtten(x,tyC,syC){
-  var ac='#6890b0';
-  var body='<circle cx="'+x+'" cy="__Y__" r="8" fill="#1a2030" stroke="'+ac+'" stroke-width="1"/>'+
-    '<line x1="'+(x-2)+'" y1="'+('__Y__-8')+'" x2="'+(x-6)+'" y2="'+('__Y__-17')+'" stroke="'+ac+'" stroke-width="2.5" stroke-linecap="round"/>'+
-    '<circle cx="'+(x-6)+'" cy="'+('__Y__-17')+'" r="1.5" fill="'+ac+'" opacity=".5"/>'+
-    '<line x1="'+(x+3)+'" y1="'+('__Y__-7')+'" x2="'+(x+7)+'" y2="'+('__Y__-17')+'" stroke="'+ac+'" stroke-width="2.5" stroke-linecap="round"/>'+
-    '<circle cx="'+(x+7)+'" cy="'+('__Y__-17')+'" r="1.5" fill="'+ac+'" opacity=".5"/>'+
-    '<line x1="'+(x+8)+'" y1="__Y__" x2="'+(x+15)+'" y2="'+('__Y__-1')+'" stroke="'+ac+'" stroke-width="1.8" stroke-linecap="round"/>'+
-    '<circle cx="'+x+'" cy="__Y__" r="2.5" fill="#0c111a" stroke="'+ac+'" stroke-width=".5"/>';
-  return {
-    top:'<circle cx="'+x+'" cy="'+tyC+'" r="8" fill="#1a2030" stroke="'+ac+'" stroke-width="1"/>'+
-        '<line x1="'+(x-2)+'" y1="'+(tyC-8)+'" x2="'+(x-6)+'" y2="'+(tyC-17)+'" stroke="'+ac+'" stroke-width="2.5" stroke-linecap="round"/>'+
-        '<circle cx="'+(x-6)+'" cy="'+(tyC-17)+'" r="1.5" fill="'+ac+'" opacity=".5"/>'+
-        '<line x1="'+(x+3)+'" y1="'+(tyC-7)+'" x2="'+(x+7)+'" y2="'+(tyC-17)+'" stroke="'+ac+'" stroke-width="2.5" stroke-linecap="round"/>'+
-        '<circle cx="'+(x+7)+'" cy="'+(tyC-17)+'" r="1.5" fill="'+ac+'" opacity=".5"/>'+
-        '<line x1="'+(x+8)+'" y1="'+tyC+'" x2="'+(x+15)+'" y2="'+(tyC-1)+'" stroke="'+ac+'" stroke-width="1.8" stroke-linecap="round"/>'+
-        '<circle cx="'+x+'" cy="'+tyC+'" r="2.5" fill="#0c111a" stroke="'+ac+'" stroke-width=".5"/>',
-    side:'<circle cx="'+x+'" cy="'+syC+'" r="8" fill="#1a2030" stroke="'+ac+'" stroke-width="1"/>'+
-         '<line x1="'+(x-2)+'" y1="'+(syC-8)+'" x2="'+(x-6)+'" y2="'+(syC-17)+'" stroke="'+ac+'" stroke-width="2.5" stroke-linecap="round"/>'+
-         '<circle cx="'+(x-6)+'" cy="'+(syC-17)+'" r="1.5" fill="'+ac+'" opacity=".5"/>'+
-         '<line x1="'+(x+3)+'" y1="'+(syC-7)+'" x2="'+(x+7)+'" y2="'+(syC-17)+'" stroke="'+ac+'" stroke-width="2.5" stroke-linecap="round"/>'+
-         '<circle cx="'+(x+7)+'" cy="'+(syC-17)+'" r="1.5" fill="'+ac+'" opacity=".5"/>'+
-         '<line x1="'+(x+8)+'" y1="'+syC+'" x2="'+(x+15)+'" y2="'+(syC-1)+'" stroke="'+ac+'" stroke-width="1.8" stroke-linecap="round"/>'+
-         '<circle cx="'+x+'" cy="'+syC+'" r="2.5" fill="#0c111a" stroke="'+ac+'" stroke-width=".5"/>'
-  };
+  function one(yC){
+    var s='';
+    s+='<rect x="'+(x-9)+'" y="'+(yC-13)+'" width="18" height="26" rx="2" fill="rgba(77,184,255,0.07)" stroke="var(--ac)" stroke-width="0.9"/>';
+    s+='<circle cx="'+x+'" cy="'+(yC-9)+'" r="1.5" fill="var(--t2)"/>';
+    s+='<line x1="'+x+'" y1="'+(yC-7.5)+'" x2="'+x+'" y2="'+(yC-3)+'" stroke="var(--am)" stroke-width="1"/>';
+    s+='<rect x="'+(x-2)+'" y="'+(yC-3)+'" width="4" height="8" rx="0.8" fill="var(--am)" opacity="0.9"/>';
+    s+='<line x1="'+(x-9)+'" y1="'+yC+'" x2="'+(x-2)+'" y2="'+yC+'" stroke="var(--ac)" stroke-width="1.2" stroke-dasharray="2,1.5" opacity="0.85"/>';
+    s+='<line x1="'+(x+2)+'" y1="'+yC+'" x2="'+(x+9)+'" y2="'+yC+'" stroke="var(--ac)" stroke-width="1.2" stroke-dasharray="2,1.5" opacity="0.35"/>';
+    return s;
+  }
+  return {top:one(tyC), side:one(syC)};
 }
 // Return KB-V optic SVG: if KB, a focus-colored side-deflecting mirror at rot=-90+pitch; else ZP rings or CRL lens stack.
 function _svgKbv(x,tyC,syC,isKB,fm,pitch){
   pitch=pitch||0;
   if(isKB){
-    // KB-V: same mirror shape as M1/M2, focus color, deflects in side view
+    // KB-V (variant C): elliptical KB mirror (curved substrate) in the focus
+    // color, deflecting in side view. Same shape language as M1/M2 but bent.
     var rot=-90+pitch;
-    return _svgMirror(x,tyC,syC,rot,COL_FOCUS,COL_FOCUSED,'#1a2a20','side');
+    return _svgMirror(x,tyC,syC,rot,COL_FOCUS,COL_FOCUSED,'#1a2a20','side','rgba(224,160,80,0.07)',true);
   }
   // Alternative focus optics (ZP/CRL) shown at KB-V position
   var ti='',si='';
@@ -492,28 +526,59 @@ function _svgKbv(x,tyC,syC,isKB,fm,pitch){
   }
   return {top:ti,side:si};
 }
-// Return KB-H optic SVG as a focus-colored top-view-deflecting mirror tilted to rot=-90+pitch (degrees).
+// KB-H optic SVG (variant C): elliptical KB mirror (curved substrate) in the
+// focus color, deflecting in top view; tilted to rot=-90+pitch (degrees).
 function _svgKbh(x,tyC,syC,pitch){
   pitch=pitch||0;
-  // KB-H: same mirror shape as M1/M2, focus color, deflects in top view
   var rot=-90+pitch;
-  return _svgMirror(x,tyC,syC,rot,COL_FOCUS,COL_FOCUSED,'#1a2a20','top');
+  return _svgMirror(x,tyC,syC,rot,COL_FOCUS,COL_FOCUSED,'#1a2a20','top','rgba(224,160,80,0.07)',true);
 }
-// Return top/side SVG for the sample as a 12x12px pink-stroked square with a faint center dot at the beam y.
+// Sample SVG (variant C): a pin standing on a goniometer stage, with the sample
+// tip at beam height and the beam passing through it.
 function _svgSample(x,tyC,syC){
-  return {
-    top:'<rect x="'+(x-6)+'" y="'+(tyC-6)+'" width="12" height="12" rx="2" fill="#2a2020" stroke="var(--pk)"/>'+
-        '<circle cx="'+x+'" cy="'+tyC+'" r="2.5" fill="var(--pk)" opacity=".5"/>',
-    side:'<rect x="'+(x-6)+'" y="'+(syC-6)+'" width="12" height="12" rx="2" fill="#2a2020" stroke="var(--pk)"/>'+
-         '<circle cx="'+x+'" cy="'+syC+'" r="2.5" fill="var(--pk)" opacity=".5"/>'
-  };
+  function one(yC){
+    var s='';
+    s+='<rect x="'+(x-7)+'" y="'+(yC+6)+'" width="14" height="4" rx="1" fill="var(--s3)" stroke="var(--pk)" stroke-width="0.7"/>';
+    s+='<line x1="'+x+'" y1="'+(yC+6)+'" x2="'+x+'" y2="'+(yC+1.5)+'" stroke="var(--pk)" stroke-width="1"/>';
+    s+='<circle cx="'+x+'" cy="'+yC+'" r="2.2" fill="var(--pk)"/>';
+    s+='<line x1="'+(x-8)+'" y1="'+yC+'" x2="'+(x+8)+'" y2="'+yC+'" stroke="var(--ac)" stroke-width="1" stroke-dasharray="2,1.5" opacity="0.7"/>';
+    return s;
+  }
+  return {top:one(tyC), side:one(syC)};
 }
-// Return top/side SVG for the detector as a 16x28px purple-stroked panel centered on the beam y.
+// Detector SVG (variant B = A internals + exterior realism): a translucent
+// pixel-array sensor face (with pixel grid + module gaps and a beam impact dot),
+// a flange body behind it, plus cooling fins, a mounting post/foot, and a signal
+// cable. The detector is the only component using variant B so it reads as the
+// visually heaviest endpoint of the beamline.
 function _svgDet(x,tyC,syC){
-  return {
-    top:'<rect x="'+(x-8)+'" y="'+(tyC-14)+'" width="16" height="28" rx="2" fill="#1a1a30" stroke="var(--pr)"/>',
-    side:'<rect x="'+(x-8)+'" y="'+(syC-14)+'" width="16" height="28" rx="2" fill="#1a1a30" stroke="var(--pr)"/>'
-  };
+  function one(yC){
+    var s='';
+    // flange body (behind the sensor face)
+    s+='<rect x="'+(x+4)+'" y="'+(yC-10)+'" width="8" height="20" rx="1.5" fill="var(--s2)" stroke="var(--pr)" stroke-width="0.7" opacity="0.9"/>';
+    // sensor face
+    s+='<rect x="'+(x-8)+'" y="'+(yC-14)+'" width="12" height="28" rx="1.5" fill="rgba(160,140,255,0.10)" stroke="var(--pr)" stroke-width="1"/>';
+    // pixel grid + module gaps
+    s+='<line x1="'+(x-2)+'" y1="'+(yC-14)+'" x2="'+(x-2)+'" y2="'+(yC+14)+'" stroke="var(--pr)" stroke-width="0.5" opacity="0.45"/>';
+    s+='<line x1="'+(x-8)+'" y1="'+(yC-7)+'" x2="'+(x+4)+'" y2="'+(yC-7)+'" stroke="var(--pr)" stroke-width="0.5" opacity="0.45"/>';
+    s+='<line x1="'+(x-8)+'" y1="'+(yC+7)+'" x2="'+(x+4)+'" y2="'+(yC+7)+'" stroke="var(--pr)" stroke-width="0.5" opacity="0.45"/>';
+    s+='<line x1="'+(x-8)+'" y1="'+yC+'" x2="'+(x+4)+'" y2="'+yC+'" stroke="var(--pr)" stroke-width="0.9" opacity="0.7"/>';
+    // incoming beam stops at the face + impact dot
+    s+='<line x1="'+(x-14)+'" y1="'+yC+'" x2="'+(x-8)+'" y2="'+yC+'" stroke="var(--ac)" stroke-width="1.2" stroke-dasharray="2,1.5" opacity="0.85"/>';
+    s+='<circle cx="'+(x-8)+'" cy="'+yC+'" r="1.5" fill="var(--ac)" opacity="0.85"/>';
+    // --- variant B exterior realism ---
+    // cooling fins on body
+    s+='<line x1="'+(x+12)+'" y1="'+(yC-6)+'" x2="'+(x+14.5)+'" y2="'+(yC-6)+'" stroke="var(--pr)" stroke-width="0.7" opacity="0.7"/>';
+    s+='<line x1="'+(x+12)+'" y1="'+(yC-2)+'" x2="'+(x+14.5)+'" y2="'+(yC-2)+'" stroke="var(--pr)" stroke-width="0.7" opacity="0.7"/>';
+    s+='<line x1="'+(x+12)+'" y1="'+(yC+2)+'" x2="'+(x+14.5)+'" y2="'+(yC+2)+'" stroke="var(--pr)" stroke-width="0.7" opacity="0.7"/>';
+    // mounting post + foot
+    s+='<line x1="'+(x+8)+'" y1="'+(yC+10)+'" x2="'+(x+8)+'" y2="'+(yC+16)+'" stroke="var(--t3)" stroke-width="1.4"/>';
+    s+='<rect x="'+(x+4)+'" y="'+(yC+16)+'" width="8" height="2.5" rx="0.8" fill="var(--s2)" stroke="var(--t3)" stroke-width="0.6"/>';
+    // signal cable
+    s+='<path d="M '+(x+12)+' '+(yC+7)+' Q '+(x+16)+' '+(yC+9)+' '+(x+16)+' '+(yC+14)+'" fill="none" stroke="var(--t3)" stroke-width="0.8"/>';
+    return s;
+  }
+  return {top:one(tyC), side:one(syC)};
 }
 
 // Dispatch: render SVG for a single device by type

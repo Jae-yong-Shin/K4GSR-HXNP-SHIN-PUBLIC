@@ -1,0 +1,21 @@
+# Optional dependencies for the B1 bluesky-queueserver scan backend
+# (SCAN_BACKEND=qserver). NOT installed by the default requirements.txt -- the
+# in-process RunEngine backend (default) does not need these.
+#
+# Install only when commissioning the queueserver backend:
+#     pip install -r server/requirements_qserver.txt
+#
+# Pinned to the exact versions validated locally for B1 (2026-06-14, Python 3.11).
+bluesky-queueserver==0.0.24
+bluesky-queueserver-api==0.0.13
+
+# Redis client (transitive dep of bluesky-queueserver, pinned for clarity).
+# VM1 PRODUCTION: run a real redis-server (apt install redis-server) and set
+#   QSERVER_USE_FAKEREDIS=0. fakeredis is the LOCAL/PoC fallback only.
+redis>=5.0
+
+# fakeredis provides an in-process TCP Redis server so the separate RE Manager
+# process can connect without a system redis-server. Local PoC / Windows only.
+# Requires the TcpFakeServer (fakeredis >= 2.21). Do NOT rely on this in
+# production -- it has no persistence across restarts.
+fakeredis>=2.21

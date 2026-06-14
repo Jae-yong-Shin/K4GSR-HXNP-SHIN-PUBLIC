@@ -1,5 +1,5 @@
-'use strict';
-// ===== shared/01_constants.js — Ring, IVU, Crystal, Material Constants + State =====
+﻿'use strict';
+// ===== shared/01_constants.js ??Ring, IVU, Crystal, Material Constants + State =====
 // @module shared/01_constants
 // @exports APP_VERSION, APP_VTAG
 // @exports E_RING, I_RING, EMIT_X, EMIT_Y, BETA_X, BETA_Y, E_SPREAD, GAMMA_E
@@ -12,9 +12,9 @@
 // Bump per CHANGELOG.md / Versioning Policy. ALL log/console output that needs to
 // mention the app version must reference APP_VERSION / APP_VTAG here, never a
 // hard-coded literal. preflight_deploy.py enforces this (no "v4.NN"/"V4.NN" literals
-// allowed under js/ outside this file). MINOR+ bump procedure (CLAUDE.md "버전 관리"):
+// allowed under js/ outside this file). MINOR+ bump procedure (CLAUDE.md "踰꾩쟾 愿由?):
 // change this line, rename bundle pair, run preflight, commit, deploy.
-var APP_VERSION = '4.38.10';
+var APP_VERSION = '4.38.11';
 var APP_VTAG = 'v' + APP_VERSION;  // for log prefixes like '[v4.37.4]'
 
 // ===== Server Connection Config =====
@@ -149,7 +149,7 @@ function xbpmZone(id) {
 
 // Build XBPM list dynamically from CD (all tp:'bpm' entries).
 // Positions come from state.positions (user-editable like any device).
-// Zone is auto-detected from DCM position — no hardcoding.
+// Zone is auto-detected from DCM position ??no hardcoding.
 window.getXbpmList = function() {
   var list = [];
   for (var i = 0; i < CD.length; i++) {

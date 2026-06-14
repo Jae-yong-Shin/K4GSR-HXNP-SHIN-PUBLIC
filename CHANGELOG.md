@@ -13,6 +13,14 @@ validation standard of `main`. The paper-reproducibility baseline remains `main`
 > IOC setup needed to reproduce them. The A3 JavaScript model itself is standalone
 > (browser/node, no dependencies).
 
+## 2026-06-14 — 4.38.11
+
+Fixed: the first-visit "Simulation Accuracy Notice" rendered as mojibake in Korean
+(its inline Korean text, the close glyph, and the panel-header emoji had been
+corrupted during the V4_37→V4_38 bundle rename). Regenerated the application HTML
+from the last clean source and rebuilt the bundle; the JavaScript modules were
+unaffected. English locale was never affected.
+
 ## Development-line sync — 2026-06-14 (versions 4.38.6 → 4.38.10)
 
 This tranche lands the post-2026-06-12 development: the ion-chamber beam-direction

@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>HANBIT ??K4GSR HXNP Virtual Commissioning Platform v4.37</title>
+<title>HANBIT — K4GSR HXNP Virtual Commissioning Platform v4.37</title>
 <!-- Fonts: system fallback -->
 <!-- Chart lib: uPlot 1.6.31 (35KB) for interactive 1D charts -->
 <link rel="stylesheet" href="vendor/uplot-1.6.31.min.css">
@@ -135,7 +135,7 @@ body.layout-compact{--rside-w:380px}
 <div class="app">
 <div class="bar"><div class="bar-brand"><div class="bar-logo">HANBIT</div><div class="bar-sub">Korea-4GSR ID10 HXNP</div></div>
 <div class="mode-btns"><button class="mode-btn active" onclick="setMode('virtual')">Virtual</button><button class="mode-btn" onclick="setMode('real')">Real</button><button class="mode-btn" onclick="setMode('dual')">Dual</button></div>
-<div class="bar-r"><span id="ringStatusBar" style="font-size:8px;font-family:var(--mn);display:flex;gap:4px;align-items:center"></span><span class="bar-st"><span class="led"></span><span id="modeStatus">VIRTUAL MODE</span></span><span id="epicsLiveStats" style="font-size:8px;font-family:var(--mn);color:var(--t3)"></span><button class="bar-btn" onclick="window.open('../K4GSR-TOMO/web/tomo_ui.html','_blank')" title="Open Tomography Reconstruction UI">TOMO</button><button class="bar-btn" onclick="window.open('../K4GSR-PTYCHO/web/ptycho_ui.html','_blank')" title="Open Ptychography Reconstruction UI">PTYCHO</button><button class="bar-btn" onclick="resetVisualSx()">??Reset</button><div style="position:relative;display:inline-flex;align-items:center"><button class="bar-btn" onclick="toggleModeMenu()" id="modeSelectorBtn">??View</button><div class="mode-menu" id="modeMenu"></div></div><div style="position:relative;display:inline-flex;align-items:center"><button class="bar-btn" onclick="toggleLangMenu()" id="langSelectorBtn" style="min-width:32px">EN</button><div class="mode-menu" id="langMenu"></div></div><span style="display:inline-flex;align-items:center;gap:3px;margin:0 4px"><button class="bar-btn" onclick="setUIZoom(-0.1)" title="Zoom Out" style="min-width:28px;padding:4px 6px">-</button><span id="uiZoomLabel" style="font-size:9px;font-family:var(--mn);color:var(--t2);min-width:36px;text-align:center">180%</span><button class="bar-btn" onclick="setUIZoom(+0.1)" title="Zoom In" style="min-width:28px;padding:4px 6px">+</button></span><button class="bar-btn estop" onclick="emergencyStop()">??E-STOP</button></div></div>
+<div class="bar-r"><span id="ringStatusBar" style="font-size:8px;font-family:var(--mn);display:flex;gap:4px;align-items:center"></span><span class="bar-st"><span class="led"></span><span id="modeStatus">VIRTUAL MODE</span></span><span id="epicsLiveStats" style="font-size:8px;font-family:var(--mn);color:var(--t3)"></span><button class="bar-btn" onclick="window.open('../K4GSR-TOMO/web/tomo_ui.html','_blank')" title="Open Tomography Reconstruction UI">TOMO</button><button class="bar-btn" onclick="window.open('../K4GSR-PTYCHO/web/ptycho_ui.html','_blank')" title="Open Ptychography Reconstruction UI">PTYCHO</button><button class="bar-btn" onclick="resetVisualSx()">⟲ Reset</button><div style="position:relative;display:inline-flex;align-items:center"><button class="bar-btn" onclick="toggleModeMenu()" id="modeSelectorBtn">⚙ View</button><div class="mode-menu" id="modeMenu"></div></div><div style="position:relative;display:inline-flex;align-items:center"><button class="bar-btn" onclick="toggleLangMenu()" id="langSelectorBtn" style="min-width:32px">EN</button><div class="mode-menu" id="langMenu"></div></div><span style="display:inline-flex;align-items:center;gap:3px;margin:0 4px"><button class="bar-btn" onclick="setUIZoom(-0.1)" title="Zoom Out" style="min-width:28px;padding:4px 6px">-</button><span id="uiZoomLabel" style="font-size:9px;font-family:var(--mn);color:var(--t2);min-width:36px;text-align:center">180%</span><button class="bar-btn" onclick="setUIZoom(+0.1)" title="Zoom In" style="min-width:28px;padding:4px 6px">+</button></span><button class="bar-btn estop" onclick="emergencyStop()">⚠ E-STOP</button></div></div>
 
 <div class="svgwrap" id="svgWrap"><svg id="blSvg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
 <defs>
@@ -154,28 +154,28 @@ body.layout-compact{--rside-w:380px}
 
 <div style="grid-column:1;display:flex;align-items:center;gap:12px;padding:2px 10px;background:var(--s1);border-top:1px solid var(--b0);font-size:8px;font-family:var(--mn);color:var(--t2);zoom:var(--ui-zoom,1.8)">
   <span>E=<span id="liveE" style="color:var(--ac)">10.00</span> keV</span>
-  <span>Flux:<span id="liveFlux" style="color:var(--gn)">??/span></span>
+  <span>Flux:<span id="liveFlux" style="color:var(--gn)">—</span></span>
 </div>
 <div class="bpan"><div class="resizer-v" id="resizerV"></div>
-<div class="pn"><div class="pn-h"><h4>?뱤 MEASUREMENT</h4><span id="scanStatus" style="font-size:10px;font-family:var(--mn);color:var(--gn)">IDLE</span></div><div class="pn-body"><canvas id="measChart" height="170"></canvas></div></div>
-<div class="pn"><div class="pn-h"><h4>??HARMONIC SELECT</h4><span id="harmInfo" style="font-size:10px;font-family:var(--mn);color:var(--ac)">??/span></div><div class="pn-body" id="harmPanel" style="font-family:var(--mn);font-size:10px"></div></div>
-<div class="pn" style="min-width:170px"><div class="pn-h"><h4>?뱥 LOG</h4><button onclick="clearLog()" style="font-size:8px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);border-radius:3px;padding:1px 6px;cursor:pointer">Clr</button></div><div class="pn-body logbox" id="logBox"></div></div>
-<div class="pn" id="comparePanel" style="display:none"><div class="pn-h"><h4>??V/R</h4><span id="cmpScoreBar" style="font-size:10px;font-family:var(--mn);color:var(--gn)">??/span></div><div class="pn-body" id="comparePanelBody" style="overflow-y:auto;font-size:9px"></div></div>
+<div class="pn"><div class="pn-h"><h4>📊 MEASUREMENT</h4><span id="scanStatus" style="font-size:10px;font-family:var(--mn);color:var(--gn)">IDLE</span></div><div class="pn-body"><canvas id="measChart" height="170"></canvas></div></div>
+<div class="pn"><div class="pn-h"><h4>⚙ HARMONIC SELECT</h4><span id="harmInfo" style="font-size:10px;font-family:var(--mn);color:var(--ac)">—</span></div><div class="pn-body" id="harmPanel" style="font-family:var(--mn);font-size:10px"></div></div>
+<div class="pn" style="min-width:170px"><div class="pn-h"><h4>📋 LOG</h4><button onclick="clearLog()" style="font-size:8px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);border-radius:3px;padding:1px 6px;cursor:pointer">Clr</button></div><div class="pn-body logbox" id="logBox"></div></div>
+<div class="pn" id="comparePanel" style="display:none"><div class="pn-h"><h4>⚖ V/R</h4><span id="cmpScoreBar" style="font-size:10px;font-family:var(--mn);color:var(--gn)">—</span></div><div class="pn-body" id="comparePanelBody" style="overflow-y:auto;font-size:9px"></div></div>
 <div class="pn" id="bsPanel" style="display:none;min-width:200px;flex:1.5">
 <div class="pn-h" style="flex-wrap:wrap;gap:4px">
-<h4>?뵮 BLUESKY LIVE</h4>
-<span id="bsLiveStatus" style="font-size:10px;font-family:var(--mn);color:var(--ac)">??/span>
+<h4>🔬 BLUESKY LIVE</h4>
+<span id="bsLiveStatus" style="font-size:10px;font-family:var(--mn);color:var(--ac)">—</span>
 <div id="bsScanCtrl" style="display:none;margin-left:auto;gap:2px;display:none;align-items:center">
-<button class="sb" onclick="window.bsScanPause()" id="bsPauseBtn" style="font-size:8px;padding:2px 6px" title="Pause">?싢씂</button>
-<button class="sb" onclick="window.bsScanResume()" id="bsResumeBtn" style="font-size:8px;padding:2px 6px;background:var(--gn);color:#000;display:none" title="Resume">?뜯뼳</button>
-<button class="sb stop" onclick="window.bsScanAbort()" id="bsAbortBtn" style="font-size:8px;padding:2px 6px" title="Abort">??/button>
+<button class="sb" onclick="window.bsScanPause()" id="bsPauseBtn" style="font-size:8px;padding:2px 6px" title="Pause">❚❚</button>
+<button class="sb" onclick="window.bsScanResume()" id="bsResumeBtn" style="font-size:8px;padding:2px 6px;background:var(--gn);color:#000;display:none" title="Resume">▶▶</button>
+<button class="sb stop" onclick="window.bsScanAbort()" id="bsAbortBtn" style="font-size:8px;padding:2px 6px" title="Abort">✖</button>
 </div>
 </div>
 <div style="padding:0 6px">
 <div class="prog-bar" style="margin:2px 0"><div class="prog-fill" id="bsLiveProgress" style="width:0%;transition:width .3s"></div></div>
 <div style="display:flex;justify-content:space-between;font-size:8px;font-family:var(--mn);color:var(--t3)">
-<span id="bsLivePts">??/span>
-<span id="bsLiveEta">??/span>
+<span id="bsLivePts">—</span>
+<span id="bsLiveEta">—</span>
 </div>
 </div>
 <div class="pn-body" id="bsPanelBody" style="overflow-y:auto;font-size:9px"><canvas id="bsLiveCanvas" height="150"></canvas></div>
@@ -186,16 +186,16 @@ body.layout-compact{--rside-w:380px}
 <div class="rside"><div class="resizer-h" id="resizerH"></div><div class="tabs">
 <div class="tab active" onclick="switchTab('undulator')">IVU</div><div class="tab" onclick="switchTab('mask')">Mask</div><div class="tab" onclick="switchTab('dcm')">DCM</div><div class="tab" onclick="switchTab('optics')">Optics</div><div class="tab" onclick="switchTab('atten')">Atten</div><div class="tab" onclick="switchTab('motors')">Motors</div><div class="tab" onclick="switchTab('measure')">Meas</div>
 <div class="tab" onclick="switchTab('align')">Align</div><div class="tab" onclick="switchTab('compare')">V/R</div><div class="tab" onclick="switchTab('epics')" style="color:var(--gn)">EPICS</div><div class="tab" onclick="switchTab('bluesky')" style="color:var(--pr)">BS</div><div class="tab" onclick="switchTab('guide')" style="color:var(--am)">Guide</div><div class="tab" onclick="switchTab('chat')" style="color:var(--pk)">Chat</div><div class="tab" onclick="switchTab('expt')" style="color:var(--gn)">Expt</div><div class="tab" onclick="switchTab('scanner')" style="color:var(--ac)">Scan</div></div>
-<div id="liveBeamMon" class="live-mon" style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px"><div style="display:flex;gap:10px;align-items:center"><span style="color:var(--t3)">E:</span><span class="mon-val" id="lm_e">10.00 keV</span><span style="color:var(--t3)">Flux:</span><span class="mon-val" id="lm_flux">??/span></div><button class="bar-btn" onclick="toggleXbpmPopup()" style="font-size:8px;padding:3px 8px;min-width:auto">XBPM</button></div>
+<div id="liveBeamMon" class="live-mon" style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px"><div style="display:flex;gap:10px;align-items:center"><span style="color:var(--t3)">E:</span><span class="mon-val" id="lm_e">10.00 keV</span><span style="color:var(--t3)">Flux:</span><span class="mon-val" id="lm_flux">—</span></div><button class="bar-btn" onclick="toggleXbpmPopup()" style="font-size:8px;padding:3px 8px;min-width:auto">XBPM</button></div>
 <div class="tabcontent">
 
-<!-- IVU Tab ??content rendered by renderDynTabs() -->
+<!-- IVU Tab — content rendered by renderDynTabs() -->
 <div class="tabpane active" id="tab-undulator"></div>
 
-<!-- DCM Tab ??content rendered by renderDynTabs() -->
+<!-- DCM Tab — content rendered by renderDynTabs() -->
 <div class="tabpane" id="tab-dcm"></div>
 
-<!-- Optics Tab ??content rendered by renderDynTabs() -->
+<!-- Optics Tab — content rendered by renderDynTabs() -->
 <div class="tabpane" id="tab-optics"></div>
 
 <!-- MOTORS Tab (NEW) -->
@@ -219,7 +219,7 @@ body.layout-compact{--rside-w:380px}
 <option value="zp">ZP/CRL</option>
 </select></div></div>
 <div id="motorGroupPanel"></div>
-<div class="ctrl-group" style="margin-top:4px"><button class="sb" style="font-size:8px" onclick="logAllMotorPositions()">?뱥 Log All Positions</button></div>
+<div class="ctrl-group" style="margin-top:4px"><button class="sb" style="font-size:8px" onclick="logAllMotorPositions()">📋 Log All Positions</button></div>
 </div>
 
 <!-- MASK Tab (NEW) -->
@@ -239,13 +239,13 @@ body.layout-compact{--rside-w:380px}
 <div class="ctrl-group" style="margin:0"><select id="technique" onchange="updateTechUI()" style="width:100%"><option value="xanes">XANES</option><option value="xrd2d">XRD 2D Map</option><option value="xrf">XRF</option><option value="xrf2d">XRF 2D Map</option></select></div></div>
 <div style="margin-bottom:6px">
 <h4 style="font-size:10px;color:var(--t1);font-weight:600;margin:0 0 3px 2px">MATERIAL</h4>
-<div class="ctrl-group" style="margin:0"><select id="material" style="width:100%"><option value="Fe">Fe</option><option value="Cu" selected>Cu</option><option value="Ni">Ni</option><option value="Ti">Ti</option><option value="Au">Au</option><option value="Pt">Pt</option><option value="Si">Si</option><option value="SrTiO3">SrTiO??/option></select></div></div>
-<div id="xanesParams"><div class="ctrl-group"><div class="row" style="margin-bottom:4px"><div><div class="ctrl-label">Sample</div><select id="xanesSampleType"><option value="solid">Solid</option><option value="powder">Powder (dilute)</option></select></div><div><div class="ctrl-label">Conc(ppm)</div><input id="xanesPPM" type="number" value="10000" step="100"/></div></div><select id="xanesEdge"><option value="K">K edge</option><option value="L3">L??edge</option></select><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Pre(eV)</div><input type="number" value="-50" id="xanesPre"/></div><div><div class="ctrl-label">Post(eV)</div><input type="number" value="300" id="xanesPost"/></div></div><div class="ctrl-label" style="margin-top:4px">Step(eV)</div><input type="number" value="0.5" step="0.1" id="xanesStep"/></div></div>
+<div class="ctrl-group" style="margin:0"><select id="material" style="width:100%"><option value="Fe">Fe</option><option value="Cu" selected>Cu</option><option value="Ni">Ni</option><option value="Ti">Ti</option><option value="Au">Au</option><option value="Pt">Pt</option><option value="Si">Si</option><option value="SrTiO3">SrTiO₃</option></select></div></div>
+<div id="xanesParams"><div class="ctrl-group"><div class="row" style="margin-bottom:4px"><div><div class="ctrl-label">Sample</div><select id="xanesSampleType"><option value="solid">Solid</option><option value="powder">Powder (dilute)</option></select></div><div><div class="ctrl-label">Conc(ppm)</div><input id="xanesPPM" type="number" value="10000" step="100"/></div></div><select id="xanesEdge"><option value="K">K edge</option><option value="L3">L₃ edge</option></select><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Pre(eV)</div><input type="number" value="-50" id="xanesPre"/></div><div><div class="ctrl-label">Post(eV)</div><input type="number" value="300" id="xanesPost"/></div></div><div class="ctrl-label" style="margin-top:4px">Step(eV)</div><input type="number" value="0.5" step="0.1" id="xanesStep"/></div></div>
 
-<div id="xrd2dParams" style="display:none"><div class="ctrl-group"><div class="row"><div><div class="ctrl-label">X Start(쨉m)</div><input type="number" value="-500" id="mapXstart"/></div><div><div class="ctrl-label">X End</div><input type="number" value="500" id="mapXend"/></div></div><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Y Start</div><input type="number" value="-500" id="mapYstart"/></div><div><div class="ctrl-label">Y End</div><input type="number" value="500" id="mapYend"/></div></div><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Step</div><input type="number" value="10" id="mapStep"/></div><div><div class="ctrl-label">Dwell(ms)</div><input type="number" value="100" id="mapDwell"/></div></div></div></div>
+<div id="xrd2dParams" style="display:none"><div class="ctrl-group"><div class="row"><div><div class="ctrl-label">X Start(µm)</div><input type="number" value="-500" id="mapXstart"/></div><div><div class="ctrl-label">X End</div><input type="number" value="500" id="mapXend"/></div></div><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Y Start</div><input type="number" value="-500" id="mapYstart"/></div><div><div class="ctrl-label">Y End</div><input type="number" value="500" id="mapYend"/></div></div><div class="row" style="margin-top:4px"><div><div class="ctrl-label">Step</div><input type="number" value="10" id="mapStep"/></div><div><div class="ctrl-label">Dwell(ms)</div><input type="number" value="100" id="mapDwell"/></div></div></div></div>
 <div id="xrfParams" style="display:none"><div class="ctrl-group"><div class="row" style="margin-bottom:4px"><div><div class="ctrl-label">Sample</div><select id="xrfSampleType"><option value="solid">Solid</option><option value="powder">Powder (dilute)</option></select></div><div><div class="ctrl-label">Conc(ppm)</div><input id="xrfPPM" type="number" value="10000" step="100"/></div></div><div class="row"><div><div class="ctrl-label">Exc E(keV)</div><input type="number" value="12" step="0.5" id="xrfExE"/></div><div><div class="ctrl-label">Dwell(s)</div><input type="number" value="10" step="1" id="xrfDwell"/></div></div></div></div>
 <div id="xrf2dParams" style="display:none"><div class="ctrl-group"><div class="row"><div><div class="ctrl-label">PPM</div><input type="number" value="1000" step="100" id="xrf2dPPM"/></div><div><div class="ctrl-label">Dwell(s)</div><input type="number" value="0.1" step="0.01" id="xrf2dDwell"/></div></div><div class="row"><div><div class="ctrl-label">X start</div><input type="number" value="-500" id="xrf2dXstart"/></div><div><div class="ctrl-label">X end</div><input type="number" value="500" id="xrf2dXend"/></div></div><div class="row"><div><div class="ctrl-label">Y start</div><input type="number" value="-500" id="xrf2dYstart"/></div><div><div class="ctrl-label">Y end</div><input type="number" value="500" id="xrf2dYend"/></div></div><div class="ctrl-label" style="margin-top:4px">Step(um)</div><input type="number" value="1.0" step="0.1" id="xrf2dStep"/></div></div>
-<div class="ctrl-group" style="display:flex;gap:4px"><button class="sb go act" onclick="startScan()">??START</button><button class="sb stop act" onclick="stopScan()">??STOP</button><button class="sb sec" onclick="exportCSV()">?뮶 CSV</button></div>
+<div class="ctrl-group" style="display:flex;gap:4px"><button class="sb go act" onclick="startScan()">▶ START</button><button class="sb stop act" onclick="stopScan()">■ STOP</button><button class="sb sec" onclick="exportCSV()">💾 CSV</button></div>
 <div class="prog-bar"><div class="prog-fill" id="scanProg"></div></div></div>
 
 <!-- ATTEN Tab -->
@@ -256,7 +256,7 @@ body.layout-compact{--rside-w:380px}
 <div style="font-size:8px;color:var(--t3);margin-bottom:4px">Between WB Slit and XBPM-WB. 4 filter slots.</div>
 <div id="attenSlots"></div>
 <div style="margin-top:4px"><div class="ctrl-label">Total Transmission<span class="att-trans" id="attenTransVal">100.0%</span></div>
-<div class="ctrl-label">Transmitted Flux<span class="ctrl-val" id="attenFluxVal">??/span></div></div>
+<div class="ctrl-label">Transmitted Flux<span class="ctrl-val" id="attenFluxVal">—</span></div></div>
 </div></div>
 <div id="tab-atten-motors"></div>
 </div>
@@ -273,9 +273,9 @@ body.layout-compact{--rside-w:380px}
 <!-- Compare Tab (unchanged) -->
 <div class="tabpane" id="tab-compare">
 <div class="ctrl-group" style="display:flex;gap:4px;align-items:center">
-<button class="sb go act" onclick="startComparison()">??Start V/R</button>
-<button class="sb stop act" onclick="stopComparison()">??Stop</button>
-<span style="font-size:8px;color:var(--t3);margin-left:auto" id="cmpMode2">??/span>
+<button class="sb go act" onclick="startComparison()">▶ Start V/R</button>
+<button class="sb stop act" onclick="stopComparison()">■ Stop</button>
+<span style="font-size:8px;color:var(--t3);margin-left:auto" id="cmpMode2">—</span>
 </div>
 <div id="compareBody" style="overflow-y:auto"></div>
 </div>
@@ -288,7 +288,7 @@ body.layout-compact{--rside-w:380px}
 </div></div>
 
 <!-- Modal overlay -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalDialog"><div class="modal-head" id="modalHead"><h3 id="modalTitle">??/h3><button class="modal-close" onclick="closeModal()">??/button></div><div class="modal-body" id="modalBody"></div></div></div>
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalDialog"><div class="modal-head" id="modalHead"><h3 id="modalTitle">—</h3><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div></div></div>
 </div>
 
 
@@ -419,7 +419,7 @@ body.layout-compact{--rside-w:380px}
 <!-- Startup accuracy-scope notice (Reviewer R1 MAJOR: "explicitly mention the limitations ... right in the GUI") -->
 <div class="modal-overlay" id="accNoticeOverlay">
   <div class="modal" id="accNoticeDialog" style="resize:none;zoom:.9" data-popup-fontscale="off">
-    <div class="modal-head"><h3 id="accNoticeTitle">Notice</h3><button class="modal-close" type="button" id="accNoticeClose">??/button></div>
+    <div class="modal-head"><h3 id="accNoticeTitle">Notice</h3><button class="modal-close" type="button" id="accNoticeClose">✕</button></div>
     <div class="modal-body" id="accNoticeBody"></div>
   </div>
 </div>
@@ -431,11 +431,11 @@ body.layout-compact{--rside-w:380px}
   var body=document.getElementById('accNoticeBody');
   var btnOk, chk, html;
   if(ko){
-    title.textContent='?쒕??덉씠???뺥솗???덈궡';
-    html='<p style="margin:0 0 12px">???뚮옯?쇱? 臾쇰━ ?쒕??덉씠?? 而⑦듃濡??쒖뒪?? 媛???ㅽ뿕???듯빀?섍퀬 ?ㅺ뎅???먯뿰?대줈 ?쒖뼱쨌?ㅽ뿕?????덈뒗 <b>?곹샇?묒슜??而ㅻ??붾떇 ?꾧뎄</b>濡? 鍮붾씪??而⑦듃濡? 鍮??뺣젹 ?덉감 由ы뿀?? ?뚮씪誘명꽣 寃쏀뼢 ?먯깋, 鍮붾씪???좎? 援먯쑁???꾪븳 寃껋엯?덈떎.</p>'
-        +'<p style="margin:0 0 12px">?쒖떆?섎뒗 鍮??ш린? 愿묒옄 ?뚮윮??媛믪? <b>洹쇱궗媛믪씠硫??뺣? ?덉륫???꾨떃?덈떎.</b> 吏묒냽 ?ш린???섏씠釉뚮━??Fraunhofer/Fresnel 紐⑤뜽濡?怨꾩궛?섎ŉ, ?뚮㈃ ?꾪뙆 ?쒕??덉씠?섏? ?ы븿?섏? ?딆뒿?덈떎.</p>'
-        +'<p style="margin:0 0 14px">?뺣???吏묒냽 ?ш린쨌?뚮윮???덉륫? ?꾩슜 肄붾뱶(SRW, Shadow4, xrt)瑜??ъ슜?섏꽭??</p>';
-    btnOk='?뺤씤'; chk='?ㅻ뒛 ?섎（ 蹂댁? ?딆쓬';
+    title.textContent='시뮬레이션 정확도 안내';
+    html='<p style="margin:0 0 12px">이 플랫폼은 물리 시뮬레이션, 컨트롤 시스템, 가상 실험을 통합하고 다국어 자연어로 제어·실험할 수 있는 <b>상호작용형 커미셔닝 도구</b>로, 빔라인 컨트롤, 빔 정렬 절차 리허설, 파라미터 경향 탐색, 빔라인 유저 교육을 위한 것입니다.</p>'
+        +'<p style="margin:0 0 12px">표시되는 빔 크기와 광자 플럭스 값은 <b>근사값이며 정밀 예측이 아닙니다.</b> 집속 크기는 하이브리드 Fraunhofer/Fresnel 모델로 계산되며, 파면 전파 시뮬레이션은 포함되지 않습니다.</p>'
+        +'<p style="margin:0 0 14px">정밀한 집속 크기·플럭스 예측은 전용 코드(SRW, Shadow4, xrt)를 사용하세요.</p>';
+    btnOk='확인'; chk='오늘 하루 보지 않음';
   } else {
     title.textContent='Simulation Accuracy Notice';
     html='<p style="margin:0 0 12px">This platform is an <b>interactive commissioning tool</b> that integrates physics simulation, the control system, and virtual experiments, operated through a multilingual natural-language interface, intended for beamline control, beam-alignment procedure rehearsal, parameter-trend exploration, and beamline-user training.</p>'
